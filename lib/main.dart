@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:tracio_fe/core/configs/theme/app_theme.dart';
-import 'package:tracio_fe/presentation/home/pages/home.dart';
+import 'package:tracio_fe/presentation/map/pages/map.dart';
 
-void main() {
+void main() async {
+  try {
+    await dotenv.load(fileName: ".env");
+  } catch (e) {
+    print("Error loading .env file: $e");
+  }
   runApp(const MyApp());
 }
 
@@ -13,15 +18,10 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return ScreenUtilInit(
-      designSize: Size(720, 1600),
-      minTextAdapt: true,
-      splitScreenMode: true,
-      builder: (context, child) => MaterialApp(
-        theme: AppTheme.appTheme,
-        debugShowCheckedModeBanner: false,
-        home: HomePage(),
-      ),
+    return MaterialApp(
+      theme: AppTheme.appTheme,
+      debugShowCheckedModeBanner: false,
+      home: MapPage(),
     );
   }
 }
