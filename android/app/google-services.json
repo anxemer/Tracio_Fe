@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "985147212411",
+    "project_id": "tracio-cbd26",
+    "storage_bucket": "tracio-cbd26.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:985147212411:android:adef72010af0e5246658de",
+        "android_client_info": {
+          "package_name": "com.example.tracio_fe"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "985147212411-30st42smddrbdqp7j75c88eddl0gbpir.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCYc6dN2b76GAnNms-evEHyqgK6d2yG7P0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "985147212411-30st42smddrbdqp7j75c88eddl0gbpir.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

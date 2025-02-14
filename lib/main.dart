@@ -1,9 +1,17 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tracio_fe/core/configs/theme/app_theme.dart';
-import 'package:tracio_fe/presentation/home/pages/home.dart';
+import 'package:tracio_fe/firebase_options.dart';
 
-void main() {
+import 'presentation/auth/pages/login.dart';
+import 'service_locator.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  
+  await initializeDependencies();
   runApp(const MyApp());
 }
 
@@ -20,7 +28,7 @@ class MyApp extends StatelessWidget {
       builder: (context, child) => MaterialApp(
         theme: AppTheme.appTheme,
         debugShowCheckedModeBanner: false,
-        home: HomePage(),
+        home: LoginPage(),
       ),
     );
   }

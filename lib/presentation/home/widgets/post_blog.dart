@@ -9,6 +9,7 @@ class PostBlog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ScreenUtil.init(context, designSize: Size(720, 1600));
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
@@ -63,9 +64,10 @@ class PostBlog extends StatelessWidget {
                       color: Colors.black,
                       size: 52.sp,
                     ),
-                    SizedBox(
-                      width: 400.w,
-                    ),
+                    // SizedBox(
+                    //   width: 400.w,
+                    // ),
+                    Spacer(),
                     Icon(
                       Icons.bookmark_border,
                       color: Colors.black,
@@ -106,9 +108,8 @@ class PostBlog extends StatelessWidget {
                   SizedBox(
                     width: 10.w,
                   ),
-                  SizedBox(
+                  Expanded(
                     // height: MediaQuery.of(context).size.height,
-                    width: MediaQuery.of(context).size.width * 1.3.w,
 
                     child: TextField(
                       style: TextStyle(color: Colors.black),

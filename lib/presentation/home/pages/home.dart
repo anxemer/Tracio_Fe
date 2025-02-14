@@ -23,6 +23,7 @@ class HomePage extends StatelessWidget {
           action: Row(
             children: [
               FloatingActionButton(
+                heroTag: 'noti',
                 backgroundColor: Colors.white,
                 mini: true,
                 shape: CircleBorder(),
@@ -33,6 +34,7 @@ class HomePage extends StatelessWidget {
                 ),
               ),
               FloatingActionButton(
+                heroTag: 'chat',
                 mini: true,
                 backgroundColor: Colors.white,
                 shape: CircleBorder(),
@@ -43,6 +45,7 @@ class HomePage extends StatelessWidget {
                 ),
               ),
               FloatingActionButton(
+                heroTag: 'search',
                 mini: true,
                 backgroundColor: Colors.white,
                 shape: CircleBorder(),
