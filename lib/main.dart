@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tracio_fe/core/configs/theme/app_theme.dart';
-import 'package:tracio_fe/presentation/home/pages/home.dart';
+
+import 'presentation/auth/pages/login.dart';
 
 void main() {
   runApp(const MyApp());
@@ -20,7 +21,7 @@ class MyApp extends StatelessWidget {
       builder: (context, child) => MaterialApp(
         theme: AppTheme.appTheme,
         debugShowCheckedModeBanner: false,
-        home: HomePage(),
+        home: LoginPage(),
       ),
     );
   }
