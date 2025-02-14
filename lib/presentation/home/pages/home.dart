@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tracio_fe/common/widget/appbar/app_bar.dart';
+import 'package:tracio_fe/common/widget/button/floating_button.dart';
 import 'package:tracio_fe/common/widget/navbar/navbar.dart';
 import 'package:tracio_fe/presentation/home/widgets/post_blog.dart';
 
@@ -22,35 +23,29 @@ class HomePage extends StatelessWidget {
           ),
           action: Row(
             children: [
-              FloatingActionButton(
-                heroTag: 'noti',
+              FloatingButton(
+                elevation: 1,
                 backgroundColor: Colors.white,
-                mini: true,
-                shape: CircleBorder(),
                 onPressed: () {},
-                child: Icon(
+                action: Icon(
                   Icons.notifications_none_outlined,
                   color: Colors.black,
                 ),
               ),
-              FloatingActionButton(
-                heroTag: 'chat',
-                mini: true,
+              FloatingButton(
+                elevation: 1,
                 backgroundColor: Colors.white,
-                shape: CircleBorder(),
                 onPressed: () {},
-                child: Icon(
+                action: Icon(
                   Icons.chat_bubble_outline,
                   color: Colors.black,
                 ),
               ),
-              FloatingActionButton(
-                heroTag: 'search',
-                mini: true,
+              FloatingButton(
+                elevation: 1,
                 backgroundColor: Colors.white,
-                shape: CircleBorder(),
                 onPressed: () {},
-                child: Icon(
+                action: Icon(
                   Icons.search_outlined,
                   color: Colors.black,
                 ),
