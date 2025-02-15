@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:tracio_fe/core/configs/utils/permission_handler_service.dart';
+import 'package:geolocator/geolocator.dart' as geolocator;
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
@@ -11,6 +14,30 @@ class MapPage extends StatefulWidget {
 
 class _MapPageState extends State<MapPage> {
   late MapboxMap mapboxMap;
+
+  List<String> mapStyles = [
+    "Mapbox Streets",
+    "Mapbox Outdoors",
+    "Mapbox Light",
+    "Mapbox Dark",
+    "Mapbox Satellite",
+    "Goong Map"
+  ];
+
+  final _permissionHandlerService = PermissionHandlerService();
+  @override
+  void initState() {
+    super.initState();
+    _requestPermissions();
+  }
+
+  Future<void> _requestPermissions() async {
+    await _permissionHandlerService.requestPermission(
+      Permission.location,
+      "Location",
+      context,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,10 +58,9 @@ class _MapPageState extends State<MapPage> {
     MapboxOptions.setAccessToken(accessToken);
 
     CameraOptions camera = CameraOptions(
-      //TODO: Get User Location
       center:
           Point(coordinates: Position(106.65607167348008, 10.838242196485027)),
-      zoom: 16,
+      zoom: 12,
       bearing: 0,
       pitch: 10,
     );
@@ -50,7 +76,7 @@ class _MapPageState extends State<MapPage> {
 
           // Input field for searching location
           Positioned(
-            top: 50,
+            top: 30,
             left: 20,
             right: 20,
             child: TextField(
@@ -70,27 +96,13 @@ class _MapPageState extends State<MapPage> {
             ),
           ),
 
-          // Show the list of nearby places
+          // Floating Action Button
           Positioned(
-            bottom: 20,
-            left: 20,
-            right: 20,
-            child: Container(
-              padding: EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.8),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Nearby Places",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
-                  Text("Placeholder for nearby places list"),
-                ],
-              ),
+            bottom: 30,
+            right: 10,
+            child: FloatingActionButton(
+              onPressed: _showStyleSelectionDialog,
+              child: Icon(Icons.map),
             ),
           ),
         ],
@@ -99,8 +111,7 @@ class _MapPageState extends State<MapPage> {
   }
 
   Future<void> _onMapCreate(MapboxMap controller) async {
-    //variables
-    String goongMapTileToken = dotenv.env['GOONG_MAPTILE_TOKEN'] ?? "";
+    // Variables
     final southwest = Point(coordinates: Position(8.5, 104.6667));
     final northeast = Point(coordinates: Position(23.5, 110.5));
     double maxZoom = 20.0;
@@ -108,10 +119,18 @@ class _MapPageState extends State<MapPage> {
 
     mapboxMap = controller;
 
-    final customStyleUri = goongMapTileToken.isNotEmpty
-        ? "https://tiles.goong.io/assets/goong_map_web.json?api_key=$goongMapTileToken"
-        : "";
 
+    // Enable the location component
+    await mapboxMap.location.updateSettings(LocationComponentSettings(
+      enabled: true,
+      showAccuracyRing: true,
+      accuracyRingColor: Colors.blue.r.toInt(),
+      accuracyRingBorderColor: Colors.white.r.toInt(),
+      pulsingEnabled: true,
+      pulsingColor: Colors.blue.r.toInt(),
+    ));
+
+    //Camera limitation
     await mapboxMap.setBounds(CameraBoundsOptions(
       bounds: CoordinateBounds(
         southwest: southwest,
@@ -122,7 +141,115 @@ class _MapPageState extends State<MapPage> {
       minZoom: minZoom,
     ));
 
-    //Load style
-    mapboxMap.loadStyleURI(customStyleUri);
+    //Compass settings
+    mapboxMap.compass.updateSettings(CompassSettings(
+      position: OrnamentPosition.BOTTOM_LEFT,
+      marginBottom: 30
+    ));
+
+    //Scale bar settings
+    mapboxMap.scaleBar.updateSettings(ScaleBarSettings(enabled: false));
+
+    //camera animation
+    //TODO: Get User Location
+    mapboxMap.flyTo(
+        CameraOptions(
+            center: Point(coordinates: Position(-80.1263, 25.7845)),
+            anchor: ScreenCoordinate(x: 0, y: 0),
+            zoom: 18,
+            bearing: 180,
+            pitch: 30),
+        MapAnimationOptions(duration: 2000, startDelay: 0));
+
+    String terrainRgbUrl =
+        "https://api.mapbox.com/v4/mapbox.terrain-rgb/{z}/{x}/{y}.pngraw?access_token=${dotenv.env['MAPBOX_ACCESS_TOKEN']}";
+    addTerrainSourceAndLayer(terrainRgbUrl);
+  }
+
+  Future<void> addTerrainSourceAndLayer(String terrainRgbUrl) async {
+    try {
+      // Attempt to add the source
+      final rasterSource = RasterSource(
+        id: "terrain-rgb-source",
+        tiles: [terrainRgbUrl],
+        tileSize: 256,
+      );
+
+      await mapboxMap.style.addSource(rasterSource);
+    } catch (e) {
+      // Handle the case where the source already exists
+      debugPrint(
+          "Source 'terrain-rgb-source' already exists or another error occurred: $e");
+    }
+
+    // Now add the layer
+    try {
+      final rasterLayer = RasterLayer(
+        id: "terrain-rgb-layer",
+        sourceId: "terrain-rgb-source",
+        slot: "middle",
+      );
+
+      await mapboxMap.style.addLayer(rasterLayer);
+    } catch (e) {
+      // Handle the case where the layer already exists
+      debugPrint(
+          "Layer 'terrain-rgb-layer' already exists or another error occurred: $e");
+    }
+  }
+
+  void _showStyleSelectionDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Select Map Style"),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: mapStyles.map((style) {
+                return ListTile(
+                  title: Text(style),
+                  onTap: () {
+                    _changeMapStyle(style);
+                    Navigator.of(context).pop();
+                  },
+                );
+              }).toList(),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _changeMapStyle(String style) {
+    String styleUri;
+
+    switch (style) {
+      case "Mapbox Streets":
+        styleUri = MapboxStyles.MAPBOX_STREETS;
+        break;
+      case "Mapbox Outdoors":
+        styleUri = MapboxStyles.OUTDOORS;
+        break;
+      case "Mapbox Light":
+        styleUri = MapboxStyles.LIGHT;
+        break;
+      case "Mapbox Dark":
+        styleUri = MapboxStyles.DARK;
+        break;
+      case "Mapbox Satellite":
+        styleUri = MapboxStyles.SATELLITE;
+        break;
+      case "Goong Map":
+        styleUri =
+            "https://tiles.goong.io/assets/goong_map_web.json?api_key=${dotenv.env['GOONG_MAPTILE_TOKEN']}";
+        break;
+      default:
+        styleUri =
+            "https://tiles.goong.io/assets/goong_map_web.json?api_key=${dotenv.env['GOONG_MAPTILE_TOKEN']}";
+    }
+
+    mapboxMap.loadStyleURI(styleUri);
   }
 }
