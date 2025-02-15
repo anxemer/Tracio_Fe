@@ -17,7 +17,6 @@ class _MapPageState extends State<MapPage> {
   late mapbox.MapboxMap mapboxMap;
 
   StreamSubscription? userPositionStream;
-  mapbox.Position? userPosition;
 
   List<String> mapStyles = [
     "Mapbox Streets",
@@ -120,8 +119,8 @@ class _MapPageState extends State<MapPage> {
         northeast: northeast,
         infiniteBounds: true,
       ),
-      // maxZoom: maxZoom,
-      // minZoom: minZoom,
+      maxZoom: maxZoom,
+      minZoom: minZoom,
     ));
 
     //Compass settings
@@ -166,20 +165,25 @@ class _MapPageState extends State<MapPage> {
       geolocator.Position? position,
     ) {
       if (position != null) {
-        userPosition = mapbox.Position(
+        _cameraAnimation(mapbox.Position(
           position.longitude,
           position.latitude,
-        );
-        //camera animation fly to user position
-        mapboxMap.flyTo(
-            mapbox.CameraOptions(
-                center: mapbox.Point(coordinates: userPosition!),
-                anchor: mapbox.ScreenCoordinate(x: 0, y: 0),
-                zoom: 18,
-                bearing: 180),
-            mapbox.MapAnimationOptions(duration: 2000, startDelay: 0));
+        ));
       }
     });
+  }
+
+  void _cameraAnimation(mapbox.Position aniPosition) {
+    mapboxMap.setCamera(mapbox.CameraOptions(
+      zoom: 12,
+    ));
+
+    mapboxMap.flyTo(
+        mapbox.CameraOptions(
+            center: mapbox.Point(coordinates: aniPosition),
+            anchor: mapbox.ScreenCoordinate(x: 0, y: 0),
+            zoom: 18),
+        mapbox.MapAnimationOptions(duration: 2000, startDelay: 500));
   }
 
   Future<void> _addTerrainSourceAndLayer(String terrainRgbUrl) async {

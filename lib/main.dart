@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
+import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' as mp;
 import 'package:tracio_fe/core/configs/theme/app_theme.dart';
 import 'package:tracio_fe/presentation/map/pages/map.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 void main() async {
   try {
@@ -17,7 +17,7 @@ void main() async {
 
 Future<void> setup() async {
   await dotenv.load(fileName: ".env");
-  MapboxOptions.setAccessToken(dotenv.env['MAPBOX_ACCESS_TOKEN']!);
+  mp.MapboxOptions.setAccessToken(dotenv.env['MAPBOX_ACCESS_TOKEN']!);
 }
 
 class MyApp extends StatelessWidget {
@@ -27,15 +27,16 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-      // designSize: Size(width: 720, height: 1600),
+      designSize: const Size(360, 690),
       minTextAdapt: true,
       splitScreenMode: true,
-      builder: (context, child) => MaterialApp(
+      builder: (_, child) => MaterialApp(
         title: 'Tracio',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.appTheme,
-        home: const MapPage(),
+        home: child,
       ),
+      child: const MapPage(),
     );
   }
 }
