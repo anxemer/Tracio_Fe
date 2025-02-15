@@ -47,6 +47,8 @@ dependencies:
   hydrated_bloc:
   dio: ^5.8.0+1
   logger:
+  shared_preferences:
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

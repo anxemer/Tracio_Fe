@@ -4,6 +4,7 @@ import 'package:tracio_fe/data/auth/sources/auth_api_service.dart';
 import 'package:tracio_fe/data/auth/sources/auth_firebase_service.dart';
 import 'package:tracio_fe/domain/auth/repositories/auth_repository.dart';
 import 'package:tracio_fe/domain/auth/usecases/check_email_verified.dart';
+import 'package:tracio_fe/domain/auth/usecases/is_logged_in.dart';
 import 'package:tracio_fe/domain/auth/usecases/login.dart';
 import 'package:tracio_fe/domain/auth/usecases/register_with_ep.dart';
 import 'package:tracio_fe/domain/auth/usecases/verify_email.dart';
@@ -25,4 +26,5 @@ Future<void> initializeDependencies() async {
   sl.registerSingleton<RegisterWithEmailAndPassUseCase>(
       RegisterWithEmailAndPassUseCase());
   sl.registerSingleton<LoginUseCase>(LoginUseCase());
+  sl.registerSingleton<IsLoggedInUseCase>(IsLoggedInUseCase());
 }

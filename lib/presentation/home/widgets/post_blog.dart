@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:tracio_fe/presentation/home/widgets/react_blog.dart';
 
 import '../../../core/configs/theme/app_colors.dart';
 import '../../../core/configs/theme/assets/app_images.dart';
@@ -11,7 +12,7 @@ class PostBlog extends StatelessWidget {
   Widget build(BuildContext context) {
     ScreenUtil.init(context, designSize: Size(720, 1600));
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 16.w),
         decoration: BoxDecoration(
@@ -22,7 +23,20 @@ class PostBlog extends StatelessWidget {
           children: [
             _informationPost(),
             SizedBox(
-              height: 48.h,
+              height: 16.h,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                'A Flutter application to submit and view feedbacks integrated with Google Sheets, using BLoC for state management. It showcases form validation, data submission, and dynamic list rendering with efficient state handling.',
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 28.sp,
+                    fontWeight: FontWeight.w500),
+              ),
+            ),
+            SizedBox(
+              height: 16.h,
             ),
             Container(
               decoration: BoxDecoration(
@@ -30,53 +44,14 @@ class PostBlog extends StatelessWidget {
                   borderRadius: BorderRadius.circular(20)),
               height: 600.h,
               width: 750.w,
+              child: Image.asset(
+                AppImages.picture,
+                fit: BoxFit.fill,
+              ),
               // color: Colors.black,
             ),
-            Column(
-              children: [
-                SizedBox(
-                  height: 20.h,
-                ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      width: 20.w,
-                    ),
-                    Icon(
-                      Icons.favorite_outline,
-                      color: Colors.red,
-                      size: 52.sp,
-                    ),
-                    SizedBox(
-                      width: 20.w,
-                    ),
-                    Icon(
-                      Icons.comment_outlined,
-                      color: Colors.black,
-                      size: 52.sp,
-                    ),
-                    SizedBox(
-                      width: 20.w,
-                    ),
-                    Icon(
-                      Icons.ios_share,
-                      color: Colors.black,
-                      size: 52.sp,
-                    ),
-                    // SizedBox(
-                    //   width: 400.w,
-                    // ),
-                    Spacer(),
-                    Icon(
-                      Icons.bookmark_border,
-                      color: Colors.black,
-                      size: 52.sp,
-                    ),
-                  ],
-                )
-              ],
-            ),
+            // _reactBlog(),
+            ReactBlog(),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: Text(
@@ -108,18 +83,7 @@ class PostBlog extends StatelessWidget {
                   SizedBox(
                     width: 10.w,
                   ),
-                  Expanded(
-                    // height: MediaQuery.of(context).size.height,
-
-                    child: TextField(
-                      style: TextStyle(color: Colors.black),
-                      decoration: InputDecoration(
-                          filled: true,
-                          hintText: 'Add a comment',
-                          fillColor: Colors.white,
-                          contentPadding: EdgeInsets.symmetric(vertical: 15)),
-                    ),
-                  ),
+                  _commentBlog(),
                   SizedBox(
                     width: 10.w,
                   ),
@@ -130,7 +94,7 @@ class PostBlog extends StatelessWidget {
                   )
                 ],
               ),
-            )
+            ),
           ],
         ),
       ),
@@ -172,5 +136,68 @@ class PostBlog extends StatelessWidget {
             trailing: Icon(Icons.arrow_forward_ios_rounded),
           ),
         ));
+  }
+
+  Widget _reactBlog() {
+    return Column(
+      children: [
+        SizedBox(
+          height: 20.h,
+        ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: 20.w,
+            ),
+            Icon(
+              Icons.favorite_outline,
+              color: Colors.red,
+              size: 52.sp,
+            ),
+            SizedBox(
+              width: 20.w,
+            ),
+            Icon(
+              Icons.comment_outlined,
+              color: Colors.black,
+              size: 52.sp,
+            ),
+            SizedBox(
+              width: 20.w,
+            ),
+            Icon(
+              Icons.ios_share,
+              color: Colors.black,
+              size: 52.sp,
+            ),
+            // SizedBox(
+            //   width: 400.w,
+            // ),
+            Spacer(),
+            Icon(
+              Icons.bookmark_border,
+              color: Colors.black,
+              size: 52.sp,
+            ),
+          ],
+        )
+      ],
+    );
+  }
+
+  Widget _commentBlog() {
+    return Expanded(
+      // height: MediaQuery.of(context).size.height,
+
+      child: TextField(
+        style: TextStyle(color: Colors.black),
+        decoration: InputDecoration(
+            filled: true,
+            hintText: 'Add a comment',
+            fillColor: Colors.white,
+            contentPadding: EdgeInsets.symmetric(vertical: 15)),
+      ),
+    );
   }
 }
