@@ -37,7 +37,7 @@ class AuthApiServiceImpl extends AuthApiService {
     try {
       var response = await sl<DioClient>()
           .post(ApiUrl.loginWithEP, data: login.toMap(), isMultipart: false);
-      return right(response.data['meesage']);
+      return right(response.data);
     } on DioException catch (e) {
       return left(e.response!.data['result']);
     }

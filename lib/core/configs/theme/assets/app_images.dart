@@ -8,4 +8,7 @@ class AppImages {
   static const logoPhone = '${basePath}phone.png';
   static const man = '${basePath}man.png';
   static const picture = '${basePath}picture.png';
+  static const topright = '${basePath}top_right_pattern.png';
+  static const bottomleft = '${basePath}bottom_left_pattern.png';
+  static const logo2 = '${basePath}logo2.png';
 }
