@@ -4,6 +4,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:tracio_fe/core/configs/utils/permission_handler_service.dart';
 import 'package:geolocator/geolocator.dart' as geolocator;
+import 'package:tracio_fe/core/constants/app_urls.dart';
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
@@ -119,7 +120,6 @@ class _MapPageState extends State<MapPage> {
 
     mapboxMap = controller;
 
-
     // Enable the location component
     await mapboxMap.location.updateSettings(LocationComponentSettings(
       enabled: true,
@@ -143,9 +143,7 @@ class _MapPageState extends State<MapPage> {
 
     //Compass settings
     mapboxMap.compass.updateSettings(CompassSettings(
-      position: OrnamentPosition.BOTTOM_LEFT,
-      marginBottom: 30
-    ));
+        position: OrnamentPosition.BOTTOM_LEFT, marginBottom: 30));
 
     //Scale bar settings
     mapboxMap.scaleBar.updateSettings(ScaleBarSettings(enabled: false));
@@ -162,7 +160,7 @@ class _MapPageState extends State<MapPage> {
         MapAnimationOptions(duration: 2000, startDelay: 0));
 
     String terrainRgbUrl =
-        "https://api.mapbox.com/v4/mapbox.terrain-rgb/{z}/{x}/{y}.pngraw?access_token=${dotenv.env['MAPBOX_ACCESS_TOKEN']}";
+        "${AppUrl.terrainRgbStyle}{dotenv.env['MAPBOX_ACCESS_TOKEN']}";
     addTerrainSourceAndLayer(terrainRgbUrl);
   }
 
@@ -242,12 +240,10 @@ class _MapPageState extends State<MapPage> {
         styleUri = MapboxStyles.SATELLITE;
         break;
       case "Goong Map":
-        styleUri =
-            "https://tiles.goong.io/assets/goong_map_web.json?api_key=${dotenv.env['GOONG_MAPTILE_TOKEN']}";
+        styleUri = "${AppUrl.goongMaptile}${dotenv.env['GOONG_MAPTILE_TOKEN']}";
         break;
       default:
-        styleUri =
-            "https://tiles.goong.io/assets/goong_map_web.json?api_key=${dotenv.env['GOONG_MAPTILE_TOKEN']}";
+        styleUri = "${AppUrl.goongMaptile}${dotenv.env['GOONG_MAPTILE_TOKEN']}";
     }
 
     mapboxMap.loadStyleURI(styleUri);
