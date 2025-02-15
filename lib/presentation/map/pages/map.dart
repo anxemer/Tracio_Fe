@@ -42,22 +42,7 @@ class _MapPageState extends State<MapPage> {
 
   @override
   Widget build(BuildContext context) {
-    String accessToken = dotenv.env['MAPBOX_ACCESS_TOKEN'] ?? "";
-
-    if (accessToken.isEmpty) {
-      return Scaffold(
-        body: Center(
-          child: Text(
-            "Mapbox access token is not provided. Please set MAPBOX_ACCESS_TOKEN in .env file.",
-            style: TextStyle(color: Colors.red),
-            textAlign: TextAlign.center,
-          ),
-        ),
-      );
-    }
-
-    MapboxOptions.setAccessToken(accessToken);
-
+    //Camera options
     CameraOptions camera = CameraOptions(
       center:
           Point(coordinates: Position(106.65607167348008, 10.838242196485027)),
@@ -160,7 +145,7 @@ class _MapPageState extends State<MapPage> {
         MapAnimationOptions(duration: 2000, startDelay: 0));
 
     String terrainRgbUrl =
-        "${AppUrl.terrainRgbStyle}{dotenv.env['MAPBOX_ACCESS_TOKEN']}";
+        "${AppUrl.terrainRgbStyle}${dotenv.env['MAPBOX_ACCESS_TOKEN']}";
     addTerrainSourceAndLayer(terrainRgbUrl);
   }
 
