@@ -1,8 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
+import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' as mapbox;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:tracio_fe/core/configs/utils/permission_handler_service.dart';
 import 'package:geolocator/geolocator.dart' as geolocator;
 import 'package:tracio_fe/core/constants/app_urls.dart';
 
@@ -14,7 +14,10 @@ class MapPage extends StatefulWidget {
 }
 
 class _MapPageState extends State<MapPage> {
-  late MapboxMap mapboxMap;
+  late mapbox.MapboxMap mapboxMap;
+
+  StreamSubscription? userPositionStream;
+  mapbox.Position? userPosition;
 
   List<String> mapStyles = [
     "Mapbox Streets",
@@ -25,27 +28,24 @@ class _MapPageState extends State<MapPage> {
     "Goong Map"
   ];
 
-  final _permissionHandlerService = PermissionHandlerService();
   @override
   void initState() {
     super.initState();
-    _requestPermissions();
+    _setupPositionTracking();
   }
 
-  Future<void> _requestPermissions() async {
-    await _permissionHandlerService.requestPermission(
-      Permission.location,
-      "Location",
-      context,
-    );
+  @override
+  void dispose() {
+    userPositionStream?.cancel();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     //Camera options
-    CameraOptions camera = CameraOptions(
-      center:
-          Point(coordinates: Position(106.65607167348008, 10.838242196485027)),
+    mapbox.CameraOptions camera = mapbox.CameraOptions(
+      center: mapbox.Point(
+          coordinates: mapbox.Position(106.65607167348008, 10.838242196485027)),
       zoom: 12,
       bearing: 0,
       pitch: 10,
@@ -55,7 +55,7 @@ class _MapPageState extends State<MapPage> {
       body: Stack(
         children: [
           // Map
-          MapWidget(
+          mapbox.MapWidget(
             cameraOptions: camera,
             onMapCreated: _onMapCreate,
           ),
@@ -96,63 +96,96 @@ class _MapPageState extends State<MapPage> {
     );
   }
 
-  Future<void> _onMapCreate(MapboxMap controller) async {
+  Future<void> _onMapCreate(mapbox.MapboxMap controller) async {
     // Variables
-    final southwest = Point(coordinates: Position(8.5, 104.6667));
-    final northeast = Point(coordinates: Position(23.5, 110.5));
+    final southwest = mapbox.Point(coordinates: mapbox.Position(8.5, 104.6667));
+    final northeast = mapbox.Point(coordinates: mapbox.Position(23.5, 110.5));
     double maxZoom = 20.0;
     double minZoom = 10.0;
 
-    mapboxMap = controller;
+    setState(() {
+      mapboxMap = controller;
+    });
 
     // Enable the location component
-    await mapboxMap.location.updateSettings(LocationComponentSettings(
+    await mapboxMap.location.updateSettings(mapbox.LocationComponentSettings(
       enabled: true,
-      showAccuracyRing: true,
-      accuracyRingColor: Colors.blue.r.toInt(),
-      accuracyRingBorderColor: Colors.white.r.toInt(),
       pulsingEnabled: true,
-      pulsingColor: Colors.blue.r.toInt(),
     ));
 
     //Camera limitation
-    await mapboxMap.setBounds(CameraBoundsOptions(
-      bounds: CoordinateBounds(
+    await mapboxMap.setBounds(mapbox.CameraBoundsOptions(
+      bounds: mapbox.CoordinateBounds(
         southwest: southwest,
         northeast: northeast,
         infiniteBounds: true,
       ),
-      maxZoom: maxZoom,
-      minZoom: minZoom,
+      // maxZoom: maxZoom,
+      // minZoom: minZoom,
     ));
 
     //Compass settings
-    mapboxMap.compass.updateSettings(CompassSettings(
-        position: OrnamentPosition.BOTTOM_LEFT, marginBottom: 30));
+    mapboxMap.compass.updateSettings(mapbox.CompassSettings(
+        position: mapbox.OrnamentPosition.BOTTOM_LEFT, marginBottom: 30));
 
     //Scale bar settings
-    mapboxMap.scaleBar.updateSettings(ScaleBarSettings(enabled: false));
-
-    //camera animation
-    //TODO: Get User Location
-    mapboxMap.flyTo(
-        CameraOptions(
-            center: Point(coordinates: Position(-80.1263, 25.7845)),
-            anchor: ScreenCoordinate(x: 0, y: 0),
-            zoom: 18,
-            bearing: 180,
-            pitch: 30),
-        MapAnimationOptions(duration: 2000, startDelay: 0));
+    mapboxMap.scaleBar.updateSettings(mapbox.ScaleBarSettings(enabled: false));
 
     String terrainRgbUrl =
         "${AppUrl.terrainRgbStyle}${dotenv.env['MAPBOX_ACCESS_TOKEN']}";
-    addTerrainSourceAndLayer(terrainRgbUrl);
+    _addTerrainSourceAndLayer(terrainRgbUrl);
   }
 
-  Future<void> addTerrainSourceAndLayer(String terrainRgbUrl) async {
+  Future<void> _setupPositionTracking() async {
+    bool serviceEnabled;
+    geolocator.LocationPermission permission;
+
+    serviceEnabled = await geolocator.Geolocator.isLocationServiceEnabled();
+
+    if (!serviceEnabled) {
+      return Future.error('Location services are disabled.');
+    }
+    permission = await geolocator.Geolocator.checkPermission();
+    if (permission == geolocator.LocationPermission.denied) {
+      permission = await geolocator.Geolocator.requestPermission();
+      if (permission == geolocator.LocationPermission.deniedForever) {
+        return Future.error(
+            'Location permissions are permanently denied, we cannot request permissions.');
+      }
+    }
+    if (permission == geolocator.LocationPermission.denied) {
+      return Future.error('Location permissions are denied');
+    }
+    geolocator.LocationSettings locationSettings = geolocator.LocationSettings(
+        accuracy: geolocator.LocationAccuracy.high, distanceFilter: 100);
+
+    userPositionStream?.cancel();
+    userPositionStream = geolocator.Geolocator.getPositionStream(
+            locationSettings: locationSettings)
+        .listen((
+      geolocator.Position? position,
+    ) {
+      if (position != null) {
+        userPosition = mapbox.Position(
+          position.longitude,
+          position.latitude,
+        );
+        //camera animation fly to user position
+        mapboxMap.flyTo(
+            mapbox.CameraOptions(
+                center: mapbox.Point(coordinates: userPosition!),
+                anchor: mapbox.ScreenCoordinate(x: 0, y: 0),
+                zoom: 18,
+                bearing: 180),
+            mapbox.MapAnimationOptions(duration: 2000, startDelay: 0));
+      }
+    });
+  }
+
+  Future<void> _addTerrainSourceAndLayer(String terrainRgbUrl) async {
     try {
       // Attempt to add the source
-      final rasterSource = RasterSource(
+      final rasterSource = mapbox.RasterSource(
         id: "terrain-rgb-source",
         tiles: [terrainRgbUrl],
         tileSize: 256,
@@ -167,7 +200,7 @@ class _MapPageState extends State<MapPage> {
 
     // Now add the layer
     try {
-      final rasterLayer = RasterLayer(
+      final rasterLayer = mapbox.RasterLayer(
         id: "terrain-rgb-layer",
         sourceId: "terrain-rgb-source",
         slot: "middle",
@@ -210,19 +243,19 @@ class _MapPageState extends State<MapPage> {
 
     switch (style) {
       case "Mapbox Streets":
-        styleUri = MapboxStyles.MAPBOX_STREETS;
+        styleUri = mapbox.MapboxStyles.MAPBOX_STREETS;
         break;
       case "Mapbox Outdoors":
-        styleUri = MapboxStyles.OUTDOORS;
+        styleUri = mapbox.MapboxStyles.OUTDOORS;
         break;
       case "Mapbox Light":
-        styleUri = MapboxStyles.LIGHT;
+        styleUri = mapbox.MapboxStyles.LIGHT;
         break;
       case "Mapbox Dark":
-        styleUri = MapboxStyles.DARK;
+        styleUri = mapbox.MapboxStyles.DARK;
         break;
       case "Mapbox Satellite":
-        styleUri = MapboxStyles.SATELLITE;
+        styleUri = mapbox.MapboxStyles.SATELLITE;
         break;
       case "Goong Map":
         styleUri = "${AppUrl.goongMaptile}${dotenv.env['GOONG_MAPTILE_TOKEN']}";
