@@ -10,7 +10,8 @@ import '../../../core/configs/theme/assets/app_images.dart';
 import '../bloc/get_blog_state.dart';
 
 class NewFeeds extends StatelessWidget {
-  const NewFeeds({super.key});
+  final ScrollController scrollController;
+  const NewFeeds({super.key, required this.scrollController});
   // final GetBlogReq getBlogReq;
 
   @override
@@ -25,12 +26,13 @@ class NewFeeds extends StatelessWidget {
           }
           if (state is GetBlogLoaded) {
             return CustomScrollView(
+              controller: scrollController,
               slivers: [
                 SliverList(
                     delegate: SliverChildBuilderDelegate(
                         (context, index) => PostBlog(
                               blogEntity: state.listBlog[index],
-                              morewdget: _comment(),
+                              // morewdget: _comment(),
                             ),
                         childCount: state.listBlog.length)),
               ],

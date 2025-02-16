@@ -22,10 +22,10 @@ class AppTheme {
           contentPadding: const EdgeInsets.all(16),
           border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(20),
-              borderSide: BorderSide.none),
+              borderSide: BorderSide(color: Colors.black)),
           enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(20),
-              borderSide: BorderSide.none)),
+              borderSide: BorderSide(color: Colors.black))),
       elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
