@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:tracio_fe/domain/blog/entites/blog.dart';
 
 class ReactBlog extends StatefulWidget {
-  const ReactBlog({super.key});
+  const ReactBlog({super.key, required this.blogEntity});
+  final BlogEntity blogEntity;
 
   @override
   State<ReactBlog> createState() => _ReactBlogState();
@@ -31,7 +33,7 @@ class _ReactBlogState extends State<ReactBlog> {
                   size: 52.sp,
                 ),
                 Text(
-                  '0',
+                  widget.blogEntity.likesCount.toString(),
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 28.sp,
@@ -50,7 +52,7 @@ class _ReactBlogState extends State<ReactBlog> {
                   size: 52.sp,
                 ),
                 Text(
-                  '0',
+                  widget.blogEntity.commentsCount.toString(),
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 28.sp,
@@ -61,22 +63,7 @@ class _ReactBlogState extends State<ReactBlog> {
             SizedBox(
               width: 20.w,
             ),
-            Row(
-              children: [
-                Icon(
-                  Icons.ios_share,
-                  color: Colors.black,
-                  size: 52.sp,
-                ),
-                Text(
-                  '0',
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 28.sp,
-                      color: Colors.black),
-                )
-              ],
-            ),
+
             // SizedBox(
             //   width: 400.w,
             // ),

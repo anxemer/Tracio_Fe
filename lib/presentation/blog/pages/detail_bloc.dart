@@ -6,7 +6,7 @@ import '../../../common/widget/appbar/app_bar.dart';
 import '../../../common/widget/button/floating_button.dart';
 import '../../../core/configs/theme/app_colors.dart';
 import '../../../core/configs/theme/assets/app_images.dart';
-import '../../home/widgets/react_blog.dart';
+import '../widget/react_blog.dart';
 
 class DetailBlocPage extends StatefulWidget {
   const DetailBlocPage({super.key});
@@ -102,7 +102,7 @@ class _DetailBlocPageState extends State<DetailBlocPage> {
                   // color: Colors.black,
                 ),
                 // _reactBlog(),
-                ReactBlog(),
+                // ReactBlog(),
                 // Padding(
                 //   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 //   child:

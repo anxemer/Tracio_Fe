@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/presentation/home/widgets/react_blog.dart';
+import 'package:tracio_fe/domain/blog/entites/blog.dart';
 
-import '../../../core/configs/theme/app_colors.dart';
 import '../../../core/configs/theme/assets/app_images.dart';
+import '../../../presentation/blog/widget/react_blog.dart';
 
 class PostBlog extends StatelessWidget {
-  const PostBlog({super.key});
-
+  const PostBlog({super.key, required this.blogEntity, this.morewdget});
+  final BlogEntity blogEntity;
+  final Widget? morewdget;
   @override
   Widget build(BuildContext context) {
-    ScreenUtil.init(context, designSize: Size(720, 1600));
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Container(
@@ -28,7 +29,7 @@ class PostBlog extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                'A Flutter application to submit and view feedbacks integrated with Google Sheets, using BLoC for state management. It showcases form validation, data submission, and dynamic list rendering with efficient state handling.',
+                blogEntity.content.toString(),
                 style: TextStyle(
                     color: Colors.black,
                     fontSize: 28.sp,
@@ -51,7 +52,9 @@ class PostBlog extends StatelessWidget {
               // color: Colors.black,
             ),
             // _reactBlog(),
-            ReactBlog(),
+            ReactBlog(
+              blogEntity: blogEntity,
+            ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: Text(
@@ -62,43 +65,12 @@ class PostBlog extends StatelessWidget {
                     fontWeight: FontWeight.w500),
               ),
             ),
-            SizedBox(
-              height: 40.h,
-            ),
-            //Comments
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 10.h),
-              child: Row(
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(60.sp)),
-                    width: 80.w,
-                    // height: 100.h,
-                    child: Image.asset(
-                      AppImages.man,
-                      fit: BoxFit.fill,
-                    ),
-                  ),
-                  SizedBox(
-                    width: 10.w,
-                  ),
-                  _commentBlog(),
-                  SizedBox(
-                    width: 10.w,
-                  ),
-                  Icon(
-                    Icons.send_rounded,
-                    color: AppColors.background,
-                    size: 30,
-                  )
-                ],
-              ),
-            ),
+            morewdget ?? Container()
           ],
         ),
       ),
     );
+    ;
   }
 
   Widget _informationPost() {
@@ -120,7 +92,7 @@ class PostBlog extends StatelessWidget {
               ),
             ),
             title: Text(
-              'AnXemer',
+              blogEntity.userName.toString(),
               style: TextStyle(
                   color: Colors.black,
                   fontWeight: FontWeight.w700,
@@ -136,68 +108,5 @@ class PostBlog extends StatelessWidget {
             trailing: Icon(Icons.arrow_forward_ios_rounded),
           ),
         ));
-  }
-
-  Widget _reactBlog() {
-    return Column(
-      children: [
-        SizedBox(
-          height: 20.h,
-        ),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(
-              width: 20.w,
-            ),
-            Icon(
-              Icons.favorite_outline,
-              color: Colors.red,
-              size: 52.sp,
-            ),
-            SizedBox(
-              width: 20.w,
-            ),
-            Icon(
-              Icons.comment_outlined,
-              color: Colors.black,
-              size: 52.sp,
-            ),
-            SizedBox(
-              width: 20.w,
-            ),
-            Icon(
-              Icons.ios_share,
-              color: Colors.black,
-              size: 52.sp,
-            ),
-            // SizedBox(
-            //   width: 400.w,
-            // ),
-            Spacer(),
-            Icon(
-              Icons.bookmark_border,
-              color: Colors.black,
-              size: 52.sp,
-            ),
-          ],
-        )
-      ],
-    );
-  }
-
-  Widget _commentBlog() {
-    return Expanded(
-      // height: MediaQuery.of(context).size.height,
-
-      child: TextField(
-        style: TextStyle(color: Colors.black),
-        decoration: InputDecoration(
-            filled: true,
-            hintText: 'Add a comment',
-            fillColor: Colors.white,
-            contentPadding: EdgeInsets.symmetric(vertical: 15)),
-      ),
-    );
   }
 }
