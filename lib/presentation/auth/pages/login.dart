@@ -4,17 +4,26 @@ import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
 import 'package:tracio_fe/common/widget/button/button.dart';
 import 'package:tracio_fe/core/configs/theme/app_colors.dart';
 import 'package:tracio_fe/core/configs/theme/assets/app_images.dart';
+import 'package:tracio_fe/data/auth/models/login_req.dart';
+import 'package:tracio_fe/domain/auth/usecases/login.dart';
 import 'package:tracio_fe/presentation/auth/pages/login_phone.dart';
-import 'package:tracio_fe/presentation/auth/pages/register.dart';
+import 'package:tracio_fe/presentation/auth/pages/verify_email.dart';
+import 'package:tracio_fe/presentation/auth/widgets/button_auth.dart';
+import 'package:tracio_fe/presentation/auth/widgets/input_field_auth.dart';
+import 'package:tracio_fe/service_locator.dart';
+
+import '../../home/pages/home.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  LoginPage({super.key});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final TextEditingController _emailCon = TextEditingController();
+  final TextEditingController _passCon = TextEditingController();
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -50,11 +59,26 @@ class _LoginPageState extends State<LoginPage> {
                       SizedBox(
                         height: 10.h,
                       ),
-                      _emailField(context),
+                      InputFieldAuth(
+                          textController: _emailCon,
+                          hintText: 'Email',
+                          prefixIcon: Icon(
+                            Icons.email_outlined,
+                            color: Colors.black,
+                          )),
                       SizedBox(
                         height: 10.h,
                       ),
-                      _passwordField(context),
+                      InputFieldAuth(
+                        obscureText: true,
+                        textController: _passCon,
+                        suffixIconl: Icon(Icons.remove_red_eye_outlined),
+                        hintText: 'Password',
+                        prefixIcon: Icon(
+                          Icons.lock_outline_rounded,
+                          color: Colors.black,
+                        ),
+                      ),
                       SizedBox(
                         height: 5.h,
                       ),
@@ -89,65 +113,6 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _emailField(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-      child: Container(
-        // color: AppColors.secondBackground,
-        // height: MediaQuery.of(context).size.height,
-        decoration: BoxDecoration(boxShadow: [
-          BoxShadow(
-              color: Colors.black.withOpacity(.2),
-              blurRadius: 15,
-              spreadRadius: 2,
-              offset: Offset(0, 15))
-        ]),
-        child: TextField(
-          style: TextStyle(color: Colors.black),
-          decoration: InputDecoration(
-              filled: true,
-              prefixIcon: Icon(
-                Icons.person,
-                color: Colors.black,
-              ),
-              hintText: 'Email',
-              fillColor: Colors.white,
-              contentPadding: EdgeInsets.symmetric(vertical: 15)),
-        ),
-      ),
-    );
-  }
-
-  Widget _passwordField(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-      child: Container(
-        // color: AppColors.secondBackground,
-        // height: MediaQuery.of(context).size.height,
-        decoration: BoxDecoration(boxShadow: [
-          BoxShadow(
-              color: Colors.black.withOpacity(.2),
-              blurRadius: 15,
-              spreadRadius: 2,
-              offset: Offset(0, 15))
-        ]),
-        child: TextField(
-          style: TextStyle(color: Colors.black),
-          decoration: InputDecoration(
-              filled: true,
-              prefixIcon: Icon(
-                Icons.lock_outline_rounded,
-                color: Colors.black,
-              ),
-              suffixIcon: Icon(Icons.remove_red_eye_outlined),
-              hintText: 'Password',
-              fillColor: Colors.white,
-              contentPadding: EdgeInsets.symmetric(vertical: 15)),
-        ),
-      ),
-    );
-  }
-
   Widget _forgotPassText() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -167,39 +132,24 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _buttonSignIn(BuildContext context) {
     return GestureDetector(
-      onTap: () {},
-      child: Container(
-        width: 300.w,
-        height: 120.h,
-        decoration: BoxDecoration(
-          color: AppColors.secondBackground,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-              width: 1.5,
-              color: AppColors.primary,
-              strokeAlign: BorderSide.strokeAlignOutside,
-              style: BorderStyle.solid),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-          child: Center(
-              child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'Sign In',
-                style: TextStyle(fontSize: 32.sp, fontWeight: FontWeight.w500),
-              ),
-              SizedBox(
-                width: 10.w,
-              ),
-              Icon(Icons.arrow_forward_outlined)
-            ],
-          )),
-        ),
-      ),
-    );
+        onTap: () async {
+          var result = await sl<LoginUseCase>().call(
+              params: LoginReq(email: _emailCon.text, password: _passCon.text));
+          result.fold((l) {
+            var snackbar = SnackBar(
+              content: Text(l),
+              behavior: SnackBarBehavior.floating,
+            );
+          }, (r) { 
+            Future.microtask(
+              () {
+                AppNavigator.pusshAndRemove(context, HomePage());
+              },
+            );
+          });
+        },
+        child:
+            ButtonAuth(title: 'Sign In', icon: Icons.arrow_forward_outlined));
   }
 
   Widget _dividerWithText() {
@@ -277,7 +227,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
             onPressed: () {
-              AppNavigator.push(context, RegisterPage());
+              AppNavigator.pushReplacement(context, VerifyEmailpage());
             },
             child: Text(
               'Register',

@@ -1,57 +1,57 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 
-class BasicNavbar extends StatefulWidget {
-  const BasicNavbar({super.key});
+class BasicNavbar extends StatelessWidget {
+  BasicNavbar({super.key, required this.isNavbarVisible});
 
-  @override
-  State<BasicNavbar> createState() => _BasicNavbarState();
-}
+  final bool isNavbarVisible;
 
-class _BasicNavbarState extends State<BasicNavbar> {
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 10.h, vertical: 5.w),
-        child: GNav(
-            tabMargin: EdgeInsets.symmetric(horizontal: 5),
-            haptic: true,
-            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-            iconSize: 20,
-            curve: Curves.easeIn,
-            color: Colors.grey.withValues(alpha: .5),
-            hoverColor: Colors.lightBlueAccent,
-            activeColor: Colors.lightBlueAccent,
-            gap: 8,
-            tabActiveBorder: Border.all(color: Colors.lightBlueAccent),
-            tabBorderRadius: 70,
-            tabBorder:
-                Border.all(color: Colors.black.withValues(alpha: .5), width: 1),
-            tabs: [
-              GButton(
-                icon: Icons.person,
-                text: 'You',
-              ),
-              GButton(
-                icon: Icons.more_horiz,
-                text: 'More',
-              ),
-              GButton(
-                icon: Icons.home,
-                text: 'Challenges',
-              ),
-              GButton(
-                icon: Icons.home,
-                text: 'Activity',
-              ),
-              GButton(
-                icon: Icons.home,
-                text: 'Activity',
-              )
-            ]),
+    return AnimatedContainer(
+      duration: Duration(milliseconds: 500),
+      curve: Curves.easeInOut,
+      height: isNavbarVisible ? 60 : 0,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 10.h, vertical: 5.w),
+          child: GNav(
+              duration: Duration(milliseconds: 100),
+              tabMargin: EdgeInsets.symmetric(horizontal: 5),
+              haptic: true,
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              iconSize: 20,
+              curve: Curves.easeIn,
+              color: Colors.grey.withValues(alpha: .5),
+              hoverColor: Colors.transparent,
+              rippleColor: Colors.transparent,
+              activeColor: Colors.lightBlueAccent,
+              gap: 8,
+              tabActiveBorder: Border.all(color: Colors.lightBlueAccent),
+              tabBorderRadius: 70,
+              tabBorder: Border.all(
+                  color: Colors.black.withValues(alpha: .5), width: 1),
+              tabs: [
+                GButton(
+                  icon: Icons.person,
+                ),
+                GButton(
+                  icon: Icons.more_horiz,
+                ),
+                GButton(
+                  icon: Icons.home,
+                ),
+                GButton(
+                  icon: Icons.home,
+                ),
+                GButton(
+                  icon: Icons.home,
+                )
+              ]),
+        ),
       ),
     );
   }
