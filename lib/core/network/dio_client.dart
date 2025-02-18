@@ -13,7 +13,8 @@ class DioClient {
               responseType: ResponseType.json,
               sendTimeout: const Duration(seconds: 10),
               receiveTimeout: const Duration(seconds: 10)),
-        )..interceptors.addAll([LoggerInterceptor()]);
+        )..interceptors
+            .addAll([AuthorizationInterceptor(), LoggerInterceptor()]);
 
   // GET METHOD
   Future<Response> get(
@@ -41,7 +42,7 @@ class DioClient {
   Future<Response> post(
     String url, {
     data,
-    bool isMultipart = false, 
+    bool isMultipart = false,
     Map<String, dynamic>? queryParameters,
     Options? options,
     ProgressCallback? onSendProgress,
@@ -52,11 +53,11 @@ class DioClient {
         url,
         data: data,
         options: options ??
-          Options(
-            contentType: isMultipart
-                ? "multipart/form-data"
-                : "application/json", // 👈 Chọn kiểu dữ liệu phù hợp
-          ),
+            Options(
+              contentType: isMultipart
+                  ? "multipart/form-data"
+                  : "application/json", // 👈 Chọn kiểu dữ liệu phù hợp
+            ),
         onSendProgress: onSendProgress,
         onReceiveProgress: onReceiveProgress,
       );
