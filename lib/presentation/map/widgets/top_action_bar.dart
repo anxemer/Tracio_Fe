@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tracio_fe/presentation/map/pages/search_location.dart';
 
 class TopActionBar extends StatelessWidget {
   const TopActionBar({super.key});
@@ -31,7 +32,21 @@ class TopActionBar extends StatelessWidget {
                 elevation: 1,
                 backgroundColor: Colors.white,
                 padding: EdgeInsets.symmetric(horizontal: 10)),
-            onPressed: () {},
+            onPressed: () async {
+              // Navigate to the style selection page and await the result
+              final selectedStyle = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const SearchLocationPage()),
+              );
+
+              // Handle the selected style
+              if (selectedStyle != null) {
+                // Update the map style using the selectedStyle
+                print(
+                    'Selected style: $selectedStyle'); // Replace with your logic
+              }
+            },
             child: Row(
               children: const [
                 Icon(
@@ -52,6 +67,7 @@ class TopActionBar extends StatelessWidget {
         ),
 
         //Options button
+        //TODO: Popup menu
         IconButton(
           style: IconButton.styleFrom(
               elevation: 2,

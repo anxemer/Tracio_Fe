@@ -15,7 +15,8 @@ class MapView extends StatefulWidget {
 
 class _MapViewState extends State<MapView> {
   late mapbox.MapboxMap mapboxMap;
-
+  final double _initAttributeButtonWidth = 20;
+  final double _panelHeightClosed = 200.0;
   StreamSubscription? userPositionStream;
 
   List<String> mapStyles = [
@@ -90,6 +91,17 @@ class _MapViewState extends State<MapView> {
 
     //Scale bar settings
     mapboxMap.scaleBar.updateSettings(mapbox.ScaleBarSettings(enabled: false));
+
+    //mapbox logo settings
+    //TODO: Update the logo settings position
+    mapboxMap.logo.updateSettings(mapbox.LogoSettings(
+        position: mapbox.OrnamentPosition.BOTTOM_RIGHT,
+        marginRight: 60 + _initAttributeButtonWidth,
+        marginBottom: _panelHeightClosed));
+    mapboxMap.attribution.updateSettings(mapbox.AttributionSettings(
+        position: mapbox.OrnamentPosition.BOTTOM_RIGHT,
+        marginRight: 60,
+        marginBottom: _panelHeightClosed));
 
     String terrainRgbUrl =
         "${AppUrl.terrainRgbStyle}${dotenv.env['MAPBOX_ACCESS_TOKEN']}";
