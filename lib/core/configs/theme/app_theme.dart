@@ -6,7 +6,7 @@ class AppTheme {
   static final appTheme = ThemeData(
       primaryColor: AppColors.primary,
       scaffoldBackgroundColor: Colors.white,
-      brightness: Brightness.dark,
+      brightness: Brightness.light,
       fontFamily: 'CircularStd',
       snackBarTheme: const SnackBarThemeData(
         backgroundColor: AppColors.background,

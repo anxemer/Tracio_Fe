@@ -36,7 +36,7 @@ class _CommentState extends State<Comment> {
               itemBuilder: (BuildContext context, int index) {
                 return Padding(
                   padding:
-                      EdgeInsets.symmetric(horizontal: 10.h, vertical: 10.h),
+                      EdgeInsets.symmetric(horizontal: 20.h, vertical: 20.h),
                   child: _commentItem(),
                 );
               },
@@ -120,6 +120,7 @@ class _CommentState extends State<Comment> {
             color: Colors.black,
           ),
         ),
+        trailing: Icon(Icons.favorite_border),
       ),
     );
   }

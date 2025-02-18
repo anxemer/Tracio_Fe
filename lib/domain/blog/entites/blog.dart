@@ -5,8 +5,9 @@ class BlogEntity {
     required this.userName,
     required this.avatar,
     required this.privacySetting,
-    required this.tittle,
+    required this.isReacted,
     required this.content,
+    required this.mediaFiles,
     required this.createdAt,
     required this.updatedAt,
     required this.likesCount,
@@ -18,8 +19,9 @@ class BlogEntity {
   final String userName;
   final String avatar;
   final int privacySetting;
-  final dynamic tittle;
+  final bool isReacted;
   final String content;
+  final List<dynamic> mediaFiles;
   final DateTime createdAt;
   final DateTime updatedAt;
   final int likesCount;

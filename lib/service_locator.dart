@@ -13,6 +13,7 @@ import 'package:tracio_fe/domain/auth/usecases/register_with_ep.dart';
 import 'package:tracio_fe/domain/auth/usecases/verify_email.dart';
 import 'package:tracio_fe/domain/blog/repositories/blog_repository.dart';
 import 'package:tracio_fe/domain/blog/usecase/get_blogs.dart';
+import 'package:tracio_fe/domain/blog/usecase/react_blog.dart';
 
 import 'core/network/dio_client.dart';
 
@@ -36,4 +37,5 @@ Future<void> initializeDependencies() async {
   sl.registerSingleton<IsLoggedInUseCase>(IsLoggedInUseCase());
   sl.registerSingleton<LogoutUseCase>(LogoutUseCase());
   sl.registerSingleton<GetBlogsUseCase>(GetBlogsUseCase());
+  sl.registerSingleton<ReactBlogUseCase>(ReactBlogUseCase());
 }

@@ -6,6 +6,7 @@ import 'package:tracio_fe/common/widget/button/floating_button.dart';
 import 'package:tracio_fe/common/widget/navbar/navbar.dart';
 import 'package:tracio_fe/domain/auth/usecases/logout.dart';
 import 'package:tracio_fe/presentation/auth/pages/login.dart';
+import 'package:tracio_fe/presentation/blog/pages/blog.dart';
 import 'package:tracio_fe/presentation/blog/widget/new_feed.dart';
 
 import '../../../common/helper/navigator/app_navigator.dart';
@@ -75,53 +76,8 @@ class _HomePageState extends State<HomePage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: BasicAppbar(
-          height: 100.h,
-          hideBack: false,
-          title: Text(
-            'Home',
-            style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-                fontSize: 40.sp),
-          ),
-          action: Row(
-            children: [
-              FloatingButton(
-                elevation: 1,
-                backgroundColor: Colors.white,
-                onPressed: () {},
-                action: Icon(
-                  Icons.notifications_none_outlined,
-                  color: Colors.black,
-                ),
-              ),
-              FloatingButton(
-                elevation: 1,
-                backgroundColor: Colors.white,
-                onPressed: () {},
-                action: Icon(
-                  Icons.chat_bubble_outline,
-                  color: Colors.black,
-                ),
-              ),
-              FloatingButton(
-                elevation: 1,
-                backgroundColor: Colors.white,
-                onPressed: () async {
-                  var data = await sl<LogoutUseCase>().call();
-
-                  AppNavigator.pushReplacement(context, LoginPage());
-                },
-                action: Icon(
-                  Icons.search_outlined,
-                  color: Colors.black,
-                ),
-              ),
-            ],
-          )),
-      body: NewFeeds(
-        scrollController: _scrollController,
+      body: BlogPage(
+        controller: _scrollController,
       ),
       bottomNavigationBar: SlideTransition(
         position: _slideAnimation,

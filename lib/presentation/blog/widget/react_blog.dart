@@ -48,16 +48,20 @@ class _ReactBlogState extends State<ReactBlog> {
                           backgroundColor: Colors.transparent,
                           context: context,
                           builder: (context) {
-                            return Padding(
-                              padding: EdgeInsets.only(
-                                  bottom:
-                                      MediaQuery.of(context).viewInsets.bottom),
-                              child: DraggableScrollableSheet(
-                                maxChildSize: 1,
-                                initialChildSize: .5,
-                                minChildSize: 0.2,
-                                builder: (context, scrollController) =>
-                                    ListReact(),
+                            return Container(
+                              color: Colors.transparent,
+                              child: Padding(
+                                padding: EdgeInsets.only(
+                                    bottom: MediaQuery.of(context)
+                                        .viewInsets
+                                        .bottom),
+                                child: DraggableScrollableSheet(
+                                  maxChildSize: 1,
+                                  initialChildSize: .5,
+                                  minChildSize: 0.2,
+                                  builder: (context, scrollController) =>
+                                      ListReact(),
+                                ),
                               ),
                             );
                           });
@@ -86,15 +90,11 @@ class _ReactBlogState extends State<ReactBlog> {
                         return Padding(
                           padding: EdgeInsets.only(
                               bottom: MediaQuery.of(context).viewInsets.bottom),
-                          child: GestureDetector(
-                            behavior: HitTestBehavior.opaque,
-                            onTap: () => Navigator.pop(context),
-                            child: DraggableScrollableSheet(
-                              maxChildSize: 1,
-                              initialChildSize: .5,
-                              minChildSize: 0.2,
-                              builder: (context, scrollController) => Comment(),
-                            ),
+                          child: DraggableScrollableSheet(
+                            maxChildSize: 1,
+                            initialChildSize: .5,
+                            minChildSize: 0.2,
+                            builder: (context, scrollController) => Comment(),
                           ),
                         );
                       }),
@@ -110,7 +110,9 @@ class _ReactBlogState extends State<ReactBlog> {
                 BasicTextButton(
                     text: widget.blogEntity.commentsCount.toString(),
                     onPress: () {
-                      showBottomSheet(
+                      showModalBottomSheet(
+                          isDismissible: true,
+                          isScrollControlled: true,
                           backgroundColor: Colors.transparent,
                           context: context,
                           builder: (context) {
@@ -118,16 +120,12 @@ class _ReactBlogState extends State<ReactBlog> {
                               padding: EdgeInsets.only(
                                   bottom:
                                       MediaQuery.of(context).viewInsets.bottom),
-                              child: GestureDetector(
-                                behavior: HitTestBehavior.opaque,
-                                onTap: () => Navigator.pop(context),
-                                child: DraggableScrollableSheet(
-                                  maxChildSize: .5,
-                                  initialChildSize: .5,
-                                  minChildSize: 0.2,
-                                  builder: (context, scrollController) =>
-                                      Comment(),
-                                ),
+                              child: DraggableScrollableSheet(
+                                maxChildSize: .5,
+                                initialChildSize: .5,
+                                minChildSize: 0.2,
+                                builder: (context, scrollController) =>
+                                    Comment(),
                               ),
                             );
                           });

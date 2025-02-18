@@ -10,8 +10,9 @@ class BlogModels {
     required this.userName,
     required this.avatar,
     required this.privacySetting,
-    required this.tittle,
+    required this.isReacted,
     required this.content,
+    required this.mediaFiles,
     required this.createdAt,
     required this.updatedAt,
     required this.likesCount,
@@ -23,53 +24,51 @@ class BlogModels {
   final String userName;
   final String avatar;
   final int privacySetting;
-  final String tittle;
+  final bool isReacted;
   final String content;
+  final List<dynamic> mediaFiles;
   final DateTime createdAt;
   final DateTime updatedAt;
   final int likesCount;
   final int commentsCount;
 
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'blogId': blogId,
-      'userId': userId,
-      'userName': userName,
-      'avatar': avatar,
-      'privacySetting': privacySetting,
-      'tittle': tittle,
-      'content': content,
-      'createdAt': createdAt.millisecondsSinceEpoch,
-      'updatedAt': updatedAt.millisecondsSinceEpoch,
-      'likesCount': likesCount,
-      'commentsCount': commentsCount,
-    };
-  }
-
-  factory BlogModels.fromMap(Map<String, dynamic> map) {
+  factory BlogModels.fromJson(Map<String, dynamic> json) {
     return BlogModels(
-      blogId: map['blogId'] as int,
-      userId: map['userId'] as int,
-      userName: map['userName'] ?? '', // Nếu null, thay bằng chuỗi rỗng
-      avatar: map['avatar'] ?? '', // Nếu null, thay bằng chuỗi rỗng
-      privacySetting: map['privacySetting'] as int,
-      tittle: map['tittle'] ?? '', // Nếu null, thay bằng chuỗi rỗng
-      content: map['content'] ?? '',
-      createdAt: map['createdAt'] != null
-          ? DateTime.parse(map['createdAt'])
+      blogId: json["blogId"],
+      userId: json["userId"],
+      userName: json["userName"],
+      avatar: json["avatar"],
+      privacySetting: json["privacySetting"],
+      isReacted: json["isReacted"],
+      content: json["content"],
+      mediaFiles: json["mediaFiles"] == null
+          ? []
+          : List<dynamic>.from(json["mediaFiles"]!.map((x) => x)),
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'])
           : DateTime.now(),
-      updatedAt: map['updatedAt'] != null
-          ? DateTime.parse(map['updatedAt'])
+      updatedAt: json['updatedAt'] != null
+          ? DateTime.parse(json['updatedAt'])
           : DateTime.now(),
-      likesCount: (map['likesCount'] ?? 0) as int, // Nếu null, gán 0
-      commentsCount: (map['commentsCount'] ?? 0) as int, // Nếu null, gán 0
+      likesCount: json["likesCount"],
+      commentsCount: json["commentsCount"],
     );
   }
 
-  String toJson() => json.encode(toMap());
-
-  factory BlogModels.fromJson(String source) =>
-      BlogModels.fromMap(json.decode(source) as Map<String, dynamic>);
+  Map<String, dynamic> toJson() => {
+        "blogId": blogId,
+        "userId": userId,
+        "userName": userName,
+        "avatar": avatar,
+        "privacySetting": privacySetting,
+        "isReacted": isReacted,
+        "content": content,
+        "mediaFiles": mediaFiles.map((x) => x).toList(),
+        "createdAt": createdAt?.toIso8601String(),
+        "updatedAt": updatedAt?.toIso8601String(),
+        "likesCount": likesCount,
+        "commentsCount": commentsCount,
+      };
 }
 
 extension BlogXModel on BlogModels {
@@ -80,11 +79,12 @@ extension BlogXModel on BlogModels {
         userName: userName,
         avatar: avatar,
         privacySetting: privacySetting,
-        tittle: tittle,
         content: content,
         createdAt: createdAt,
         updatedAt: updatedAt,
         likesCount: likesCount,
-        commentsCount: commentsCount);
+        commentsCount: commentsCount,
+        mediaFiles: mediaFiles,
+        isReacted: isReacted);
   }
 }
