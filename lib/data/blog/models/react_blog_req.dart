@@ -1,13 +1,9 @@
 class ReactBlogReq {
   ReactBlogReq({
-    required this.cyclistId,
-    required this.cyclistName,
     required this.entityId,
     required this.entityType,
   });
 
-  final int? cyclistId;
-  final String? cyclistName;
   final int? entityId;
   final String? entityType;
 
@@ -21,8 +17,6 @@ class ReactBlogReq {
   // }
 
   Map<String, dynamic> toJson() => {
-        "cyclistId": cyclistId,
-        "cyclistName": cyclistName,
         "entityId": entityId,
         "entityType": entityType,
       };

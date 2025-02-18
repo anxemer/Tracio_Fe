@@ -90,6 +90,9 @@ class BlogPage extends StatelessWidget {
         child: HeaderInformation(
             title: Text('Bạn đang nghĩ gì?'),
             imageUrl: Image.asset(AppImages.man),
-            trailling: Icon(Icons.image_outlined)));
+            trailling: Icon(
+              Icons.image_outlined,
+              size: 60.w,
+            )));
   }
 }

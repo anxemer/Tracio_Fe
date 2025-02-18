@@ -67,8 +67,6 @@ class _PostBlogState extends State<PostBlog> {
               onDoubleTap: () async {
                 await sl<ReactBlogUseCase>().call(
                     params: ReactBlogReq(
-                        cyclistId: 1,
-                        cyclistName: 'An Xemer',
                         entityId: widget.blogEntity.blogId,
                         entityType: "blog"));
                 setState(() {

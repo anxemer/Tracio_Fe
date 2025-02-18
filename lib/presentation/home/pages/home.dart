@@ -75,17 +75,19 @@ class _HomePageState extends State<HomePage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: BlogPage(
-        controller: _scrollController,
-      ),
-      bottomNavigationBar: SlideTransition(
-        position: _slideAnimation,
-        child: AnimatedOpacity(
-          duration: Duration(milliseconds: 300),
-          opacity: _isNavbarVisible ? 1.0 : 0.0,
-          child: BasicNavbar(
-            isNavbarVisible: _isNavbarVisible,
+    return SafeArea(
+      child: Scaffold(
+        body: BlogPage(
+          controller: _scrollController,
+        ),
+        bottomNavigationBar: SlideTransition(
+          position: _slideAnimation,
+          child: AnimatedOpacity(
+            duration: Duration(milliseconds: 300),
+            opacity: _isNavbarVisible ? 1.0 : 0.0,
+            child: BasicNavbar(
+              isNavbarVisible: _isNavbarVisible,
+            ),
           ),
         ),
       ),
