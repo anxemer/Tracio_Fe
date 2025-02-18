@@ -47,4 +47,10 @@ class AuthRepositotyImpl extends AuthRepository {
       return true;
     }
   }
+
+  @override
+  Future<void> logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('accessToken');
+  }
 }

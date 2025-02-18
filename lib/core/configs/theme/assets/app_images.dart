@@ -11,4 +11,5 @@ class AppImages {
   static const topright = '${basePath}top_right_pattern.png';
   static const bottomleft = '${basePath}bottom_left_pattern.png';
   static const logo2 = '${basePath}logo2.png';
+  static const edit = '${basePath}editing.png';
 }

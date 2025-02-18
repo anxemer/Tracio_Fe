@@ -19,7 +19,7 @@ class FloatingButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
-        elevation: e,
+        elevation: elevation,
         heroTag: heroTag,
         backgroundColor: backgroundColor,
         mini: true,

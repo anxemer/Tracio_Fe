@@ -48,7 +48,7 @@ dependencies:
   dio: ^5.8.0+1
   logger:
   shared_preferences:
-
+  carousel_slider:
 dev_dependencies:
   flutter_test:
     sdk: flutter
