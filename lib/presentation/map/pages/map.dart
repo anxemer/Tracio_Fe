@@ -1,6 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:geolocator/geolocator.dart' as geolocator;
+import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' as mapbox;
 import 'package:sliding_up_panel/sliding_up_panel.dart';
-import 'package:tracio_fe/presentation/map/pages/style_selection.dart';
+import 'package:tracio_fe/presentation/map/bloc/map_cubit.dart';
+import 'package:tracio_fe/presentation/map/bloc/map_state.dart';
 import 'package:tracio_fe/presentation/map/widgets/map_view.dart';
 import 'package:tracio_fe/presentation/map/widgets/route_detail_panel.dart';
 import 'package:tracio_fe/presentation/map/widgets/top_action_bar.dart';
@@ -19,6 +25,15 @@ class _MapPageState extends State<MapPage> {
   double _panelHeightOpen = 0;
   final double _panelHeightClosed = 150.0;
 
+  List<String> mapStyles = [
+    "Mapbox Streets",
+    "Mapbox Outdoors",
+    "Mapbox Light",
+    "Mapbox Dark",
+    "Mapbox Satellite",
+    "Goong Map"
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -26,150 +41,192 @@ class _MapPageState extends State<MapPage> {
   }
 
   @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     _panelHeightOpen = MediaQuery.of(context).size.height * .33;
+
     return Scaffold(
       body: SafeArea(
-        child: Stack(
-          alignment: Alignment.topCenter,
-          children: [
-            //Bottom: Sliding panel
-            SlidingUpPanel(
-              maxHeight: _panelHeightOpen,
-              minHeight: _panelHeightClosed,
-              parallaxEnabled: true,
-              parallaxOffset: .5,
-              borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20), topRight: Radius.circular(20)),
-              onPanelSlide: (double pos) => setState(() {
-                _fabHeight = pos * (_panelHeightOpen - _panelHeightClosed) +
-                    _initFabHeight;
-              }),
-              panelBuilder: (sc) => RouteDetailPanel(scrollController: sc),
-              body: Stack(children: [
-                MapView(),
-              ]),
-            ),
-            
-            //Right: Undo Redo buttons
-            Positioned(
-              bottom: _fabHeight,
-              right: 10,
-              child: Container(
-                width: 40,
-                height: 100,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(100), bottom: Radius.circular(100)),
+        child: BlocProvider(
+          create: (context) => MapCubit(),
+          child: Stack(
+            alignment: Alignment.topCenter,
+            children: [
+              // Bottom: Sliding panel
+              SlidingUpPanel(
+                maxHeight: _panelHeightOpen,
+                minHeight: _panelHeightClosed,
+                parallaxEnabled: true,
+                parallaxOffset: .5,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
                 ),
-                child: Column(
-                  children: [
-                    IconButton(
-                      icon: const Icon(
-                        Icons.undo,
-                        size: 20,
-                        color: Colors.black,
-                      ),
-                      onPressed: () {},
+                onPanelSlide: (double pos) => setState(() {
+                  _fabHeight = pos * (_panelHeightOpen - _panelHeightClosed) +
+                      _initFabHeight;
+                }),
+                panelBuilder: (sc) => RouteDetailPanel(scrollController: sc),
+                body: const MapView(),
+              ),
+
+              // Right: Undo Redo buttons
+              Positioned(
+                bottom: _fabHeight,
+                right: 10,
+                child: Container(
+                  width: 40,
+                  height: 100,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(100),
+                      bottom: Radius.circular(100),
                     ),
-                    IconButton(
-                      icon: const Icon(
-                        Icons.redo,
-                        size: 20,
-                        color: Colors.black,
+                  ),
+                  child: Column(
+                    children: [
+                      IconButton(
+                        icon: const Icon(
+                          Icons.undo,
+                          size: 20,
+                          color: Colors.black,
+                        ),
+                        onPressed: () {
+                          // Implement undo functionality
+                        },
                       ),
-                      onPressed: () {},
+                      IconButton(
+                        icon: const Icon(
+                          Icons.redo,
+                          size: 20,
+                          color: Colors.black,
+                        ),
+                        onPressed: () {
+                          // Implement redo functionality
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              // Left: Configure buttons
+              Positioned(
+                bottom: _fabHeight,
+                left: 10,
+                child: Column(
+                  spacing: 10,
+                  children: [
+                    // Center camera button
+
+                    BlocBuilder<MapCubit, MapCubitState>(
+                        builder: (context, state) {
+                      return IconButton(
+                        style: IconButton.styleFrom(
+                          elevation: 2,
+                          backgroundColor: Colors.white,
+                          alignment: Alignment.center,
+                          padding: EdgeInsets.zero,
+                        ),
+                        icon: const Icon(
+                          Icons.location_searching_outlined,
+                          color: Colors.black87,
+                        ),
+                        onPressed: () async {
+                          centerCamera(context);
+                        },
+                      );
+                    }),
+
+                    // Change style button
+                    BlocBuilder<MapCubit, MapCubitState>(
+                        builder: (context, state) {
+                      return IconButton(
+                        style: IconButton.styleFrom(
+                          elevation: 2,
+                          backgroundColor: Colors.white,
+                          alignment: Alignment.center,
+                          padding: EdgeInsets.zero,
+                        ),
+                        icon: const Icon(
+                          Icons.layers,
+                          color: Colors.black87,
+                        ),
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (_) {
+                              return AlertDialog(
+                                title: const Text("Select Map Style"),
+                                content: SingleChildScrollView(
+                                  child: ListBody(
+                                    children: mapStyles.map((style) {
+                                      return ListTile(
+                                        title: Text(style),
+                                        onTap: () {
+                                          BlocProvider.of<MapCubit>(context)
+                                              .changeMapStyle(style);
+                                          Navigator.of(context).pop();
+                                        },
+                                      );
+                                    }).toList(),
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      );
+                    }),
+
+                    // Change Cycling button
+                    IconButton(
+                      style: IconButton.styleFrom(
+                        elevation: 2,
+                        backgroundColor: Colors.white,
+                        alignment: Alignment.center,
+                        padding: EdgeInsets.zero,
+                      ),
+                      icon: const Icon(
+                        Icons.directions_bike_sharp,
+                        color: Colors.black87,
+                      ),
+                      onPressed: () {
+                        // Implement cycling functionality
+                      },
                     ),
                   ],
                 ),
               ),
-            ),
-            //TODO: Popup menu
-            //Left: Configure buttons
-            Positioned(
-              bottom: _fabHeight,
-              left: 10,
-              child: Column(
-                spacing: 10,
-                children: [
-                  //Center camera button
-                  IconButton(
-                    style: IconButton.styleFrom(
-                      elevation: 2,
-                      backgroundColor: Colors.white,
-                      alignment: Alignment.center,
-                      padding: EdgeInsets.zero,
-                    ),
-                    icon: const Icon(
-                      Icons.location_searching_outlined,
-                      color: Colors.black87,
-                    ),
-                    onPressed: () {},
-                  ),
 
-                  //Change style button
-                  IconButton(
-                    style: IconButton.styleFrom(
-                      elevation: 2,
-                      backgroundColor: Colors.white,
-                      alignment: Alignment.center,
-                      padding: EdgeInsets.zero,
-                    ),
-                    icon: const Icon(
-                      Icons.layers,
-                      color: Colors.black87,
-                    ),
-                    onPressed: () async {
-                      // Navigate to the style selection page and await the result
-                      final selectedStyle = await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const StyleSelectionPage()),
-                      );
-
-                      // Handle the selected style
-                      if (selectedStyle != null) {
-                        // Update the map style using the selectedStyle
-                        print(
-                            'Selected style: $selectedStyle'); // Replace with your logic
-                      }
-                    },
-                  ),
-
-                  //Change Cycling button
-                  IconButton(
-                    style: IconButton.styleFrom(
-                      elevation: 2,
-                      backgroundColor: Colors.white,
-                      alignment: Alignment.center,
-                      padding: EdgeInsets.zero,
-                    ),
-                    icon: const Icon(
-                      Icons.directions_bike_sharp,
-                      color: Colors.black87,
-                    ),
-                    onPressed: () {},
-                  ),
-                ],
+              // Top action bar
+              Positioned(
+                top: _initTopBarTopPosition,
+                left: 20,
+                right: 20,
+                child: const TopActionBar(),
               ),
-            ),
-
-            //Top: action bar
-            Positioned(
-              top: _initTopBarTopPosition,
-              left: 20,
-              right: 20,
-              child: TopActionBar(),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  Future<void> centerCamera(BuildContext context) async {
+    geolocator.LocationSettings locationSettings = geolocator.LocationSettings(
+      accuracy: geolocator.LocationAccuracy.high,
+      distanceFilter: 100,
+    );
+    await geolocator.Geolocator.getCurrentPosition(
+            locationSettings: locationSettings)
+        .then((geolocator.Position? position) {
+      if (position != null) {
+        // Update camera position using MapCubit
+        BlocProvider.of<MapCubit>(context).cameraAnimation(
+          mapbox.Position(position.longitude, position.latitude),
+        );
+      }
+    });
   }
 }
