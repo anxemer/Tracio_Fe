@@ -1,3 +1,5 @@
+import 'package:tracio_fe/data/map/models/mapbox_direction_req.dart';
+
 class ApiUrl {
   //base Url
   static const baseURL = 'http://192.168.1.9:';
@@ -14,5 +16,30 @@ class ApiUrl {
   static const reactBlog = '$portBlog/api/reactions';
   static Uri urlGetBlog([Map<String, String>? params]) {
     return Uri.parse('$portBlog/api/blogs').replace(queryParameters: params);
+  }
+
+  //Api route
+  static Uri urlGetDirectionUsingMapbox(
+      MapboxDirectionsRequest mapboxDirectionReq) {
+    final coordsString = mapboxDirectionReq.coordinates
+        .map((c) => '${c.longitude},${c.latitude}')
+        .join(';');
+
+    final uri = Uri.https(
+      'api.mapbox.com',
+      '/directions/v5/mapbox/${mapboxDirectionReq.profile}/$coordsString',
+      {
+        'alternatives': mapboxDirectionReq.alternatives.toString(),
+        'annotations': mapboxDirectionReq.annotations,
+        'continue_straight': mapboxDirectionReq.continueStraight.toString(),
+        'geometries': mapboxDirectionReq.geometries,
+        'language': mapboxDirectionReq.language,
+        'overview': mapboxDirectionReq.overview,
+        'steps': mapboxDirectionReq.steps.toString(),
+        'access_token': mapboxDirectionReq.accessToken,
+      },
+    );
+
+    return uri;
   }
 }

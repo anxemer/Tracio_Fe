@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:dio/dio.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_polyline_algorithm/google_polyline_algorithm.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
@@ -20,6 +21,9 @@ class MapCubit extends Cubit<MapCubitState> {
     pitch: 10,
   );
 
+  List<PointAnnotationOptions> pointAnnotationOptions = [];
+  PointAnnotationManager? pointAnnotationManager;
+
   Future<void> initializeMap(MapboxMap mapboxMap) async {
     double maxZoom = 20.0;
     double minZoom = 10.0;
@@ -37,9 +41,8 @@ class MapCubit extends Cubit<MapCubitState> {
     ));
 
     //Compass settings
-    await mapboxMap.compass.updateSettings(CompassSettings(
-        position: OrnamentPosition.BOTTOM_LEFT, marginBottom: 30));
-
+    await mapboxMap.gestures
+        .updateSettings(GesturesSettings(rotateEnabled: false));
     //Scale bar settings
     await mapboxMap.scaleBar.updateSettings(ScaleBarSettings(enabled: false));
 
@@ -105,8 +108,11 @@ class MapCubit extends Cubit<MapCubitState> {
       case "Goong Map":
         styleUri = "${AppUrl.goongMaptile}${dotenv.env['GOONG_MAPTILE_TOKEN']}";
         break;
+      case "Terrain-v2":
+        styleUri = "mapbox://styles/trminloc/cm7brl3yq006m01qyhqlx2kze";
+        break;
       default:
-        styleUri = "${AppUrl.goongMaptile}${dotenv.env['GOONG_MAPTILE_TOKEN']}";
+        styleUri = MapboxStyles.OUTDOORS;
     }
     emit(MapCubitStyleLoaded(styleUri: styleUri));
   }
@@ -124,7 +130,79 @@ class MapCubit extends Cubit<MapCubitState> {
         MapAnimationOptions(duration: 2000, startDelay: 500));
   }
 
-  void showAlertDialog() {
-    emit(MapShowDialogState());
+  Future<void> addPointAnnotation(Position position) async {
+    // Create a new PointAnnotationManager if it doesn't exist
+    pointAnnotationManager ??=
+        await mapboxMap?.annotations.createPointAnnotationManager();
+
+    final ByteData bytes =
+        await rootBundle.load('assets/images/location_icon.png');
+    final Uint8List list = bytes.buffer.asUint8List();
+
+    final pointAnnotationOption = PointAnnotationOptions(
+      geometry: Point(coordinates: position),
+      image: list,
+      iconOffset: [-10.0, 20.0],
+    );
+
+    pointAnnotationOptions.add(pointAnnotationOption);
+
+    emit(MapAnnotationsUpdated(annotations: List.from(pointAnnotationOptions)));
+
+    _updateAnnotationsOnMap();
+  }
+
+  Future<void> addListPointsAnnotation(List<Position> positions) async {
+    // Create a new PointAnnotationManager if it doesn't exist
+    pointAnnotationManager ??=
+        await mapboxMap?.annotations.createPointAnnotationManager();
+
+    final ByteData bytes =
+        await rootBundle.load('assets/images/location_icon.png');
+    final Uint8List list = bytes.buffer.asUint8List();
+
+    // Create PointAnnotationOptions for each position
+    List<PointAnnotationOptions> newAnnotations = positions.map((position) {
+      return PointAnnotationOptions(
+        geometry: Point(coordinates: position),
+        image: list,
+        iconOffset: [-5,-20],
+      );
+    }).toList();
+
+    // Add new annotations to the existing list
+    pointAnnotationOptions.addAll(newAnnotations);
+
+    // Emit new state with updated annotations
+    emit(MapAnnotationsUpdated(annotations: List.from(pointAnnotationOptions)));
+
+    // Update annotations on the map
+    _updateAnnotationsOnMap();
+  }
+
+  Future<void> removeLastAnnotation() async {
+    if (pointAnnotationOptions.isNotEmpty) {
+      pointAnnotationOptions.removeLast();
+      emit(MapAnnotationsUpdated(
+          annotations: List.from(pointAnnotationOptions)));
+      await _updateAnnotationsOnMap();
+    } else {
+      await clearAnnotations();
+    }
+  }
+
+  Future<void> clearAnnotations() async {
+    pointAnnotationOptions.clear();
+    emit(MapAnnotationsUpdated(annotations: List.from(pointAnnotationOptions)));
+    await _updateAnnotationsOnMap();
+  }
+
+  Future<void> _updateAnnotationsOnMap() async {
+    if (pointAnnotationManager != null) {
+      await pointAnnotationManager!.deleteAll();
+      if (pointAnnotationOptions.isNotEmpty) {
+        await pointAnnotationManager?.createMulti(pointAnnotationOptions);
+      }
+    }
   }
 }

@@ -18,4 +18,8 @@ class MapCubitStyleLoaded extends MapCubitState {
   MapCubitStyleLoaded({required this.styleUri});
 }
 
-class MapShowDialogState extends MapCubitState {}
+class MapAnnotationsUpdated extends MapCubitState {
+  final List<PointAnnotationOptions> annotations;
+
+  MapAnnotationsUpdated({required this.annotations});
+}

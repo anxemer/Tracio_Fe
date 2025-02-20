@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart' as geolocator;
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' as mapbox;
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'package:tracio_fe/presentation/map/bloc/get_direction_cubit.dart';
 import 'package:tracio_fe/presentation/map/bloc/map_cubit.dart';
 import 'package:tracio_fe/presentation/map/bloc/map_state.dart';
 import 'package:tracio_fe/presentation/map/widgets/map_view.dart';
@@ -24,6 +25,7 @@ class _MapPageState extends State<MapPage> {
   double _fabHeight = 0;
   double _panelHeightOpen = 0;
   final double _panelHeightClosed = 150.0;
+  bool isCentered = false;
 
   List<String> mapStyles = [
     "Mapbox Streets",
@@ -31,7 +33,8 @@ class _MapPageState extends State<MapPage> {
     "Mapbox Light",
     "Mapbox Dark",
     "Mapbox Satellite",
-    "Goong Map"
+    "Goong Map",
+    "Terrain-v2",
   ];
 
   @override
@@ -46,8 +49,13 @@ class _MapPageState extends State<MapPage> {
 
     return Scaffold(
       body: SafeArea(
-        child: BlocProvider(
-          create: (context) => MapCubit(),
+        child: MultiBlocProvider(
+          providers: [
+            BlocProvider(create: (context) => MapCubit()),
+            BlocProvider(
+              create: (context) => GetDirectionCubit(),
+            )
+          ],
           child: Stack(
             alignment: Alignment.topCenter,
             children: [
@@ -73,41 +81,46 @@ class _MapPageState extends State<MapPage> {
               Positioned(
                 bottom: _fabHeight,
                 right: 10,
-                child: Container(
-                  width: 40,
-                  height: 100,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(100),
-                      bottom: Radius.circular(100),
+                child: BlocBuilder<MapCubit, MapCubitState>(
+                    builder: (context, state) {
+                  return Container(
+                    width: 40,
+                    height: 100,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(100),
+                        bottom: Radius.circular(100),
+                      ),
                     ),
-                  ),
-                  child: Column(
-                    children: [
-                      IconButton(
-                        icon: const Icon(
-                          Icons.undo,
-                          size: 20,
-                          color: Colors.black,
+                    child: Column(
+                      children: [
+                        IconButton(
+                          icon: const Icon(
+                            Icons.undo,
+                            size: 20,
+                            color: Colors.black,
+                          ),
+                          onPressed: () {
+                            BlocProvider.of<MapCubit>(context)
+                                .removeLastAnnotation();
+                          },
                         ),
-                        onPressed: () {
-                          // Implement undo functionality
-                        },
-                      ),
-                      IconButton(
-                        icon: const Icon(
-                          Icons.redo,
-                          size: 20,
-                          color: Colors.black,
+                        IconButton(
+                          icon: const Icon(
+                            Icons.redo,
+                            size: 20,
+                            color: Colors.black,
+                          ),
+                          onPressed: () {
+                            BlocProvider.of<MapCubit>(context)
+                                .clearAnnotations();
+                          },
                         ),
-                        onPressed: () {
-                          // Implement redo functionality
-                        },
-                      ),
-                    ],
-                  ),
-                ),
+                      ],
+                    ),
+                  );
+                }),
               ),
 
               // Left: Configure buttons
@@ -118,7 +131,6 @@ class _MapPageState extends State<MapPage> {
                   spacing: 10,
                   children: [
                     // Center camera button
-
                     BlocBuilder<MapCubit, MapCubitState>(
                         builder: (context, state) {
                       return IconButton(
@@ -128,12 +140,12 @@ class _MapPageState extends State<MapPage> {
                           alignment: Alignment.center,
                           padding: EdgeInsets.zero,
                         ),
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.location_searching_outlined,
                           color: Colors.black87,
                         ),
                         onPressed: () async {
-                          centerCamera(context);
+                          _centerCameraButton(context);
                         },
                       );
                     }),
@@ -153,28 +165,7 @@ class _MapPageState extends State<MapPage> {
                           color: Colors.black87,
                         ),
                         onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (_) {
-                              return AlertDialog(
-                                title: const Text("Select Map Style"),
-                                content: SingleChildScrollView(
-                                  child: ListBody(
-                                    children: mapStyles.map((style) {
-                                      return ListTile(
-                                        title: Text(style),
-                                        onTap: () {
-                                          BlocProvider.of<MapCubit>(context)
-                                              .changeMapStyle(style);
-                                          Navigator.of(context).pop();
-                                        },
-                                      );
-                                    }).toList(),
-                                  ),
-                                ),
-                              );
-                            },
-                          );
+                          _showStyleDialog(context);
                         },
                       );
                     }),
@@ -213,7 +204,31 @@ class _MapPageState extends State<MapPage> {
     );
   }
 
-  Future<void> centerCamera(BuildContext context) async {
+  Future<dynamic> _showStyleDialog(BuildContext context) {
+    return showDialog(
+      context: context,
+      builder: (_) {
+        return AlertDialog(
+          title: const Text("Select Map Style"),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: mapStyles.map((style) {
+                return ListTile(
+                  title: Text(style),
+                  onTap: () {
+                    BlocProvider.of<MapCubit>(context).changeMapStyle(style);
+                    Navigator.of(context).pop();
+                  },
+                );
+              }).toList(),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _centerCameraButton(BuildContext context) async {
     geolocator.LocationSettings locationSettings = geolocator.LocationSettings(
       accuracy: geolocator.LocationAccuracy.high,
       distanceFilter: 100,
@@ -223,9 +238,11 @@ class _MapPageState extends State<MapPage> {
         .then((geolocator.Position? position) {
       if (position != null) {
         // Update camera position using MapCubit
-        BlocProvider.of<MapCubit>(context).cameraAnimation(
-          mapbox.Position(position.longitude, position.latitude),
-        );
+        if (context.mounted) {
+          BlocProvider.of<MapCubit>(context).cameraAnimation(
+            mapbox.Position(position.longitude, position.latitude),
+          );
+        }
       }
     });
   }
