@@ -1,8 +1,5 @@
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
-import '../../../core/configs/theme/assets/app_images.dart';
 
 class PictureCard extends StatefulWidget {
   const PictureCard({super.key, required this.listImageUrl});
@@ -26,7 +23,7 @@ class _PictureCardState extends State<PictureCard> {
     return Column(
       children: [
         SizedBox(
-          height: 600.h,
+          height: MediaQuery.of(context).size.height / 3.h,
           width: 750.w,
           child: Stack(
             children: [

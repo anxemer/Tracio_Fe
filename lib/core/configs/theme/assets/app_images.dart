@@ -12,4 +12,9 @@ class AppImages {
   static const bottomleft = '${basePath}bottom_left_pattern.png';
   static const logo2 = '${basePath}logo2.png';
   static const edit = '${basePath}editing.png';
+  static const draft = '${basePath}draft.png';
+  static const share = '${basePath}send.png';
+  static const eye = '${basePath}user.png';
+  static const group = '${basePath}group.png';
+  static const follower = '${basePath}follow.png';
 }

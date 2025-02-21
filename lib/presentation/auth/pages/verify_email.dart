@@ -103,8 +103,7 @@ class VerifyEmailpage extends StatelessWidget {
                             if (state is VerifyEmailFailure) {
                               return Column(
                                 children: [
-                                  _buttonSignIn(
-                                      context, _emailCon.text.toString()),
+                                  _buttonSignIn(),
                                   Text(
                                     'Verify failure, please try again',
                                     style: TextStyle(
@@ -113,8 +112,7 @@ class VerifyEmailpage extends StatelessWidget {
                                 ],
                               );
                             }
-                            return _buttonSignIn(
-                                context, _emailCon.text.toString().trim());
+                            return _buttonSignIn();
                           },
                         ),
 
@@ -141,7 +139,7 @@ class VerifyEmailpage extends StatelessWidget {
     );
   }
 
-  Widget _buttonSignIn(BuildContext context, String email) {
+  Widget _buttonSignIn() {
     return BlocBuilder<VerifyEmailCubit, VerifyEmailState>(
       builder: (context, state) {
         if (state is VerifyEmailLoading) {
@@ -150,7 +148,7 @@ class VerifyEmailpage extends StatelessWidget {
 
         return GestureDetector(
           onTap: () async {
-            context.read<VerifyEmailCubit>().verifyEmail(email.trim());
+            context.read<VerifyEmailCubit>().verifyEmail(_emailCon.text);
           },
           child: ButtonAuth(
             title: 'Verify Email',

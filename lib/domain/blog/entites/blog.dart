@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import '../../../data/blog/models/blog.dart';
+
 class BlogEntity {
   BlogEntity({
     required this.blogId,
@@ -6,6 +10,7 @@ class BlogEntity {
     required this.avatar,
     required this.privacySetting,
     required this.isReacted,
+    required this.reactionId,
     required this.content,
     required this.mediaFiles,
     required this.createdAt,
@@ -19,9 +24,10 @@ class BlogEntity {
   final String userName;
   final String avatar;
   final int privacySetting;
-  final bool isReacted;
+  bool isReacted;
+  final int reactionId;
   final String content;
-  final List<dynamic> mediaFiles;
+  final List<MediaFile> mediaFiles;
   final DateTime createdAt;
   final DateTime updatedAt;
   final int likesCount;

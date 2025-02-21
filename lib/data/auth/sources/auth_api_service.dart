@@ -19,8 +19,8 @@ class AuthApiServiceImpl extends AuthApiService {
       final formData = FormData.fromMap({
         "FirebaseUid": params.firebaseId,
         "Email": params.email,
-        "DisplayName": params.fullName,
-        "password": params.password,
+        "UserName": params.fullName,
+        // "password": params.password,
       });
       var response = await sl<DioClient>()
           .post(ApiUrl.registerWithEP, data: formData, isMultipart: true);

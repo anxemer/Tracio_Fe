@@ -47,7 +47,7 @@ dependencies:
   sliding_up_panel: ^2.0.0+1
 
   # Maps
-  mapbox_maps_flutter: ^2.5.2
+  mapbox_maps_flutter: ^2.6.0
   geolocator: ^13.0.2
   google_polyline_algorithm: ^3.1.0
   #Permission
@@ -59,6 +59,9 @@ dependencies:
   logger:
   shared_preferences:
   carousel_slider:
+  image_picker: ^1.1.2
+  photo_manager: ^3.6.4
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -73,5 +76,5 @@ flutter:
     - assets/images/
     - assets/vectors/
 
-    # token 
-    - .env
+    # token
+    # - .env

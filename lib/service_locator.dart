@@ -12,10 +12,13 @@ import 'package:tracio_fe/domain/auth/usecases/logout.dart';
 import 'package:tracio_fe/domain/auth/usecases/register_with_ep.dart';
 import 'package:tracio_fe/domain/auth/usecases/verify_email.dart';
 import 'package:tracio_fe/domain/blog/repositories/blog_repository.dart';
+import 'package:tracio_fe/domain/blog/usecase/craete_blog.dart';
 import 'package:tracio_fe/domain/blog/usecase/get_blogs.dart';
+import 'package:tracio_fe/domain/blog/usecase/get_category.dart';
 import 'package:tracio_fe/domain/blog/usecase/react_blog.dart';
 
 import 'core/network/dio_client.dart';
+import 'domain/blog/usecase/un_react_blog.dart';
 
 final sl = GetIt.instance;
 
@@ -38,4 +41,7 @@ Future<void> initializeDependencies() async {
   sl.registerSingleton<LogoutUseCase>(LogoutUseCase());
   sl.registerSingleton<GetBlogsUseCase>(GetBlogsUseCase());
   sl.registerSingleton<ReactBlogUseCase>(ReactBlogUseCase());
+  sl.registerSingleton<UnReactBlogUseCase>(UnReactBlogUseCase());
+  sl.registerSingleton<CreateBlogUseCase>(CreateBlogUseCase());
+  sl.registerSingleton<GetCategoryUseCase>(GetCategoryUseCase());
 }

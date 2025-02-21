@@ -4,7 +4,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tracio_fe/common/widget/blog/header_information.dart';
 import 'package:tracio_fe/core/configs/theme/assets/app_images.dart';
+import 'package:tracio_fe/presentation/blog/bloc/create_blog_cubit.dart';
 import 'package:tracio_fe/presentation/blog/bloc/get_blog_cubit.dart';
+import 'package:tracio_fe/presentation/blog/bloc/react_blog_cubit.dart';
+import 'package:tracio_fe/presentation/blog/pages/create_blog.dart';
 import 'package:tracio_fe/presentation/blog/widget/new_feed.dart';
 
 import '../../../common/helper/navigator/app_navigator.dart';
@@ -20,8 +23,15 @@ class BlogPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => GetBlogCubit()..getBlog(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => GetBlogCubit()..getBlog(),
+        ),
+        BlocProvider(
+          create: (context) => CreateBlogCubit(),
+        ),
+      ],
       child: Scaffold(
         appBar: BasicAppbar(
             height: 100.h,
@@ -70,7 +80,7 @@ class BlogPage extends StatelessWidget {
             )),
         body: CustomScrollView(controller: controller, slivers: [
           SliverToBoxAdapter(
-            child: _createBlog(),
+            child: _createBlog(context),
           ),
           SliverToBoxAdapter(
             child: SizedBox(
@@ -83,13 +93,19 @@ class BlogPage extends StatelessWidget {
     );
   }
 
-  Widget _createBlog() {
-    return Container(
-        width: double.infinity,
-        height: 100.h,
-        child: HeaderInformation(
-            title: Text('Bạn đang nghĩ gì?'),
-            imageUrl: Image.asset(AppImages.man),
-            trailling: Icon(Icons.image_outlined)));
+  Widget _createBlog(BuildContext context) {
+    return GestureDetector(
+      onTap: () => AppNavigator.push(context, CreateBlogPage()),
+      child: Container(
+          width: double.infinity,
+          height: 100.h,
+          child: HeaderInformation(
+              title: Text('Share your picture'),
+              imageUrl: Image.asset(AppImages.man),
+              trailling: Icon(
+                Icons.image_outlined,
+                size: 60.w,
+              ))),
+    );
   }
 }

@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tracio_fe/common/widget/blog/animation_react.dart';
 import 'package:tracio_fe/common/widget/blog/header_information.dart';
 import 'package:tracio_fe/common/widget/blog/picture_card.dart';
+import 'package:tracio_fe/core/configs/theme/assets/app_images.dart';
 import 'package:tracio_fe/data/blog/models/react_blog_req.dart';
 import 'package:tracio_fe/domain/blog/entites/blog.dart';
 import 'package:tracio_fe/domain/blog/usecase/react_blog.dart';
+import 'package:tracio_fe/presentation/blog/bloc/react_blog_cubit.dart';
 
 import '../../../service_locator.dart';
 import 'react_blog.dart';
@@ -29,6 +32,10 @@ class _PostBlogState extends State<PostBlog> {
   ];
   @override
   Widget build(BuildContext context) {
+    List<String> mediaUrls = widget.blogEntity.mediaFiles
+        .map((file) => file.mediaUrl ?? "")
+        .toList();
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Container(
@@ -45,7 +52,8 @@ class _PostBlogState extends State<PostBlog> {
                   style:
                       TextStyle(fontWeight: FontWeight.bold, fontSize: 40.sp),
                 ),
-                imageUrl: Image.network(widget.blogEntity.avatar),
+                imageUrl: Image.asset(AppImages.man),
+                // Image.network(widget.blogEntity.avatar),
                 trailling: Icon(Icons.arrow_forward_ios_rounded)),
             SizedBox(
               height: 16.h,
@@ -65,28 +73,28 @@ class _PostBlogState extends State<PostBlog> {
             ),
             GestureDetector(
               onDoubleTap: () async {
-                await sl<ReactBlogUseCase>().call(
-                    params: ReactBlogReq(
-                        cyclistId: 1,
-                        cyclistName: 'An Xemer',
-                        entityId: widget.blogEntity.blogId,
-                        entityType: "blog"));
+                if (widget.blogEntity.isReacted == false) {
+                  await sl<ReactBlogUseCase>().call(
+                      params: ReactBlogReq(
+                          entityId: widget.blogEntity.blogId,
+                          entityType: "blog"));
+                }
+
                 setState(() {
+                  widget.blogEntity.isReacted = true;
                   isAnimating = true;
                 });
               },
               child: Stack(alignment: Alignment.center, children: [
-                PictureCard(
-                  listImageUrl: listImageUrl,
-                ),
+                PictureCard(listImageUrl: mediaUrls ?? listImageUrl),
                 AnimatedOpacity(
                   opacity: isAnimating ? 1 : 0,
-                  duration: Duration(microseconds: 200),
+                  duration: Duration(microseconds: 100),
                   child: AnimationReact(
                     child: Icon(
                       Icons.favorite,
                       color: Colors.red.shade600,
-                      size: 100.w,
+                      size: 150.w,
                     ),
                     isAnimating: isAnimating,
                     duration: Duration(milliseconds: 400),
@@ -102,8 +110,10 @@ class _PostBlogState extends State<PostBlog> {
             ),
             // _reactBlog(),
             ReactBlog(
+              // isReaction: widget.blogEntity.isReacted,
               blogEntity: widget.blogEntity,
             ),
+
             // Padding(
             //   padding: const EdgeInsets.symmetric(horizontal: 8.0),
             //   child: Text(
