@@ -9,19 +9,23 @@ class ButtonDesign extends StatelessWidget {
       required this.icon,
       required this.fillColor,
       required this.textColor,
-      required this.borderColor});
+      required this.borderColor,
+      this.height,
+      this.width});
   final VoidCallback ontap;
   final String text;
   final String icon;
   final Color fillColor;
   final Color textColor;
   final Color borderColor;
+  final double? height;
+  final double? width;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 80.h,
-      width: 500.w,
+      height: height ?? 80.h,
+      width: width ?? 500.w,
       child: InkWell(
         onTap: ontap,
         borderRadius: BorderRadius.circular(20.r), // Tự động co giãn

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class BasicAppbar extends StatelessWidget implements PreferredSizeWidget {
   final Widget? title;
@@ -7,21 +7,24 @@ class BasicAppbar extends StatelessWidget implements PreferredSizeWidget {
   final Color? backgroundColor;
   final bool hideBack;
   final double? height;
+  final bool? centralTitle;
+  final int? data;
   const BasicAppbar(
       {this.title,
       this.hideBack = false,
       this.action,
       this.backgroundColor,
       this.height,
-      super.key});
+      super.key,
+      this.centralTitle,
+      this.data});
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      
       backgroundColor: backgroundColor ?? Colors.transparent,
       elevation: 0,
-      centerTitle: false,
+      centerTitle: centralTitle ?? false,
       automaticallyImplyLeading: false,
       toolbarHeight: height ?? 80,
       title: title ?? const Text(''),
@@ -31,15 +34,15 @@ class BasicAppbar extends StatelessWidget implements PreferredSizeWidget {
           ? null
           : IconButton(
               onPressed: () {
-                Navigator.pop(context);
+                Navigator.pop(context, data);
               },
               icon: Container(
-                height: 50,
-                width: 50,
+                height: 50.h,
+                width: 10.w,
                 decoration: const BoxDecoration(
                     color: Colors.white, shape: BoxShape.circle),
                 child: const Icon(Icons.arrow_back_ios_new,
-                    size: 15, color: Colors.black),
+                    size: 24, color: Colors.black),
               ),
             ),
     );

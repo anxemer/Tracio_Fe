@@ -41,6 +41,9 @@ class _CommentState extends State<Comment> {
                 );
               },
             ),
+            SizedBox(
+              height: 20.h,
+            ),
             Positioned(bottom: 0, right: 0, left: 0, child: _comment())
           ],
         ),
@@ -51,7 +54,7 @@ class _CommentState extends State<Comment> {
   Widget _comment() {
     return //Comments
         Padding(
-      padding: EdgeInsets.symmetric(horizontal: 10.h),
+      padding: EdgeInsets.symmetric(horizontal: 20.h),
       child: Row(
         children: [
           // Container(
