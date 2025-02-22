@@ -14,6 +14,7 @@ class ApiUrl {
   //Api Blog
   static const reactBlog = '$portBlog/api/reactions';
   static const unReactBlog = '$portBlog/api/reactions';
+  static const getReactBlog = '$portBlog/api/reactions';
   static Uri urlGetBlog([Map<String, String>? params]) {
     return Uri.parse('$portBlog/api/blogs').replace(queryParameters: params);
   }

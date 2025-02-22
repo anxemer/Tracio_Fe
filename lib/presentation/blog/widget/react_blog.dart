@@ -44,7 +44,7 @@ class _ReactBlogState extends State<ReactBlog> {
               children: [
                 GestureDetector(
                     onTap: () async {
-                      print(widget.blogEntity.isReacted);
+                      print(widget.blogEntity.reactionId);
                       // final cubit = context.read<ReactBlogCubit>();
                       if (widget.blogEntity.isReacted) {
                         var result = await sl<UnReactBlogUseCase>()
@@ -54,7 +54,6 @@ class _ReactBlogState extends State<ReactBlog> {
                         }, (data) {
                           bool isReact =
                               toogleIsReaction(widget.blogEntity.isReacted);
-                          print('data$data');
                           // context.read<ReactBlogCubit>().reactBlog(isReact);
                           print(isReact);
                           setState(() {

@@ -1,7 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:tracio_fe/data/auth/repositories/auth_repositoty_impl.dart';
-import 'package:tracio_fe/data/auth/sources/auth_api_service.dart';
-import 'package:tracio_fe/data/auth/sources/auth_firebase_service.dart';
+import 'package:tracio_fe/data/auth/sources/auth_remote_source/auth_api_service.dart';
+import 'package:tracio_fe/data/auth/sources/auth_remote_source/auth_firebase_service.dart';
 import 'package:tracio_fe/data/blog/repositories/blog_repository_impl.dart';
 import 'package:tracio_fe/data/blog/source/blog_api_service.dart';
 import 'package:tracio_fe/domain/auth/repositories/auth_repository.dart';

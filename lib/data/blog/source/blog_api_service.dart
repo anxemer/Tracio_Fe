@@ -12,6 +12,7 @@ abstract class BlogApiService {
   Future<Either> createBlog(CreateBlogReq react);
   Future<Either> getCategoryBlog();
   Future<Either> unReactBlog(int reactId);
+  Future<Either> getReactBlog(int reactId);
 }
 
 class BlogApiServiceImpl extends BlogApiService {
@@ -77,5 +78,11 @@ class BlogApiServiceImpl extends BlogApiService {
     } on DioException catch (e) {
       return left(e.response!.data['title']);
     }
+  }
+
+  @override
+  Future<Either> getReactBlog(int reactId) async {
+    // TODO: implement getReactBlog
+    throw UnimplementedError();
   }
 }

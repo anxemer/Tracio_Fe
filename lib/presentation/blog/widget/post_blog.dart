@@ -85,28 +85,30 @@ class _PostBlogState extends State<PostBlog> {
                   isAnimating = true;
                 });
               },
-              child: Stack(alignment: Alignment.center, children: [
-                PictureCard(listImageUrl: mediaUrls ?? listImageUrl),
-                AnimatedOpacity(
-                  opacity: isAnimating ? 1 : 0,
-                  duration: Duration(microseconds: 100),
-                  child: AnimationReact(
-                    child: Icon(
-                      Icons.favorite,
-                      color: Colors.red.shade600,
-                      size: 150.w,
-                    ),
-                    isAnimating: isAnimating,
-                    duration: Duration(milliseconds: 400),
-                    iconlike: false,
-                    End: () {
-                      setState(() {
-                        isAnimating = false;
-                      });
-                    },
-                  ),
-                )
-              ]),
+              child: mediaUrls != []
+                  ? Stack(alignment: Alignment.center, children: [
+                      PictureCard(listImageUrl: mediaUrls),
+                      AnimatedOpacity(
+                        opacity: isAnimating ? 1 : 0,
+                        duration: Duration(microseconds: 100),
+                        child: AnimationReact(
+                          child: Icon(
+                            Icons.favorite,
+                            color: Colors.red.shade600,
+                            size: 150.w,
+                          ),
+                          isAnimating: isAnimating,
+                          duration: Duration(milliseconds: 400),
+                          iconlike: false,
+                          End: () {
+                            setState(() {
+                              isAnimating = false;
+                            });
+                          },
+                        ),
+                      )
+                    ])
+                  : Container(),
             ),
             // _reactBlog(),
             ReactBlog(
