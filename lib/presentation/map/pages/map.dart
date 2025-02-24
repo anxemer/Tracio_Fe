@@ -24,7 +24,7 @@ class _MapPageState extends State<MapPage> {
   final double _initTopBarTopPosition = 10.0;
   double _fabHeight = 0;
   double _panelHeightOpen = 0;
-  final double _panelHeightClosed = 150.0;
+  final double _panelHeightClosed = 120.0;
   bool isCentered = false;
 
   List<String> mapStyles = [
@@ -45,7 +45,7 @@ class _MapPageState extends State<MapPage> {
 
   @override
   Widget build(BuildContext context) {
-    _panelHeightOpen = MediaQuery.of(context).size.height * .33;
+    _panelHeightOpen = 300;
 
     return Scaffold(
       body: SafeArea(
@@ -54,7 +54,7 @@ class _MapPageState extends State<MapPage> {
             BlocProvider(create: (context) => MapCubit()),
             BlocProvider(
               create: (context) => GetDirectionCubit(),
-            )
+            ),
           ],
           child: Stack(
             alignment: Alignment.topCenter,

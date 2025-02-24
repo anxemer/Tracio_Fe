@@ -50,6 +50,8 @@ dependencies:
   mapbox_maps_flutter: ^2.5.2
   geolocator: ^13.0.2
   google_polyline_algorithm: ^3.1.0
+  map_elevation: ^2.0.0
+  latlong2: ^0.8.0
   #Permission
   permission_handler: ^11.3.1
 

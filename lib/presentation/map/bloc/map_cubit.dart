@@ -83,7 +83,7 @@ class MapCubit extends Cubit<MapCubitState> {
         throw Exception('Failed to load route');
       }
     } catch (e) {
-      print('Error fetching route: $e');
+        ('Error fetching route: $e');
     }
   }
 
@@ -143,12 +143,13 @@ class MapCubit extends Cubit<MapCubitState> {
       geometry: Point(coordinates: position),
       image: list,
       iconOffset: [-10.0, 20.0],
+
     );
 
     pointAnnotationOptions.add(pointAnnotationOption);
 
     emit(MapAnnotationsUpdated(annotations: List.from(pointAnnotationOptions)));
-
+    
     _updateAnnotationsOnMap();
   }
 

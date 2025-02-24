@@ -42,4 +42,8 @@ class ApiUrl {
 
     return uri;
   }
+
+  static Uri urlGetEleUsingOpenElevation() {
+    return Uri.https("api.open-elevation.com", '/api/v1/lookup');
+  }
 }

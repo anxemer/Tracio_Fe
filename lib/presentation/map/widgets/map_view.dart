@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -23,7 +22,6 @@ class MapView extends StatefulWidget {
 class _MapViewState extends State<MapView> {
   LocationTracking locationTracking = LocationTracking();
   StreamSubscription? userPositionStream;
-  Dio dio = Dio();
 
   @override
   void initState() {
@@ -42,13 +40,14 @@ class _MapViewState extends State<MapView> {
   Widget build(BuildContext context) {
     final mapCubit = BlocProvider.of<MapCubit>(context);
     final directionCubit = BlocProvider.of<GetDirectionCubit>(context);
-
     return BlocConsumer<GetDirectionCubit, GetDirectionState>(
-      listener: (context, state) {
+      listener: (context, state) async {
         if (state is GetDirectionLoaded) {
-          // Handle loaded state if needed\
           mapCubit.addListPointsAnnotation(state.direction.waypoints);
-          _addPolylineRouteToMap(state.direction.geometry!, context);
+
+          if (context.mounted) {
+            _addPolylineRouteToMap(state.direction.geometry!, context);
+          }
         } else if (state is GetDirectionFailure) {
           // Show error message
           ScaffoldMessenger.of(context).showSnackBar(
@@ -79,7 +78,6 @@ class _MapViewState extends State<MapView> {
                     await mapCubit.addPointAnnotation(tappedPosition);
 
                     if (mapCubit.pointAnnotationOptions.length >= 2) {
-                      // Create coordinate list from mapCubit's pointAnnotationOptions
                       List<Coordinate> coordinates = mapCubit
                           .pointAnnotationOptions
                           .map((annotation) => Coordinate(
@@ -145,8 +143,8 @@ class _MapViewState extends State<MapView> {
     polylineAnnotationOptions = mapbox.PolylineAnnotationOptions(
         geometry: lineString,
         lineJoin: mapbox.LineJoin.ROUND,
-        lineColor: Colors.red.toInt(),
-        lineWidth: 6.0);
+        lineColor: Colors.blue.toInt(),
+        lineWidth: 3.0);
     // Add the annotation to the map
     polylineAnnotationManager?.create(polylineAnnotationOptions);
   }
