@@ -5,8 +5,10 @@ import 'package:tracio_fe/data/auth/sources/auth_firebase_service.dart';
 import 'package:tracio_fe/data/blog/repositories/blog_repository_impl.dart';
 import 'package:tracio_fe/data/blog/source/blog_api_service.dart';
 import 'package:tracio_fe/data/map/repositories/elevation_repository_impl.dart';
+import 'package:tracio_fe/data/map/repositories/location_repository_impl.dart';
 import 'package:tracio_fe/data/map/repositories/route_repository_impl.dart';
 import 'package:tracio_fe/data/map/source/elevation_api_service.dart';
+import 'package:tracio_fe/data/map/source/location_api_service.dart';
 import 'package:tracio_fe/data/map/source/route_api_service.dart';
 import 'package:tracio_fe/domain/auth/repositories/auth_repository.dart';
 import 'package:tracio_fe/domain/auth/usecases/check_email_verified.dart';
@@ -19,9 +21,12 @@ import 'package:tracio_fe/domain/blog/repositories/blog_repository.dart';
 import 'package:tracio_fe/domain/blog/usecase/get_blogs.dart';
 import 'package:tracio_fe/domain/blog/usecase/react_blog.dart';
 import 'package:tracio_fe/domain/map/repositories/elevation_repository.dart';
+import 'package:tracio_fe/domain/map/repositories/location_repository.dart';
 import 'package:tracio_fe/domain/map/repositories/route_repository.dart';
 import 'package:tracio_fe/domain/map/usecase/get_direction_using_mapbox.dart';
 import 'package:tracio_fe/domain/map/usecase/get_elevation.dart';
+import 'package:tracio_fe/domain/map/usecase/get_location_detail.dart';
+import 'package:tracio_fe/domain/map/usecase/get_locations.dart';
 
 import 'core/network/dio_client.dart';
 
@@ -35,11 +40,13 @@ Future<void> initializeDependencies() async {
   sl.registerSingleton<BlogApiService>(BlogApiServiceImpl());
   sl.registerSingleton<RouteApiService>(RouteApiServiceImpl());
   sl.registerSingleton<ElevationApiService>(ElevationApiServiceImpl());
+  sl.registerSingleton<LocationApiService>(LocationApiServiceImpl());
   //Repositoríe
   sl.registerSingleton<AuthRepository>(AuthRepositotyImpl());
   sl.registerSingleton<BlogRepository>(BlogRepositoryImpl());
   sl.registerSingleton<RouteRepository>(RouteRepositoryImpl());
   sl.registerSingleton<ElevationRepository>(ElevationRepositoryImpl());
+  sl.registerSingleton<LocationRepository>(LocationRepositoryImpl());
   //UseCase
   sl.registerSingleton<VerifyEmailUseCase>(VerifyEmailUseCase());
   sl.registerSingleton<CheckEmailVerifiedUseCase>(CheckEmailVerifiedUseCase());
@@ -53,4 +60,7 @@ Future<void> initializeDependencies() async {
   sl.registerSingleton<GetDirectionUsingMapboxUseCase>(
       GetDirectionUsingMapboxUseCase());
   sl.registerSingleton<GetElevationUseCase>(GetElevationUseCase());
+  sl.registerSingleton<GetLocationAutoCompleteUseCase>(
+      GetLocationAutoCompleteUseCase());
+  sl.registerSingleton<GetLocationDetailUseCase>(GetLocationDetailUseCase());
 }

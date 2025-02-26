@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_polyline_algorithm/google_polyline_algorithm.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:tracio_fe/core/configs/utils/color_utils.dart';
 import 'package:tracio_fe/core/constants/app_urls.dart';
 import 'package:tracio_fe/presentation/map/bloc/map_state.dart';
 
@@ -23,6 +25,12 @@ class MapCubit extends Cubit<MapCubitState> {
 
   List<PointAnnotationOptions> pointAnnotationOptions = [];
   PointAnnotationManager? pointAnnotationManager;
+
+  PolylineAnnotationManager? polylineAnnotationManager;
+
+  Position? lastSearchedPosition;
+  PointAnnotation? searchedAnnotation;
+  PointAnnotationOptions? searchAnnotationPoint;
 
   Future<void> initializeMap(MapboxMap mapboxMap) async {
     double maxZoom = 20.0;
@@ -83,7 +91,7 @@ class MapCubit extends Cubit<MapCubitState> {
         throw Exception('Failed to load route');
       }
     } catch (e) {
-        ('Error fetching route: $e');
+      ('Error fetching route: $e');
     }
   }
 
@@ -143,14 +151,46 @@ class MapCubit extends Cubit<MapCubitState> {
       geometry: Point(coordinates: position),
       image: list,
       iconOffset: [-10.0, 20.0],
-
     );
 
     pointAnnotationOptions.add(pointAnnotationOption);
 
     emit(MapAnnotationsUpdated(annotations: List.from(pointAnnotationOptions)));
-    
+
     _updateAnnotationsOnMap();
+  }
+
+  Future<void> addPointAnnotationForChoosing(Position position) async {
+    pointAnnotationManager ??=
+        await mapboxMap?.annotations.createPointAnnotationManager();
+
+    final ByteData bytes =
+        await rootBundle.load('assets/images/search_location_marker.png');
+    final Uint8List list = bytes.buffer.asUint8List();
+
+    searchAnnotationPoint = PointAnnotationOptions(
+        geometry: Point(coordinates: position),
+        image: list,
+        iconOffset: [-10.0, 20.0],
+        iconSize: 0.5);
+
+    // Ensure it gets added to the map
+    await pointAnnotationManager?.create(searchAnnotationPoint!);
+  }
+
+  Future<void> addPolylineRouteToMap(LineString lineString) async {
+    // Add the route to the map
+    polylineAnnotationManager ??=
+        await mapboxMap?.annotations.createPolylineAnnotationManager();
+    PolylineAnnotationOptions? polylineAnnotationOptions;
+
+    polylineAnnotationOptions = PolylineAnnotationOptions(
+        geometry: lineString,
+        lineJoin: LineJoin.ROUND,
+        lineColor: Colors.blue.toInt(),
+        lineWidth: 3.0);
+    // Add the annotation to the map
+    polylineAnnotationManager?.create(polylineAnnotationOptions);
   }
 
   Future<void> addListPointsAnnotation(List<Position> positions) async {
@@ -167,7 +207,7 @@ class MapCubit extends Cubit<MapCubitState> {
       return PointAnnotationOptions(
         geometry: Point(coordinates: position),
         image: list,
-        iconOffset: [-5,-20],
+        iconOffset: [-5, -20],
       );
     }).toList();
 
@@ -201,9 +241,27 @@ class MapCubit extends Cubit<MapCubitState> {
   Future<void> _updateAnnotationsOnMap() async {
     if (pointAnnotationManager != null) {
       await pointAnnotationManager!.deleteAll();
-      if (pointAnnotationOptions.isNotEmpty) {
-        await pointAnnotationManager?.createMulti(pointAnnotationOptions);
+
+      List<PointAnnotationOptions> updatedAnnotations =
+          List.from(pointAnnotationOptions);
+      if (searchAnnotationPoint != null) {
+        updatedAnnotations.add(searchAnnotationPoint!);
+      }
+
+      if (updatedAnnotations.isNotEmpty) {
+        await pointAnnotationManager?.createMulti(updatedAnnotations);
       }
     }
+  }
+
+  void onBottomSheetClosed() {
+    emit(MapAnnotationsUpdated(annotations: List.from(pointAnnotationOptions)));
+
+    if (searchAnnotationPoint != null) {
+      pointAnnotationOptions.remove(searchAnnotationPoint!);
+      searchAnnotationPoint = null;
+    }
+
+    _updateAnnotationsOnMap();
   }
 }

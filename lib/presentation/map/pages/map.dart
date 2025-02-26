@@ -6,6 +6,7 @@ import 'package:geolocator/geolocator.dart' as geolocator;
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' as mapbox;
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:tracio_fe/presentation/map/bloc/get_direction_cubit.dart';
+import 'package:tracio_fe/presentation/map/bloc/get_location_cubit.dart';
 import 'package:tracio_fe/presentation/map/bloc/map_cubit.dart';
 import 'package:tracio_fe/presentation/map/bloc/map_state.dart';
 import 'package:tracio_fe/presentation/map/widgets/map_view.dart';
@@ -54,6 +55,9 @@ class _MapPageState extends State<MapPage> {
             BlocProvider(create: (context) => MapCubit()),
             BlocProvider(
               create: (context) => GetDirectionCubit(),
+            ),
+            BlocProvider(
+              create: (context) => GetLocationCubit(),
             ),
           ],
           child: Stack(
@@ -115,6 +119,9 @@ class _MapPageState extends State<MapPage> {
                           onPressed: () {
                             BlocProvider.of<MapCubit>(context)
                                 .clearAnnotations();
+                            BlocProvider.of<MapCubit>(context)
+                                .polylineAnnotationManager
+                                ?.deleteAll();
                           },
                         ),
                       ],

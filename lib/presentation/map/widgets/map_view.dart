@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' as mapbox;
 import 'package:geolocator/geolocator.dart' as geolocator;
-import 'package:tracio_fe/core/configs/utils/color_utils.dart';
 import 'package:tracio_fe/core/configs/utils/location_tracking.dart';
 import 'package:tracio_fe/data/map/models/mapbox_direction_req.dart';
 import 'package:tracio_fe/presentation/map/bloc/get_direction_cubit.dart';
@@ -46,7 +45,7 @@ class _MapViewState extends State<MapView> {
           mapCubit.addListPointsAnnotation(state.direction.waypoints);
 
           if (context.mounted) {
-            _addPolylineRouteToMap(state.direction.geometry!, context);
+            mapCubit.addPolylineRouteToMap(state.direction.geometry!);
           }
         } else if (state is GetDirectionFailure) {
           // Show error message
@@ -61,7 +60,7 @@ class _MapViewState extends State<MapView> {
             BlocConsumer<MapCubit, MapCubitState>(
               listener: (context, state) {
                 if (state is MapCubitRouteLoaded) {
-                  _addPolylineRouteToMap(state.lineString, context);
+                  mapCubit.addPolylineRouteToMap(state.lineString);
                 } else if (state is MapCubitStyleLoaded) {
                   _changeMapStyle(state.styleUri, context);
                 }
@@ -130,23 +129,6 @@ class _MapViewState extends State<MapView> {
         }
       }
     });
-  }
-
-  Future<void> _addPolylineRouteToMap(
-      mapbox.LineString lineString, BuildContext context) async {
-    final mapCubit = BlocProvider.of<MapCubit>(context);
-    // Add the route to the map
-    final polylineAnnotationManager =
-        await mapCubit.mapboxMap?.annotations.createPolylineAnnotationManager();
-    mapbox.PolylineAnnotationOptions? polylineAnnotationOptions;
-
-    polylineAnnotationOptions = mapbox.PolylineAnnotationOptions(
-        geometry: lineString,
-        lineJoin: mapbox.LineJoin.ROUND,
-        lineColor: Colors.blue.toInt(),
-        lineWidth: 3.0);
-    // Add the annotation to the map
-    polylineAnnotationManager?.create(polylineAnnotationOptions);
   }
 
   Future<void> _changeMapStyle(String styleUri, BuildContext context) async {

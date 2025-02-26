@@ -1,3 +1,4 @@
+import 'package:tracio_fe/data/map/models/get_place_req.dart';
 import 'package:tracio_fe/data/map/models/mapbox_direction_req.dart';
 
 class ApiUrl {
@@ -45,5 +46,29 @@ class ApiUrl {
 
   static Uri urlGetEleUsingOpenElevation() {
     return Uri.https("api.open-elevation.com", '/api/v1/lookup');
+  }
+
+  static Uri urlGetPlacesAutocomplete(GetPlaceReq request, String apiKey) {
+    final queryParams = {
+      'api_key': apiKey,
+      'input': request.searchText,
+    };
+
+    if (request.sessionToken != null && request.sessionToken!.isNotEmpty) {
+      queryParams['sessiontoken'] = request.sessionToken!;
+    }
+
+    return Uri.https('rsapi.goong.io', '/Place/AutoComplete', queryParams);
+  }
+
+  static Uri urlGetPlaceDetail(GetPlaceDetailReq request, String apiKey) {
+    final queryParams = {
+      'api_key': apiKey,
+      'place_id': request.placeId,
+    };
+    if (request.sessionToken != null && request.sessionToken!.isNotEmpty) {
+      queryParams['sessiontoken'] = request.sessionToken!;
+    }
+    return Uri.https('rsapi.goong.io', '/Place/Detail', queryParams);
   }
 }

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:tracio_fe/core/configs/theme/app_colors.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:tracio_fe/presentation/map/bloc/get_location_cubit.dart';
+import 'package:uuid/uuid.dart';
 
 class SearchLocationInput extends StatefulWidget {
   const SearchLocationInput({super.key});
@@ -9,58 +12,78 @@ class SearchLocationInput extends StatefulWidget {
 }
 
 class _SearchLocationInputState extends State<SearchLocationInput> {
-  final FocusNode _focusNode = FocusNode();
-  double searchFieldSize = 200;
-  final int animationDuration = 300;
+  final TextEditingController _searchController = TextEditingController();
+
+  final Uuid _uuid = Uuid();
+  String _sessionToken = "";
   @override
-  initState() {
+  void initState() {
     super.initState();
-    _focusNode.addListener(() {
-      if (_focusNode.hasFocus) {
-        setState(() {
-          searchFieldSize = 300;
-        });
-      } else {
-        _focusNode.unfocus();
-        setState(() {
-          searchFieldSize = 200;
-        });
-      }
-    });
+    _searchController.addListener(_onSearchChanged);
   }
 
   @override
   void dispose() {
-    _focusNode.dispose();
+    _searchController.removeListener(_onSearchChanged);
+    _searchController.dispose();
     super.dispose();
+  }
+
+  String _previousSearchText = "";
+  void _onSearchChanged() {
+    final currentText = _searchController.text.trim();
+
+    if (currentText == _previousSearchText) return;
+
+    if (_sessionToken.isEmpty) {
+      _sessionToken = _uuid.v4();
+    }
+
+    setState(() {});
+    _previousSearchText = currentText;
+    context
+        .read<GetLocationCubit>()
+        .getLocationsAutoComplete(currentText, sessionToken: _sessionToken);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: AnimatedContainer(
-        duration: Duration(milliseconds: animationDuration),
-        width: searchFieldSize,
-        child: TextField(
-          cursorColor: AppColors.secondBackground,
-          focusNode: _focusNode,
-          onTapOutside: (PointerDownEvent event) {
-            FocusManager.instance.primaryFocus?.unfocus();
-          },
-          style:
-              TextStyle(color: Colors.black54, overflow: TextOverflow.ellipsis),
-          decoration: InputDecoration(
-            hintText: 'Search route...',
-            filled: true,
-            fillColor: Colors.white,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide.none,
-            ),
-            prefixIcon: Icon(
-              Icons.search,
-              color: AppColors.background,
-            ),
+    return Container(
+      padding: EdgeInsets.all(15.w),
+      color: Colors.grey.shade700,
+      child: TextField(
+        controller: _searchController,
+        onTapOutside: (event) {
+          FocusManager.instance.primaryFocus?.unfocus();
+        },
+        decoration: InputDecoration(
+          prefixIcon: IconButton(
+            onPressed: () => Navigator.pop(context),
+            icon: const Icon(Icons.arrow_back),
+          ),
+          suffixIcon: _searchController.text.isNotEmpty
+              ? IconButton(
+                  onPressed: () {
+                    _searchController.clear();
+                    _sessionToken = "";
+                    context.read<GetLocationCubit>().clearSearchResults();
+                    setState(() {});
+                  },
+                  icon: const Icon(Icons.close),
+                )
+              : null,
+          hintText: "Find Location",
+          hintStyle: TextStyle(color: Colors.grey[400]),
+          contentPadding:
+              EdgeInsets.symmetric(vertical: 10.h, horizontal: 10.w),
+          border: const OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(5.0)),
+          ),
+          enabledBorder: const OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(5.0)),
+          ),
+          focusedBorder: const OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(5.0)),
           ),
         ),
       ),
