@@ -45,6 +45,9 @@
 		<true />
 		<key>UIApplicationSupportsIndirectInputEvents</key>
 		<true />
+
+
+		<!-- Permission options for the `location` group -->
 		<key>NSLocationWhenInUseUsageDescription</key>
 		<string>This app uses location to display maps and points of interest.</string>
 		<key>NSLocationTemporaryUsageDescriptionDictionary</key>
@@ -52,5 +55,19 @@
 			<key>YourPurposeKey</key>
 			<string>The example App requires temporary access to the device&apos;s precise location.</string>
 		</dict>
+		<key>NSLocationUsageDescription</key>
+		<string>Older devices need location.</string>
+		<key>NSLocationAlwaysUsageDescription</key>
+		<string>This app needs access to location when in the background.</string>
+		<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+		<string>This app needs access to location when open and in the background.</string>
+
+		<!-- Permission options for the `appTrackingTransparency` -->
+		<key>NSUserTrackingUsageDescription</key>
+		<string>appTrackingTransparency</string>
+
+		<!-- Permission options for the `camera` group -->
+		<key>NSCameraUsageDescription</key>
+		<string>camera</string>
 	</dict>
 </plist>

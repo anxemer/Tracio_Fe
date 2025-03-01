@@ -56,6 +56,12 @@ dependencies:
   latlong2: ^0.8.0
   #Permission
   permission_handler: ^11.3.1
+  # Notifications
+  flutter_local_notifications: ^18.0.1
+  # Background Service
+  flutter_background_service: ^5.1.0
+  # Periodic Task
+  workmanager: ^0.5.2
 
   flutter_dotenv: ^5.2.1
   hydrated_bloc:
