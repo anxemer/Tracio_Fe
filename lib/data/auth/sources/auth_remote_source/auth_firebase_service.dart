@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:tracio_fe/data/auth/models/register_req.dart';
 
 abstract class AuthFirebaseService {
-  // Future<Either> registerWithEmailAndPassword(RegisterReq user);
   Future<Either> verifyEmail(String email);
   Future<bool> checkEmailVeriy();
   Future<Either> changePasswordFirebase(String pass);
@@ -12,30 +11,12 @@ abstract class AuthFirebaseService {
 class AuthFirebaseServiceImpl extends AuthFirebaseService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
-  // @override
-  // Future<Either> registerWithEmailAndPassword(RegisterReq user) async {
-  //   try {
-  //     var data = await _firebaseAuth.createUserWithEmailAndPassword(
-  //         email: user.email, password: user.password);
-  //     return right(data);
-  //   } on FirebaseAuthException catch (e) {
-  //     String message = '';
-
-  //     if (e.code == 'weak-password') {
-  //       message = 'The password provided is too weak';
-  //     } else if (e.code == 'email-already-in-use') {
-  //       message = 'An account already exists with that email.';
-  //     }
-
-  //     return Left(message);
-  //   }
-  // }
 
   @override
   Future<Either> verifyEmail(String email) async {
     try {
       String firebaseId;
-      print("⏳ Đang tạo tài khoản với email: $email");
+      
       UserCredential userCredential = await _firebaseAuth
           .createUserWithEmailAndPassword(email: email, password: '12345678');
       User? user = userCredential.user;
@@ -48,11 +29,11 @@ class AuthFirebaseServiceImpl extends AuthFirebaseService {
         await user.sendEmailVerification();
         return right(firebaseId);
       }
-      return left('Email is already verified or user does not exist.');
+      return left(true);
     } on FirebaseAuthException {
       String errorMessage = 'Lỗi không xác định.';
 
-      return left(errorMessage);
+      return left(false);
     }
   }
 
@@ -60,7 +41,7 @@ class AuthFirebaseServiceImpl extends AuthFirebaseService {
   Future<bool> checkEmailVeriy() async {
     for (int i = 0; i <= 10; i++) {
       User? user = _firebaseAuth.currentUser;
-      print("🔄 Kiểm tra lần thứ, emailVerified = ${user?.emailVerified}");
+     
       await Future.delayed(Duration(seconds: 3)); // Kiểm tra sau mỗi 3 giây
       await user?.reload(); // Refresh user info
 

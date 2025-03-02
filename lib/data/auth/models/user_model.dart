@@ -1,45 +1,88 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
-// ignore_for_file: public_member_api_docs, sort_constructors_first
-class UserModel {
-   final int? userId;
-    final String? userName;
-    final String? email;
-    final String? firebaseId;
-    final String? phoneNumber;
-    final String? profilePicture;
+import 'package:tracio_fe/domain/auth/entities/user.dart';
+
+class UserModel extends UserEntity {
+  final Session session;
   UserModel({
-    this.userId,
-    this.userName,
-    this.email,
-    this.firebaseId,
-    this.phoneNumber,
-    this.profilePicture,
+    super.userId,
+    super.userName,
+    super.email,
+    super.firebaseId,
+    super.phoneNumber,
+    super.profilePicture,
+    required this.session,
   });
 
+  // Chuyển đối tượng thành Map để convert sang JSON
   Map<String, dynamic> toMap() {
-    return <String, dynamic>{
+    return {
       'userId': userId,
       'userName': userName,
       'email': email,
       'firebaseId': firebaseId,
       'phoneNumber': phoneNumber,
       'profilePicture': profilePicture,
+      'session': session.toMap(),
     };
   }
 
+  // Tạo object từ Map JSON (Dùng khi API trả về dữ liệu)
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
-      userId: map['userId'] != null ? map['userId'] as int : null,
-      userName: map['userName'] != null ? map['userName'] as String : null,
-      email: map['email'] != null ? map['email'] as String : null,
-      firebaseId: map['firebaseId'] != null ? map['firebaseId'] as String : null,
-      phoneNumber: map['phoneNumber'] != null ? map['phoneNumber'] as String : null,
-      profilePicture: map['profilePicture'] != null ? map['profilePicture'] as String : null,
+      userId: map['userId'] as int,
+      userName: map['userName'] as String,
+      email: map['email'] as String,
+      firebaseId: map['firebaseId'] as String,
+      phoneNumber: map['phoneNumber'] as String,
+      profilePicture: map['profilePicture'] as String? ?? "", // Tránh null
+      session: Session.fromMap(map['session']),
     );
   }
 
-  String toJson() => json.encode(toMap());
+  // Chuyển JSON string thành object
+  factory UserModel.fromJson(String source) =>
+      UserModel.fromMap(json.decode(source));
 
-  factory UserModel.fromJson(String source) => UserModel.fromMap(json.decode(source) as Map<String, dynamic>);
+  // Convert object sang JSON string
+  String toJson() => json.encode(toMap());
+}
+
+class Session {
+  final String accessToken;
+  final String refreshToken;
+  final DateTime expiresAt;
+
+  Session({
+    required this.accessToken,
+    required this.refreshToken,
+    required this.expiresAt,
+  });
+
+  // Chuyển đối tượng thành Map JSON
+  Map<String, dynamic> toMap() {
+    return {
+      'accessToken': accessToken,
+      'refreshToken': refreshToken,
+      'expiresAt': expiresAt.toIso8601String(),
+    };
+  }
+
+  // Parse từ JSON Map
+  factory Session.fromMap(Map<String, dynamic> map) {
+    return Session(
+      accessToken: map['accessToken'] as String,
+      refreshToken: map['refreshToken'] as String,
+      expiresAt:
+          DateTime.parse(map['expiresAt']), // API trả về đầy đủ -> parse luôn
+    );
+  }
+
+  // Convert JSON string thành object
+  factory Session.fromJson(String source) =>
+      Session.fromMap(json.decode(source));
+
+  // Convert object sang JSON string
+  String toJson() => json.encode(toMap());
 }

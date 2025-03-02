@@ -1,6 +1,4 @@
-import 'dart:io';
-
-import '../../../data/blog/models/blog.dart';
+import '../../../data/blog/models/view/blog_model.dart';
 
 class BlogEntity {
   BlogEntity({
@@ -10,7 +8,7 @@ class BlogEntity {
     required this.avatar,
     required this.privacySetting,
     required this.isReacted,
-    required this.reactionId,
+    required this.isBookmarked,
     required this.content,
     required this.mediaFiles,
     required this.createdAt,
@@ -23,13 +21,13 @@ class BlogEntity {
   final int userId;
   final String userName;
   final String avatar;
-  final int privacySetting;
+  int privacySetting;
   bool isReacted;
-  final int reactionId;
+  bool isBookmarked;
   final String content;
   final List<MediaFile> mediaFiles;
-  final DateTime createdAt;
-  final DateTime updatedAt;
-  final int likesCount;
-  final int commentsCount;
+  DateTime? createdAt;
+  DateTime? updatedAt;
+  int likesCount;
+  int commentsCount;
 }

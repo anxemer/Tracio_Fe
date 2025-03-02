@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tracio_fe/presentation/blog/widget/post_blog.dart';
 import 'package:tracio_fe/presentation/blog/bloc/get_blog_cubit.dart';
+import 'package:tracio_fe/service_locator.dart';
 
 import '../bloc/get_blog_state.dart';
 

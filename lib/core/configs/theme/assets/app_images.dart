@@ -1,7 +1,6 @@
 class AppImages {
   static const basePath = 'assets/images/';
   static const profile = '${basePath}profile.png';
-  static const orderPlaced = '${basePath}order_placed.png';
   static const logo = '${basePath}logo.png';
   static const logoFb = '${basePath}facebook.png';
   static const logoGg = '${basePath}google.png';
@@ -17,4 +16,8 @@ class AppImages {
   static const eye = '${basePath}user.png';
   static const group = '${basePath}group.png';
   static const follower = '${basePath}follow.png';
+  static const noti = '${basePath}noti.png';
+  static const messenger = '${basePath}messenger.png';
+  static const search = '${basePath}search.png';
+  static const reply = '${basePath}reply.png';
 }

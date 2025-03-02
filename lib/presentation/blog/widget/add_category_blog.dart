@@ -8,14 +8,14 @@ import 'package:tracio_fe/presentation/blog/bloc/category/select_category_cubit.
 
 import '../bloc/category/get_category_state.dart';
 
-class AddIfmBlog extends StatefulWidget {
-  const AddIfmBlog({super.key});
+class AddCategoryBlog extends StatefulWidget {
+  const AddCategoryBlog({super.key});
 
   @override
-  State<AddIfmBlog> createState() => _AddIfmBlogState();
+  State<AddCategoryBlog> createState() => _AddCategoryBlogState();
 }
 
-class _AddIfmBlogState extends State<AddIfmBlog> {
+class _AddCategoryBlogState extends State<AddCategoryBlog> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<GetCategoryCubit, GetCategoryState>(

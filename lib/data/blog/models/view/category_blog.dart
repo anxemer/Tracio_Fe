@@ -1,14 +1,16 @@
 import 'dart:convert';
 
-import '../../../domain/blog/entites/category_blog.dart';
+import '../../../../domain/blog/entites/category_blog.dart';
 
-class CategoryBlogModel {
-  final int? categoryId;
-  final String? categoryName;
+List<CategoryBlogModel> categoryModelListFromRemoteJson(String str) =>
+    List<CategoryBlogModel>.from(json
+        .decode(str)['result']['categories']
+        .map((x) => CategoryBlogModel.fromJson(x)));
 
+class CategoryBlogModel extends CategoryBlogEntity {
   CategoryBlogModel({
-    this.categoryId,
-    this.categoryName,
+    super.categoryId,
+    super.categoryName,
   });
 
   factory CategoryBlogModel.fromMap(Map<String, dynamic> map) {
@@ -31,11 +33,4 @@ class CategoryBlogModel {
   }
 
   String toJson() => json.encode(toMap());
-}
-
-extension cateXModel on CategoryBlogModel {
-  CategoryBlogEntity toEntity() {
-    return CategoryBlogEntity(
-        categoryId: categoryId, categoryName: categoryName);
-  }
 }

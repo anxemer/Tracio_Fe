@@ -1,4 +1,4 @@
-import 'package:tracio_fe/domain/blog/entites/blog.dart';
+import 'package:tracio_fe/domain/blog/entites/blog_entity.dart';
 
 abstract class GetBlogState {}
 

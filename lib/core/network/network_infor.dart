@@ -7,7 +7,7 @@ abstract class NetworkInfor {
 class NetworkInforIml implements NetworkInfor {
   final InternetConnectionChecker connectionChecker;
 
-  NetworkInforIml({required this.connectionChecker});
+  NetworkInforIml(this.connectionChecker);
   @override
   Future<bool> get isConnected => connectionChecker.hasConnection;
 }

@@ -64,8 +64,9 @@ dependencies:
 
   internet_connection_checker:
   equatable:
-  flutter_secure_storage:
-dev_dependencies:
+  flutter_secure_storage: ^9.2.4
+  flutter_easyloading:
+  timeago:
   flutter_test:
     sdk: flutter
 
