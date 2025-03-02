@@ -1,13 +1,15 @@
 import 'package:tracio_fe/data/map/models/get_place_req.dart';
+import 'package:tracio_fe/data/map/models/isochrone_req.dart';
 import 'package:tracio_fe/data/map/models/mapbox_direction_req.dart';
 
 class ApiUrl {
   //base Url
-  static const baseURL = 'http://192.168.1.9:';
+  static const baseURL = 'http://127.0.0.1:';
   // static const baseURL = 'http://10.87.46.103:';
   //port
   static const portUser = '5186';
   static const portBlog = '5265';
+  static const portRoute = '5208';
 
   //Api User
   static const registerWithEP = '$portUser/api/auth/register-user';
@@ -71,4 +73,18 @@ class ApiUrl {
     }
     return Uri.https('rsapi.goong.io', '/Place/Detail', queryParams);
   }
+
+  static Uri urlGetIsochroneMapbox(IsochroneReq request) {
+    final coordsString = "${request.lng},${request.lat}";
+
+    final uri = Uri.https(
+      'api.mapbox.com',
+      '/isochrone/v1/mapbox/cycling/$coordsString',
+      request.toMap(),
+    );
+
+    return uri;
+  }
+
+  static const postRoute = '$portRoute/api/route';
 }

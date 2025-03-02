@@ -1,9 +1,7 @@
 import 'dart:async';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_polyline_algorithm/google_polyline_algorithm.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:tracio_fe/core/configs/utils/color_utils.dart';
@@ -29,8 +27,11 @@ class MapCubit extends Cubit<MapCubitState> {
   PolylineAnnotationManager? polylineAnnotationManager;
 
   Position? lastSearchedPosition;
+
   PointAnnotation? searchedAnnotation;
   PointAnnotationOptions? searchAnnotationPoint;
+
+  PolygonAnnotationManager? polygonAnnotationManager;
 
   Future<void> initializeMap(MapboxMap mapboxMap) async {
     double maxZoom = 20.0;
@@ -66,33 +67,34 @@ class MapCubit extends Cubit<MapCubitState> {
         marginBottom: 200));
   }
 
-  Future<void> fetchRoute() async {
-    emit(MapCubitRouteLoading());
-    final String accessToken = dotenv.env['MAPBOX_ACCESS_TOKEN']!;
-    final String url =
-        'https://api.mapbox.com/directions/v5/mapbox/cycling/106.780616%2C10.88529%3B106.778378%2C10.874937?alternatives=true&annotations=distance%2Cduration%2Cspeed&continue_straight=true&geometries=polyline&language=en&overview=full&steps=true&access_token=$accessToken';
+  Future<void> initializeMapForRiding(MapboxMap mapboxMap) async {
+    double maxZoom = 20.0;
+    double minZoom = 10.0;
 
-    try {
-      final response = await Dio().get(url);
-
-      if (response.statusCode == 200) {
-        final data = response.data;
-        final coordinates = data['routes'][0]['geometry'];
-
-        final List<List<num>> decodedPolyline = decodePolyline(coordinates);
-        // Convert to lineString
-        final List<Position> positions = decodedPolyline
-            .map((coord) => Position(coord[1], coord[0]))
-            .toList();
-        final LineString lineString = LineString(coordinates: positions);
-
-        emit(MapCubitRouteLoaded(lineString: lineString));
-      } else {
-        throw Exception('Failed to load route');
-      }
-    } catch (e) {
-      ('Error fetching route: $e');
-    }
+    this.mapboxMap = mapboxMap;
+    // Enable the location component
+    await mapboxMap.location.updateSettings(
+        LocationComponentSettings(enabled: true, puckBearingEnabled: true));
+    //Camera limitation
+    await mapboxMap.setBounds(CameraBoundsOptions(
+      maxZoom: maxZoom,
+      minZoom: minZoom,
+    ));
+    //Scale bar settings
+    await mapboxMap.scaleBar.updateSettings(ScaleBarSettings(enabled: false));
+    //mapbox logo settings
+    mapboxMap.logo.updateSettings(LogoSettings(
+        position: OrnamentPosition.BOTTOM_RIGHT,
+        marginRight: 80,
+        marginBottom: 80));
+    mapboxMap.attribution.updateSettings(AttributionSettings(
+        position: OrnamentPosition.BOTTOM_RIGHT,
+        marginRight: 65,
+        marginBottom: 80));
+    mapboxMap.compass.updateSettings(CompassSettings(
+        position: OrnamentPosition.BOTTOM_RIGHT,
+        marginRight: 20,
+        marginBottom: 80));
   }
 
   void changeMapStyle(String style) {
@@ -129,7 +131,6 @@ class MapCubit extends Cubit<MapCubitState> {
     mapboxMap?.setCamera(CameraOptions(
       zoom: 12,
     ));
-
     mapboxMap?.flyTo(
         CameraOptions(
             center: Point(coordinates: aniPosition),
@@ -251,6 +252,41 @@ class MapCubit extends Cubit<MapCubitState> {
       if (updatedAnnotations.isNotEmpty) {
         await pointAnnotationManager?.createMulti(updatedAnnotations);
       }
+    }
+  }
+
+  Future<void> addPolygonGeoJson(Uri mapboxRequest) async {
+    await removePolygonGeoJson();
+
+    await mapboxMap?.style.addSource(
+        GeoJsonSource(id: "geojson_data", data: mapboxRequest.toString()));
+
+    await mapboxMap?.style.addLayer(FillLayer(
+      id: "geojson_layer",
+      sourceId: "geojson_data",
+      fillColor: Colors.blue.toInt(),
+      fillOpacity: 0.3,
+    ));
+
+    // Line Layer (Border of the Polygon)
+    await mapboxMap?.style.addLayer(LineLayer(
+      id: "geojson_border",
+      sourceId: "geojson_data",
+      lineColor: Colors.blue.shade800.toInt(),
+      lineWidth: 3.5,
+    ));
+
+    mapboxMap?.flyTo(CameraOptions(zoom: 15),
+        MapAnimationOptions(duration: 2000, startDelay: 500));
+  }
+
+  Future<void> removePolygonGeoJson() async {
+    try {
+      await mapboxMap?.style.removeStyleLayer("geojson_layer");
+      await mapboxMap?.style.removeStyleLayer("geojson_border");
+      await mapboxMap?.style.removeStyleSource("geojson_data");
+    } catch (e) {
+      print("Error removing existing polygon: $e");
     }
   }
 

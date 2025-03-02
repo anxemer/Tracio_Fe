@@ -9,18 +9,19 @@ import 'package:tracio_fe/presentation/map/bloc/get_direction_cubit.dart';
 import 'package:tracio_fe/presentation/map/bloc/get_location_cubit.dart';
 import 'package:tracio_fe/presentation/map/bloc/map_cubit.dart';
 import 'package:tracio_fe/presentation/map/bloc/map_state.dart';
-import 'package:tracio_fe/presentation/map/widgets/map_view.dart';
+import 'package:tracio_fe/presentation/map/bloc/route_cubit.dart';
+import 'package:tracio_fe/presentation/map/widgets/route_planner_map.dart';
 import 'package:tracio_fe/presentation/map/widgets/route_detail_panel.dart';
 import 'package:tracio_fe/presentation/map/widgets/top_action_bar.dart';
 
-class MapPage extends StatefulWidget {
-  const MapPage({super.key});
+class RoutePlanner extends StatefulWidget {
+  const RoutePlanner({super.key});
 
   @override
-  State<MapPage> createState() => _MapPageState();
+  State<RoutePlanner> createState() => _RoutePlannerState();
 }
 
-class _MapPageState extends State<MapPage> {
+class _RoutePlannerState extends State<RoutePlanner> {
   final double _initFabHeight = 160;
   final double _initTopBarTopPosition = 10.0;
   double _fabHeight = 0;
@@ -59,6 +60,9 @@ class _MapPageState extends State<MapPage> {
             BlocProvider(
               create: (context) => GetLocationCubit(),
             ),
+            BlocProvider(
+              create: (context) => RouteCubit(),
+            ),
           ],
           child: Stack(
             alignment: Alignment.topCenter,
@@ -78,7 +82,7 @@ class _MapPageState extends State<MapPage> {
                       _initFabHeight;
                 }),
                 panelBuilder: (sc) => RouteDetailPanel(scrollController: sc),
-                body: const MapView(),
+                body: const RoutePlannerMap(),
               ),
 
               // Right: Undo Redo buttons

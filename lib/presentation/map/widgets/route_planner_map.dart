@@ -11,14 +11,14 @@ import 'package:tracio_fe/presentation/map/bloc/get_direction_state.dart';
 import 'package:tracio_fe/presentation/map/bloc/map_cubit.dart';
 import 'package:tracio_fe/presentation/map/bloc/map_state.dart';
 
-class MapView extends StatefulWidget {
-  const MapView({super.key});
+class RoutePlannerMap extends StatefulWidget {
+  const RoutePlannerMap({super.key});
 
   @override
-  State<MapView> createState() => _MapViewState();
+  State<RoutePlannerMap> createState() => _RoutePlannerMapState();
 }
 
-class _MapViewState extends State<MapView> {
+class _RoutePlannerMapState extends State<RoutePlannerMap> {
   LocationTracking locationTracking = LocationTracking();
   StreamSubscription? userPositionStream;
 
@@ -100,7 +100,8 @@ class _MapViewState extends State<MapView> {
               },
             ),
             // Show loading indicator while fetching directions
-            if (directionState is GetDirectionLoading)
+            if (directionState is GetDirectionLoading ||
+                directionState is GetElevationLoading)
               Center(
                 child: CircularProgressIndicator(),
               ),

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
+import 'package:tracio_fe/core/constants/api_url.dart';
+import 'package:tracio_fe/data/map/models/isochrone_req.dart';
 import 'package:tracio_fe/domain/map/entities/place.dart';
 import 'package:tracio_fe/presentation/map/bloc/map_cubit.dart';
 import 'package:tracio_fe/presentation/map/bloc/map_state.dart';
@@ -29,7 +31,9 @@ class TopActionBar extends StatelessWidget {
               Icons.arrow_back,
               color: Colors.black54,
             ),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pop(context);
+            },
           ),
           // Search location button
           SizedBox(
@@ -41,14 +45,14 @@ class TopActionBar extends StatelessWidget {
                   foregroundColor: Colors.black,
                   padding: EdgeInsets.symmetric(horizontal: 10)),
               onPressed: () async {
-                PlaceDetailEntity? searchedCoordinate =
-                    await Navigator.push<PlaceDetailEntity?>(
+                dynamic searchedCoordinate = await Navigator.push<dynamic>(
                   context,
                   MaterialPageRoute(
                       builder: (context) => const SearchLocationPage()),
                 );
 
-                if (searchedCoordinate != null) {
+                if (searchedCoordinate != null &&
+                    searchedCoordinate.runtimeType == PlaceDetailEntity) {
                   if (context.mounted) {
                     context.read<MapCubit>().cameraAnimation(Position(
                         searchedCoordinate.longitude,
@@ -58,6 +62,13 @@ class TopActionBar extends StatelessWidget {
                         Position(searchedCoordinate.longitude,
                             searchedCoordinate.latitude));
                     _showLocationOptions(context, searchedCoordinate);
+                  }
+                } else if (searchedCoordinate != null &&
+                    searchedCoordinate.runtimeType == IsochroneReq) {
+                  if (context.mounted) {
+                    final uri =
+                        ApiUrl.urlGetIsochroneMapbox(searchedCoordinate);
+                    context.read<MapCubit>().addPolygonGeoJson(uri);
                   }
                 }
               },
