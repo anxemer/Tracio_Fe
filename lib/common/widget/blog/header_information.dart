@@ -9,12 +9,12 @@ class HeaderInformation extends StatelessWidget {
       required this.title,
       required this.imageUrl,
       this.subtitle,
-      required this.trailling,
+      this.trailling,
       this.widthImage});
   final Text title;
   final Widget imageUrl;
   final Text? subtitle;
-  final Widget trailling;
+  final Widget? trailling;
   final double? widthImage;
 
   @override

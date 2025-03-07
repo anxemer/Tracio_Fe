@@ -62,7 +62,11 @@ dependencies:
   image_picker: ^1.1.2
   photo_manager: ^3.6.4
 
-dev_dependencies:
+  internet_connection_checker:
+  equatable:
+  flutter_secure_storage: ^9.2.4
+  flutter_easyloading:
+  timeago:
   flutter_test:
     sdk: flutter
 

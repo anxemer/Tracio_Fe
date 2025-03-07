@@ -1,67 +1,160 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:dartz/dartz.dart';
-import 'package:tracio_fe/data/blog/models/blog.dart';
-import 'package:tracio_fe/data/blog/models/category_blog.dart';
-import 'package:tracio_fe/data/blog/models/create_blog_req.dart';
-import 'package:tracio_fe/data/blog/models/react_blog_req.dart';
+
+import 'package:tracio_fe/core/erorr/failure.dart';
+import 'package:tracio_fe/core/network/network_infor.dart';
+import 'package:tracio_fe/data/blog/models/request/comment_blog_req.dart';
+import 'package:tracio_fe/data/blog/models/request/create_blog_req.dart';
+import 'package:tracio_fe/data/blog/models/request/get_reply_comment_req.dart';
+import 'package:tracio_fe/data/blog/models/request/react_blog_req.dart';
+import 'package:tracio_fe/data/blog/models/request/reply_comment_req.dart';
+import 'package:tracio_fe/data/blog/models/view/blog_model.dart';
+import 'package:tracio_fe/data/blog/models/view/category_blog.dart';
+import 'package:tracio_fe/data/blog/models/view/comment_blog_model.dart';
+import 'package:tracio_fe/data/blog/models/view/reaction_response_model.dart';
 import 'package:tracio_fe/data/blog/source/blog_api_service.dart';
+import 'package:tracio_fe/domain/blog/entites/category_blog.dart';
+import 'package:tracio_fe/domain/blog/entites/reply_comment.dart';
 import 'package:tracio_fe/domain/blog/repositories/blog_repository.dart';
 
+import '../../../domain/blog/entites/blog_entity.dart';
+import '../../../domain/blog/entites/comment_blog.dart';
+import '../../../domain/blog/usecase/un_react_blog.dart';
 import '../../../service_locator.dart';
+import '../models/request/get_comment_req.dart';
 
 class BlogRepositoryImpl extends BlogRepository {
+  final NetworkInfor networkInfo;
+  final BlogApiService remoteDataSource;
+
+  BlogRepositoryImpl({
+    required this.networkInfo,
+    required this.remoteDataSource,
+  });
   @override
-  Future<Either> getBlogs() async {
-    var returnedData = await sl<BlogApiService>().getBlogs();
+  Future<Either<Failure, List<BlogEntity>>> getBlogs() async {
+    if (await networkInfo.isConnected) {
+      try {
+        var returnedData = await remoteDataSource.getBlogs();
+        return Right(returnedData);
+      } on ServerFailure {
+        return Left(ServerFailure(''));
+      }
+    } else {
+      return Left(NetworkFailure('Network error'));
+    }
+
+    // return returnedData.fold((error) {
+    //   return left(error);
+    // }, (data) {
+    //   var blogs = List.from(data['result']['blogs'])
+    //       .map((item) => BlogModels.fromJson(item).toEntity())
+    //       .toList();
+    //   return right(blogs);
+    // });
+  }
+
+  @override
+  Future<Either<Failure, ReactionResponseModel>> reactBlogs(
+      ReactBlogReq react) async {
+    var returnedData = await remoteDataSource.reactBlog(react);
     return returnedData.fold((error) {
       return left(error);
     }, (data) {
-      var blogs = List.from(data['result']['blogs'])
-          .map((item) => BlogModels.fromJson(item).toEntity())
-          .toList();
-      return right(blogs);
+      return right(ReactionResponseModel.fromMap(data));
     });
   }
 
   @override
-  Future<Either> reactBlogs(ReactBlogReq react) async {
-    var returnedData = await sl<BlogApiService>().reactBlog(react);
-    return returnedData.fold((error) {
-      return left(false);
-    }, (data) {
-      return right(true);
-    });
+  Future<Either<Failure, bool>> createBlogs(CreateBlogReq react) async {
+    try {
+      var returnData = await remoteDataSource.createBlog(react);
+
+      return Right(returnData);
+    } on Failure catch (e) {
+      return Left(e);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
   }
 
   @override
-  Future<Either> createBlogs(CreateBlogReq react) async {
-    var returnData = await sl<BlogApiService>().createBlog(react);
-    return returnData.fold((erorr) {
-      return left(erorr);
-    }, (data) {
-      return right(data);
-    });
+  Future<Either<Failure, List<CategoryBlogEntity>>> getCategoryBlog() async {
+    var returnData = await remoteDataSource.getCategoryBlog();
+    return Right(returnData);
   }
 
   @override
-  Future<Either> getCategoryBlog() async {
-    var returnData = await sl<BlogApiService>().getCategoryBlog();
+  Future<Either<Failure, bool>> unReactBlog(UnReactionParam params) async {
+    var returnData = await remoteDataSource.unReactBlog(params);
     return returnData.fold((error) {
-      return left(error);
+      return Left(ExceptionFailure('Error'));
     }, (data) {
-      var categories = List.from(data['result']['categories'])
-          .map((e) => CategoryBlogModel.fromMap(e).toEntity())
-          .toList();
-      return right(categories);
+      return Right(true);
     });
   }
 
   @override
-  Future<Either> unReactBlog(int reactId) async {
-    var returnData = await sl<BlogApiService>().unReactBlog(reactId);
-    return returnData.fold((error) {
-      return left(false);
-    }, (data) {
-      return right(true);
+  Future<Either<Failure, bool>> commentBlog(CommentBlogReq comment) async {
+    var response = await remoteDataSource.commentBlog(comment);
+    return response.fold((error) {
+      return Left(error);
+    }, (message) {
+      return Right(true);
     });
+  }
+
+  @override
+  Future<Either<Failure, List<CommentBlogEntity>>> getCommentBlog(
+      GetCommentReq comment) async {
+    try {
+      var response = await remoteDataSource.getCommentBlog(comment);
+      if (response != []) {
+        return Right(response);
+      }
+      return Right([]);
+    } on Failure catch (e) {
+      return Left(e);
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> bookmarkBlogs(int blogId) async {
+    var returnedData = await remoteDataSource.bookmarkBlog(blogId);
+    return Right(true);
+  }
+
+  @override
+  Future<Either<Failure, bool>> unBookmarkBlogs(int blogId) async {
+    var returnData = await remoteDataSource.unBookmarkBlog(blogId);
+    return returnData.fold((error) {
+      return Left(ExceptionFailure('Error'));
+    }, (data) {
+      return Right(true);
+    });
+  }
+
+  @override
+  Future<Either<Failure, bool>> repCommentBlog(ReplyCommentReq comment) async {
+    var response = await remoteDataSource.repCommentBlog(comment);
+    return response.fold((error) {
+      return Left(error);
+    }, (message) {
+      return Right(true);
+    });
+  }
+
+  @override
+  Future<Either<Failure, List<ReplyCommentEntity>>> getRepCommentBlog(
+      GetReplyCommentReq comment) async {
+    try {
+      var response = await remoteDataSource.getRepCommentBlog(comment);
+      if (response != []) {
+        return Right(response);
+      }
+      return Right([]);
+    } on Failure catch (e) {
+      return Left(e);
+    }
   }
 }

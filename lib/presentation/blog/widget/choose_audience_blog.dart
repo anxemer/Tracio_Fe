@@ -4,19 +4,19 @@ import 'package:tracio_fe/common/widget/appbar/app_bar.dart';
 import 'package:tracio_fe/core/configs/theme/assets/app_images.dart';
 
 class ChooseAudienceBlog extends StatefulWidget {
-  const ChooseAudienceBlog({super.key});
+  ChooseAudienceBlog({super.key, required this.selectedIndex});
+  int? selectedIndex;
 
   @override
   State<ChooseAudienceBlog> createState() => _ChooseAudienceBlogState();
 }
 
 class _ChooseAudienceBlogState extends State<ChooseAudienceBlog> {
-  int? selectedIndex;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: BasicAppbar(
-        data: selectedIndex,
+        data: widget.selectedIndex,
         height: 60.h,
         centralTitle: true,
         title: Text('Audience'),
@@ -34,18 +34,14 @@ class _ChooseAudienceBlogState extends State<ChooseAudienceBlog> {
               leading: Image.asset(AppImages.group, width: 40), // Ảnh tiêu đề
               title: const Text('public'),
               trailing: Checkbox(
-                checkColor: Colors.black,
-                activeColor: Colors.white,
-                shape: const CircleBorder(), // Làm checkbox hình tròn
-                value: selectedIndex == 0,
-                onChanged: (bool? newValue) {
-                  setState(() {
-                    print(selectedIndex);
-                    selectedIndex = newValue == true ? 0 : null;
-                    selectedIndex == 0;
-                  });
-                },
-              ),
+                  checkColor: Colors.black,
+                  activeColor: Colors.white,
+                  shape: const CircleBorder(),
+                  value: widget.selectedIndex == 0,
+                  onChanged: (bool? newValue) {
+                    widget.selectedIndex = newValue == true ? 0 : null;
+                    widget.selectedIndex == 0;
+                  }),
             ),
             ListTile(
               leading: Icon(
@@ -57,12 +53,12 @@ class _ChooseAudienceBlogState extends State<ChooseAudienceBlog> {
                 checkColor: Colors.black,
                 activeColor: Colors.white,
                 shape: const CircleBorder(), // Làm checkbox hình tròn
-                value: selectedIndex == 1,
+                value: widget.selectedIndex == 1,
                 onChanged: (bool? newValue) {
                   setState(() {
-                    print(selectedIndex);
-                    selectedIndex = newValue == true ? 1 : null;
-                    selectedIndex == 1;
+                    print(widget.selectedIndex);
+                    widget.selectedIndex = newValue == true ? 1 : null;
+                    widget.selectedIndex == 1;
                   });
                 },
               ),
@@ -77,12 +73,11 @@ class _ChooseAudienceBlogState extends State<ChooseAudienceBlog> {
                 checkColor: Colors.black,
                 activeColor: Colors.white,
                 shape: const CircleBorder(), // Làm checkbox hình tròn
-                value: selectedIndex == 2,
+                value: widget.selectedIndex == 2,
                 onChanged: (bool? newValue) {
                   setState(() {
-                    selectedIndex = newValue == true ? 2 : null;
-                    selectedIndex == 2;
-                    print(selectedIndex);
+                    widget.selectedIndex = newValue == true ? 2 : null;
+                    widget.selectedIndex == 2;
                   });
                 },
               ),

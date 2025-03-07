@@ -1,16 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/common/widget/appbar/app_bar.dart';
-import 'package:tracio_fe/common/widget/button/floating_button.dart';
 import 'package:tracio_fe/common/widget/navbar/navbar.dart';
-import 'package:tracio_fe/domain/auth/usecases/logout.dart';
-import 'package:tracio_fe/presentation/auth/pages/login.dart';
 import 'package:tracio_fe/presentation/blog/pages/blog.dart';
-import 'package:tracio_fe/presentation/blog/widget/new_feed.dart';
 
-import '../../../common/helper/navigator/app_navigator.dart';
-import '../../../service_locator.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

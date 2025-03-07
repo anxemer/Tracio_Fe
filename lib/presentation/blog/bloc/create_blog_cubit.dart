@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tracio_fe/data/blog/models/create_blog_req.dart';
+import 'package:tracio_fe/data/blog/models/request/create_blog_req.dart';
 import 'package:tracio_fe/domain/blog/usecase/craete_blog.dart';
 import 'package:tracio_fe/presentation/blog/bloc/create_blog_state.dart';
 
@@ -13,9 +13,9 @@ class CreateBlogCubit extends Cubit<CreateBlogState> {
     try {
       emit(CreateBlogLoading());
 
-      final result = await sl<CreateBlogUseCase>().call(params: param);
+      final result = await sl<CreateBlogUseCase>().call( param);
       result.fold((erorr) {
-        emit(CreateBlogFail(error: erorr));
+        emit(CreateBlogFail(error: erorr.message));
       }, (data) {
         emit(CreateBlogSuccess());
       });

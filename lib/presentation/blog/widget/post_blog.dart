@@ -2,14 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:tracio_fe/common/bloc/generic_data_cubit.dart';
+import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
 import 'package:tracio_fe/common/widget/blog/animation_react.dart';
 import 'package:tracio_fe/common/widget/blog/header_information.dart';
 import 'package:tracio_fe/common/widget/blog/picture_card.dart';
 import 'package:tracio_fe/core/configs/theme/assets/app_images.dart';
-import 'package:tracio_fe/data/blog/models/react_blog_req.dart';
-import 'package:tracio_fe/domain/blog/entites/blog.dart';
+import 'package:tracio_fe/data/blog/models/request/get_comment_req.dart';
+import 'package:tracio_fe/data/blog/models/request/react_blog_req.dart';
+import 'package:tracio_fe/domain/blog/entites/blog_entity.dart';
+import 'package:tracio_fe/domain/blog/entites/reply_comment.dart';
+import 'package:tracio_fe/domain/blog/usecase/get_reply_comment.dart';
 import 'package:tracio_fe/domain/blog/usecase/react_blog.dart';
-import 'package:tracio_fe/presentation/blog/bloc/react_blog_cubit.dart';
+import 'package:tracio_fe/presentation/blog/bloc/comment/get_commnet_cubit.dart';
+import 'package:tracio_fe/presentation/blog/pages/detail_bloc.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 import '../../../service_locator.dart';
 import 'react_blog.dart';
@@ -36,36 +43,48 @@ class _PostBlogState extends State<PostBlog> {
         .map((file) => file.mediaUrl ?? "")
         .toList();
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: 16.w),
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            color: Colors.lightBlueAccent.withValues(alpha: .1)),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => GetCommentCubit(),
+        ),
+       
+      ],
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Container(
+              height: 1.h,
+              color: Colors.black38,
+            ),
             HeaderInformation(
                 title: Text(
                   widget.blogEntity.userName,
                   style:
                       TextStyle(fontWeight: FontWeight.bold, fontSize: 40.sp),
                 ),
+                subtitle: Text(
+                  timeago.format(widget.blogEntity.createdAt!, locale: 'vi'),
+                  style: TextStyle(fontSize: 20.sp),
+                ),
                 imageUrl: Image.asset(AppImages.man),
                 // Image.network(widget.blogEntity.avatar),
-                trailling: Icon(Icons.arrow_forward_ios_rounded)),
+                trailling: GestureDetector(
+                    onTap: () => AppNavigator.push(context, DetailBlocPage()),
+                    child: Icon(Icons.arrow_forward_ios_rounded))),
             SizedBox(
               height: 16.h,
             ),
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: EdgeInsets.only(left: 20),
               child: Text(
                 widget.blogEntity.content.toString(),
                 style: TextStyle(
                     color: Colors.black,
                     fontSize: 28.sp,
-                    fontWeight: FontWeight.w500),
+                    fontWeight: FontWeight.w400),
               ),
             ),
             SizedBox(
@@ -74,98 +93,49 @@ class _PostBlogState extends State<PostBlog> {
             GestureDetector(
               onDoubleTap: () async {
                 if (widget.blogEntity.isReacted == false) {
-                  await sl<ReactBlogUseCase>().call(
-                      params: ReactBlogReq(
-                          entityId: widget.blogEntity.blogId,
-                          entityType: "blog"));
+                  await sl<ReactBlogUseCase>().call(ReactBlogReq(
+                      entityId: widget.blogEntity.blogId, entityType: "blog"));
+                  setState(() {
+                    widget.blogEntity.likesCount++;
+                    widget.blogEntity.isReacted = true;
+                    isAnimating = true;
+                  });
                 }
-
-                setState(() {
-                  widget.blogEntity.isReacted = true;
-                  isAnimating = true;
-                });
               },
-              child: Stack(alignment: Alignment.center, children: [
-                PictureCard(listImageUrl: mediaUrls ?? listImageUrl),
-                AnimatedOpacity(
-                  opacity: isAnimating ? 1 : 0,
-                  duration: Duration(microseconds: 100),
-                  child: AnimationReact(
-                    child: Icon(
-                      Icons.favorite,
-                      color: Colors.red.shade600,
-                      size: 150.w,
-                    ),
-                    isAnimating: isAnimating,
-                    duration: Duration(milliseconds: 400),
-                    iconlike: false,
-                    End: () {
-                      setState(() {
-                        isAnimating = false;
-                      });
-                    },
-                  ),
-                )
-              ]),
+              child: mediaUrls != []
+                  ? Stack(alignment: Alignment.center, children: [
+                      PictureCard(listImageUrl: mediaUrls),
+                      AnimatedOpacity(
+                        opacity: isAnimating ? 1 : 0,
+                        duration: Duration(microseconds: 100),
+                        child: AnimationReact(
+                          isAnimating: isAnimating,
+                          duration: Duration(milliseconds: 400),
+                          iconlike: false,
+                          End: () {
+                            setState(() {
+                              isAnimating = false;
+                            });
+                          },
+                          child: Icon(
+                            Icons.favorite,
+                            color: const Color.fromARGB(255, 242, 81, 78),
+                            size: 150.w,
+                          ),
+                        ),
+                      )
+                    ])
+                  : Container(),
             ),
             // _reactBlog(),
             ReactBlog(
-              // isReaction: widget.blogEntity.isReacted,
               blogEntity: widget.blogEntity,
             ),
 
-            // Padding(
-            //   padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            //   child: Text(
-            //     'view all 200 comments',
-            //     style: TextStyle(
-            //         color: Colors.black54,
-            //         fontSize: 24.sp,
-            //         fontWeight: FontWeight.w500),
-            //   ),
-            // ),
             widget.morewdget ?? Container()
           ],
         ),
       ),
     );
   }
-
-  // Widget _informationPost() {
-  //   return HeaderInformation(title: title, imageUrl: imageUrl, trailling: trailling)
-  //   // SizedBox(
-  //   //     width: 750.w,
-  //   //     height: 100.h,
-  //   //     child: Center(
-  //   //       child: ListTile(
-  //   //         leading: ClipOval(
-  //   //           child: Container(
-  //   //             decoration:
-  //   //                 BoxDecoration(borderRadius: BorderRadius.circular(60.sp)),
-  //   //             width: 80.w,
-  //   //             // height: 100.h,
-  //   //             child: Image.asset(
-  //   //               AppImages.man,
-  //   //               fit: BoxFit.fill,
-  //   //             ),
-  //   //           ),
-  //   //         ),
-  //   //         title: Text(
-  //   //           widget.blogEntity.userName.toString(),
-  //   //           style: TextStyle(
-  //   //               color: Colors.black,
-  //   //               fontWeight: FontWeight.w700,
-  //   //               fontSize: 28.sp),
-  //   //         ),
-  //   //         // subtitle: Text(
-  //   //         //   'AnXemer',
-  //   //         //   style: TextStyle(
-  //   //         //       color: Colors.black,
-  //   //         //       fontWeight: FontWeight.w400,
-  //   //         //       fontSize: 20.sp),
-  //   //         // ),
-  //   //         trailing: Icon(Icons.arrow_forward_ios_rounded),
-  //   //       ),
-  //   //     ));
-  // }
 }

@@ -201,14 +201,14 @@ class RegisterPage extends StatelessWidget {
     return GestureDetector(
         onTap: () async {
           var result = await sl<RegisterWithEmailAndPassUseCase>().call(
-              params: RegisterReq(
+              RegisterReq(
                   firebaseId: firebaseId.toString(),
                   fullName: _fullnameCon.text,
                   email: email.toString(),
                   password: _passwordCon.text));
           result.fold((l) {
             var snackbar = SnackBar(
-              content: Text(l),
+              content: Text('Đăng ký thất bại'),
               behavior: SnackBarBehavior.floating,
             );
             ScaffoldMessenger.of(context).showSnackBar(snackbar);

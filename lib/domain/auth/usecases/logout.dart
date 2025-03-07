@@ -1,11 +1,13 @@
+import 'package:dartz/dartz.dart';
+import 'package:tracio_fe/core/erorr/failure.dart';
 import 'package:tracio_fe/core/usecase/usecase.dart';
 import 'package:tracio_fe/domain/auth/repositories/auth_repository.dart';
 
 import '../../../service_locator.dart';
 
-class LogoutUseCase extends Usecase<dynamic, dynamic> {
+class LogoutUseCase extends Usecase<NoParams, NoParams> {
   @override
-  Future call({params}) async {
+  Future<Either<Failure, NoParams>> call(NoParams params) async {
     return await sl<AuthRepository>().logout();
   }
 }

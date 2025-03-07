@@ -1,35 +1,26 @@
-import '../../../domain/blog/entites/blog.dart';
+import 'dart:convert';
 
-class BlogModels {
+import '../../../../domain/blog/entites/blog_entity.dart';
+
+List<BlogModels> blogModelListFromJson(String str) => List<BlogModels>.from(
+    json.decode(str)['result']['blogs'].map((x) => BlogModels.fromJson(x)));
+
+class BlogModels extends BlogEntity {
   BlogModels({
-    required this.blogId,
-    required this.userId,
-    required this.userName,
-    required this.avatar,
-    required this.privacySetting,
-    required this.isReacted,
-    required this.reactionId,
-    required this.content,
-    required this.mediaFiles,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.likesCount,
-    required this.commentsCount,
+    required super.userId,
+    required super.blogId,
+    required super.userName,
+    required super.avatar,
+    required super.privacySetting,
+    required super.isReacted,
+    required super.isBookmarked,
+    required super.content,
+    required super.mediaFiles,
+    required super.createdAt,
+    required super.updatedAt,
+    required super.likesCount,
+    required super.commentsCount,
   });
-
-  final int blogId;
-  final int userId;
-  final String userName;
-  final String avatar;
-  final int privacySetting;
-  final bool isReacted;
-  final int reactionId;
-  final String content;
-  final List<MediaFile> mediaFiles;
-  final DateTime? createdAt;
-  final DateTime? updatedAt;
-  final int likesCount;
-  final int commentsCount;
 
   factory BlogModels.fromJson(Map<String, dynamic> json) {
     return BlogModels(
@@ -39,7 +30,7 @@ class BlogModels {
       avatar: json["avatar"],
       privacySetting: json["privacySetting"],
       isReacted: json["isReacted"],
-      reactionId: json["reactionId"],
+      isBookmarked: json["isBookmarked"],
       content: json["content"],
       mediaFiles: json["mediaFiles"] == null
           ? []
@@ -59,7 +50,7 @@ class BlogModels {
         "avatar": avatar,
         "privacySetting": privacySetting,
         "isReacted": isReacted,
-        "reactionId": reactionId,
+        "isBookmarked": isBookmarked,
         "content": content,
         "mediaFiles": mediaFiles.map((x) => x?.toJson()).toList(),
         "createdAt": createdAt?.toIso8601String(),
@@ -89,23 +80,4 @@ class MediaFile {
         "mediaId": mediaId,
         "mediaUrl": mediaUrl,
       };
-}
-
-extension BlogXModel on BlogModels {
-  BlogEntity toEntity() {
-    return BlogEntity(
-        blogId: blogId,
-        userId: userId,
-        userName: userName,
-        avatar: avatar,
-        privacySetting: privacySetting,
-        content: content,
-        createdAt: createdAt!,
-        updatedAt: updatedAt!,
-        likesCount: likesCount,
-        commentsCount: commentsCount,
-        mediaFiles: mediaFiles,
-        isReacted: isReacted,
-        reactionId: reactionId);
-  }
 }

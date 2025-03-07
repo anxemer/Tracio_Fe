@@ -5,18 +5,18 @@ class ButtonDesign extends StatelessWidget {
   const ButtonDesign(
       {super.key,
       required this.ontap,
-      required this.text,
+       this.text,
       required this.icon,
       required this.fillColor,
-      required this.textColor,
+       this.textColor,
       required this.borderColor,
       this.height,
       this.width});
   final VoidCallback ontap;
-  final String text;
+  final String ?text;
   final String icon;
   final Color fillColor;
-  final Color textColor;
+  final Color? textColor;
   final Color borderColor;
   final double? height;
   final double? width;
@@ -47,7 +47,7 @@ class ButtonDesign extends StatelessWidget {
                 Image.asset(icon, width: 40.w, height: 40.h),
                 SizedBox(width: 10.w),
                 Text(
-                  text,
+                  text ?? '',
                   style: TextStyle(
                     fontSize: 24.sp, // Tự động điều chỉnh theo màn hình
                     fontWeight: FontWeight.w500,

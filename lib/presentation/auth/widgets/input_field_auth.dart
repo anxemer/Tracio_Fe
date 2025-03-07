@@ -32,6 +32,9 @@ class InputFieldAuth extends StatelessWidget {
               offset: Offset(0, 15))
         ]),
         child: TextField(
+          onTapOutside: (event) {
+            FocusManager.instance.primaryFocus?.unfocus();
+          },
           obscureText: obscureText ?? false,
           obscuringCharacter: '*',
           enabled: enale,

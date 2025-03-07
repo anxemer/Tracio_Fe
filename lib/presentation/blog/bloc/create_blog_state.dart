@@ -1,4 +1,4 @@
-import 'package:tracio_fe/data/blog/models/create_blog_req.dart';
+import 'package:tracio_fe/data/blog/models/request/create_blog_req.dart';
 
 abstract class CreateBlogState {}
 
