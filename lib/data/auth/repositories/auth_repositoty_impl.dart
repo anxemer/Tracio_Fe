@@ -69,7 +69,7 @@ class AuthRepositotyImpl extends AuthRepository {
   }
 
   @override
-  Future<Either<Failure, UserModel>> login(login) async {
+  Future<Either<Failure, UserEntity>> login(login) async {
     return await _authenticate(() {
       return sl<AuthApiService>().login(login);
     });

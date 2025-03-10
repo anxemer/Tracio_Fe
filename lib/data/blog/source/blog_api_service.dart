@@ -6,21 +6,23 @@ import 'package:tracio_fe/core/erorr/failure.dart';
 import 'package:tracio_fe/core/network/dio_client.dart';
 import 'package:tracio_fe/data/blog/models/request/comment_blog_req.dart';
 import 'package:tracio_fe/data/blog/models/request/create_blog_req.dart';
+import 'package:tracio_fe/data/blog/models/request/get_blog_req.dart';
 import 'package:tracio_fe/data/blog/models/request/get_comment_req.dart';
 import 'package:tracio_fe/data/blog/models/request/get_reply_comment_req.dart';
 import 'package:tracio_fe/data/blog/models/request/react_blog_req.dart';
 import 'package:tracio_fe/data/blog/models/request/reply_comment_req.dart';
-import 'package:tracio_fe/data/blog/models/view/blog_model.dart';
-import 'package:tracio_fe/data/blog/models/view/category_blog.dart';
-import 'package:tracio_fe/data/blog/models/view/comment_blog_model.dart';
-import 'package:tracio_fe/data/blog/models/view/get_reaction_blog.dart';
-import 'package:tracio_fe/data/blog/models/view/reply_comment_model.dart';
+import 'package:tracio_fe/data/blog/models/response/blog_model.dart';
+import 'package:tracio_fe/data/blog/models/response/blog_response.dart';
+import 'package:tracio_fe/data/blog/models/response/category_blog.dart';
+import 'package:tracio_fe/data/blog/models/response/comment_blog_model.dart';
+import 'package:tracio_fe/data/blog/models/response/get_reaction_blog.dart';
+import 'package:tracio_fe/data/blog/models/response/reply_comment_model.dart';
 import 'package:tracio_fe/service_locator.dart';
 
 import '../../../domain/blog/usecase/un_react_blog.dart';
 
 abstract class BlogApiService {
-  Future<List<BlogModels>> getBlogs();
+  Future<BlogResponse> getBlogs(GetBlogReq getBlog);
   Future<Either> reactBlog(ReactBlogReq react);
   Future<bool> createBlog(CreateBlogReq react);
   Future<Either> bookmarkBlog(int blogId);
@@ -36,12 +38,19 @@ abstract class BlogApiService {
 
 class BlogApiServiceImpl extends BlogApiService {
   @override
-  Future<List<BlogModels>> getBlogs() async {
-    Uri apiUrl = ApiUrl.urlGetBlog({});
+  Future<BlogResponse> getBlogs(GetBlogReq getBlog) async {
+    // final params = {
+    //   'userId': getBlog.userId.toString(),
+    //   'categoryId': getBlog.categoryId.toString(),
+    //   'pageSize': getBlog.pageSize.toString(),
+    //   'pageNumber': getBlog.pageNumber.toString(),
+    //   'ascending': getBlog.ascending.toString(),
+    // };
+    Uri apiUrl = ApiUrl.urlGetBlog(getBlog.toQueryParams());
+
     var response = await sl<DioClient>().get(apiUrl.toString());
     if (response.statusCode == 200) {
-      return List<BlogModels>.from(
-          response.data['result']['blogs'].map((x) => BlogModels.fromJson(x)));
+      return BlogResponse.fromMap(response.data);
     } else {
       throw ServerFailure(response.statusMessage.toString());
     }
@@ -92,8 +101,7 @@ class BlogApiServiceImpl extends BlogApiService {
   @override
   Future<Either> unReactBlog(UnReactionParam params) async {
     try {
-      var response = await sl<DioClient>().delete(
-          '${ApiUrl.unReactBlog}/${params.id}',
+      await sl<DioClient>().delete('${ApiUrl.unReactBlog}/${params.id}',
           queryParameters: {'entityType': params.type});
 
       return right(true);
@@ -110,7 +118,9 @@ class BlogApiServiceImpl extends BlogApiService {
       // var listReact = List.from(response.data['result']['reactions'])
       //     .map((e) => GetReactionBlogResponse.fromMap(e))
       //     .toList();
-      return reactionBlogModelListFromRemoteJson(response.data);
+      return List<GetReactionBlogResponse>.from(response.data['result']
+              ['reactions']
+          .map((x) => GetReactionBlogResponse.fromMap(x)));
     } on DioException catch (e) {
       return e.response?.data['message'] ?? "Lỗi server: ${e.message}";
     }
@@ -209,15 +219,15 @@ class BlogApiServiceImpl extends BlogApiService {
   @override
   Future<Either> repCommentBlog(ReplyCommentReq comment) async {
     try {
-      // Tạo FormData từ ReplyCommentReq
       FormData formData = await comment.toFormData();
 
-      // Gọi API sử dụng DioClient
       final response = await sl<DioClient>()
           .post(ApiUrl.repCommentBlog, // URL endpoint để reply comment
               data: formData);
 
-      // Xử lý response và trả về kết quả thành công
+      if (response.statusCode == 400) {
+        print('bị lỗiiiiiii');
+      }
       return Right(response.data);
     } catch (e) {
       if (e is DioException) {

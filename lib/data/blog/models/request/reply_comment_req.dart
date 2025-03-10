@@ -1,13 +1,16 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:io';
+
 import 'package:dio/dio.dart';
 
 class ReplyCommentReq {
-  final int commentId;
+  final int? replyId;
+  final int? commentId;
   final String content;
   final List<File>? files; // Đặt là nullable vì có thể không có file
 
   ReplyCommentReq({
+    this.replyId,
     required this.commentId,
     required this.content,
     this.files,
@@ -30,11 +33,22 @@ class ReplyCommentReq {
     } else {
       print("No media files provided");
     }
-
-    return FormData.fromMap({
-      'commentId': commentId.toString(),
+    Map<String, dynamic> formMap = {
+      'CommentId': commentId.toString(),
       'Content': content,
-      'files': files,
-    });
+      'files': mutibleFiles
+    };
+    if (replyId != null) {
+      formMap['ReplyId'] = replyId.toString();
+    } else {
+      formMap['ReplyId'] = '';
+    }
+
+    return FormData.fromMap(formMap);
+  }
+
+  @override
+  String toString() {
+    return 'ReplyCommentReq(replyId: $replyId, commentId: $commentId, content: $content, files: $files)';
   }
 }

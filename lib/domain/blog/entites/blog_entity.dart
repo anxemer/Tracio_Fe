@@ -1,4 +1,4 @@
-import '../../../data/blog/models/view/blog_model.dart';
+import '../../../data/blog/models/response/blog_model.dart';
 
 class BlogEntity {
   BlogEntity({

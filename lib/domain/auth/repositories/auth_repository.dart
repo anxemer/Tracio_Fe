@@ -11,7 +11,7 @@ abstract class AuthRepository {
   Future<Either<Failure, bool>> registerWithEmailAndPassword(RegisterReq user);
   Future<Either<Failure, String>> verifyEmail(String email);
   Future<Either<Failure, bool>> checkEmailVerified();
-  Future<Either<Failure, UserModel>> login(LoginReq login);
+  Future<Either<Failure, UserEntity>> login(LoginReq login);
   Future<Either<Failure, bool>> isloggedIn();
   Future<Either<Failure, NoParams>> logout();
   Future<Either<Failure, UserEntity>> getCachUser();

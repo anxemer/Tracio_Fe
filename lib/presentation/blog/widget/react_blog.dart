@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:tracio_fe/common/bloc/generic_data_cubit.dart';
 import 'package:tracio_fe/common/widget/button/text_button.dart';
 import 'package:tracio_fe/domain/blog/entites/blog_entity.dart';
+import 'package:tracio_fe/domain/blog/entites/reaction_response_entity.dart';
 import 'package:tracio_fe/domain/blog/usecase/bookmark_blog.dart';
+import 'package:tracio_fe/domain/blog/usecase/get_reaction_blog.dart';
 import 'package:tracio_fe/domain/blog/usecase/unBookmark.dart';
 import 'package:tracio_fe/presentation/blog/widget/comment.dart';
 import 'package:tracio_fe/presentation/blog/widget/icon_blog.dart';
@@ -33,6 +36,8 @@ class _ReactBlogState extends State<ReactBlog> {
   @override
   Widget build(BuildContext context) {
     final commentCubit = context.read<GetCommentCubit>();
+    final reacCubit = context.read<GenericDataCubit>();
+
     return Column(
       children: [
         SizedBox(
@@ -88,7 +93,7 @@ class _ReactBlogState extends State<ReactBlog> {
                         color: widget.blogEntity.isReacted
                             ? Colors.red
                             : Colors.black,
-                        size: 52.sp,
+                        size: 44.sp,
                       )),
                   SizedBox(
                     width: 10.w,
@@ -114,7 +119,10 @@ class _ReactBlogState extends State<ReactBlog> {
                                     initialChildSize: .5,
                                     minChildSize: 0.2,
                                     builder: (context, scrollController) =>
-                                        ListReact(),
+                                        ListReact(
+                                      blogId: widget.blogEntity.blogId,
+                                      cubit: reacCubit,
+                                    ),
                                   ),
                                 ),
                               );
@@ -152,7 +160,7 @@ class _ReactBlogState extends State<ReactBlog> {
                     child: Icon(
                       Icons.comment_outlined,
                       color: Colors.black,
-                      size: 52.sp,
+                      size: 44.sp,
                     ),
                   ),
                   SizedBox(
@@ -218,7 +226,7 @@ class _ReactBlogState extends State<ReactBlog> {
                       ? Icons.bookmark_added_rounded
                       : Icons.bookmark_border,
                   color: Colors.black,
-                  size: 52.sp,
+                  size: 44.sp,
                 ),
               ),
             ],

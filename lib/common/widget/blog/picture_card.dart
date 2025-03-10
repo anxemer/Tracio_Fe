@@ -13,14 +13,10 @@ class PictureCard extends StatefulWidget {
 class _PictureCardState extends State<PictureCard> {
   late PageController _pageController;
   int _currentPage = 0;
-
   @override
   void initState() {
     super.initState();
-    _pageController = PageController(
-        // keepPage: true,
-        // viewportFraction: .8,
-        );
+    _pageController = PageController();
   }
 
   @override
@@ -28,39 +24,42 @@ class _PictureCardState extends State<PictureCard> {
     return Column(
       children: [
         SizedBox(
-          height: 500.h,
+          height: 400.h,
           width: 750.w,
           child: Stack(
             children: [
-              CarouselSlider(
-                options: CarouselOptions(
-                  height: 500.h,
-                  viewportFraction: 0.6,
-                  enlargeCenterPage: true,
-                  padEnds: true,
-                  onPageChanged: (index, reason) {
-                    setState(() {
-                      _currentPage = index;
-                    });
-                  },
-                ),
-                items: widget.listImageUrl.map((imageUrl) {
-                  return Builder(
-                    builder: (BuildContext context) {
-                      return Container(
-                        width: MediaQuery.of(context).size.width,
-                        margin: EdgeInsets.symmetric(horizontal: 5.0),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: Image.network(
-                            imageUrl,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      );
+              Align(
+                alignment: Alignment.center,
+                child: CarouselSlider(
+                  options: CarouselOptions(
+                    height: 400.h,
+                    viewportFraction: widget.listImageUrl.length == 1 ? 1 : 0.8,
+                    enlargeCenterPage: true,
+                    padEnds: false,
+                    onPageChanged: (index, reason) {
+                      setState(() {
+                        _currentPage = index;
+                      });
                     },
-                  );
-                }).toList(),
+                  ),
+                  items: widget.listImageUrl.map((imageUrl) {
+                    return Builder(
+                      builder: (BuildContext context) {
+                        return Container(
+                          width: MediaQuery.of(context).size.width,
+                          margin: EdgeInsets.symmetric(horizontal: 4.0),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: Image.network(
+                              imageUrl,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  }).toList(),
+                ),
               ),
               Positioned(
                 bottom: 10,

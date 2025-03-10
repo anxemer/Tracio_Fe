@@ -2,9 +2,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:tracio_fe/presentation/blog/bloc/create_blog_cubit.dart';
 import 'package:tracio_fe/presentation/blog/pages/add_title_blog.dart';
+
+import '../../../common/widget/blog/pick_image.dart';
 
 class CreateBlogPage extends StatefulWidget {
   const CreateBlogPage({super.key});
@@ -14,73 +17,153 @@ class CreateBlogPage extends StatefulWidget {
 }
 
 class _CreateBlogPageState extends State<CreateBlogPage> {
-  final List<Widget> _mediaList = [];
   final List<File> selectedFiles = []; // Danh sách chứa các ảnh đã chọn
-  final List<File> allFiles = []; // Lưu tất cả ảnh từ album
-  int currentPage = 0;
-  int _currentPage = 0;
-  int? lastPage;
+
   late PageController _pageController;
 
   @override
   void initState() {
     super.initState();
-    _fetchNewMedia();
+    // _fetchNewMedia();
     _pageController = PageController();
   }
 
-  /// Lấy danh sách ảnh từ album
-  _fetchNewMedia() async {
-    lastPage = currentPage;
-    final PermissionState ps = await PhotoManager.requestPermissionExtend();
-    if (ps.isAuth) {
-      List<AssetPathEntity> album =
-          await PhotoManager.getAssetPathList(type: RequestType.image);
-      List<AssetEntity> media =
-          await album[0].getAssetListPaged(page: currentPage, size: 60);
+  // /// Lấy danh sách ảnh từ album
+  // _fetchNewMedia() async {
+  //   lastPage = currentPage;
+  //   final PermissionState ps = await PhotoManager.requestPermissionExtend();
+  //   if (ps.isAuth) {
+  //     List<AssetPathEntity> album =
+  //         await PhotoManager.getAssetPathList(type: RequestType.image);
+  //     List<AssetEntity> media =
+  //         await album[0].getAssetListPaged(page: currentPage, size: 60);
 
-      for (var asset in media) {
-        if (asset.type == AssetType.image) {
-          final file = await asset.file;
-          if (file != null) {
-            allFiles.add(File(file.path)); // Lưu ảnh vào danh sách tổng
-          }
-        }
-      }
+  //     for (var asset in media) {
+  //       if (asset.type == AssetType.image) {
+  //         final file = await asset.file;
+  //         if (file != null) {
+  //           allFiles.add(File(file.path)); // Lưu ảnh vào danh sách tổng
+  //         }
+  //       }
+  //     }
 
-      List<Widget> temp = media.map((asset) {
-        return FutureBuilder(
-          future: asset.thumbnailDataWithSize(ThumbnailSize(200, 200)),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done) {
-              return Image.memory(
-                snapshot.data!,
-                fit: BoxFit.cover,
-              );
-            }
-            return Container();
-          },
-        );
-      }).toList();
+  //     List<Widget> temp = [];
 
-      setState(() {
-        _mediaList.addAll(temp);
-        currentPage++;
-      });
-    }
-  }
+  //     if (currentPage == 0) {
+  //       temp.add(GestureDetector(
+  //         onTap: _takePicture,
+  //         child: Container(
+  //           color: Colors.grey.shade400,
+  //           child: Center(
+  //             child: Icon(
+  //               Icons.camera_alt_outlined,
+  //               size: 80.w,
+  //               color: Colors.white,
+  //             ),
+  //           ),
+  //         ),
+  //       ));
+  //     }
+  //     temp.addAll(media.map((asset) {
+  //       return FutureBuilder(
+  //         future: asset.thumbnailDataWithSize(ThumbnailSize(200, 200)),
+  //         builder: (context, snapshot) {
+  //           if (snapshot.connectionState == ConnectionState.done) {
+  //             return Image.memory(
+  //               snapshot.data!,
+  //               fit: BoxFit.cover,
+  //             );
+  //           }
+  //           return Container();
+  //         },
+  //       );
+  //     }).toList());
+
+  //     setState(() {
+  //       _mediaList.addAll(temp);
+  //       currentPage++;
+  //     });
+  //   }
+  // }
+
+  // Future<void> _takePicture() async {
+  //   try {
+  //     final XFile? photo =
+  //         await _imagePicker.pickImage(source: ImageSource.camera);
+  //     if (photo != null) {
+  //       File imageFile = File(photo.path);
+  //       setState(() {
+  //         // Thêm ảnh vào danh sách tổng
+  //         // allFiles.insert(0, imageFile);
+
+  //         // Thêm vào danh sách đã chọn
+  //         selectedFiles.add(imageFile);
+
+  //         // Thêm ảnh vào đầu danh sách hiển thị
+  //         // _mediaList.insert(
+  //         //     1,
+  //         //     Image.file(
+  //         //       imageFile,
+  //         //       fit: BoxFit.cover,
+  //         //     ));
+  //       });
+
+  //       // Cập nhật PageView để hiển thị ảnh vừa chụp
+  //       _pageController.animateToPage(
+  //         selectedFiles.length,
+  //         duration: const Duration(milliseconds: 300),
+  //         curve: Curves.easeInOut,
+  //       );
+  //     }
+  //   } catch (e) {
+  //     print('Lỗi khi chụp ảnh: $e');
+  //   }
+  // }
 
   /// Hàm chọn hoặc bỏ chọn ảnh
-  void toggleSelection(int index) {
+  void _onImageToggle(File file, bool isSelected) {
     setState(() {
-      File selectedFile = allFiles[index];
-      if (selectedFiles.contains(selectedFile)) {
-        selectedFiles.remove(selectedFile); // Bỏ chọn nếu đã có
+      if (isSelected) {
+        selectedFiles.add(file); // Thêm vào danh sách chọn
       } else {
-        selectedFiles.add(selectedFile); // Thêm vào danh sách chọn
+        selectedFiles.remove(file); // Bỏ chọn
       }
     });
   }
+
+  void _onImageCaptured(File file) {
+    setState(() {
+      selectedFiles.add(file); // Thêm vào danh sách chọn
+    });
+    _pageController.animateToPage(
+      selectedFiles.length - 1,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  void _onRemoveImage(int index) {
+    setState(() {
+      selectedFiles.removeAt(index);
+      if (selectedFiles.isEmpty) {
+        // Nếu không còn ảnh nào
+      } else if (index >= selectedFiles.length) {
+        // Nếu xóa ảnh cuối cùng, chuyển về ảnh trước đó
+        _pageController.jumpToPage(selectedFiles.length - 1);
+      }
+    });
+  }
+  //   if (adjustedIndex >= 0 && adjustedIndex < allFiles.length) {
+  //     setState(() {
+  //       File selectedFile = allFiles[adjustedIndex];
+  //       if (selectedFiles.contains(selectedFile)) {
+  //         selectedFiles.remove(selectedFile); // Bỏ chọn nếu đã có
+  //       } else {
+  //         selectedFiles.add(selectedFile); // Thêm vào danh sách chọn
+  //       }
+  //     });
+  //   }
+  // }
 
   @override
   void dispose() {
@@ -117,7 +200,10 @@ class _CreateBlogPageState extends State<CreateBlogPage> {
                 },
                 child: Text(
                   'Next',
-                  style: TextStyle(fontSize: 40.sp, color: Colors.blue),
+                  style: TextStyle(
+                      fontSize: 32.sp,
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold),
                 ),
               ),
             ),
@@ -129,72 +215,13 @@ class _CreateBlogPageState extends State<CreateBlogPage> {
           children: [
             // Hiển thị danh sách ảnh đã chọn
             SizedBox(
-                height: MediaQuery.of(context).size.height / 2,
-                child: selectedFiles.isEmpty
-                    ? Center(child: Text('Chọn ảnh để hiển thị'))
-                    : PageView.builder(
-                        onPageChanged: (value) => setState(() {
-                              _currentPage = value;
-                            }),
-                        controller: _pageController,
-                        itemCount: selectedFiles.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 80.h),
-                            child: Stack(
-                              alignment: Alignment.topRight,
-                              children: [
-                                Image.file(
-                                  selectedFiles[index],
-                                  width: 600.w,
-                                  // height: 300,
-                                  fit: BoxFit.fill,
-                                ),
-                                GestureDetector(
-                                  onTap: () => toggleSelection(index),
-                                  child: Container(
-                                    margin: EdgeInsets.all(5.w),
-                                    decoration: BoxDecoration(
-                                      color: Colors.black54,
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: Icon(
-                                      Icons.close,
-                                      color: Colors.white,
-                                      size: 24.w,
-                                    ),
-                                  ),
-                                ),
-                                Positioned(
-                                  bottom: 10,
-                                  left: 0,
-                                  right: 0,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: List.generate(
-                                        selectedFiles.length, (index) {
-                                      return Container(
-                                        margin:
-                                            EdgeInsets.symmetric(horizontal: 4),
-                                        width:
-                                            _currentPage == index ? 32.w : 16.w,
-                                        height: 8,
-                                        decoration: BoxDecoration(
-                                          color: _currentPage == index
-                                              ? Colors.white
-                                              : Colors.grey,
-                                          borderRadius:
-                                              BorderRadius.circular(4),
-                                        ),
-                                      );
-                                    }),
-                                  ),
-                                )
-                              ],
-                            ),
-                          );
-                        })),
-
+              height: MediaQuery.of(context).size.height / 2,
+              child: SelectedImagesViewer(
+                selectedFiles: selectedFiles,
+                onRemoveImage: _onRemoveImage,
+                pageController: _pageController,
+              ),
+            ),
             // Tiêu đề 'Recent'
             Container(
               width: double.infinity,
@@ -209,37 +236,10 @@ class _CreateBlogPageState extends State<CreateBlogPage> {
 
             // GridView hiển thị tất cả ảnh
             Expanded(
-              child: GridView.builder(
-                itemCount: _mediaList.length,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  mainAxisSpacing: 1,
-                  crossAxisSpacing: 2,
-                ),
-                itemBuilder: (context, index) {
-                  bool isSelected = selectedFiles.contains(allFiles[index]);
-                  return GestureDetector(
-                    onTap: () => toggleSelection(index),
-                    child: Stack(
-                      children: [
-                        Positioned.fill(child: _mediaList[index]),
-                        if (isSelected)
-                          Container(
-                            color: Colors.black54,
-                            child: Center(
-                              child: Icon(
-                                Icons.check_circle,
-                                color: Colors.white,
-                                size: 40.w,
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ),
+                child: ImagePickerGrid(
+                    selectedFiles: selectedFiles,
+                    onImageToggle: _onImageToggle,
+                    onImageCaptured: _onImageCaptured)),
           ],
         ),
       ),

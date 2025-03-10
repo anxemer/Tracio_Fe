@@ -1,39 +1,60 @@
-import 'dart:convert';
+import 'package:dio/dio.dart';
 
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 class GetBlogReq {
-  final int userRequestId;
-  final int userId;
-  final DateTime sortBy;
-  final bool ascending;
-
   GetBlogReq({
-    required this.userRequestId,
-    required this.userId,
-    required this.sortBy,
-    required this.ascending,
+    this.userId,
+    this.categoryId,
+    this.sortBy,
+    this.ascending,
+    this.pageSize,
+    this.pageNumber,
   });
 
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'userRequestId': userRequestId,
-      'userId': userId,
-      'createAt': sortBy.millisecondsSinceEpoch.toString(),
-      'ascending': ascending,
-    };
-  }
+  final String? userId;
+  final String? categoryId;
+  final String? sortBy;
+  final String? ascending;
+  final int? pageSize;
+  final int? pageNumber;
 
-  factory GetBlogReq.fromMap(Map<String, dynamic> map) {
+  factory GetBlogReq.fromJson(Map<String, dynamic> json) {
     return GetBlogReq(
-      userRequestId: map['userRequestId'] as int,
-      userId: map['userId'] as int,
-      sortBy: DateTime.fromMillisecondsSinceEpoch(map['createAt'] as int),
-      ascending: map['ascending'] as bool,
+      userId: json["userId"],
+      categoryId: json["categoryId"],
+      sortBy: (json["sortBy"] ?? ""),
+      ascending: json["ascending"],
+      pageSize: json["pageSize"],
+      pageNumber: json["pageNumber"],
     );
   }
 
-  String toJson() => json.encode(toMap());
+  Map<String, dynamic> toJson() => {
+        "userId": userId,
+        "categoryId": categoryId,
+        "sortBy": sortBy,
+        "ascending": ascending,
+        "pageSize": pageSize,
+        "pageNumber": pageNumber,
+      };
+  Future<FormData> toFormData() async {
+    return FormData.fromMap({
+      "userId": userId,
+      "categoryId": categoryId,
+      "sortBy": sortBy,
+      "ascending": ascending,
+      "pageSize": pageSize,
+      "pageNumber": pageNumber,
+    });
+  }
 
-  factory GetBlogReq.fromJson(String source) =>
-      GetBlogReq.fromMap(json.decode(source) as Map<String, dynamic>);
+  Map<String, String> toQueryParams() {
+    return {
+      if (userId != null) 'userId': userId!,
+      if (categoryId != null) 'categoryId': categoryId!,
+      if (sortBy != null) 'sortBy': sortBy!,
+      if (ascending != null) 'ascending': ascending!,
+      if (pageSize != null) 'pageSize': pageSize.toString(),
+      if (pageNumber != null) 'pageNumber': pageNumber.toString(),
+    };
+  }
 }

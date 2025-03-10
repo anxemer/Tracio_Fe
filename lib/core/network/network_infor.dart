@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 abstract class NetworkInfor {
@@ -5,9 +6,12 @@ abstract class NetworkInfor {
 }
 
 class NetworkInforIml implements NetworkInfor {
-  final InternetConnectionChecker connectionChecker;
+  final Connectivity connectionChecker;
 
   NetworkInforIml(this.connectionChecker);
   @override
-  Future<bool> get isConnected => connectionChecker.hasConnection;
+  Future<bool> get isConnected async {
+    final connectionResult = await connectionChecker.checkConnectivity();
+    return connectionResult != ConnectivityResult.none;
+  }
 }

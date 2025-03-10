@@ -1,8 +1,10 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tracio_fe/core/network/network_infor.dart';
+import 'package:tracio_fe/core/signalr_service.dart';
 import 'package:tracio_fe/data/auth/repositories/auth_repositoty_impl.dart';
 import 'package:tracio_fe/data/auth/sources/auth_remote_source/auth_api_service.dart';
 import 'package:tracio_fe/data/auth/sources/auth_remote_source/auth_firebase_service.dart';
@@ -22,6 +24,7 @@ import 'package:tracio_fe/domain/blog/usecase/craete_blog.dart';
 import 'package:tracio_fe/domain/blog/usecase/get_blogs.dart';
 import 'package:tracio_fe/domain/blog/usecase/get_category.dart';
 import 'package:tracio_fe/domain/blog/usecase/get_comment_blog.dart';
+import 'package:tracio_fe/domain/blog/usecase/get_reaction_blog.dart';
 import 'package:tracio_fe/domain/blog/usecase/get_reply_comment.dart';
 import 'package:tracio_fe/domain/blog/usecase/react_blog.dart';
 import 'package:tracio_fe/domain/blog/usecase/unBookmark.dart';
@@ -42,8 +45,7 @@ Future<void> initializeDependencies() async {
 
   // Các service cơ bản - đăng ký lazy để tạo khi cần
   sl.registerLazySingleton<FlutterSecureStorage>(() => FlutterSecureStorage());
-  sl.registerLazySingleton<InternetConnectionChecker>(
-      () => InternetConnectionChecker.createInstance());
+  sl.registerLazySingleton(() => Connectivity());
   sl.registerLazySingleton<NetworkInfor>(() => NetworkInforIml(sl()));
 
   // Remote services
@@ -52,6 +54,7 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton<AuthApiService>(() => AuthApiServiceImpl());
   sl.registerLazySingleton<BlogApiService>(() => BlogApiServiceImpl());
   sl.registerLazySingleton<AuthLocalSource>(() => AuthLocalSourceImp());
+  sl.registerLazySingleton<SignalRService>(() => SignalRService());
 
   // Repositories - sử dụng constructor injection
   sl.registerLazySingleton<AuthRepository>(() => AuthRepositotyImpl());
@@ -62,6 +65,7 @@ Future<void> initializeDependencies() async {
   // Use cases - thường không cần là singleton vì không giữ state
   // Có thể sử dụng registerFactory nếu không cần lưu trữ state
   sl.registerFactory<GetBlogsUseCase>(() => GetBlogsUseCase());
+  sl.registerFactory<GetReactBlogUseCase>(() => GetReactBlogUseCase());
   sl.registerFactory<ReactBlogUseCase>(() => ReactBlogUseCase());
   sl.registerFactory<UnReactBlogUseCase>(() => UnReactBlogUseCase());
   sl.registerFactory<CreateBlogUseCase>(() => CreateBlogUseCase());

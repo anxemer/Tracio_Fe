@@ -39,8 +39,10 @@ class _ChooseAudienceBlogState extends State<ChooseAudienceBlog> {
                   shape: const CircleBorder(),
                   value: widget.selectedIndex == 0,
                   onChanged: (bool? newValue) {
-                    widget.selectedIndex = newValue == true ? 0 : null;
-                    widget.selectedIndex == 0;
+                    setState(() {
+                      widget.selectedIndex = newValue == true ? 0 : null;
+                      widget.selectedIndex == 0;
+                    });
                   }),
             ),
             ListTile(
@@ -55,8 +57,9 @@ class _ChooseAudienceBlogState extends State<ChooseAudienceBlog> {
                 shape: const CircleBorder(), // Làm checkbox hình tròn
                 value: widget.selectedIndex == 1,
                 onChanged: (bool? newValue) {
+                  print(widget.selectedIndex);
+
                   setState(() {
-                    print(widget.selectedIndex);
                     widget.selectedIndex = newValue == true ? 1 : null;
                     widget.selectedIndex == 1;
                   });

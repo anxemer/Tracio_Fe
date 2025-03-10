@@ -3,14 +3,14 @@ import 'package:dio/dio.dart';
 
 class GetReplyCommentReq {
   final int commentId;
-  final int replyId;
+  final int? replyId;
   final int pageSize;
   final int pageNumber;
   GetReplyCommentReq({
     required this.commentId,
-   required  this.replyId,
-   required this.pageSize,
-   required this.pageNumber,
+    this.replyId,
+    required this.pageSize,
+    required this.pageNumber,
   });
 
   Future<FormData> toFormData() async {

@@ -28,6 +28,7 @@ class VerifyEmailCubit extends Cubit<VerifyEmailState> {
     //   emit(VerifyEmailFailure(message: 'Email chưa được xác minh'));
     // }
     result.fold((error) {
+      
       emit(VerifyEmailFailure(message: 'Email chưa được xác minh'));
     }, (data) {
       emit(VerifyEmailSuccess(email: email, firebaseId: firebaseId));

@@ -63,10 +63,12 @@ dependencies:
   photo_manager: ^3.6.4
 
   internet_connection_checker:
+  connectivity_plus:
   equatable:
   flutter_secure_storage: ^9.2.4
   flutter_easyloading:
   timeago:
+  signalr_netcore:
   flutter_test:
     sdk: flutter
 

@@ -7,10 +7,10 @@ import 'package:tracio_fe/domain/blog/repositories/blog_repository.dart';
 import '../../../core/erorr/failure.dart';
 import '../../../service_locator.dart';
 
-class ReactBlogUseCase extends Usecase<ReactionResponseEntity, ReactBlogReq> {
+class GetReactBlogUseCase extends Usecase<List<ReactionResponseEntity>, int> {
   @override
-  Future<Either<Failure, ReactionResponseEntity>> call(
-      ReactBlogReq? params) async {
-    return await sl<BlogRepository>().reactBlogs(params!);
+  Future<Either<Failure, List<ReactionResponseEntity>>> call(
+      int? params) async {
+    return await sl<BlogRepository>().getReactBlogs(params!);
   }
 }
