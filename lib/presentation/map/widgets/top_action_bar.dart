@@ -54,13 +54,13 @@ class TopActionBar extends StatelessWidget {
                 if (searchedCoordinate != null &&
                     searchedCoordinate.runtimeType == PlaceDetailEntity) {
                   if (context.mounted) {
-                    context.read<MapCubit>().cameraAnimation(Position(
+                    context.read<MapCubit>().animateCamera(Position(
                         searchedCoordinate.longitude,
                         searchedCoordinate.latitude));
-
-                    context.read<MapCubit>().addPointAnnotationForChoosing(
-                        Position(searchedCoordinate.longitude,
-                            searchedCoordinate.latitude));
+                    //Search annotation
+                    context.read<MapCubit>().addSearchAnnotation(Position(
+                        searchedCoordinate.longitude,
+                        searchedCoordinate.latitude));
                     _showLocationOptions(context, searchedCoordinate);
                   }
                 } else if (searchedCoordinate != null &&

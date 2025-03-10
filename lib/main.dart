@@ -1,7 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:tracio_fe/common/helper/notification/noti_service.dart';
 import 'package:tracio_fe/core/configs/theme/app_theme.dart';
@@ -19,6 +22,7 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await setup();
   await initializeDependencies();
+
   runApp(const MyApp());
 }
 
@@ -35,6 +39,12 @@ Future<void> setup() async {
   //TODO Permission handler
 
   await NotiService().initNotification();
+
+  HydratedBloc.storage = await HydratedStorage.build(
+    storageDirectory: kIsWeb
+        ? HydratedStorage.webStorageDirectory
+        : await getTemporaryDirectory(),
+  );
 }
 
 class MyApp extends StatefulWidget {
@@ -51,7 +61,7 @@ class _MyAppState extends State<MyApp> {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => SplashCubit()..appStarted()),
-        BlocProvider(create: (context) => LocationBloc())
+        BlocProvider(create: (context) => LocationBloc()),
       ],
       child: ScreenUtilInit(
         designSize: Size(720, 1600),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/common/helper/notification/noti_service.dart';
 import 'package:tracio_fe/common/widget/appbar/app_bar.dart';
 import 'package:tracio_fe/presentation/map/pages/cycling.dart';
 import 'package:tracio_fe/presentation/map/pages/route_planner.dart';
@@ -86,12 +85,6 @@ class LibraryPage extends StatelessWidget {
           SizedBox(height: 16.h),
           buildActionButton(buttonText, onPressed),
           SizedBox(height: 16.h),
-          buildActionButton("Notification Press", () {
-            NotiService().showNotification(
-              title: "Hello",
-              description: "Tracio",
-            );
-          }),
         ],
       ),
     );

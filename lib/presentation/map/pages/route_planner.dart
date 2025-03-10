@@ -110,8 +110,8 @@ class _RoutePlannerState extends State<RoutePlanner> {
                             color: Colors.black,
                           ),
                           onPressed: () {
-                            BlocProvider.of<MapCubit>(context)
-                                .removeLastAnnotation();
+                            // BlocProvider.of<MapCubit>(context)
+                            //     .removeLastAnnotation();
                           },
                         ),
                         IconButton(
@@ -121,11 +121,11 @@ class _RoutePlannerState extends State<RoutePlanner> {
                             color: Colors.black,
                           ),
                           onPressed: () {
-                            BlocProvider.of<MapCubit>(context)
-                                .clearAnnotations();
-                            BlocProvider.of<MapCubit>(context)
-                                .polylineAnnotationManager
-                                ?.deleteAll();
+                            // BlocProvider.of<MapCubit>(context)
+                            //     .clearAnnotations();
+                            // BlocProvider.of<MapCubit>(context)
+                            //     .polylineAnnotationManager
+                            //     ?.deleteAll();
                           },
                         ),
                       ],
@@ -250,7 +250,7 @@ class _RoutePlannerState extends State<RoutePlanner> {
       if (position != null) {
         // Update camera position using MapCubit
         if (context.mounted) {
-          BlocProvider.of<MapCubit>(context).cameraAnimation(
+          BlocProvider.of<MapCubit>(context).animateCamera(
             mapbox.Position(position.longitude, position.latitude),
           );
         }

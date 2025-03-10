@@ -4,12 +4,12 @@ import 'package:tracio_fe/data/map/models/mapbox_direction_req.dart';
 
 class ApiUrl {
   //base Url
-  static const baseURL = 'http://127.0.0.1:';
+  static const baseURL = 'https://localhost:';
   // static const baseURL = 'http://10.87.46.103:';
   //port
   static const portUser = '5186';
   static const portBlog = '5265';
-  static const portRoute = '5208';
+  static const portRoute = '5009';
 
   //Api User
   static const registerWithEP = '$portUser/api/auth/register-user';

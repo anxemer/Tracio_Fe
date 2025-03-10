@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tracio_fe/core/configs/theme/app_colors.dart';
 import 'package:tracio_fe/presentation/map/bloc/get_direction_cubit.dart';
 import 'package:tracio_fe/presentation/map/bloc/get_location_cubit.dart';
 import 'package:tracio_fe/presentation/map/bloc/map_cubit.dart';
 import 'package:tracio_fe/presentation/map/bloc/map_state.dart';
 import 'package:tracio_fe/presentation/map/bloc/route_cubit.dart';
+import 'package:tracio_fe/presentation/map/bloc/tracking_location_bloc.dart';
+import 'package:tracio_fe/presentation/map/bloc/tracking_location_event.dart';
 import 'package:tracio_fe/presentation/map/widgets/cycling_map_view.dart';
-import 'package:tracio_fe/presentation/map/widgets/top_action_bar.dart';
 import 'dart:async';
 import 'package:geolocator/geolocator.dart' as geolocator;
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' as mapbox;
@@ -21,20 +21,12 @@ class CyclingPage extends StatefulWidget {
 
 class _CyclingPageState extends State<CyclingPage> {
   final double _fabHeight = 80;
-  bool isCentered = false;
-  List<String> mapStyles = [
-    "Mapbox Streets",
-    "Mapbox Outdoors",
-    "Mapbox Light",
-    "Mapbox Dark",
-    "Mapbox Satellite",
-    "Goong Map",
-    "Terrain-v2",
-  ];
+  bool isPaused = false; // State to track if cycling is paused
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(),
       body: SafeArea(
         child: MultiBlocProvider(
           providers: [
@@ -49,134 +41,62 @@ class _CyclingPageState extends State<CyclingPage> {
               create: (context) => RouteCubit(),
             ),
           ],
-          child: Stack(children: [
-            CyclingMapView(),
-            Positioned(
-              bottom: _fabHeight,
-              left: 10,
-              child: Column(
-                spacing: 10,
-                children: [
-                  // Center camera button
-                  BlocBuilder<MapCubit, MapCubitState>(
+          child: Stack(
+            children: [
+              CyclingMapView(),
+              Positioned(
+                bottom: _fabHeight,
+                left: 10,
+                child: Column(
+                  children: [
+                    // Center camera button
+                    BlocBuilder<MapCubit, MapCubitState>(
                       builder: (context, state) {
-                    return IconButton(
-                      style: IconButton.styleFrom(
-                        elevation: 2,
-                        backgroundColor: Colors.white,
-                        alignment: Alignment.center,
-                        padding: EdgeInsets.zero,
-                      ),
-                      icon: Icon(
-                        Icons.location_searching_outlined,
-                        color: Colors.black87,
-                      ),
-                      onPressed: () async {
-                        _centerCameraButton(context);
+                        return IconButton(
+                          style: IconButton.styleFrom(
+                            elevation: 2,
+                            backgroundColor: Colors.white,
+                            alignment: Alignment.center,
+                            padding: EdgeInsets.zero,
+                          ),
+                          icon: Icon(
+                            Icons.location_searching_outlined,
+                            color: Colors.black87,
+                          ),
+                          onPressed: () async {
+                            _centerCameraButton(context);
+                          },
+                        );
                       },
-                    );
-                  }),
-
-                  // Change style button
-                  BlocBuilder<MapCubit, MapCubitState>(
-                      builder: (context, state) {
-                    return IconButton(
-                      style: IconButton.styleFrom(
-                        elevation: 2,
-                        backgroundColor: Colors.white,
-                        alignment: Alignment.center,
-                        padding: EdgeInsets.zero,
-                      ),
-                      icon: const Icon(
-                        Icons.layers,
-                        color: Colors.black87,
-                      ),
-                      onPressed: () {
-                        _showStyleDialog(context);
-                      },
-                    );
-                  }),
-
-                  // Change Cycling button
-                  IconButton(
-                    style: IconButton.styleFrom(
-                      elevation: 2,
-                      backgroundColor: Colors.white,
-                      alignment: Alignment.center,
-                      padding: EdgeInsets.zero,
                     ),
-                    icon: const Icon(
-                      Icons.directions_bike_sharp,
-                      color: Colors.black87,
-                    ),
-                    onPressed: () {
-                      // Implement cycling functionality
-                    },
-                  ),
-                ],
-              ),
-            ),
-
-            // Top action bar
-            Positioned(
-              top: 20,
-              left: 20,
-              right: 20,
-              child: const TopActionBar(),
-            ),
-
-            Positioned(
-              bottom: 20,
-              left: 20,
-              right: 20,
-              child: Center(
-                child: Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: TextButton(
-                    style: TextButton.styleFrom(
-                      backgroundColor: AppColors.secondBackground,
-                      padding: EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    onPressed: () {},
-                    child: Text("Start ride",
-                        style: TextStyle(color: Colors.white, fontSize: 16)),
-                  ),
+                  ],
                 ),
               ),
-            ),
-          ]),
+              Positioned(
+                bottom: 20,
+                left: MediaQuery.of(context).size.width / 2 -
+                    40, // Center the button
+                child: ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      isPaused = !isPaused;
+                    });
+                    // Add logic to pause or start tracking
+                    if (isPaused) {
+                      // Pause logic
+                      context.read<LocationBloc>().add(PauseLocationTracking());
+                    } else {
+                      // Start logic
+                      context.read<LocationBloc>().add(StartLocationTracking());
+                    }
+                  },
+                  child: Text(isPaused ? "Start" : "Pause"),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
-    );
-  }
-
-  Future<dynamic> _showStyleDialog(BuildContext context) {
-    return showDialog(
-      context: context,
-      builder: (_) {
-        return AlertDialog(
-          title: const Text("Select Map Style"),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: mapStyles.map((style) {
-                return ListTile(
-                  title: Text(style),
-                  onTap: () {
-                    BlocProvider.of<MapCubit>(context).changeMapStyle(style);
-                    Navigator.of(context).pop();
-                  },
-                );
-              }).toList(),
-            ),
-          ),
-        );
-      },
     );
   }
 
@@ -191,7 +111,7 @@ class _CyclingPageState extends State<CyclingPage> {
       if (position != null) {
         // Update camera position using MapCubit
         if (context.mounted) {
-          BlocProvider.of<MapCubit>(context).cameraAnimation(
+          BlocProvider.of<MapCubit>(context).animateCamera(
             mapbox.Position(position.longitude, position.latitude),
           );
         }

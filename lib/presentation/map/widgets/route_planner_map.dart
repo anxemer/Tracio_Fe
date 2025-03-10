@@ -34,7 +34,6 @@ class _RoutePlannerMapState extends State<RoutePlannerMap> {
     super.dispose();
   }
 
-//TODO: Set order of waypoints
   @override
   Widget build(BuildContext context) {
     final mapCubit = BlocProvider.of<MapCubit>(context);
@@ -42,10 +41,10 @@ class _RoutePlannerMapState extends State<RoutePlannerMap> {
     return BlocConsumer<GetDirectionCubit, GetDirectionState>(
       listener: (context, state) async {
         if (state is GetDirectionLoaded) {
-          mapCubit.addListPointsAnnotation(state.direction.waypoints);
-
           if (context.mounted) {
-            mapCubit.addPolylineRouteToMap(state.direction.geometry!);
+            //Set order of waypoints
+            await mapCubit.addMultiplePointAnnotations(state.direction.waypoints);
+            await mapCubit.addPolylineRoute(state.direction.geometry!);
           }
         } else if (state is GetDirectionFailure) {
           // Show error message
@@ -60,7 +59,7 @@ class _RoutePlannerMapState extends State<RoutePlannerMap> {
             BlocConsumer<MapCubit, MapCubitState>(
               listener: (context, state) {
                 if (state is MapCubitRouteLoaded) {
-                  mapCubit.addPolylineRouteToMap(state.lineString);
+                  mapCubit.addPolylineRoute(state.lineString);
                 } else if (state is MapCubitStyleLoaded) {
                   _changeMapStyle(state.styleUri, context);
                 }
@@ -76,9 +75,8 @@ class _RoutePlannerMapState extends State<RoutePlannerMap> {
                     final tappedPosition = tapListenerEvent.point.coordinates;
                     await mapCubit.addPointAnnotation(tappedPosition);
 
-                    if (mapCubit.pointAnnotationOptions.length >= 2) {
-                      List<Coordinate> coordinates = mapCubit
-                          .pointAnnotationOptions
+                    if (mapCubit.pointAnnotations.length >= 2) {
+                      List<Coordinate> coordinates = mapCubit.pointAnnotations
                           .map((annotation) => Coordinate(
                                 annotation.geometry.coordinates.lng as double,
                                 annotation.geometry.coordinates.lat as double,
@@ -92,6 +90,7 @@ class _RoutePlannerMapState extends State<RoutePlannerMap> {
                         coordinates: coordinates,
                         accessToken: accessToken,
                       );
+                      //Clear annotations for re-position
                       mapCubit.clearAnnotations();
                       directionCubit.getDirectionUsingMapbox(request);
                     }
@@ -124,7 +123,7 @@ class _RoutePlannerMapState extends State<RoutePlannerMap> {
       if (position != null) {
         // Update camera position using MapCubit
         if (context.mounted) {
-          BlocProvider.of<MapCubit>(context).cameraAnimation(
+          BlocProvider.of<MapCubit>(context).animateCamera(
             mapbox.Position(position.longitude, position.latitude),
           );
         }

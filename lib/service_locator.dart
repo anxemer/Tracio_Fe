@@ -27,6 +27,7 @@ import 'package:tracio_fe/domain/map/usecase/get_direction_using_mapbox.dart';
 import 'package:tracio_fe/domain/map/usecase/get_elevation.dart';
 import 'package:tracio_fe/domain/map/usecase/get_location_detail.dart';
 import 'package:tracio_fe/domain/map/usecase/get_locations.dart';
+import 'package:tracio_fe/domain/map/usecase/post_route.dart';
 
 import 'core/network/dio_client.dart';
 
@@ -63,4 +64,5 @@ Future<void> initializeDependencies() async {
   sl.registerSingleton<GetLocationAutoCompleteUseCase>(
       GetLocationAutoCompleteUseCase());
   sl.registerSingleton<GetLocationDetailUseCase>(GetLocationDetailUseCase());
+  sl.registerSingleton<PostRouteUseCase>(PostRouteUseCase());
 }

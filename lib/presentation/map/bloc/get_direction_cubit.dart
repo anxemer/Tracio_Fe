@@ -16,8 +16,6 @@ class GetDirectionCubit extends Cubit<GetDirectionState> {
     data.fold((error) {
       emit(GetDirectionFailure(errorMessage: error));
     }, (directionData) async {
-      // Emit direction first, without elevation
-      emit(GetDirectionLoaded(direction: directionData));
       // Now fetch elevation using polyline
       var elevationData = await sl<GetElevationUseCase>()
           .call(params: directionData.polyLineOverview!);
