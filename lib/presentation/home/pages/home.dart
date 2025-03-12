@@ -89,6 +89,7 @@ class _HomePageState extends State<HomePage>
         ),
       ],
       child: SafeArea(
+        bottom: true,
         child: Scaffold(
           body: BlogPage(
             scrollController: _scrollController,

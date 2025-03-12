@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:tracio_fe/core/configs/theme/app_colors.dart';
 
 class BasicNavbar extends StatelessWidget {
   BasicNavbar({super.key, required this.isNavbarVisible});
@@ -16,39 +17,51 @@ class BasicNavbar extends StatelessWidget {
       height: isNavbarVisible ? 60 : 0,
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
-        child: Padding(
+        child: Container(
+          decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border(
+                top: BorderSide(width: .8, color: Colors.grey.shade200),
+              )),
+          width: MediaQuery.of(context).size.width,
           padding: EdgeInsets.symmetric(horizontal: 10.h, vertical: 5.w),
           child: GNav(
-              duration: Duration(milliseconds: 100),
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              duration: Duration(milliseconds: 300),
               tabMargin: EdgeInsets.symmetric(horizontal: 5),
               haptic: true,
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-              iconSize: 20,
+              padding: EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+              iconSize: 28,
               curve: Curves.easeIn,
-              color: Colors.grey.withValues(alpha: .5),
-              hoverColor: Colors.transparent,
+              color: Colors.grey.shade600,
+              hoverColor: AppColors.background.withAlpha(80),
               rippleColor: Colors.transparent,
-              activeColor: Colors.lightBlueAccent,
+              activeColor: AppColors.primary,
               gap: 8,
-              tabActiveBorder: Border.all(color: Colors.lightBlueAccent),
-              tabBorderRadius: 70,
-              tabBorder: Border.all(
-                  color: Colors.black.withValues(alpha: .5), width: 1),
+              tabActiveBorder:
+                  Border.all(color: AppColors.background, width: 1),
+              tabBorderRadius: 20,
+              tabBorder: Border.all(color: Colors.grey.shade300, width: 1),
               tabs: [
                 GButton(
-                  icon: Icons.person,
+                  icon: Icons.home_outlined,
+                  text: 'Home',
                 ),
                 GButton(
-                  icon: Icons.more_horiz,
+                  icon: Icons.explore_outlined,
+                  text: 'Maps',
                 ),
                 GButton(
-                  icon: Icons.home,
+                  icon: Icons.directions_bike,
+                  text: "Ride",
                 ),
                 GButton(
-                  icon: Icons.home,
+                  icon: Icons.shop_outlined,
+                  text: 'Services',
                 ),
                 GButton(
-                  icon: Icons.home,
+                  icon: Icons.more_vert_sharp,
+                  text: 'More',
                 )
               ]),
         ),

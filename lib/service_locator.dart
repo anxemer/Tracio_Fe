@@ -9,6 +9,14 @@ import 'package:tracio_fe/data/auth/sources/auth_remote_source/auth_api_service.
 import 'package:tracio_fe/data/auth/sources/auth_remote_source/auth_firebase_service.dart';
 import 'package:tracio_fe/data/blog/repositories/blog_repository_impl.dart';
 import 'package:tracio_fe/data/blog/source/blog_api_service.dart';
+import 'package:tracio_fe/data/map/repositories/elevation_repository_impl.dart';
+import 'package:tracio_fe/data/map/repositories/location_repository_impl.dart';
+import 'package:tracio_fe/data/map/repositories/route_repository_impl.dart';
+import 'package:tracio_fe/data/map/source/elevation_api_service.dart';
+import 'package:tracio_fe/data/map/source/location_api_service.dart';
+import 'package:tracio_fe/data/map/source/route_api_service.dart';
+import 'package:tracio_fe/data/map/source/tracking_grpc_service.dart';
+import 'package:tracio_fe/data/map/source/tracking_hub_service.dart';
 import 'package:tracio_fe/data/user/repositories/user_profile_repository_impl.dart';
 import 'package:tracio_fe/data/user/source/user_api_source.dart';
 import 'package:tracio_fe/domain/auth/repositories/auth_repository.dart';
@@ -29,6 +37,14 @@ import 'package:tracio_fe/domain/blog/usecase/get_comment_blog.dart';
 import 'package:tracio_fe/domain/blog/usecase/get_reaction_blog.dart';
 import 'package:tracio_fe/domain/blog/usecase/get_reply_comment.dart';
 import 'package:tracio_fe/domain/blog/usecase/react_blog.dart';
+import 'package:tracio_fe/domain/map/repositories/elevation_repository.dart';
+import 'package:tracio_fe/domain/map/repositories/location_repository.dart';
+import 'package:tracio_fe/domain/map/repositories/route_repository.dart';
+import 'package:tracio_fe/domain/map/usecase/get_direction_using_mapbox.dart';
+import 'package:tracio_fe/domain/map/usecase/get_elevation.dart';
+import 'package:tracio_fe/domain/map/usecase/get_location_detail.dart';
+import 'package:tracio_fe/domain/map/usecase/get_locations.dart';
+import 'package:tracio_fe/domain/map/usecase/post_route.dart';
 import 'package:tracio_fe/domain/blog/usecase/unBookmark.dart';
 import 'package:tracio_fe/domain/user/repositories/user_profile_repository.dart';
 import 'package:tracio_fe/domain/user/usecase/get_user_profile.dart';
@@ -51,7 +67,6 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton<FlutterSecureStorage>(() => FlutterSecureStorage());
   sl.registerLazySingleton(() => Connectivity());
   sl.registerLazySingleton<NetworkInfor>(() => NetworkInforIml(sl()));
-
   // Remote services
   sl.registerLazySingleton<AuthFirebaseService>(
       () => AuthFirebaseServiceImpl());
@@ -60,14 +75,24 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton<AuthLocalSource>(() => AuthLocalSourceImp());
   sl.registerLazySingleton<SignalRService>(() => SignalRService());
   sl.registerLazySingleton<UserApiSource>(() => UserApiSourceImpl());
-
+  sl.registerLazySingleton<RouteApiService>(() => RouteApiServiceImpl());
+  sl.registerLazySingleton<ElevationApiService>(
+      () => ElevationApiServiceImpl());
+  sl.registerLazySingleton<LocationApiService>(() => LocationApiServiceImpl());
+  //Services
   sl.registerLazySingleton<AuthRepository>(() => AuthRepositotyImpl());
   sl.registerLazySingleton<UserProfileRepository>(
       () => UserProfileRepositoryImpl(dataSource: sl()));
 
   sl.registerLazySingleton<BlogRepository>(() => BlogRepositoryImpl(
       networkInfo: sl(), remoteDataSource: sl(), signalRService: sl()));
-
+  sl.registerLazySingleton<RouteRepository>(() => RouteRepositoryImpl());
+  sl.registerLazySingleton<ElevationRepository>(
+      () => ElevationRepositoryImpl());
+  sl.registerLazySingleton<LocationRepository>(() => LocationRepositoryImpl());
+  //gRPC & Hubs
+  sl.registerLazySingleton<ITrackingGrpcService>(() => TrackingGrpcService());
+  sl.registerLazySingleton<ITrackingHubService>(() => TrackingHubService());
   // Use cases - thường không cần là singleton vì không giữ state
   // Có thể sử dụng registerFactory nếu không cần lưu trữ state
   sl.registerFactory<GetBlogsUseCase>(() => GetBlogsUseCase());
@@ -92,4 +117,12 @@ Future<void> initializeDependencies() async {
   sl.registerFactory<RepCommentUsecase>(() => RepCommentUsecase());
   sl.registerFactory<GetUserProfileUseCase>(() => GetUserProfileUseCase());
   sl.registerFactory<GetCacherUserUseCase>(() => GetCacherUserUseCase());
+  sl.registerFactory<GetDirectionUsingMapboxUseCase>(
+      () => GetDirectionUsingMapboxUseCase());
+  sl.registerFactory<GetElevationUseCase>(() => GetElevationUseCase());
+  sl.registerFactory<GetLocationAutoCompleteUseCase>(
+      () => GetLocationAutoCompleteUseCase());
+  sl.registerFactory<GetLocationDetailUseCase>(
+      () => GetLocationDetailUseCase());
+  sl.registerFactory<PostRouteUseCase>(() => PostRouteUseCase());
 }
