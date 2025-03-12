@@ -10,6 +10,8 @@ import 'package:tracio_fe/data/map/repositories/route_repository_impl.dart';
 import 'package:tracio_fe/data/map/source/elevation_api_service.dart';
 import 'package:tracio_fe/data/map/source/location_api_service.dart';
 import 'package:tracio_fe/data/map/source/route_api_service.dart';
+import 'package:tracio_fe/data/map/source/tracking_grpc_service.dart';
+import 'package:tracio_fe/data/map/source/tracking_hub_service.dart';
 import 'package:tracio_fe/domain/auth/repositories/auth_repository.dart';
 import 'package:tracio_fe/domain/auth/usecases/check_email_verified.dart';
 import 'package:tracio_fe/domain/auth/usecases/is_logged_in.dart';
@@ -42,12 +44,15 @@ Future<void> initializeDependencies() async {
   sl.registerSingleton<RouteApiService>(RouteApiServiceImpl());
   sl.registerSingleton<ElevationApiService>(ElevationApiServiceImpl());
   sl.registerSingleton<LocationApiService>(LocationApiServiceImpl());
-  //Repositoríe
+  //Repositories
   sl.registerSingleton<AuthRepository>(AuthRepositotyImpl());
   sl.registerSingleton<BlogRepository>(BlogRepositoryImpl());
   sl.registerSingleton<RouteRepository>(RouteRepositoryImpl());
   sl.registerSingleton<ElevationRepository>(ElevationRepositoryImpl());
   sl.registerSingleton<LocationRepository>(LocationRepositoryImpl());
+  //gRPC & Hubs
+  sl.registerSingleton<ITrackingGrpcService>(TrackingGrpcService());
+  sl.registerLazySingleton<ITrackingHubService>(() => TrackingHubService());
   //UseCase
   sl.registerSingleton<VerifyEmailUseCase>(VerifyEmailUseCase());
   sl.registerSingleton<CheckEmailVerifiedUseCase>(CheckEmailVerifiedUseCase());

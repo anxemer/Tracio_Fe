@@ -1,11 +1,12 @@
-import 'package:geolocator/geolocator.dart';
+import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
+    as bg;
 
 abstract class LocationEvent {}
 
 class StartLocationTracking extends LocationEvent {}
 
 class UpdateLocation extends LocationEvent {
-  final Position position;
+  final bg.Location position;
   final double heading;
   UpdateLocation(this.position, this.heading);
 }
@@ -22,7 +23,7 @@ class UserHeadingChanged extends LocationEvent {
 }
 
 class UserMovedSignificantly extends LocationEvent {
-  final Position position;
+  final bg.Location position;
   UserMovedSignificantly(this.position);
 }
 
@@ -30,8 +31,10 @@ abstract class LocationState {}
 
 class LocationInitial extends LocationState {}
 
+class LocationTracking extends LocationState {}
+
 class LocationUpdated extends LocationState {
-  final Position position;
+  final bg.Location position;
   final double heading;
   LocationUpdated(this.position, this.heading);
 }

@@ -35,6 +35,7 @@ Future<void> setup() async {
     Permission.storage,
     Permission.accessNotificationPolicy,
     Permission.notification,
+    Permission.activityRecognition
   ].request();
   //TODO Permission handler
 

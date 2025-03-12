@@ -65,7 +65,13 @@
 		<!-- Permission options for the `appTrackingTransparency` -->
 		<key>NSUserTrackingUsageDescription</key>
 		<string>appTrackingTransparency</string>
-
+		<key>UIBackgroundModes</key>
+		<array>
+			<string>fetch</string>
+			<string>location</string>
+		</array>
+		<key>NSMotionUsageDescription</key>
+		<string>Motion usage description</string>
 		<!-- Permission options for the `camera` group -->
 		<key>NSCameraUsageDescription</key>
 		<string>camera</string>

@@ -1,4 +1,5 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Permissions options for the `location` group -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -7,8 +8,9 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-feature android:name="android.hardware.location.gps"/>
-
+    <uses-feature android:name="android.hardware.location.gps" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
     <!-- Permissions options for the `sensors` group -->
     <uses-permission android:name="android.permission.BODY_SENSORS" />
     <uses-permission android:name="android.permission.BODY_SENSORS_BACKGROUND" />
@@ -30,6 +32,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
+        tools:replace="android:label"
         android:label="tracio_fe"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
@@ -82,6 +85,17 @@
             android:stopWithTask="false"
             android:foregroundServiceType="specialUse">
         </service>
+        <service
+            android:name="com.transistorsoft.locationmanager.service.TrackingService"
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            android:foregroundServiceType="location" />
+        <!-- flutter_background_geolocation licence -->
+        <meta-data android:name="com.transistorsoft.locationmanager.license"
+            android:value="025736af0c3b480ecc1a6fc8aea17e73cc012049ed117472072b76e5e170953d" />
+        <meta-data android:name="com.transistorsoft.locationmanager.hms.license"
+            android:value="bd0bf2738a5b3d3335225ee43ec3a806c58f40999065a065b8504911ebc122a8" />
+        <meta-data android:name="com.transistorsoft.locationmanager.polygon.license"
+            android:value="b581ad7ac9cd66c712e423fa1989f5052df5d166c4a1e1511d1f1d5b1a1c665a" />
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

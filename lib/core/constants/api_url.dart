@@ -4,7 +4,7 @@ import 'package:tracio_fe/data/map/models/mapbox_direction_req.dart';
 
 class ApiUrl {
   //base Url
-  static const baseURL = 'https://localhost:';
+  static const baseURL = 'https://10.0.2.2:';
   // static const baseURL = 'http://10.87.46.103:';
   //port
   static const portUser = '5186';
@@ -87,4 +87,5 @@ class ApiUrl {
   }
 
   static const postRoute = '$portRoute/api/route';
+  static const locationHubUrl = 'http://localhost:$portRoute/locationHub';
 }
