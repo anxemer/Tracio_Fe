@@ -288,18 +288,7 @@ class _CommentItemState extends State<CommentItem> {
                                         ),
                                       ),
 
-                                      // _comment(() {
-                                      //   context
-                                      //       .read<GenericDataCubit>()
-                                      //       .getData<List<ReplyCommentEntity>>(
-                                      //           sl<GetReplyCommentUsecase>(),
-                                      //           params: GetReplyCommentReq(
-                                      //               commentId: widget
-                                      //                   .comment.commentId!,
-                                      //               // replyId: 0,
-                                      //               pageSize: 10,
-                                      //               pageNumber: 1));
-                                      // })
+                                  
                                     ],
                                   );
                                 } else if (state is FailureLoadData) {
@@ -328,111 +317,5 @@ class _CommentItemState extends State<CommentItem> {
     );
   }
 
-//   Widget _comment(Function() onReplySubmitted) {
-//     return Padding(
-//       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 5.h),
-//       child: Column(
-//         children: [
-//           selectedFiles.isNotEmpty
-//               ? SizedBox(
-//                   height: 200.h,
-//                   child: SelectedImagesViewer(
-//                     widgeImage: 150.w,
-//                     selectedFiles: selectedFiles,
-//                     onRemoveImage: _onRemoveImage,
-//                     pageController: _pageController,
-//                   ),
-//                 )
-//               : SizedBox(),
-//           Container(
-//             height: 80.h,
-//             decoration: BoxDecoration(
-//                 borderRadius: BorderRadius.circular(60.sp),
-//                 border: Border.all(color: Colors.black45, width: 1.w)),
-//             child: Row(
-//               children: [
-//                 Padding(padding: EdgeInsets.symmetric(horizontal: 10.w)),
-//                 ClipOval(
-//                   child: SizedBox(
-//                     width: 40.w,
-//                     height: 40.h,
-//                     child: Image.asset(AppImages.man),
-//                   ),
-//                 ),
-//                 SizedBox(
-//                   width: 10.w,
-//                 ),
-//                 Expanded(
-//                   child: TextField(
-//                     controller: _titleCon,
-//                     style: const TextStyle(color: Colors.black),
-//                     decoration: const InputDecoration(
-//                       filled: true,
-//                       hintText: 'Reply',
-//                       fillColor: Colors.white,
-//                       contentPadding: EdgeInsets.symmetric(vertical: 15),
-//                     ),
-//                   ),
-//                 ),
-//                 GestureDetector(
-//                   onTap: () {
-//                     showModalBottomSheet(
-//                         isDismissible: true,
-//                         isScrollControlled: true,
-//                         backgroundColor: Colors.transparent,
-//                         context: context,
-//                         builder: (context) {
-//                           return Padding(
-//                             padding: EdgeInsets.only(
-//                                 bottom:
-//                                     MediaQuery.of(context).viewInsets.bottom),
-//                             child: DraggableScrollableSheet(
-//                                 maxChildSize: .5,
-//                                 initialChildSize: .5,
-//                                 minChildSize: 0.2,
-//                                 builder: (context, scrollController) =>
-//                                     ImagePickerGrid(
-//                                       onImageCaptured: _onImageCaptured,
-//                                       onImageToggle: _onImageToggle,
-//                                       selectedFiles: selectedFiles,
-//                                     )),
-//                           );
-//                         });
-//                   },
-//                   child: Icon(
-//                     Icons.image_outlined,
-//                     size: 30,
-//                   ),
-//                 ),
-//                 SizedBox(width: 5.w),
-//                 GestureDetector(
-//                     onTap: () async {
-//                       var result = await sl<RepCommentUsecase>().call(
-//                           ReplyCommentReq(
-//                               commentId: widget.comment.commentId!,
-//                               content: _titleCon.text,
-//                               files: selectedFiles));
-//                       if (selectedFiles.isNotEmpty) {
-//                         _onRemoveImage(0);
-//                       }
-//                       result.fold((error) {
-//                         ScaffoldMessenger.of(context).showSnackBar(
-//                           SnackBar(content: Text('Gửi bình luận thất bại')),
-//                         );
-//                       }, (susscess) {
-//                         _titleCon.clear();
-//                         widget.comment.repliesCount++;
-//                       });
-//                       FocusManager.instance.primaryFocus?.unfocus();
-//                     },
-//                     child: Icon(Icons.send_rounded,
-//                         color: AppColors.background, size: 20)),
-//               ],
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
+
 }

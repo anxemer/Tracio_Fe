@@ -143,7 +143,7 @@ class _CommentInputWidgetState extends State<CommentInputWidget> {
                     onTap: widget.onReset,
                     child: Icon(
                       Icons.close,
-                      size: 24.sp,
+                      size: 36.sp,
                       color: Colors.grey,
                     ),
                   ),

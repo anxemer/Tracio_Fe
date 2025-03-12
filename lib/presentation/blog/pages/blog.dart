@@ -1,10 +1,9 @@
 import 'dart:async';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/common/widget/blog/header_information.dart';
 import 'package:tracio_fe/core/configs/theme/app_colors.dart';
 import 'package:tracio_fe/core/configs/theme/assets/app_images.dart';
 import 'package:tracio_fe/data/blog/models/request/get_blog_req.dart';
@@ -12,10 +11,12 @@ import 'package:tracio_fe/domain/blog/entites/blog_entity.dart';
 import 'package:tracio_fe/presentation/auth/bloc/authCubit/auth_cubit.dart';
 import 'package:tracio_fe/presentation/blog/bloc/get_blog_cubit.dart';
 import 'package:tracio_fe/presentation/blog/pages/create_blog.dart';
-import 'package:tracio_fe/presentation/blog/widget/post_blog.dart';
+import 'package:tracio_fe/presentation/blog/widget/new_feed.dart';
+import 'package:tracio_fe/presentation/profile/pages/user_profile.dart';
 
 import '../../../common/helper/navigator/app_navigator.dart';
 import '../../../common/widget/appbar/app_bar.dart';
+import '../../auth/bloc/authCubit/auth_state.dart';
 import '../../auth/pages/login.dart';
 import '../bloc/get_blog_state.dart';
 
@@ -29,7 +30,6 @@ class BlogPage extends StatefulWidget {
 
 class _BlogPageState extends State<BlogPage> {
   Timer? _scrollDebounce;
-
   void _scrollListener() {
     double maxScroll = widget.scrollController.position.maxScrollExtent;
     double currentScroll = widget.scrollController.position.pixels;
@@ -144,33 +144,79 @@ class _BlogPageState extends State<BlogPage> {
   }
 
   Widget _createBlogHeader() {
-    return GestureDetector(
-      onTap: () {
-        AppNavigator.push(context, const CreateBlogPage());
+    return BlocBuilder<AuthCubit, AuthState>(
+      builder: (context, state) {
+        if (state is AuthLoaded) {
+          return Padding(
+            padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 12.w),
+            child: SizedBox(
+                // width: double.infinity / 2,
+                height: 100.h,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    InkWell(
+                        onTap: () => AppNavigator.push(context,
+                            UserProfilePage(userId: state.user.userId)),
+                        child: SizedBox(
+                          // height: 200.h,
+                          // width: 200.w,
+                          child: CachedNetworkImage(
+                            imageUrl: state.user.profilePicture!,
+                            fit: BoxFit.cover,
+                            imageBuilder: (context, imageProvider) =>
+                                CircleAvatar(
+                              // radius: 30.sp,
+                              backgroundImage: imageProvider,
+                            ),
+                            // maxHeightDiskCache: 200,
+                            // maxWidthDiskCache: 200,
+                          ),
+                        )
+                        // Image.asset(
+                        //   AppImages.man,
+                        //   cacheWidth:
+                        //       (100 * MediaQuery.of(context).devicePixelRatio)
+                        //           .toInt(),
+                        //   width: 80.w,
+                        // ),
+                        ),
+                    SizedBox(
+                      width: 20.w,
+                    ),
+                    Expanded(
+                      child: InkWell(
+                        onTap: () =>
+                            AppNavigator.push(context, CreateBlogPage()),
+                        child: Row(
+                          children: [
+                            Text(
+                              'Share your picture',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w500, fontSize: 32.sp),
+                            ),
+                            Spacer(),
+                            Icon(
+                              Icons.image_outlined,
+                              size: 60.w,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                )),
+          );
+        } else if (state is AuthFailure) {
+          // Hiển thị loading indicator
+          return Padding(
+            padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 12.w),
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
+        return Container();
       },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        child: SizedBox(
-          width: double.infinity,
-          height: 100.h,
-          child: HeaderInformation(
-            title: const Text(
-              'An Xểm',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            subtitle: const Text('Share your picture'),
-            imageUrl: Image.asset(
-              AppImages.man,
-              cacheWidth:
-                  (100 * MediaQuery.of(context).devicePixelRatio).toInt(),
-            ),
-            trailling: Icon(
-              Icons.image_outlined,
-              size: 40.w,
-            ),
-          ),
-        ),
-      ),
     );
   }
 
@@ -189,7 +235,7 @@ class _BlogPageState extends State<BlogPage> {
       // GetBlogInitial or other states
       return const SliverFillRemaining(
         hasScrollBody: false,
-        child: SizedBox(),
+        child: Center(child: CircularProgressIndicator()),
       );
     }
   }
@@ -219,9 +265,9 @@ class _BlogListView extends StatelessWidget {
           }
 
           if (index < blogs.length) {
-            return PostBlog(
+            return NewFeeds(
               key: ValueKey('blog_${blogs[index].blogId}'),
-              blogEntity: blogs[index],
+              blogs: blogs[index],
             );
           }
 

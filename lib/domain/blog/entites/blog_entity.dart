@@ -30,4 +30,36 @@ class BlogEntity {
   DateTime? updatedAt;
   int likesCount;
   int commentsCount;
+
+  BlogEntity copyWith({
+    int? blogId,
+    int? userId,
+    String? userName,
+    String? avatar,
+    int? privacySetting,
+    bool? isReacted,
+    bool? isBookmarked,
+    String? content,
+    List<MediaFile>? mediaFiles,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    int? likesCount,
+    int? commentsCount,
+  }) {
+    return BlogEntity(
+      blogId: blogId ?? this.blogId,
+      userId: userId ?? this.userId,
+      userName: userName ?? this.userName,
+      avatar: avatar ?? this.avatar,
+      privacySetting: privacySetting ?? this.privacySetting,
+      isReacted: isReacted ?? this.isReacted,
+      isBookmarked: isBookmarked ?? this.isBookmarked,
+      content: content ?? this.content,
+      mediaFiles: mediaFiles ?? this.mediaFiles,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      likesCount: likesCount ?? this.likesCount,
+      commentsCount: commentsCount ?? this.commentsCount,
+    );
+  }
 }

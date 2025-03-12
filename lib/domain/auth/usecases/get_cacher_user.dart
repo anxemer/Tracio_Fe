@@ -6,9 +6,9 @@ import 'package:tracio_fe/domain/auth/repositories/auth_repository.dart';
 
 import '../../../service_locator.dart';
 
-class GetCacherUserUseCase implements Usecase<UserEntity, dynamic> {
+class GetCacherUserUseCase implements Usecase<UserEntity, NoParams> {
   @override
-  Future<Either<Failure, UserEntity>> call(params) async {
+  Future<Either<Failure, UserEntity>> call(NoParams params) async {
     return await sl<AuthRepository>().getCachUser();
   }
 }

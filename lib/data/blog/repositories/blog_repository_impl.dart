@@ -3,15 +3,13 @@ import 'package:dartz/dartz.dart';
 
 import 'package:tracio_fe/core/erorr/failure.dart';
 import 'package:tracio_fe/core/network/network_infor.dart';
+import 'package:tracio_fe/core/signalr_service.dart';
 import 'package:tracio_fe/data/blog/models/request/comment_blog_req.dart';
 import 'package:tracio_fe/data/blog/models/request/create_blog_req.dart';
 import 'package:tracio_fe/data/blog/models/request/get_reply_comment_req.dart';
 import 'package:tracio_fe/data/blog/models/request/react_blog_req.dart';
 import 'package:tracio_fe/data/blog/models/request/reply_comment_req.dart';
-import 'package:tracio_fe/data/blog/models/response/blog_model.dart';
 import 'package:tracio_fe/data/blog/models/response/blog_response.dart';
-import 'package:tracio_fe/data/blog/models/response/category_blog.dart';
-import 'package:tracio_fe/data/blog/models/response/comment_blog_model.dart';
 import 'package:tracio_fe/data/blog/models/response/get_reaction_blog.dart';
 import 'package:tracio_fe/data/blog/source/blog_api_service.dart';
 import 'package:tracio_fe/domain/blog/entites/category_blog.dart';
@@ -19,10 +17,8 @@ import 'package:tracio_fe/domain/blog/entites/reaction_response_entity.dart';
 import 'package:tracio_fe/domain/blog/entites/reply_comment.dart';
 import 'package:tracio_fe/domain/blog/repositories/blog_repository.dart';
 
-import '../../../domain/blog/entites/blog_entity.dart';
 import '../../../domain/blog/entites/comment_blog.dart';
 import '../../../domain/blog/usecase/un_react_blog.dart';
-import '../../../service_locator.dart';
 import '../models/request/get_blog_req.dart';
 import '../models/request/get_comment_req.dart';
 
@@ -31,10 +27,12 @@ typedef _ConcreteOrBlogChooser = Future<BlogResponse> Function();
 class BlogRepositoryImpl extends BlogRepository {
   final NetworkInfor networkInfo;
   final BlogApiService remoteDataSource;
+  final SignalRService signalRService;
 
   BlogRepositoryImpl({
     required this.networkInfo,
     required this.remoteDataSource,
+    required this.signalRService,
   });
   @override
   Future<Either<Failure, BlogResponse>> getBlogs(GetBlogReq params) async {

@@ -22,8 +22,11 @@ import 'comment_input.dart';
 class Comment extends StatefulWidget {
   final int blogId;
   final GetCommentCubit cubit;
-
-  const Comment({super.key, required this.blogId, required this.cubit});
+  const Comment({
+    super.key,
+    required this.blogId,
+    required this.cubit,
+  });
 
   @override
   State<Comment> createState() => _CommentState();
@@ -173,29 +176,36 @@ class _CommentState extends State<Comment> {
                   Padding(
                     padding: EdgeInsets.only(top: 8.h),
                     child: Container(
-                      width: 200.w,
+                      width: 400.w,
                       height: 3.h,
                       color: Colors.black,
                     ),
                   ),
+                  SizedBox(
+                    height: 10.h,
+                  ),
                   Text(
                     'Comments',
                     style:
-                        TextStyle(fontWeight: FontWeight.w600, fontSize: 32.sp),
+                        TextStyle(fontWeight: FontWeight.w600, fontSize: 40.sp),
                   ),
                   Expanded(
                     child: _buildContent(state),
                   ),
-                  BlocBuilder<CommentInputCubit, CommentInputState>(
-                    builder: (context, inputState) {
-                      return CommentInputWidget(
-                        inputData: inputState.inputData,
-                        onSubmit: _handleCommentSubmit,
-                        onReset: () {
-                          _commentInputCubit.updateToDefault(widget.blogId);
-                        },
-                      );
-                    },
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        bottom: 20.0, left: 10, right: 10),
+                    child: BlocBuilder<CommentInputCubit, CommentInputState>(
+                      builder: (context, inputState) {
+                        return CommentInputWidget(
+                          inputData: inputState.inputData,
+                          onSubmit: _handleCommentSubmit,
+                          onReset: () {
+                            _commentInputCubit.updateToDefault(widget.blogId);
+                          },
+                        );
+                      },
+                    ),
                   ),
                 ],
               ),

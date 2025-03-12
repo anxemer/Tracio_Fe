@@ -34,4 +34,5 @@ abstract class BlogRepository {
       GetCommentReq comment);
   Future<Either<Failure, List<ReplyCommentEntity>>> getRepCommentBlog(
       GetReplyCommentReq comment);
+  
 }

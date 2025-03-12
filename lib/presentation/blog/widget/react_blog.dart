@@ -1,17 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/common/bloc/generic_data_cubit.dart';
 import 'package:tracio_fe/common/widget/button/text_button.dart';
 import 'package:tracio_fe/domain/blog/entites/blog_entity.dart';
-import 'package:tracio_fe/domain/blog/entites/reaction_response_entity.dart';
 import 'package:tracio_fe/domain/blog/usecase/bookmark_blog.dart';
-import 'package:tracio_fe/domain/blog/usecase/get_reaction_blog.dart';
 import 'package:tracio_fe/domain/blog/usecase/unBookmark.dart';
-import 'package:tracio_fe/presentation/blog/widget/comment.dart';
-import 'package:tracio_fe/presentation/blog/widget/icon_blog.dart';
-import 'package:tracio_fe/presentation/blog/widget/list_react.dart';
 
 import '../../../data/blog/models/request/react_blog_req.dart';
 import '../../../domain/blog/usecase/react_blog.dart';
@@ -20,8 +13,15 @@ import '../../../service_locator.dart';
 import '../bloc/comment/get_commnet_cubit.dart';
 
 class ReactBlog extends StatefulWidget {
-  ReactBlog({super.key, required this.blogEntity});
+  ReactBlog(
+      {super.key,
+      required this.blogEntity,
+      required this.textReactionAction,
+      required this.cmtAction});
   BlogEntity blogEntity;
+  final VoidCallback textReactionAction;
+  final VoidCallback cmtAction;
+
   // bool isReaction;
 
   @override
@@ -35,9 +35,6 @@ class _ReactBlogState extends State<ReactBlog> {
 
   @override
   Widget build(BuildContext context) {
-    final commentCubit = context.read<GetCommentCubit>();
-    final reacCubit = context.read<GenericDataCubit>();
-
     return Column(
       children: [
         SizedBox(
@@ -59,9 +56,9 @@ class _ReactBlogState extends State<ReactBlog> {
                           await sl<UnReactBlogUseCase>().call(UnReactionParam(
                               id: widget.blogEntity.blogId, type: 'blog'));
                           setState(() {
-                            if (widget.blogEntity.likesCount > 0) {
-                              widget.blogEntity.likesCount--;
-                            }
+                            // if (widget.blogEntity.likesCount > 0) {
+                            //   widget.blogEntity.likesCount--;
+                            // }
 
                             widget.blogEntity.isReacted = false;
                             // widget.blogEntity. = 0;
@@ -79,7 +76,7 @@ class _ReactBlogState extends State<ReactBlog> {
                             // context.read<ReactBlogCubit>().reactBlog(isReact);
 
                             setState(() {
-                              widget.blogEntity.likesCount++;
+                              // widget.blogEntity.likesCount++;
                               // widget.blogEntity.reactionId = data.reactionId!;
                               widget.blogEntity.isReacted = isReact;
                             });
@@ -100,34 +97,7 @@ class _ReactBlogState extends State<ReactBlog> {
                   ),
                   BasicTextButton(
                       text: widget.blogEntity.likesCount.toString(),
-                      onPress: () {
-                        showModalBottomSheet(
-                            isDismissible: true,
-                            isScrollControlled: true,
-                            backgroundColor: Colors.transparent,
-                            context: context,
-                            builder: (context) {
-                              return Container(
-                                color: Colors.transparent,
-                                child: Padding(
-                                  padding: EdgeInsets.only(
-                                      bottom: MediaQuery.of(context)
-                                          .viewInsets
-                                          .bottom),
-                                  child: DraggableScrollableSheet(
-                                    maxChildSize: 1,
-                                    initialChildSize: .5,
-                                    minChildSize: 0.2,
-                                    builder: (context, scrollController) =>
-                                        ListReact(
-                                      blogId: widget.blogEntity.blogId,
-                                      cubit: reacCubit,
-                                    ),
-                                  ),
-                                ),
-                              );
-                            });
-                      }),
+                      onPress: widget.textReactionAction),
                 ],
               ),
               SizedBox(
@@ -136,27 +106,7 @@ class _ReactBlogState extends State<ReactBlog> {
               Row(
                 children: [
                   GestureDetector(
-                    onTap: () => showModalBottomSheet(
-                        isDismissible: true,
-                        isScrollControlled: true,
-                        backgroundColor: Colors.transparent,
-                        context: context,
-                        builder: (context) {
-                          return Padding(
-                            padding: EdgeInsets.only(
-                                bottom:
-                                    MediaQuery.of(context).viewInsets.bottom),
-                            child: DraggableScrollableSheet(
-                              maxChildSize: 1,
-                              initialChildSize: .8,
-                              minChildSize: 0.2,
-                              builder: (context, scrollController) => Comment(
-                                blogId: widget.blogEntity.blogId,
-                                cubit: commentCubit,
-                              ),
-                            ),
-                          );
-                        }),
+                    onTap: widget.cmtAction,
                     child: Icon(
                       Icons.comment_outlined,
                       color: Colors.black,
@@ -168,31 +118,7 @@ class _ReactBlogState extends State<ReactBlog> {
                   ),
                   BasicTextButton(
                       text: widget.blogEntity.commentsCount.toString(),
-                      onPress: () {
-                        showModalBottomSheet(
-                            isDismissible: true,
-                            isScrollControlled: true,
-                            backgroundColor: Colors.transparent,
-                            context: context,
-                            builder: (context) {
-                              return Padding(
-                                padding: EdgeInsets.only(
-                                    bottom: MediaQuery.of(context)
-                                        .viewInsets
-                                        .bottom),
-                                child: DraggableScrollableSheet(
-                                  maxChildSize: .8,
-                                  initialChildSize: .8,
-                                  minChildSize: 0.2,
-                                  builder: (context, scrollController) =>
-                                      Comment(
-                                    blogId: widget.blogEntity.blogId,
-                                    cubit: commentCubit,
-                                  ),
-                                ),
-                              );
-                            });
-                      }),
+                      onPress: widget.cmtAction),
                 ],
               ),
               Spacer(),

@@ -113,9 +113,8 @@ class AuthRepositotyImpl extends AuthRepository {
       try {
         final remoteResponse = await getDataSource();
         String token = remoteResponse.session.accessToken;
-        print(token);
         await sl<AuthLocalSource>().saveToken(token);
-        print(remoteResponse);
+        print('Token $token');
         sl<AuthLocalSource>().saveUser(remoteResponse);
         return Right(remoteResponse);
       } on DioException catch (e) {

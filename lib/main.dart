@@ -1,15 +1,24 @@
+import 'dart:io';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:tracio_fe/common/bloc/generic_data_cubit.dart';
 import 'package:tracio_fe/core/configs/theme/app_theme.dart';
+import 'package:tracio_fe/core/signalr_service.dart';
+import 'package:tracio_fe/domain/user/entities/user_profile_entity.dart';
+import 'package:tracio_fe/domain/user/usecase/get_user_profile.dart';
 import 'package:tracio_fe/firebase_options.dart';
 import 'package:tracio_fe/presentation/auth/bloc/authCubit/auth_cubit.dart';
+import 'package:tracio_fe/presentation/blog/bloc/comment/get_commnet_cubit.dart';
+import 'package:tracio_fe/presentation/blog/bloc/get_blog_cubit.dart';
 import 'package:tracio_fe/presentation/splash/bloc/splash_cubit.dart';
 import 'package:tracio_fe/presentation/splash/page/splash.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' as mp;
+import 'package:tracio_fe/service_locator.dart';
 
 import 'service_locator.dart' as di;
 
@@ -18,6 +27,9 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   await di.initializeDependencies();
+  // await sl<SignalRService>().initConnection();
+  HttpOverrides.global = MyHttpOverrides();
+
   runApp(const MyApp());
   configLoading();
 }
@@ -40,6 +52,15 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => AuthCubit(),
+        ),
+        BlocProvider(
+          create: (context) => AuthCubit()..checkUser(),
+        ),
+        BlocProvider(
+          create: (context) => GetCommentCubit(),
+        ),
+        BlocProvider(
+          create: (context) => GenericDataCubit(),
         ),
       ],
       child: ScreenUtilInit(
@@ -71,4 +92,13 @@ void configLoading() {
     ..userInteractions = false
     ..maskType = EasyLoadingMaskType.black
     ..dismissOnTap = true;
+}
+
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+  }
 }

@@ -8,16 +8,14 @@ import 'package:tracio_fe/common/widget/blog/picture_card.dart';
 import 'package:tracio_fe/data/blog/models/request/react_blog_req.dart';
 import 'package:tracio_fe/domain/blog/entites/blog_entity.dart';
 import 'package:tracio_fe/domain/blog/usecase/react_blog.dart';
-import 'package:tracio_fe/presentation/blog/pages/detail_bloc.dart';
+import 'package:tracio_fe/presentation/blog/pages/detail_blog.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 import '../../../service_locator.dart';
-import 'react_blog.dart';
 
 class PostBlog extends StatefulWidget {
-  const PostBlog({super.key, required this.blogEntity, this.morewdget});
+  const PostBlog({super.key, required this.blogEntity});
   final BlogEntity blogEntity;
-  final Widget? morewdget;
 
   @override
   State<PostBlog> createState() => _PostBlogState();
@@ -59,7 +57,11 @@ class _PostBlogState extends State<PostBlog> {
               ),
               // Image.network(widget.blogEntity.avatar),
               trailling: GestureDetector(
-                  onTap: () => AppNavigator.push(context, DetailBlocPage()),
+                  onTap: () => AppNavigator.push(
+                      context,
+                      DetailBlocPage(
+                        blog: widget.blogEntity,
+                      )),
                   child: Icon(Icons.arrow_forward_ios_rounded))),
           SizedBox(
             height: 16.h,
@@ -70,7 +72,7 @@ class _PostBlogState extends State<PostBlog> {
               widget.blogEntity.content.toString(),
               style: TextStyle(
                   color: Colors.black,
-                  fontSize: 28.sp,
+                  fontSize: 32.sp,
                   fontWeight: FontWeight.w400),
             ),
           ),
@@ -83,7 +85,7 @@ class _PostBlogState extends State<PostBlog> {
                 await sl<ReactBlogUseCase>().call(ReactBlogReq(
                     entityId: widget.blogEntity.blogId, entityType: "blog"));
                 setState(() {
-                  widget.blogEntity.likesCount++;
+                  // widget.blogEntity.likesCount++;
                   widget.blogEntity.isReacted = true;
                   isAnimating = true;
                 });
@@ -115,11 +117,11 @@ class _PostBlogState extends State<PostBlog> {
                 : Container(),
           ),
           // _reactBlog(),
-          ReactBlog(
-            blogEntity: widget.blogEntity,
-          ),
+          // ReactBlog(
+          //   blogEntity: widget.blogEntity,
+          // ),
 
-          widget.morewdget ?? Container()
+          // widget.morewdget ?? Container()
         ],
       ),
     );

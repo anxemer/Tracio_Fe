@@ -9,7 +9,6 @@ import 'package:tracio_fe/core/configs/theme/app_colors.dart';
 import 'package:tracio_fe/core/configs/theme/assets/app_images.dart';
 import 'package:tracio_fe/core/erorr/failure.dart';
 import 'package:tracio_fe/data/auth/models/login_req.dart';
-import 'package:tracio_fe/domain/auth/usecases/login.dart';
 import 'package:tracio_fe/presentation/auth/bloc/authCubit/auth_cubit.dart';
 import 'package:tracio_fe/presentation/auth/pages/login_phone.dart';
 import 'package:tracio_fe/presentation/auth/pages/verify_email.dart';

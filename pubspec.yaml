@@ -68,11 +68,13 @@ dependencies:
   flutter_secure_storage: ^9.2.4
   flutter_easyloading:
   timeago:
-  signalr_netcore:
+  signalr_netcore: ^1.4.1
+  cached_network_image:
   flutter_test:
     sdk: flutter
 
   flutter_lints: ^5.0.0
+  web_socket_channel: ^3.0.2
 
 flutter:
   uses-material-design: true

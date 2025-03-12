@@ -3,7 +3,7 @@ class ApiUrl {
   static const baseURL = 'https://192.168.1.9:';
   // static const baseURL = 'https://10.10.1.66:';
   // static const baseURL = 'https://10.87.46.103:';
-  static const hubUrl = 'ws://192.168.1.9:5265/content-hub';
+  static const hubUrl = 'http://10.87.46.103:5002/content-hub';
   //port
   static const portUser = '5003';
   static const portBlog = '5002';
@@ -11,6 +11,7 @@ class ApiUrl {
   //Api User
   static const registerWithEP = '$portUser/api/auth/register-user';
   static const loginWithEP = '$portUser/api/auth/login';
+  static const userProfile = '$portUser/api/users';
 
   //Api Blog
   static const reactBlog = '$portBlog/api/reactions';
