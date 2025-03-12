@@ -63,14 +63,18 @@ dependencies:
   photo_manager: ^3.6.4
 
   internet_connection_checker:
+  connectivity_plus:
   equatable:
   flutter_secure_storage: ^9.2.4
   flutter_easyloading:
   timeago:
+  signalr_netcore: ^1.4.1
+  cached_network_image:
   flutter_test:
     sdk: flutter
 
   flutter_lints: ^5.0.0
+  web_socket_channel: ^3.0.2
 
 flutter:
   uses-material-design: true

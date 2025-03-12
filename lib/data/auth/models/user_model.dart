@@ -9,8 +9,8 @@ class UserModel extends UserEntity {
     super.userId,
     super.userName,
     super.email,
-    super.firebaseId,
-    super.phoneNumber,
+    // super.firebaseId,
+    // super.phoneNumber,
     super.profilePicture,
     required this.session,
   });
@@ -21,21 +21,18 @@ class UserModel extends UserEntity {
       'userId': userId,
       'userName': userName,
       'email': email,
-      'firebaseId': firebaseId,
-      'phoneNumber': phoneNumber,
       'profilePicture': profilePicture,
       'session': session.toMap(),
     };
   }
 
-  // Tạo object từ Map JSON (Dùng khi API trả về dữ liệu)
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
       userId: map['userId'] as int,
       userName: map['userName'] as String,
       email: map['email'] as String,
-      firebaseId: map['firebaseId'] as String,
-      phoneNumber: map['phoneNumber'] as String,
+      // firebaseId: map['firebaseId'] as String ,
+      // phoneNumber: map['phoneNumber'] as String ,
       profilePicture: map['profilePicture'] as String? ?? "", // Tránh null
       session: Session.fromMap(map['session']),
     );
@@ -74,8 +71,7 @@ class Session {
     return Session(
       accessToken: map['accessToken'] as String,
       refreshToken: map['refreshToken'] as String,
-      expiresAt:
-          DateTime.parse(map['expiresAt']), // API trả về đầy đủ -> parse luôn
+      expiresAt: DateTime.parse(map['expiresAt']),
     );
   }
 

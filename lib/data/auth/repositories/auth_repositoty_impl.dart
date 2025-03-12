@@ -69,7 +69,7 @@ class AuthRepositotyImpl extends AuthRepository {
   }
 
   @override
-  Future<Either<Failure, UserModel>> login(login) async {
+  Future<Either<Failure, UserEntity>> login(login) async {
     return await _authenticate(() {
       return sl<AuthApiService>().login(login);
     });
@@ -113,9 +113,8 @@ class AuthRepositotyImpl extends AuthRepository {
       try {
         final remoteResponse = await getDataSource();
         String token = remoteResponse.session.accessToken;
-        print(token);
         await sl<AuthLocalSource>().saveToken(token);
-        print(remoteResponse);
+        print('Token $token');
         sl<AuthLocalSource>().saveUser(remoteResponse);
         return Right(remoteResponse);
       } on DioException catch (e) {

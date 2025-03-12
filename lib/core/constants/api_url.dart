@@ -1,20 +1,22 @@
 class ApiUrl {
   //base Url
-  static const baseURL = 'http://192.168.1.9:';
-  // static const baseURL = 'http://10.0.1.232:';
-  // static const baseURL = 'http://10.87.46.103:';
+  static const baseURL = 'https://192.168.1.9:';
+  // static const baseURL = 'https://10.10.1.66:';
+  // static const baseURL = 'https://10.87.46.103:';
+  static const hubUrl = 'http://10.87.46.103:5002/content-hub';
   //port
-  static const portUser = '5186';
-  static const portBlog = '5265';
+  static const portUser = '5003';
+  static const portBlog = '5002';
 
   //Api User
   static const registerWithEP = '$portUser/api/auth/register-user';
   static const loginWithEP = '$portUser/api/auth/login';
+  static const userProfile = '$portUser/api/users';
 
   //Api Blog
   static const reactBlog = '$portBlog/api/reactions';
   static const unReactBlog = '$portBlog/api/reactions';
-  static const getReactBlog = '$portBlog/api/reactions';
+  static const getReactBlog = '$portBlog/api/blogs';
   static Uri urlGetBlog([Map<String, String>? params]) {
     return Uri.parse('$portBlog/api/blogs').replace(queryParameters: params);
   }

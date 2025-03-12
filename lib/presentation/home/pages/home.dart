@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tracio_fe/common/bloc/generic_data_cubit.dart';
 import 'package:tracio_fe/common/widget/navbar/navbar.dart';
+import 'package:tracio_fe/presentation/blog/bloc/comment/get_commnet_cubit.dart';
 import 'package:tracio_fe/presentation/blog/pages/blog.dart';
 
+import '../../../data/blog/models/request/get_blog_req.dart';
+import '../../blog/bloc/create_blog_cubit.dart';
+import '../../blog/bloc/get_blog_cubit.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -67,18 +73,34 @@ class _HomePageState extends State<HomePage>
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        body: BlogPage(
-          controller: _scrollController,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => GenericDataCubit(),
         ),
-        bottomNavigationBar: SlideTransition(
-          position: _slideAnimation,
-          child: AnimatedOpacity(
-            duration: Duration(milliseconds: 300),
-            opacity: _isNavbarVisible ? 1.0 : 0.0,
-            child: BasicNavbar(
-              isNavbarVisible: _isNavbarVisible,
+        BlocProvider(
+          create: (context) => GetBlogCubit()..getBlog(GetBlogReq()),
+        ),
+        BlocProvider(
+          create: (context) => CreateBlogCubit(),
+        ),
+        BlocProvider(
+          create: (context) => GetCommentCubit(),
+        ),
+      ],
+      child: SafeArea(
+        child: Scaffold(
+          body: BlogPage(
+            scrollController: _scrollController,
+          ),
+          bottomNavigationBar: SlideTransition(
+            position: _slideAnimation,
+            child: AnimatedOpacity(
+              duration: Duration(milliseconds: 300),
+              opacity: _isNavbarVisible ? 1.0 : 0.0,
+              child: BasicNavbar(
+                isNavbarVisible: _isNavbarVisible,
+              ),
             ),
           ),
         ),

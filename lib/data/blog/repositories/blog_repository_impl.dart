@@ -3,39 +3,43 @@ import 'package:dartz/dartz.dart';
 
 import 'package:tracio_fe/core/erorr/failure.dart';
 import 'package:tracio_fe/core/network/network_infor.dart';
+import 'package:tracio_fe/core/signalr_service.dart';
 import 'package:tracio_fe/data/blog/models/request/comment_blog_req.dart';
 import 'package:tracio_fe/data/blog/models/request/create_blog_req.dart';
 import 'package:tracio_fe/data/blog/models/request/get_reply_comment_req.dart';
 import 'package:tracio_fe/data/blog/models/request/react_blog_req.dart';
 import 'package:tracio_fe/data/blog/models/request/reply_comment_req.dart';
-import 'package:tracio_fe/data/blog/models/view/blog_model.dart';
-import 'package:tracio_fe/data/blog/models/view/category_blog.dart';
-import 'package:tracio_fe/data/blog/models/view/comment_blog_model.dart';
-import 'package:tracio_fe/data/blog/models/view/reaction_response_model.dart';
+import 'package:tracio_fe/data/blog/models/response/blog_response.dart';
+import 'package:tracio_fe/data/blog/models/response/get_reaction_blog.dart';
 import 'package:tracio_fe/data/blog/source/blog_api_service.dart';
 import 'package:tracio_fe/domain/blog/entites/category_blog.dart';
+import 'package:tracio_fe/domain/blog/entites/reaction_response_entity.dart';
 import 'package:tracio_fe/domain/blog/entites/reply_comment.dart';
 import 'package:tracio_fe/domain/blog/repositories/blog_repository.dart';
 
-import '../../../domain/blog/entites/blog_entity.dart';
 import '../../../domain/blog/entites/comment_blog.dart';
 import '../../../domain/blog/usecase/un_react_blog.dart';
-import '../../../service_locator.dart';
+import '../models/request/get_blog_req.dart';
 import '../models/request/get_comment_req.dart';
+
+typedef _ConcreteOrBlogChooser = Future<BlogResponse> Function();
 
 class BlogRepositoryImpl extends BlogRepository {
   final NetworkInfor networkInfo;
   final BlogApiService remoteDataSource;
+  final SignalRService signalRService;
 
   BlogRepositoryImpl({
     required this.networkInfo,
     required this.remoteDataSource,
+    required this.signalRService,
   });
   @override
-  Future<Either<Failure, List<BlogEntity>>> getBlogs() async {
-    if (await networkInfo.isConnected) {
+  Future<Either<Failure, BlogResponse>> getBlogs(GetBlogReq params) async {
+    final bool isConnected = await networkInfo.isConnected;
+    if (isConnected) {
       try {
-        var returnedData = await remoteDataSource.getBlogs();
+        var returnedData = await remoteDataSource.getBlogs(params);
         return Right(returnedData);
       } on ServerFailure {
         return Left(ServerFailure(''));
@@ -55,13 +59,13 @@ class BlogRepositoryImpl extends BlogRepository {
   }
 
   @override
-  Future<Either<Failure, ReactionResponseModel>> reactBlogs(
+  Future<Either<Failure, GetReactionBlogResponse>> reactBlogs(
       ReactBlogReq react) async {
     var returnedData = await remoteDataSource.reactBlog(react);
     return returnedData.fold((error) {
-      return left(error);
+      return left(ExceptionFailure(''));
     }, (data) {
-      return right(ReactionResponseModel.fromMap(data));
+      return right(GetReactionBlogResponse.fromMap(data));
     });
   }
 
@@ -120,7 +124,7 @@ class BlogRepositoryImpl extends BlogRepository {
 
   @override
   Future<Either<Failure, bool>> bookmarkBlogs(int blogId) async {
-    var returnedData = await remoteDataSource.bookmarkBlog(blogId);
+    await remoteDataSource.bookmarkBlog(blogId);
     return Right(true);
   }
 
@@ -149,6 +153,20 @@ class BlogRepositoryImpl extends BlogRepository {
       GetReplyCommentReq comment) async {
     try {
       var response = await remoteDataSource.getRepCommentBlog(comment);
+      if (response != []) {
+        return Right(response);
+      }
+      return Right([]);
+    } on Failure catch (e) {
+      return Left(e);
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<ReactionResponseEntity>>> getReactBlogs(
+      int blog) async {
+    try {
+      var response = await remoteDataSource.getReactBlog(blog);
       if (response != []) {
         return Right(response);
       }

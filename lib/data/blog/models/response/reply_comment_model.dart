@@ -23,7 +23,7 @@ class ReplyCommentModel extends ReplyCommentEntity {
       replyId: json["replyId"],
       cyclistId: json["cyclistId"],
       commentId: json["commentId"],
-      cyclistName: json["cyclistName"],
+      cyclistName: json["cyclistName"], 
       content: json["content"],
       isReacted: json["isReacted"],
       mediaFiles: json["mediaFiles"] == null

@@ -1,7 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:io';
 
-import '../../../data/blog/models/view/blog_model.dart';
+import '../../../data/blog/models/response/blog_model.dart';
 
 class ReplyCommentEntity {
   final int replyId;
@@ -9,10 +9,10 @@ class ReplyCommentEntity {
   final int commentId;
   final String cyclistName;
   final String content;
-  final bool isReacted;
+  bool isReacted;
   final List<MediaFile> mediaFiles;
-  final DateTime ?createdAt;
-  final int likesCount;
+  final DateTime? createdAt;
+  int likesCount;
   ReplyCommentEntity({
     required this.replyId,
     required this.cyclistId,
@@ -24,6 +24,4 @@ class ReplyCommentEntity {
     required this.createdAt,
     required this.likesCount,
   });
-
-
 }

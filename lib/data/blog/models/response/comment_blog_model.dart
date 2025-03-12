@@ -1,7 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
-import 'package:tracio_fe/data/blog/models/view/blog_model.dart';
+import 'package:tracio_fe/data/blog/models/response/blog_model.dart';
 import 'package:tracio_fe/domain/blog/entites/comment_blog.dart';
 
 List<CommentBlogModel> commentBlogModelListFromRemoteJson(String str) =>

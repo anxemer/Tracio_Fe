@@ -1,9 +1,6 @@
 import 'package:dio/dio.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:logger/logger.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tracio_fe/core/constants/api_url.dart';
-import 'package:tracio_fe/core/constants/app_urls.dart';
 import 'package:tracio_fe/data/auth/sources/auth_local_source/auth_local_source.dart';
 import 'package:tracio_fe/service_locator.dart';
 
@@ -18,7 +15,7 @@ class LoggerInterceptor extends Interceptor {
     final requestPath = '${options.baseUrl}${options.path}';
     logger.e('${options.method} request ==> $requestPath'); //Error log
     logger.d('Error type: ${err.error} \n '
-        'Error message: ${err.message}'); //Debug log
+        'Error message: ${err.response}'); //Debug log
     handler.next(err); //Continue with the Error
   }
 

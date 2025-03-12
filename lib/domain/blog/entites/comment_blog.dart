@@ -1,5 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import '../../../data/blog/models/view/blog_model.dart';
+import '../../../data/blog/models/response/blog_model.dart';
 
 class CommentBlogEntity {
   final int? commentId;

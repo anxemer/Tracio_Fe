@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:dio/io.dart';
 
 import '../constants/api_url.dart';
 import 'interceptors.dart';
@@ -13,8 +14,16 @@ class DioClient {
               responseType: ResponseType.json,
               sendTimeout: const Duration(seconds: 10),
               receiveTimeout: const Duration(seconds: 10)),
-        )..interceptors
-            .addAll([AuthorizationInterceptor(), LoggerInterceptor()]);
+        ) {
+    _dio.interceptors.addAll([AuthorizationInterceptor(), LoggerInterceptor()]);
+
+    // ignore: deprecated_member_use
+    (_dio.httpClientAdapter as IOHttpClientAdapter).onHttpClientCreate =
+        (client) {
+      client.badCertificateCallback = (cert, host, port) => true;
+      return client;
+    };
+  }
 
   // GET METHOD
   Future<Response> get(
