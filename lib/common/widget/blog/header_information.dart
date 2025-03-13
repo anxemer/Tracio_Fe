@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
-import '../../../core/configs/theme/assets/app_images.dart';
+import 'package:tracio_fe/core/constants/app_size.dart';
 
 class HeaderInformation extends StatelessWidget {
   const HeaderInformation(
@@ -20,16 +19,15 @@ class HeaderInformation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-        width: 750.w,
-        height: 100.h,
+        width: MediaQuery.of(context).size.width,
+        height: AppSize.bannerHeight.h,
         child: Center(
           child: ListTile(
-            leading: ClipOval(
+            leading: CircleAvatar(
               child: Container(
-                  decoration:
-                      BoxDecoration(borderRadius: BorderRadius.circular(60.sp)),
-                  width: widthImage ?? 80.w,
-                  // height: 100.h,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(double.infinity)),
+                  width: widthImage ?? AppSize.imageMedium.w,
                   child: imageUrl),
             ),
             title: title,

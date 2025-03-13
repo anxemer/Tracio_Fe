@@ -3,11 +3,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:tracio_fe/common/widget/drag_handle/drag_handle.dart';
+import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/data/blog/models/request/comment_blog_req.dart';
-import 'package:tracio_fe/data/blog/models/request/get_reply_comment_req.dart';
 import 'package:tracio_fe/data/blog/models/request/reply_comment_req.dart';
 import 'package:tracio_fe/domain/blog/usecase/comment_blog.dart';
-import 'package:tracio_fe/domain/blog/usecase/get_reply_comment.dart';
 import 'package:tracio_fe/domain/blog/usecase/rep_comment.dart';
 import 'package:tracio_fe/presentation/blog/widget/comment_item.dart';
 import 'package:tracio_fe/service_locator.dart';
@@ -15,7 +15,7 @@ import '../../../domain/blog/entites/comment_input_data.dart';
 import '../../../data/blog/models/request/get_comment_req.dart';
 import '../bloc/comment/comment_input_state.dart';
 import '../bloc/comment/get_comment_state.dart';
-import '../bloc/comment/get_commnet_cubit.dart';
+import '../bloc/comment/get_comment_cubit.dart';
 import '../bloc/comment/comment_input_cubit.dart';
 import 'comment_input.dart';
 
@@ -60,32 +60,30 @@ class _CommentState extends State<Comment> {
 
     switch (inputData.mode) {
       case CommentMode.blogComment:
-        if (widget.blogId != null) {
-          var result = await sl<CommentBlogUsecase>().call(
-            CommentBlogReq(
-              blogId: widget.blogId,
-              content: content,
-              mediaFiles: files,
-            ),
-          );
+        var result = await sl<CommentBlogUsecase>().call(
+          CommentBlogReq(
+            blogId: widget.blogId,
+            content: content,
+            mediaFiles: files,
+          ),
+        );
 
-          result.fold(
-            (error) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Gửi bình luận thất bại')),
-              );
-            },
-            (success) {
-              widget.cubit.getCommentBlog(GetCommentReq(
-                blogId: widget.blogId,
-                ascending: true,
-                commentId: 0,
-                pageNumber: 1,
-                pageSize: 10,
-              ));
-            },
-          );
-        }
+        result.fold(
+          (error) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Gửi bình luận thất bại')),
+            );
+          },
+          (success) {
+            widget.cubit.getCommentBlog(GetCommentReq(
+              blogId: widget.blogId,
+              ascending: true,
+              commentId: 0,
+              pageNumber: 1,
+              pageSize: 10,
+            ));
+          },
+        );
         break;
 
       case CommentMode.replyComment:
@@ -166,35 +164,37 @@ class _CommentState extends State<Comment> {
         builder: (context, state) {
           return ClipRRect(
             borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(32),
-              topRight: Radius.circular(32),
+              topLeft: Radius.circular(AppSize.borderRadiusLarge),
+              topRight: Radius.circular(AppSize.borderRadiusLarge),
             ),
             child: Container(
               color: Colors.white,
               child: Column(
                 children: [
-                  Padding(
-                    padding: EdgeInsets.only(top: 8.h),
-                    child: Container(
-                      width: 400.w,
-                      height: 3.h,
-                      color: Colors.black,
-                    ),
-                  ),
                   SizedBox(
                     height: 10.h,
                   ),
+                  DragHandle(
+                    width: MediaQuery.of(context).size.width * 0.3.w,
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
                   Text(
                     'Comments',
-                    style:
-                        TextStyle(fontWeight: FontWeight.w600, fontSize: 40.sp),
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: AppSize.textHeading.sp,
+                    ),
                   ),
                   Expanded(
                     child: _buildContent(state),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(
-                        bottom: 20.0, left: 10, right: 10),
+                        bottom: AppSize.apHorizontalPadding * 0.5,
+                        left: 10,
+                        right: 10),
                     child: BlocBuilder<CommentInputCubit, CommentInputState>(
                       builder: (context, inputState) {
                         return CommentInputWidget(
@@ -224,7 +224,7 @@ class _CommentState extends State<Comment> {
       return const Center(child: Text("Chưa có bình luận"));
     }
     if (state is GetCommentLoaded) {
-      final comments = state.listComment ?? [];
+      final comments = state.listComment;
       return comments.isEmpty
           ? const Center(child: Text("Chưa có bình luận"))
           : ListView.builder(

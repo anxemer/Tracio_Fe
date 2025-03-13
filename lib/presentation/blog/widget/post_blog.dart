@@ -6,6 +6,7 @@ import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
 import 'package:tracio_fe/common/widget/blog/animation_react.dart';
 import 'package:tracio_fe/common/widget/blog/header_information.dart';
 import 'package:tracio_fe/common/widget/blog/picture_card.dart';
+import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/data/blog/models/request/react_blog_req.dart';
 import 'package:tracio_fe/domain/blog/entites/blog_entity.dart';
 import 'package:tracio_fe/domain/blog/usecase/react_blog.dart';
@@ -31,61 +32,56 @@ class _PostBlogState extends State<PostBlog> {
         .map((file) => file.mediaUrl ?? "")
         .toList();
 
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            height: 1.h,
-            color: Colors.black38,
-          ),
-          HeaderInformation(
-            // widthImage: 70.w,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        HeaderInformation(
             title: Text(
               widget.blogEntity.userName,
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 40.sp),
+              style: TextStyle(
+                  fontWeight: FontWeight.bold, fontSize: AppSize.textLarge.sp),
             ),
             subtitle: Text(
               timeago.format(widget.blogEntity.createdAt!, locale: 'vi'),
-              style: TextStyle(fontSize: 20.sp),
+              style: TextStyle(fontSize: AppSize.textSmall.sp),
             ),
-            imageUrl: CachedNetworkImage(
-              imageUrl: widget.blogEntity.avatar,
-              fit: BoxFit.cover,
-              imageBuilder: (context, imageProvider) => CircleAvatar(
-                // radius: 30.sp,
-                backgroundImage: imageProvider,
+            imageUrl: Image.network(
+              widget.blogEntity.avatar,
+              height: AppSize.imageSmall.h,
+              fit: BoxFit.fill,
+              errorBuilder: (context, url, error) => CircleAvatar(
+                backgroundColor: Colors.grey.shade300,
+                radius: AppSize.imageSmall / 2.w,
+                child: Icon(
+                  Icons.person,
+                  size: AppSize.imageSmall / 2.w,
+                ),
               ),
-              // maxHeightDiskCache: 200,
-              // maxWidthDiskCache: 200,
             ),
-            // Image.network(widget.blogEntity.avatar),
-            // trailling: GestureDetector(
-            //     onTap: () => AppNavigator.push(
-            //         context,
-            //         DetailBlocPage(
-            //           blog: widget.blogEntity,
-            //         )),
-            //     child: Icon(Icons.arrow_forward_ios_rounded)),
+            trailling: GestureDetector(
+                onTap: () => AppNavigator.push(
+                    context,
+                    DetailBlocPage(
+                      blog: widget.blogEntity,
+                    )),
+                child: Icon(Icons.arrow_forward_ios_rounded))),
+        SizedBox(
+          height: 10.h,
+        ),
+        Padding(
+          padding: EdgeInsets.only(left: 20),
+          child: Text(
+            widget.blogEntity.content.toString(),
+            style: TextStyle(
+                color: Colors.black,
+                fontSize: AppSize.textMedium.sp,
+                fontWeight: FontWeight.w400),
           ),
-          SizedBox(
-            height: 16.h,
-          ),
-          Padding(
-            padding: EdgeInsets.only(left: 20),
-            child: Text(
-              widget.blogEntity.content.toString(),
-              style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 32.sp,
-                  fontWeight: FontWeight.w400),
-            ),
-          ),
-          SizedBox(
-            height: 16.h,
-          ),
-          GestureDetector(
+        ),
+        SizedBox(
+          height: 10.h,
+        ),
+        GestureDetector(
             onDoubleTap: () async {
               if (widget.blogEntity.isReacted == false) {
                 await sl<ReactBlogUseCase>().call(ReactBlogReq(
@@ -98,7 +94,7 @@ class _PostBlogState extends State<PostBlog> {
                 widget.onLikeUpdated;
               }
             },
-            child: mediaUrls != []
+            child: mediaUrls.isNotEmpty
                 ? Stack(alignment: Alignment.center, children: [
                     PictureCard(listImageUrl: mediaUrls),
                     AnimatedOpacity(
@@ -116,21 +112,19 @@ class _PostBlogState extends State<PostBlog> {
                         child: Icon(
                           Icons.favorite,
                           color: const Color.fromARGB(255, 242, 81, 78),
-                          size: 150.w,
+                          size: AppSize.iconLarge.w,
                         ),
                       ),
                     )
                   ])
-                : Container(),
-          ),
-          // _reactBlog(),
-          // ReactBlog(
-          //   blogEntity: widget.blogEntity,
-          // ),
+                : Container()),
+        // _reactBlog(),
+        // ReactBlog(
+        //   blogEntity: widget.blogEntity,
+        // ),
 
-          // widget.morewdget ?? Container()
-        ],
-      ),
+        // widget.morewdget ?? Container()
+      ],
     );
   }
 }

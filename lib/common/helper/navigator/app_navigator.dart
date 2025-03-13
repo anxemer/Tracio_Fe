@@ -10,7 +10,7 @@ class AppNavigator {
     Navigator.push(context, MaterialPageRoute(builder: (context) => widget));
   }
 
-  static void pusshAndRemove(BuildContext context, Widget widget) {
+  static void pushAndRemove(BuildContext context, Widget widget) {
     Navigator.pushAndRemoveUntil(context,
         MaterialPageRoute(builder: (context) => widget), (route) => false);
   }

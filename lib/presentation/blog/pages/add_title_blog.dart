@@ -82,7 +82,7 @@ class _AddTitleBlogPageState extends State<AddTitleBlogPage> {
               }
               if (state is CreateBlogSuccess) {
                 Future.microtask(() {
-                  AppNavigator.pusshAndRemove(context, HomePage());
+                  AppNavigator.pushAndRemove(context, HomePage());
                 });
               }
               return Padding(

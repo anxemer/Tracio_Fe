@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tracio_fe/common/widget/button/text_button.dart';
+import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/domain/blog/entites/blog_entity.dart';
 import 'package:tracio_fe/domain/blog/usecase/bookmark_blog.dart';
 import 'package:tracio_fe/domain/blog/usecase/unBookmark.dart';
@@ -10,7 +10,6 @@ import '../../../data/blog/models/request/react_blog_req.dart';
 import '../../../domain/blog/usecase/react_blog.dart';
 import '../../../domain/blog/usecase/un_react_blog.dart';
 import '../../../service_locator.dart';
-import '../bloc/comment/get_commnet_cubit.dart';
 
 class ReactBlog extends StatefulWidget {
   ReactBlog(
@@ -37,17 +36,12 @@ class _ReactBlogState extends State<ReactBlog> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        SizedBox(
-          height: 20.h,
-        ),
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20.w),
+          padding:
+              EdgeInsets.symmetric(horizontal: AppSize.apHorizontalPadding.w),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              SizedBox(
-                width: 20.w,
-              ),
               Row(
                 children: [
                   GestureDetector(
@@ -89,8 +83,8 @@ class _ReactBlogState extends State<ReactBlog> {
                             : Icons.favorite_border_outlined,
                         color: widget.blogEntity.isReacted
                             ? Colors.red
-                            : Colors.black,
-                        size: 44.sp,
+                            : Colors.black87,
+                        size: AppSize.iconMedium*1.2.sp,
                       )),
                   SizedBox(
                     width: 10.w,
@@ -110,7 +104,7 @@ class _ReactBlogState extends State<ReactBlog> {
                     child: Icon(
                       Icons.comment_outlined,
                       color: Colors.black,
-                      size: 44.sp,
+                      size: AppSize.iconMedium*1.2.sp,
                     ),
                   ),
                   SizedBox(
@@ -152,7 +146,7 @@ class _ReactBlogState extends State<ReactBlog> {
                       ? Icons.bookmark_added_rounded
                       : Icons.bookmark_border,
                   color: Colors.black,
-                  size: 44.sp,
+                  size: AppSize.iconMedium*1.2.sp,
                 ),
               ),
             ],

@@ -41,7 +41,7 @@ class _LoginPageState extends State<LoginPage> {
             Future.microtask(
               () {
                 EasyLoading.dismiss();
-                AppNavigator.pusshAndRemove(context, HomePage());
+                AppNavigator.pushAndRemove(context, HomePage());
               },
             );
           }
