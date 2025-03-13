@@ -3,6 +3,8 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 
+import '../../../core/configs/theme/app_colors.dart';
+
 class BasicNavbar extends StatefulWidget {
   const BasicNavbar({super.key});
 
