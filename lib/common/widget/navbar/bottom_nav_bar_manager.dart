@@ -5,6 +5,7 @@ import 'package:tracio_fe/core/configs/theme/app_colors.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/presentation/exploration/page/exploration.dart';
 import 'package:tracio_fe/presentation/home/pages/home.dart';
+import 'package:tracio_fe/presentation/map/pages/cycling.dart';
 import 'package:tracio_fe/presentation/map/pages/route_planner.dart';
 import 'package:tracio_fe/presentation/more/page/more.dart';
 import 'package:tracio_fe/presentation/service/page/service.dart';
@@ -20,8 +21,8 @@ class _BottomNavBarManagerState extends State<BottomNavBarManager> {
   int _selectedIndex = 0;
   final List<Widget> _screens = [
     HomePage(),
-    ExplorationPage(),
     RoutePlanner(),
+    CyclingPage(),
     ServicePage(),
     MorePage(),
   ];

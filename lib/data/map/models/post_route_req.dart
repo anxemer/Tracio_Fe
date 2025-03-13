@@ -8,6 +8,7 @@ class PostRouteReq {
   final Location? avoid;
   final List<String>? avoidsRoads;
   final bool optimize;
+  final String staticImage;
 
   PostRouteReq({
     required this.origin,
@@ -19,6 +20,7 @@ class PostRouteReq {
     this.avoid,
     this.avoidsRoads,
     this.optimize = false,
+    required this.staticImage,
   });
 
   factory PostRouteReq.fromJson(Map<String, dynamic> json) {
@@ -34,6 +36,7 @@ class PostRouteReq {
       avoidsRoads:
           (json['avoidsRoads'] as List?)?.map((e) => e as String).toList(),
       optimize: json['optimize'] ?? false,
+      staticImage: json['thumbnail'].toString(),
     );
   }
 
@@ -48,6 +51,7 @@ class PostRouteReq {
       'avoid': avoid?.toJson(),
       'avoidsRoads': avoidsRoads,
       'optimize': optimize,
+      'thumbnail': staticImage,
     };
   }
 }

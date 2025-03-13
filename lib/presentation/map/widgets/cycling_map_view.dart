@@ -18,13 +18,11 @@ class CyclingMapView extends StatefulWidget {
 class _CyclingMapViewState extends State<CyclingMapView> {
   StreamSubscription? locationSubscription;
   List<mapbox.Position> routePoints = [];
-  mapbox.MapboxMap? mapboxMap; // Store the map instance
   bool isMapInitialized = false;
 
   @override
   void initState() {
     super.initState();
-    // context.read<LocationBloc>().add(StartLocationTracking());
   }
 
   @override
@@ -47,7 +45,6 @@ class _CyclingMapViewState extends State<CyclingMapView> {
                 key: const ValueKey("mapWidget"),
                 cameraOptions: mapCubit.camera,
                 onMapCreated: (map) {
-                  mapboxMap = map;
                   mapCubit.initializeMap(map, forRiding: true);
                   isMapInitialized = true;
                 },
@@ -69,7 +66,9 @@ class _CyclingMapViewState extends State<CyclingMapView> {
     setState(() {
       routePoints.add(newPoint);
     });
-
+    if (routePoints.length > 100) {
+      routePoints.removeAt(0);
+    }
     final lineString = mapbox.LineString(coordinates: routePoints);
 
     await mapCubit.addPolylineRoute(lineString);

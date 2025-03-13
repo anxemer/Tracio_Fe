@@ -1,14 +1,14 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_polyline_algorithm/google_polyline_algorithm.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:tracio_fe/common/helper/custom_paint/numbered_circle_painter.dart';
-import 'package:tracio_fe/core/configs/theme/app_colors.dart';
 import 'package:tracio_fe/core/configs/utils/color_utils.dart';
+import 'package:tracio_fe/core/constants/api_url.dart';
 import 'package:tracio_fe/core/constants/app_urls.dart';
 import 'package:tracio_fe/presentation/map/bloc/map_state.dart';
 
@@ -24,8 +24,7 @@ class MapCubit extends Cubit<MapCubitState> {
     pitch: 10,
   );
 
-  Snapshotter? _snapshotter;
-  Image? snapshotImage;
+  Uri? snapshotImageUrl;
 
   List<PointAnnotationOptions> pointAnnotations = [];
   PointAnnotationManager? pointAnnotationManager;
@@ -144,7 +143,6 @@ class MapCubit extends Cubit<MapCubitState> {
         iconAnchor: IconAnchor.BOTTOM);
 
     pointAnnotationManager?.create(annotation);
-
     pointAnnotations.add(annotation);
     emit(MapAnnotationsUpdated(annotations: List.from(pointAnnotations)));
   }
@@ -273,210 +271,31 @@ class MapCubit extends Cubit<MapCubitState> {
     _updateAnnotationsOnMap();
   }
 
-  Future<void> initSnapshot({
-    double width = 400,
-    double height = 600,
-    String styleURI = MapboxStyles.MAPBOX_STREETS,
-  }) async {
-    _snapshotter = await Snapshotter.create(
-      options: MapSnapshotOptions(
-        size: Size(width: width, height: height),
-        pixelRatio: 2.0,
-        showsAttribution: false,
-        showsLogo: false,
-      ),
-    );
-
-    _snapshotter?.style.setStyleURI(styleURI);
-  }
-
   Future<void> getSnapshot(
       LineString lineString, Position start, Position end) async {
     emit(StaticImageLoading());
-    await initSnapshot();
-    if (mapboxMap == null || _snapshotter == null) {
-      emit(StaticImageFailure(
-          errorMessage: "Mapbox Snapshotter not initialized"));
-      return;
-    }
-
     try {
-      // 🔹 Compute Bounding Box (Fit all points in view)
-      final cameraOptions = _calculateBoundingCamera(lineString.coordinates);
-      _snapshotter?.setCamera(cameraOptions);
+      // Encode the polyline coordinates to a string
 
-      // 🔹 Add Polyline & Waypoints
-      await _addPolylineToSnapshot(lineString);
-      await _addWaypointsToSnapshot([start, end]);
+      String polylineEncoded = encodePolyline(lineString.coordinates
+          .map((point) => [point.lat, point.lng])
+          .toList());
 
-      final snapshot = await _snapshotter?.start();
+      if (polylineEncoded.isNotEmpty) {
+        snapshotImageUrl = ApiUrl.urlGetStaticImageMapbox(
+          dotenv.env['MAPBOX_ACCESS_TOKEN']!,
+          [start.lng, start.lat],
+          [end.lng, end.lat],
+          polylineEncoded,
+        );
 
-      if (snapshot != null) {
-        snapshotImage = Image.memory(snapshot);
-        emit(StaticImageLoaded(snapshot: snapshotImage));
+        // Assuming `snapshotImage` is set properly with the image URL
+        emit(StaticImageLoaded(snapshot: snapshotImageUrl));
       } else {
         emit(StaticImageFailure(errorMessage: "Error capturing snapshot"));
       }
     } catch (e) {
       emit(StaticImageFailure(errorMessage: "Error capturing snapshot: $e"));
     }
-  }
-
-  void cancelSnapshot() async {
-    snapshotImage = null;
-    _snapshotter?.clearData();
-    _snapshotter?.cancel();
-
-    try {
-      // ✅ Remove polyline source & layer
-      await _snapshotter?.style.removeStyleLayer("polyline_layer");
-      await _snapshotter?.style.removeStyleSource("polyline_source");
-
-      // ✅ Remove all waypoint sources & layers
-      for (int i = 0; i < 10; i++) {
-        // Assume max 10 waypoints
-        await _snapshotter?.style.removeStyleLayer("waypoint_layer_$i");
-        await _snapshotter?.style.removeStyleSource("waypoint_source_$i");
-      }
-    } catch (e) {
-      print("Error removing sources: $e");
-    }
-
-    emit(StaticImageFailure(errorMessage: "Snapshot Cancelled"));
-  }
-
-  Future<void> _addPolylineToSnapshot(LineString lineString) async {
-    final polylineSource = GeoJsonSource(
-      id: "polyline_source",
-      data: jsonEncode({
-        "type": "Feature",
-        "geometry": {
-          "type": "LineString",
-          "coordinates":
-              lineString.coordinates.map((pos) => [pos.lng, pos.lat]).toList(),
-        },
-      }),
-    );
-
-    await _snapshotter!.style.addSource(polylineSource);
-
-    final polylineLayer = LineLayer(
-      id: "polyline_layer",
-      sourceId: "polyline_source",
-      lineColor: AppColors.secondBackground.toInt(),
-      lineWidth: 10.0,
-    );
-
-    await _snapshotter!.style.addLayer(polylineLayer);
-  }
-
-  Future<void> _addWaypointsToSnapshot(List<Position> waypoints) async {
-    if (waypoints.length < 2) return;
-    await _addStyleImage("start-flag", "assets/images/start-flag.png");
-    await _addStyleImage("end-flag", "assets/images/end-flag.png");
-    for (var i = 0; i < waypoints.length; i++) {
-      String markerType = (i == 0)
-          ? "start-flag"
-          : (i == waypoints.length - 1)
-              ? "end-flag"
-              : "marker-icon";
-
-      final waypointSource = GeoJsonSource(
-        id: "waypoint_source_$i",
-        data: jsonEncode({
-          "type": "Feature",
-          "geometry": {
-            "type": "Point",
-            "coordinates": [waypoints[i].lng, waypoints[i].lat],
-          },
-        }),
-      );
-
-      await _snapshotter!.style.addSource(waypointSource);
-
-      final waypointLayer = SymbolLayer(
-        id: "waypoint_layer_$i",
-        sourceId: "waypoint_source_$i",
-        iconImage: markerType,
-        iconSize: 1, // Adjust marker size
-        iconAnchor: IconAnchor.BOTTOM, // Ensure bottom aligns with position
-      );
-
-      await _snapshotter!.style.addLayer(waypointLayer);
-    }
-  }
-
-  CameraOptions _calculateBoundingCamera(List<Position> positions) {
-    double minLat = double.infinity, maxLat = double.negativeInfinity;
-    double minLng = double.infinity, maxLng = double.negativeInfinity;
-
-    for (var pos in positions) {
-      if (pos.lat < minLat) minLat = pos.lat.toDouble();
-      if (pos.lat > maxLat) maxLat = pos.lat.toDouble();
-      if (pos.lng < minLng) minLng = pos.lng.toDouble();
-      if (pos.lng > maxLng) maxLng = pos.lng.toDouble();
-    }
-
-    final center = Position((minLng + maxLng) / 2, (minLat + maxLat) / 2);
-    final zoom = _calculateOptimalZoom(minLat, maxLat, minLng, maxLng);
-
-    return CameraOptions(
-      center: Point(coordinates: center),
-      zoom: zoom,
-      pitch: 0,
-      bearing: 0,
-    );
-  }
-
-// 🔹 Function: Calculate Optimal Zoom Level
-  double _calculateOptimalZoom(
-      double minLat, double maxLat, double minLng, double maxLng) {
-    final latDiff = maxLat - minLat;
-    final lngDiff = maxLng - minLng;
-    final maxDiff = latDiff > lngDiff ? latDiff : lngDiff;
-
-    if (maxDiff < 0.01) return 16; // Very close
-    if (maxDiff < 0.1) return 13; // Medium distance
-    if (maxDiff < 1) return 10; // Large distance
-    return 7; // Very large distance
-  }
-
-  /// 📌 **Load & Resize Image to Valid Dimensions**
-  Future<void> _addStyleImage(String imageId, String assetPath) async {
-    final ByteData bytes = await rootBundle.load(assetPath);
-    final Uint8List imageData = bytes.buffer.asUint8List();
-
-    // 🛠 Ensure Image is a Power-of-Two Size
-    Uint8List resizedImage =
-        await _resizeImageToPowerOfTwo(imageData, 64, 64); // Resize to 64x64
-
-    MbxImage mbxImage = MbxImage(
-      width: 64, // Must be power-of-two
-      height: 64, // Must be power-of-two
-      data: resizedImage,
-    );
-
-    await _snapshotter!.style.addStyleImage(
-      imageId,
-      1.0, // Scale factor
-      mbxImage,
-      false, // SDF (Symbol Distance Field) - set to false
-      [], // Stretch X
-      [], // Stretch Y
-      null, // Image content
-    );
-  }
-
-  /// 📌 **Resize Image to Power-of-Two Dimensions**
-  Future<Uint8List> _resizeImageToPowerOfTwo(
-      Uint8List imageData, int targetWidth, int targetHeight) async {
-    ui.Codec codec = await ui.instantiateImageCodec(imageData,
-        targetWidth: targetWidth, targetHeight: targetHeight);
-    ui.FrameInfo frameInfo = await codec.getNextFrame();
-    ui.Image resizedImage = frameInfo.image;
-
-    ByteData? byteData =
-        await resizedImage.toByteData(format: ui.ImageByteFormat.png);
-    return byteData!.buffer.asUint8List();
   }
 }

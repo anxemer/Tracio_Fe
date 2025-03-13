@@ -127,7 +127,7 @@ class _RouteDetailPanelState extends State<RouteDetailPanel> {
                         final result = await Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (context) => SnapshotDisplayPage(
-                              snapshotImage: mapCubit.snapshotImage!,
+                              snapshotImage: mapCubit.snapshotImageUrl!,
                               metricsSection: _buildEmptyMetricsData(),
                             ),
                           ),
@@ -151,14 +151,11 @@ class _RouteDetailPanelState extends State<RouteDetailPanel> {
                             avoidsRoads: ["ferry"],
                             optimize: false,
                             weighting: 2,
+                            staticImage: mapCubit.snapshotImageUrl!.toString(),
                           );
 
                           BlocProvider.of<RouteCubit>(context)
                               .postRoute(request);
-                        } else if (result == 'canceled') {
-                          mapCubit.cancelSnapshot();
-                        } else {
-                          mapCubit.cancelSnapshot();
                         }
                       }
                     } else if (state is StaticImageFailure) {
@@ -301,7 +298,7 @@ class _RouteDetailPanelState extends State<RouteDetailPanel> {
 
   String _encodePolyline(LineString lineString) {
     final listNum = lineString.coordinates
-        .map((position) => [position.lng, position.lat])
+        .map((position) => [position.lat, position.lng])
         .toList();
 
     return encodePolyline(listNum);

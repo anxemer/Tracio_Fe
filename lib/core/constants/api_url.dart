@@ -113,4 +113,27 @@ class ApiUrl {
 
   static const postRoute = '$portRoute/api/route';
   static const locationHubUrl = 'http://localhost:$portRoute/locationHub';
+
+  static Uri urlGetStaticImageMapbox(String accessToken, List<num> start,
+      List<num> end, String polylineEncoded) {
+    final startNum = '${start[0]},${start[1]}';
+    final endNum = '${end[0]},${end[1]}';
+
+    final strokeWidth = 5;
+    final strokeColor = 'f44';
+
+    final points = 'pin-s-a+9ed4bd($startNum),pin-s-b+000($endNum)';
+
+    final path = 'path-$strokeWidth+$strokeColor($polylineEncoded)';
+
+    final uri = Uri.https(
+      'api.mapbox.com',
+      '/styles/v1/mapbox/streets-v12/static/$points,$path/auto/400x700',
+      {
+        'access_token': accessToken,
+      },
+    );
+
+    return uri;
+  }
 }

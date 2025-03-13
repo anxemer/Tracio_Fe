@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tracio_fe/core/configs/theme/app_colors.dart';
 
 class SnapshotDisplayPage extends StatelessWidget {
-  final Image snapshotImage;
+  final Uri snapshotImage;
   final Widget metricsSection;
 
   const SnapshotDisplayPage({
@@ -16,8 +16,7 @@ class SnapshotDisplayPage extends StatelessWidget {
     return PopScope(
       onPopInvokedWithResult: (didPop, result) {
         if (!didPop && Navigator.canPop(context)) {
-          Navigator.pop(
-              context, 'canceled');
+          Navigator.pop(context, 'canceled');
         }
       },
       child: Scaffold(
@@ -28,7 +27,7 @@ class SnapshotDisplayPage extends StatelessWidget {
             child: Stack(
               children: [
                 Positioned.fill(
-                  child: snapshotImage,
+                  child: Image.network(snapshotImage.toString()),
                 ),
                 Positioned(
                   top: 16,
@@ -100,7 +99,7 @@ class SnapshotDisplayPage extends StatelessWidget {
                           ),
                           onPressed: () {
                             if (Navigator.canPop(context)) {
-                              Navigator.pop(context, 'canceled');
+                              Navigator.pop(context, 'save');
                             }
                           },
                           child: Text("Save",

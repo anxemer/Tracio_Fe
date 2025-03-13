@@ -56,9 +56,16 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
 
     bg.BackgroundGeolocation.ready(bg.Config(
       desiredAccuracy: bg.Config.DESIRED_ACCURACY_HIGH,
-      distanceFilter: 5.0, // Update location every 5 meters
+      distanceFilter: 10.0, // Update location every 5 meters
       stopOnTerminate: false,
       foregroundService: true,
+      backgroundPermissionRationale: bg.PermissionRationale(
+          title:
+              "Allow Tracio to access this device's location even when the app is closed or not in use.",
+          message:
+              "This app collects location data to enable recording your trips to work and calculate distance-travelled.",
+          positiveAction: 'Change to "{backgroundPermissionOptionLabel}"',
+          negativeAction: 'Cancel'),
       logLevel: bg.Config.LOG_LEVEL_INFO,
     )).then((bg.State state) {
       if (!state.enabled) {
@@ -88,9 +95,9 @@ class LocationBloc extends Bloc<LocationEvent, LocationState> {
   }
 
   void _onStopTracking(
-      StopLocationTracking event, Emitter<LocationState> emit) {
+      StopLocationTracking event, Emitter<LocationState> emit) async {
     bg.BackgroundGeolocation.stop();
-    bg.BackgroundGeolocation.destroyLocations();
+    await bg.BackgroundGeolocation.removeListeners();
     _debounceTimer?.cancel();
     emit(LocationInitial());
   }
