@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -14,9 +15,9 @@ import 'package:timeago/timeago.dart' as timeago;
 import '../../../service_locator.dart';
 
 class PostBlog extends StatefulWidget {
-  const PostBlog({super.key, required this.blogEntity});
+  const PostBlog({super.key, required this.blogEntity, this.onLikeUpdated});
   final BlogEntity blogEntity;
-
+  final Function()? onLikeUpdated;
   @override
   State<PostBlog> createState() => _PostBlogState();
 }
@@ -40,29 +41,34 @@ class _PostBlogState extends State<PostBlog> {
             color: Colors.black38,
           ),
           HeaderInformation(
-              // widthImage: 70.w,
-              title: Text(
-                widget.blogEntity.userName,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 40.sp),
+            // widthImage: 70.w,
+            title: Text(
+              widget.blogEntity.userName,
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 40.sp),
+            ),
+            subtitle: Text(
+              timeago.format(widget.blogEntity.createdAt!, locale: 'vi'),
+              style: TextStyle(fontSize: 20.sp),
+            ),
+            imageUrl: CachedNetworkImage(
+              imageUrl: widget.blogEntity.avatar,
+              fit: BoxFit.cover,
+              imageBuilder: (context, imageProvider) => CircleAvatar(
+                // radius: 30.sp,
+                backgroundImage: imageProvider,
               ),
-              subtitle: Text(
-                timeago.format(widget.blogEntity.createdAt!, locale: 'vi'),
-                style: TextStyle(fontSize: 20.sp),
-              ),
-              imageUrl: Image.network(
-                widget.blogEntity.avatar,
-                // width: 80.w,
-                height: 80.h,
-                fit: BoxFit.fill,
-              ),
-              // Image.network(widget.blogEntity.avatar),
-              trailling: GestureDetector(
-                  onTap: () => AppNavigator.push(
-                      context,
-                      DetailBlocPage(
-                        blog: widget.blogEntity,
-                      )),
-                  child: Icon(Icons.arrow_forward_ios_rounded))),
+              // maxHeightDiskCache: 200,
+              // maxWidthDiskCache: 200,
+            ),
+            // Image.network(widget.blogEntity.avatar),
+            // trailling: GestureDetector(
+            //     onTap: () => AppNavigator.push(
+            //         context,
+            //         DetailBlocPage(
+            //           blog: widget.blogEntity,
+            //         )),
+            //     child: Icon(Icons.arrow_forward_ios_rounded)),
+          ),
           SizedBox(
             height: 16.h,
           ),
@@ -85,10 +91,11 @@ class _PostBlogState extends State<PostBlog> {
                 await sl<ReactBlogUseCase>().call(ReactBlogReq(
                     entityId: widget.blogEntity.blogId, entityType: "blog"));
                 setState(() {
-                  // widget.blogEntity.likesCount++;
+                  widget.blogEntity.likesCount++;
                   widget.blogEntity.isReacted = true;
                   isAnimating = true;
                 });
+                widget.onLikeUpdated;
               }
             },
             child: mediaUrls != []

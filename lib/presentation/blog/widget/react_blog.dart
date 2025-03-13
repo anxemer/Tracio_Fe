@@ -57,7 +57,7 @@ class _ReactBlogState extends State<ReactBlog> {
                               id: widget.blogEntity.blogId, type: 'blog'));
                           setState(() {
                             // if (widget.blogEntity.likesCount > 0) {
-                            //   widget.blogEntity.likesCount--;
+                            widget.blogEntity.likesCount--;
                             // }
 
                             widget.blogEntity.isReacted = false;
@@ -76,7 +76,7 @@ class _ReactBlogState extends State<ReactBlog> {
                             // context.read<ReactBlogCubit>().reactBlog(isReact);
 
                             setState(() {
-                              // widget.blogEntity.likesCount++;
+                              widget.blogEntity.likesCount++;
                               // widget.blogEntity.reactionId = data.reactionId!;
                               widget.blogEntity.isReacted = isReact;
                             });

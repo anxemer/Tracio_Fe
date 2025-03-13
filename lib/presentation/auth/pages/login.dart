@@ -46,11 +46,7 @@ class _LoginPageState extends State<LoginPage> {
             );
           }
         } else if (state is AuthFailure) {
-          if (state.failure is CredentialFailure) {
-            EasyLoading.showError("Username/Password Wrong!");
-          } else {
-            EasyLoading.showError(state.failure.toString());
-          }
+          EasyLoading.showError("Username/Password Wrong!");
         }
         return Scaffold(
           body: SingleChildScrollView(

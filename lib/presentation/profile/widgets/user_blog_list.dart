@@ -71,15 +71,15 @@ class _UserBlogListState extends State<UserBlogList> {
             ),
             action: Row(
               children: [
-                FloatingButton(
-                  elevation: 0,
-                  backgroundColor: Colors.transparent,
-                  onPressed: () {},
-                  action: Icon(
-                    Icons.more_vert_outlined,
-                    color: Colors.black,
-                  ),
-                ),
+                // FloatingButton(
+                //   elevation: 0,
+                //   backgroundColor: Colors.transparent,
+                //   onPressed: () {},
+                //   action: Icon(
+                //     Icons.more_vert_outlined,
+                //     color: Colors.black,
+                //   ),
+                // ),
               ],
             )),
         body: BlocBuilder<GetBlogCubit, GetBlogState>(

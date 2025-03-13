@@ -12,7 +12,7 @@ class BasicTextButton extends StatelessWidget {
       child: Text(
         text,
         style: TextStyle(
-            fontWeight: FontWeight.bold, fontSize: 28.sp, color: Colors.black),
+            fontWeight: FontWeight.bold, fontSize: 32.sp, color: Colors.black),
       ),
     );
   }

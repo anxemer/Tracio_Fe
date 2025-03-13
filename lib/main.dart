@@ -53,9 +53,9 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           create: (context) => AuthCubit(),
         ),
-        BlocProvider(
-          create: (context) => AuthCubit()..checkUser(),
-        ),
+        // BlocProvider(
+        //   create: (context) => AuthCubit()..checkUser(),
+        // ),
         BlocProvider(
           create: (context) => GetCommentCubit(),
         ),

@@ -188,15 +188,13 @@ class _CreateBlogPageState extends State<CreateBlogPage> {
               padding: EdgeInsets.symmetric(horizontal: 10.w),
               child: GestureDetector(
                 onTap: () {
-                  if (selectedFiles.isNotEmpty) {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => AddTitleBlogPage(
-                          file: selectedFiles, // Truyền danh sách ảnh đã chọn
-                        ),
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => AddTitleBlogPage(
+                        file: selectedFiles, // Truyền danh sách ảnh đã chọn
                       ),
-                    );
-                  }
+                    ),
+                  );
                 },
                 child: Text(
                   'Next',
