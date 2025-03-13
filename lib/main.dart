@@ -31,6 +31,11 @@ Future<void> main() async {
     statusBarIconBrightness: Brightness.light,
     statusBarBrightness: Brightness.dark,
   ));
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    statusBarColor: Colors.grey.shade700,
+    statusBarIconBrightness: Brightness.light,
+    statusBarBrightness: Brightness.dark,
+  ));
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   try {
