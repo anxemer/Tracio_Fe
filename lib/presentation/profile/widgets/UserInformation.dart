@@ -1,6 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
 import 'package:tracio_fe/domain/user/entities/user_profile_entity.dart';
+import 'package:tracio_fe/presentation/profile/pages/edit_profile.dart';
 
 import '../../../common/widget/blog/header_information.dart';
 import '../../../core/configs/theme/app_colors.dart';
@@ -16,11 +19,11 @@ class Userinformation extends StatelessWidget {
       height: 400.w,
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          color: Colors.lightBlueAccent.withValues(alpha: .07)),
+          color: const Color.fromARGB(255, 255, 255, 255)),
       child: Column(
         children: [
           HeaderInformation(
-              widthImage: 120.w,
+              widthImage: 100.w,
               subtitle: Text(
                 '${user.district} ${user.city!}',
                 style: TextStyle(
@@ -35,10 +38,16 @@ class Userinformation extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                     fontSize: 40.sp),
               ),
-              imageUrl: Image.asset(AppImages.man),
-              trailling: SizedBox(
-                child: Image.asset(AppImages.edit),
-                width: 40.w,
+              imageUrl: CachedNetworkImage(
+                imageUrl: user.profilePicture!,
+                fit: BoxFit.cover,
+              ),
+              trailling: InkWell(
+                onTap: () => AppNavigator.push(context, EditProfilePage(user: user,)),
+                child: SizedBox(
+                  child: Image.asset(AppImages.edit),
+                  width: 40.w,
+                ),
               )),
           SizedBox(
             height: 40.h,

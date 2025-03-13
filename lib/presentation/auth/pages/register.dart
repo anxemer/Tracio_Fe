@@ -200,6 +200,8 @@ class RegisterPage extends StatelessWidget {
   Widget _buttonRegister(BuildContext context) {
     return GestureDetector(
         onTap: () async {
+          // print(firebaseId.toString());
+
           var result = await sl<RegisterWithEmailAndPassUseCase>().call(
               RegisterReq(
                   firebaseId: firebaseId.toString(),
@@ -215,7 +217,7 @@ class RegisterPage extends StatelessWidget {
           }, (r) {
             Future.microtask(
               () {
-                AppNavigator.pushReplacement(context, HomePage());
+                AppNavigator.pushReplacement(context, LoginPage());
               },
             );
           });

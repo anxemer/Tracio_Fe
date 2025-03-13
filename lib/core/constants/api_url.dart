@@ -17,6 +17,7 @@ class ApiUrl {
 
   //Api User
   static const registerWithEP = '$portUser/api/auth/register-user';
+  static const sendVerifyEmail = '$portUser/api/auth/send-verify-email';
   static const loginWithEP = '$portUser/api/auth/login';
   static const userProfile = '$portUser/api/users';
 

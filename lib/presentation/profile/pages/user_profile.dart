@@ -19,7 +19,9 @@ class UserProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey.shade300,
       appBar: BasicAppbar(
+          backgroundColor: Colors.white,
           height: 100.h,
           hideBack: false,
           title: Text(
@@ -52,101 +54,104 @@ class UserProfilePage extends StatelessWidget {
               ..getBlog(GetBlogReq(userId: userId.toString(), pageSize: 10)),
           ),
         ],
-        child: Column(
-          children: [
-            BlocBuilder<UserProfileCubit, UserProfileState>(
-              builder: (context, state) {
-                if (state is UserProfileLoaded) {
-                  return Userinformation(
-                    user: state.userProfileEntity,
-                  );
-                }
-                return Container();
-              },
-            ),
-            SizedBox(
-              height: 20.h,
-            ),
-            Container(
-              width: double.infinity,
-              // height: 400.w,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: Colors.lightBlueAccent.withValues(alpha: .07)),
-              child: Column(
-                children: [
-                  ListTile(
-                    leading: Text(
-                      'Activities',
-                      style: TextStyle(
-                          fontSize: 32.sp, fontWeight: FontWeight.w600),
-                    ),
-                    trailing: Icon(Icons.navigate_next),
-                  ),
-                  Container(
-                    width: 600.w,
-                    height: 3.h,
-                    color: Colors.grey.shade500,
-                  ),
-                  ListTile(
-                    leading: Text(
-                      'Statistics',
-                      style: TextStyle(
-                          fontSize: 32.sp, fontWeight: FontWeight.w600),
-                    ),
-                    trailing: Icon(Icons.navigate_next),
-                  ),
-                  Container(
-                    width: 600.w,
-                    height: 3.h,
-                    color: Colors.grey.shade500,
-                  ),
-                  ListTile(
-                    leading: Text(
-                      'routesa',
-                      style: TextStyle(
-                          fontSize: 32.sp, fontWeight: FontWeight.w600),
-                    ),
-                    trailing: Icon(Icons.navigate_next),
-                  ),
-                  Container(
-                    width: 600.w,
-                    height: 3.h,
-                    color: Colors.grey.shade500,
-                  ),
-                  Builder(builder: (context) {
-                    return InkWell(
-                      onTap: () {
-                        final blogCubit = context.read<GetBlogCubit>()
-                          ..getBlog(GetBlogReq(
-                              userId: userId.toString(), pageSize: 10));
-
-                        AppNavigator.push(
-                            context,
-                            BlocProvider.value(
-                                value: blogCubit,
-                                child: UserBlogList(userId: userId!)));
-                      },
-                      child: ListTile(
-                        leading: Text(
-                          'Blogs',
-                          style: TextStyle(
-                              fontSize: 32.sp, fontWeight: FontWeight.w600),
-                        ),
-                        trailing: Icon(Icons.navigate_next),
-                      ),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              BlocBuilder<UserProfileCubit, UserProfileState>(
+                builder: (context, state) {
+                  if (state is UserProfileLoaded) {
+                    return Userinformation(
+                      user: state.userProfileEntity,
                     );
-                  })
-
-                  // Container(
-                  //   width: 600.w,
-                  //   height: 3.h,
-                  //   color: Colors.grey.shade500,
-                  // ),
-                ],
+                  }
+                  return Container();
+                },
               ),
-            )
-          ],
+              SizedBox(
+                height: 20.h,
+              ),
+              Container(
+                width: double.infinity,
+                // height: 400.w,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: const Color.fromARGB(255, 255, 255, 255)),
+                child: Column(
+                  children: [
+                    ListTile(
+                      leading: Text(
+                        'Activities',
+                        style: TextStyle(
+                            fontSize: 32.sp, fontWeight: FontWeight.w600),
+                      ),
+                      trailing: Icon(Icons.navigate_next),
+                    ),
+                    Container(
+                      width: 600.w,
+                      height: 3.h,
+                      color: Colors.grey.shade500,
+                    ),
+                    ListTile(
+                      leading: Text(
+                        'Statistics',
+                        style: TextStyle(
+                            fontSize: 32.sp, fontWeight: FontWeight.w600),
+                      ),
+                      trailing: Icon(Icons.navigate_next),
+                    ),
+                    Container(
+                      width: 600.w,
+                      height: 3.h,
+                      color: Colors.grey.shade500,
+                    ),
+                    ListTile(
+                      leading: Text(
+                        'routesa',
+                        style: TextStyle(
+                            fontSize: 32.sp, fontWeight: FontWeight.w600),
+                      ),
+                      trailing: Icon(Icons.navigate_next),
+                    ),
+                    Container(
+                      width: 600.w,
+                      height: 3.h,
+                      color: Colors.grey.shade500,
+                    ),
+                    Builder(builder: (context) {
+                      return InkWell(
+                        onTap: () {
+                          final blogCubit = context.read<GetBlogCubit>()
+                            ..getBlog(GetBlogReq(
+                                userId: userId.toString(), pageSize: 10));
+
+                          AppNavigator.push(
+                              context,
+                              BlocProvider.value(
+                                  value: blogCubit,
+                                  child: UserBlogList(userId: userId!)));
+                        },
+                        child: ListTile(
+                          leading: Text(
+                            'Blogs',
+                            style: TextStyle(
+                                fontSize: 32.sp, fontWeight: FontWeight.w600),
+                          ),
+                          trailing: Icon(Icons.navigate_next),
+                        ),
+                      );
+                    })
+
+                    // Container(
+                    //   width: 600.w,
+                    //   height: 3.h,
+                    //   color: Colors.grey.shade500,
+                    // ),
+                  ],
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );

@@ -1,5 +1,5 @@
 import 'package:dartz/dartz.dart';
-import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:tracio_fe/core/erorr/exception.dart';
 import 'package:tracio_fe/core/erorr/failure.dart';
 import 'package:tracio_fe/core/network/network_infor.dart';
@@ -37,30 +37,22 @@ class AuthRepositotyImpl extends AuthRepository {
 
   @override
   Future<Either<Failure, String>> verifyEmail(String email) async {
-    if (await sl<NetworkInfor>().isConnected) {
-      try {
-        await sl<AuthFirebaseService>().verifyEmail(email);
-        return Right('Verify Susscess');
-      } on Failure catch (e) {
-        return Left(e);
-      }
-    } else {
-      return Left(NetworkFailure('Không có kết nối mạng'));
+    try {
+      var result = await sl<AuthFirebaseService>().verifyEmail(email);
+      return Right(result);
+    } on FirebaseAuthException {
+      return Left(ExceptionFailure('Verify email fail'));
     }
   }
 
   @override
   Future<Either<Failure, bool>> checkEmailVerified() async {
-    if (await sl<NetworkInfor>().isConnected) {
-      try {
-        await sl<AuthFirebaseService>().checkEmailVeriy();
+    try {
+      bool isVerify = await sl<AuthFirebaseService>().checkEmailVerify();
 
-        return Right(true);
-      } on Failure catch (e) {
-        return Left(e);
-      }
-    } else {
-      return Left(NetworkFailure('Không có kết nối mạng'));
+      return Right(isVerify);
+    } on Failure catch (e) {
+      return Left(e);
     }
   }
 
@@ -101,31 +93,15 @@ class AuthRepositotyImpl extends AuthRepository {
 
   Future<Either<Failure, UserModel>> _authenticate(
       _DataSourceChoose getDataSource) async {
-    bool isConnected = await sl<NetworkInfor>().isConnected;
-    // print("Kết nối mạng: $isConnected");
-
-    // print('Token $token');
-    if (isConnected) {
-      try {
-        final remoteResponse = await getDataSource();
-        String token = remoteResponse.session.accessToken;
-        await sl<AuthLocalSource>().saveToken(token);
-        print('Token $token');
-        sl<AuthLocalSource>().saveUser(remoteResponse);
-        return Right(remoteResponse);
-      } on DioException catch (e) {
-        if (e.response != null) {
-          return Left(ServerFailure(
-              e.response?.data['message'] ?? "Lỗi server: ${e.message}"));
-        } else {
-          return Left(NetworkFailure("Không có kết nối mạng: ${e.message}"));
-        }
-      } catch (e) {
-        return Left(ExceptionFailure("Lỗi không xác định: $e"));
-      }
+    try {
+      final remoteResponse = await getDataSource();
+      String token = remoteResponse.session.accessToken;
+      await sl<AuthLocalSource>().saveToken(token);
+      sl<AuthLocalSource>().saveUser(remoteResponse);
+      return Right(remoteResponse);
+    } on CredentialFailure catch (e) {
+      return Left(e);
     }
-
-    return Left(NetworkFailure("Không có kết nối mạng"));
   }
 
   @override

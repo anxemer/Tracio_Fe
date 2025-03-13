@@ -91,57 +91,66 @@ class _AddTitleBlogPageState extends State<AddTitleBlogPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height / 2,
-                        child: PageView.builder(
-                            onPageChanged: (value) => setState(() {
-                                  _currentPage = value;
-                                }),
-                            controller: _pageController,
-                            itemCount: widget.file.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              return Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 80.h),
-                                child: Stack(
-                                    alignment: Alignment.topRight,
-                                    children: [
-                                      Image.file(
-                                        widget.file[index],
-                                        width: 600.w,
-                                        // height: 300,
-                                        fit: BoxFit.fill,
-                                      ),
-                                      Positioned(
-                                        bottom: 10,
-                                        left: 0,
-                                        right: 0,
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: List.generate(
-                                              widget.file.length, (index) {
-                                            return Container(
-                                              margin: EdgeInsets.symmetric(
-                                                  horizontal: 4),
-                                              width: _currentPage == index
-                                                  ? 32.w
-                                                  : 16.w,
-                                              height: 8,
-                                              decoration: BoxDecoration(
-                                                color: _currentPage == index
-                                                    ? AppColors.secondBackground
-                                                    : Colors.grey,
-                                                borderRadius:
-                                                    BorderRadius.circular(4),
+                      widget.file.length != 0
+                          ? SizedBox(
+                              height: MediaQuery.of(context).size.height / 2,
+                              child: PageView.builder(
+                                  onPageChanged: (value) => setState(() {
+                                        _currentPage = value;
+                                      }),
+                                  controller: _pageController,
+                                  itemCount: widget.file.length,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    return Padding(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 80.h),
+                                      child: Stack(
+                                          alignment: Alignment.topRight,
+                                          children: [
+                                            Image.file(
+                                              widget.file[index],
+                                              width: 600.w,
+                                              // height: 300,
+                                              fit: BoxFit.fill,
+                                            ),
+                                            Positioned(
+                                              bottom: 10,
+                                              left: 0,
+                                              right: 0,
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: List.generate(
+                                                    widget.file.length,
+                                                    (index) {
+                                                  return Container(
+                                                    margin:
+                                                        EdgeInsets.symmetric(
+                                                            horizontal: 4),
+                                                    width: _currentPage == index
+                                                        ? 32.w
+                                                        : 16.w,
+                                                    height: 8,
+                                                    decoration: BoxDecoration(
+                                                      color: _currentPage ==
+                                                              index
+                                                          ? AppColors
+                                                              .secondBackground
+                                                          : Colors.grey,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              4),
+                                                    ),
+                                                  );
+                                                }),
                                               ),
-                                            );
-                                          }),
-                                        ),
-                                      )
-                                    ]),
-                              );
-                            }),
-                      ),
+                                            )
+                                          ]),
+                                    );
+                                  }),
+                            )
+                          : Container(),
                       Divider(),
                       SizedBox(
                           height: 50.h,
@@ -149,7 +158,7 @@ class _AddTitleBlogPageState extends State<AddTitleBlogPage> {
                           child: TextField(
                             controller: _titleCon,
                             decoration:
-                                InputDecoration(hintText: 'Add caption.....'),
+                                InputDecoration(hintText: 'Add title.....'),
                           )),
                       Divider(),
                       Column(

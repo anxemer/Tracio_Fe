@@ -18,5 +18,5 @@ class AuthLoggedOut extends AuthState {}
 class AuthFailure extends AuthState {
   final Failure failure;
 
-  AuthFailure({required this.failure});
+  AuthFailure(this.failure);
 }

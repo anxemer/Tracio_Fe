@@ -104,10 +104,15 @@ class VerifyEmailpage extends StatelessWidget {
                               return Column(
                                 children: [
                                   _buttonSignIn(),
+                                  SizedBox(
+                                    height: 20.h,
+                                  ),
                                   Text(
                                     'Verify failure, please try again',
                                     style: TextStyle(
-                                        color: Colors.red, fontSize: 18.sp),
+                                        color: Colors.red,
+                                        fontSize: 32.sp,
+                                        fontWeight: FontWeight.w500),
                                   ),
                                 ],
                               );

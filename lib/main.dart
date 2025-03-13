@@ -81,7 +81,7 @@ class _MyAppState extends State<MyApp> {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => SplashCubit()..appStarted()),
-        BlocProvider(create: (context) => AuthCubit()..checkUser()),
+        BlocProvider(create: (context) => AuthCubit()),
         BlocProvider(create: (context) => GetCommentCubit()),
         BlocProvider(create: (context) => GenericDataCubit()),
         BlocProvider(create: (context) => LocationCubit()),
