@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:tracio_fe/core/constants/app_size.dart';
 
 import '../../../common/widget/blog/pick_image.dart';
 import '../../../core/configs/theme/app_colors.dart';
@@ -13,7 +14,7 @@ class CommentInputWidget extends StatefulWidget {
     super.key,
     required this.onSubmit,
     required this.inputData,
-    required this.onReset, // Thêm callback để reset
+    required this.onReset,
   });
 
   final Function(String content, List<File> files, CommentInputData inputData)
@@ -155,7 +156,7 @@ class _CommentInputWidgetState extends State<CommentInputWidget> {
             SizedBox(
               height: 150.h,
               child: SelectedImagesViewer(
-                widgeImage: 120.w,
+                widgeImage: AppSize.imageLarge.w,
                 selectedFiles: selectedFiles,
                 onRemoveImage: _onRemoveImage,
                 pageController: _pageController,
@@ -164,7 +165,7 @@ class _CommentInputWidgetState extends State<CommentInputWidget> {
 
           // Input container
           Container(
-            height: 120.h,
+            height: AppSize.bottomNavBarHeight * 0.8.h,
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(60.sp),
                 border: Border.all(color: Colors.black45, width: 1.w)),
@@ -173,8 +174,8 @@ class _CommentInputWidgetState extends State<CommentInputWidget> {
                 SizedBox(width: 8.w),
                 ClipOval(
                   child: SizedBox(
-                    width: 80.w,
-                    height: 80.h,
+                    width: AppSize.imageSmall * 0.8.w,
+                    height: AppSize.imageSmall * 0.8.h,
                     child: Image.asset(AppImages.man),
                   ),
                 ),
@@ -197,7 +198,7 @@ class _CommentInputWidgetState extends State<CommentInputWidget> {
                 IconButton(
                   icon: Icon(
                     Icons.image_outlined,
-                    size: 60.sp,
+                    size: AppSize.iconLarge.sp,
                   ),
                   onPressed: () {
                     showModalBottomSheet(
@@ -232,7 +233,7 @@ class _CommentInputWidgetState extends State<CommentInputWidget> {
                   icon: Icon(
                     Icons.send_rounded,
                     color: AppColors.background,
-                    size: 60.sp,
+                    size: AppSize.iconLarge.sp,
                   ),
                   onPressed: () {
                     if (_textController.text.trim().isNotEmpty ||

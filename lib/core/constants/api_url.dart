@@ -4,7 +4,7 @@ import 'package:tracio_fe/data/map/models/mapbox_direction_req.dart';
 
 class ApiUrl {
   //base Url
-  static const baseURL = 'https://192.168.1.19:';
+  static const baseURL = 'https://localhost:';
   // static const baseURL = 'https://10.10.1.66:';
   // static const baseURL = 'https://10.87.46.103:';
   static const hubUrl = 'http://10.87.46.103:5002/content-hub';

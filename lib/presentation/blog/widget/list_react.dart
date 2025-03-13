@@ -5,11 +5,9 @@ import 'package:tracio_fe/common/bloc/generic_data_cubit.dart';
 import 'package:tracio_fe/domain/blog/entites/reaction_response_entity.dart';
 
 import '../../../common/bloc/generic_data_state.dart';
-import '../../../core/configs/theme/app_colors.dart';
 import '../../../core/configs/theme/assets/app_images.dart';
 import '../../../domain/blog/usecase/get_reaction_blog.dart';
 import '../../../service_locator.dart';
-import '../bloc/comment/get_commnet_cubit.dart';
 
 class ListReact extends StatefulWidget {
   const ListReact({super.key, required this.cubit, required this.blogId});
@@ -21,8 +19,9 @@ class ListReact extends StatefulWidget {
 
 class _ListReactState extends State<ListReact> {
   @override
+  @override
   void initState() {
-    // TODO: implement initState
+    super.initState();
     widget.cubit.getData<List<ReactionResponseEntity>>(
         sl<GetReactBlogUseCase>(),
         params: widget.blogId);

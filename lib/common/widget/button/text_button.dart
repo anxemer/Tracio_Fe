@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:tracio_fe/core/constants/app_size.dart';
 
 class BasicTextButton extends StatelessWidget {
   const BasicTextButton({super.key, required this.text, required this.onPress});
@@ -12,7 +13,9 @@ class BasicTextButton extends StatelessWidget {
       child: Text(
         text,
         style: TextStyle(
-            fontWeight: FontWeight.bold, fontSize: 28.sp, color: Colors.black),
+            fontWeight: FontWeight.w400,
+            fontSize: AppSize.textMedium.sp * 1.2,
+            color: Colors.black87),
       ),
     );
   }

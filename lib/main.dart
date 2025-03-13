@@ -15,7 +15,7 @@ import 'package:tracio_fe/firebase_options.dart';
 import 'package:tracio_fe/presentation/splash/page/splash.dart';
 import 'package:tracio_fe/presentation/map/bloc/tracking_location_bloc.dart';
 import 'package:tracio_fe/presentation/auth/bloc/authCubit/auth_cubit.dart';
-import 'package:tracio_fe/presentation/blog/bloc/comment/get_commnet_cubit.dart';
+import 'package:tracio_fe/presentation/blog/bloc/comment/get_comment_cubit.dart';
 import 'package:tracio_fe/presentation/splash/bloc/splash_cubit.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' as mp;
@@ -23,10 +23,11 @@ import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' as mp;
 import 'service_locator.dart' as di;
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();                                   
+  WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
     statusBarColor: Colors.grey.shade700,
     statusBarIconBrightness: Brightness.light,
+    statusBarBrightness: Brightness.dark,
   ));
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
@@ -76,7 +77,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-      providers: [
+      providers: [  
         BlocProvider(create: (context) => SplashCubit()..appStarted()),
         BlocProvider(create: (context) => AuthCubit()..checkUser()),
         BlocProvider(create: (context) => GetCommentCubit()),
@@ -84,7 +85,7 @@ class _MyAppState extends State<MyApp> {
         BlocProvider(create: (context) => LocationBloc()),
       ],
       child: ScreenUtilInit(
-        designSize: Size(720, 1600),
+        designSize: Size(360, 690),
         minTextAdapt: true,
         splitScreenMode: true,
         builder: (context, child) => MaterialApp(

@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tracio_fe/common/bloc/generic_data_cubit.dart';
-import 'package:tracio_fe/common/widget/navbar/navbar.dart';
-import 'package:tracio_fe/presentation/blog/bloc/comment/get_commnet_cubit.dart';
+import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
+import 'package:tracio_fe/common/widget/appbar/app_bar.dart';
+import 'package:tracio_fe/core/constants/app_size.dart';
+import 'package:tracio_fe/presentation/blog/bloc/comment/get_comment_cubit.dart';
 import 'package:tracio_fe/presentation/blog/pages/blog.dart';
+import 'package:tracio_fe/presentation/chat/page/chat.dart';
+import 'package:tracio_fe/presentation/notifications/page/notifications.dart';
 
 import '../../../data/blog/models/request/get_blog_req.dart';
 import '../../blog/bloc/create_blog_cubit.dart';
@@ -17,57 +21,16 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage>
-    with SingleTickerProviderStateMixin {
-  ScrollController _scrollController = ScrollController();
-  bool _isNavbarVisible = true;
-  late AnimationController _animationController;
-  late Animation<Offset> _slideAnimation;
+class _HomePageState extends State<HomePage> {
+  final ScrollController _scrollController = ScrollController();
   @override
   void initState() {
     super.initState();
-    _scrollController.addListener(_onScroll);
-
-    _animationController = AnimationController(
-      vsync: this,
-      duration: Duration(milliseconds: 300),
-    );
-
-    _slideAnimation = Tween<Offset>(
-      begin: Offset(0, 0),
-      end: Offset(0, 1), // Trượt xuống khi ẩn
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
-  }
-
-  void _onScroll() {
-    if (_scrollController.position.userScrollDirection ==
-        ScrollDirection.reverse) {
-      // Cuộn xuống => Ẩn navbar
-      if (_isNavbarVisible) {
-        _animationController.forward();
-        setState(() {
-          _isNavbarVisible = false;
-        });
-      }
-    } else if (_scrollController.position.userScrollDirection ==
-        ScrollDirection.forward) {
-      // Cuộn lên => Hiện navbar
-      if (!_isNavbarVisible) {
-        _animationController.reverse();
-        setState(() {
-          _isNavbarVisible = true;
-        });
-      }
-    }
   }
 
   @override
   void dispose() {
     _scrollController.dispose();
-    _animationController.dispose();
     super.dispose();
   }
 
@@ -75,37 +38,74 @@ class _HomePageState extends State<HomePage>
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        BlocProvider(create: (context) => GenericDataCubit()),
         BlocProvider(
-          create: (context) => GenericDataCubit(),
-        ),
-        BlocProvider(
-          create: (context) => GetBlogCubit()..getBlog(GetBlogReq()),
-        ),
-        BlocProvider(
-          create: (context) => CreateBlogCubit(),
-        ),
-        BlocProvider(
-          create: (context) => GetCommentCubit(),
-        ),
+            create: (context) => GetBlogCubit()..getBlog(GetBlogReq())),
+        BlocProvider(create: (context) => CreateBlogCubit()),
+        BlocProvider(create: (context) => GetCommentCubit()),
       ],
       child: SafeArea(
         bottom: true,
         child: Scaffold(
+          appBar: _buildAppBar(),
           body: BlogPage(
             scrollController: _scrollController,
           ),
-          bottomNavigationBar: SlideTransition(
-            position: _slideAnimation,
-            child: AnimatedOpacity(
-              duration: Duration(milliseconds: 300),
-              opacity: _isNavbarVisible ? 1.0 : 0.0,
-              child: BasicNavbar(
-                isNavbarVisible: _isNavbarVisible,
-              ),
-            ),
-          ),
         ),
       ),
+    );
+  }
+
+  PreferredSizeWidget _buildAppBar() {
+    return BasicAppbar(
+      height: AppSize.appBarHeight.h,
+      hideBack: true,
+      title: Text(
+        'Home',
+        style: TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.w400,
+          fontSize: AppSize.textHeading * 0.9.sp,
+        ),
+      ),
+      action: _buildActionIcons(),
+    );
+  }
+
+  Widget _buildActionIcons() {
+    return Row(
+      children: [
+        IconButton(
+          padding: EdgeInsets.zero,
+          highlightColor: Colors.grey.shade600,
+          splashColor: Colors.white.withAlpha(30),
+          hoverColor: Colors.white.withAlpha(10),
+          onPressed: () {
+            AppNavigator.push(context, NotificationsPage());
+          },
+          icon: Icon(
+            Icons.notifications,
+            color: Colors.white,
+            size: AppSize.iconMedium.w,
+          ),
+          tooltip: "Notifications",
+        ),
+        IconButton(
+          padding: EdgeInsets.zero,
+          highlightColor: Colors.grey.shade600,
+          splashColor: Colors.white.withAlpha(30),
+          hoverColor: Colors.white.withAlpha(10),
+          onPressed: () {
+            AppNavigator.push(context, ChatPage());
+          },
+          icon: Icon(
+            Icons.mail,
+            color: Colors.white,
+            size: AppSize.iconMedium.w,
+          ),
+          tooltip: "Message",
+        )
+      ],
     );
   }
 }

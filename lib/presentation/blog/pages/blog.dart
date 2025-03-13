@@ -5,23 +5,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tracio_fe/core/configs/theme/app_colors.dart';
-import 'package:tracio_fe/core/configs/theme/assets/app_images.dart';
+import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/data/blog/models/request/get_blog_req.dart';
-import 'package:tracio_fe/domain/blog/entites/blog_entity.dart';
 import 'package:tracio_fe/presentation/auth/bloc/authCubit/auth_cubit.dart';
+import 'package:tracio_fe/presentation/auth/pages/login.dart';
 import 'package:tracio_fe/presentation/blog/bloc/get_blog_cubit.dart';
 import 'package:tracio_fe/presentation/blog/pages/create_blog.dart';
-import 'package:tracio_fe/presentation/blog/widget/new_feed.dart';
+import 'package:tracio_fe/presentation/blog/widget/blog_list_view.dart';
 import 'package:tracio_fe/presentation/profile/pages/user_profile.dart';
 
 import '../../../common/helper/navigator/app_navigator.dart';
-import '../../../common/widget/appbar/app_bar.dart';
 import '../../auth/bloc/authCubit/auth_state.dart';
-import '../../auth/pages/login.dart';
 import '../bloc/get_blog_state.dart';
 
 class BlogPage extends StatefulWidget {
-  const BlogPage({Key? key, required this.scrollController}) : super(key: key);
+  const BlogPage({super.key, required this.scrollController});
   final ScrollController scrollController;
 
   @override
@@ -63,7 +61,6 @@ class _BlogPageState extends State<BlogPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _buildAppBar(),
       body: BlocBuilder<GetBlogCubit, GetBlogState>(
         builder: (context, state) {
           return RefreshIndicator(
@@ -92,66 +89,15 @@ class _BlogPageState extends State<BlogPage> {
 
   // Extracted widgets for better performance
 
-  PreferredSizeWidget _buildAppBar() {
-    return BasicAppbar(
-      centralTitle: true,
-      height: 100.h,
-      hideBack: true,
-      title: Text(
-        'Home',
-        style: TextStyle(
-          color: Colors.black,
-          fontWeight: FontWeight.bold,
-          fontSize: 40.sp,
-        ),
-      ),
-      action: _buildActionIcons(),
-    );
-  }
-
-  Widget _buildActionIcons() {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.w),
-      child: Row(
-        children: [
-          Image.asset(
-            AppImages.noti,
-            width: 40.w,
-            cacheWidth: (40 * MediaQuery.of(context).devicePixelRatio).toInt(),
-          ),
-          SizedBox(width: 20.w),
-          Image.asset(
-            AppImages.messenger,
-            width: 40.w,
-            cacheWidth: (40 * MediaQuery.of(context).devicePixelRatio).toInt(),
-          ),
-          SizedBox(width: 20.w),
-          GestureDetector(
-            onTap: () async {
-              context.read<AuthCubit>().logout();
-              AppNavigator.pushReplacement(context, LoginPage());
-            },
-            child: Image.asset(
-              AppImages.search,
-              width: 40.w,
-              cacheWidth:
-                  (40 * MediaQuery.of(context).devicePixelRatio).toInt(),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _createBlogHeader() {
     return BlocBuilder<AuthCubit, AuthState>(
       builder: (context, state) {
         if (state is AuthLoaded) {
           return Padding(
-            padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 12.w),
+            padding: EdgeInsets.symmetric(
+                vertical: 8.h, horizontal: AppSize.apHorizontalPadding.w),
             child: SizedBox(
-                // width: double.infinity / 2,
-                height: 100.h,
+                height: AppSize.appBarHeight.h,
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -160,30 +106,35 @@ class _BlogPageState extends State<BlogPage> {
                         onTap: () => AppNavigator.push(context,
                             UserProfilePage(userId: state.user.userId)),
                         child: SizedBox(
-                          // height: 200.h,
-                          // width: 200.w,
                           child: CachedNetworkImage(
                             imageUrl: state.user.profilePicture!,
                             fit: BoxFit.cover,
                             imageBuilder: (context, imageProvider) =>
                                 CircleAvatar(
-                              // radius: 30.sp,
                               backgroundImage: imageProvider,
+                              radius: AppSize.iconSmall.w,
                             ),
-                            // maxHeightDiskCache: 200,
-                            // maxWidthDiskCache: 200,
+                            placeholder: (context, url) => CircleAvatar(
+                              backgroundColor: Colors.grey.shade300,
+                              radius: AppSize.iconSmall.w,
+                              child: Icon(
+                                Icons.person,
+                                color: Colors.white,
+                                size: AppSize.iconSmall.w,
+                              ),
+                            ),
+                            errorWidget: (context, url, error) => CircleAvatar(
+                              backgroundColor: Colors.grey.shade300,
+                              radius: AppSize.iconSmall.w,
+                              child: Icon(
+                                Icons.person,
+                                size: AppSize.iconSmall.w,
+                              ),
+                            ),
                           ),
-                        )
-                        // Image.asset(
-                        //   AppImages.man,
-                        //   cacheWidth:
-                        //       (100 * MediaQuery.of(context).devicePixelRatio)
-                        //           .toInt(),
-                        //   width: 80.w,
-                        // ),
-                        ),
+                        )),
                     SizedBox(
-                      width: 20.w,
+                      width: 10.w,
                     ),
                     Expanded(
                       child: InkWell(
@@ -194,12 +145,13 @@ class _BlogPageState extends State<BlogPage> {
                             Text(
                               'Share your picture',
                               style: TextStyle(
-                                  fontWeight: FontWeight.w500, fontSize: 32.sp),
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: AppSize.textLarge.sp),
                             ),
                             Spacer(),
                             Icon(
                               Icons.image_outlined,
-                              size: 60.w,
+                              size: AppSize.iconLarge.w,
                             ),
                           ],
                         ),
@@ -209,7 +161,12 @@ class _BlogPageState extends State<BlogPage> {
                 )),
           );
         } else if (state is AuthFailure) {
-          // Hiển thị loading indicator
+          Future.delayed(Duration.zero, () {
+            if (context.mounted) {
+              _showAuthFailureDialog(context);
+            }
+          });
+
           return Padding(
             padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 12.w),
             child: Center(child: CircularProgressIndicator()),
@@ -220,9 +177,44 @@ class _BlogPageState extends State<BlogPage> {
     );
   }
 
+  void _showAuthFailureDialog(BuildContext context) {
+    Timer(Duration(seconds: 30), () {
+      Navigator.of(context).pop();
+    });
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Authentication Failed'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                  'Your session has expired. You will be redirected to the login page in 30 seconds.'),
+              SizedBox(height: 16.h),
+              Text('You can go back to login now if you prefer.'),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                AppNavigator.pushAndRemove(context, LoginPage());
+              },
+              child: Text('Go to Login Now'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Widget _buildMainContent(GetBlogState state) {
     if (state is GetBlogLoaded) {
-      return _BlogListView(
+      return BlogListView(
         blogs: state.blogs!,
         isLoading: state.isLoading!,
       );
@@ -232,49 +224,10 @@ class _BlogPageState extends State<BlogPage> {
         child: Center(child: CircularProgressIndicator()),
       );
     } else {
-      // GetBlogInitial or other states
       return const SliverFillRemaining(
         hasScrollBody: false,
         child: Center(child: CircularProgressIndicator()),
       );
     }
-  }
-}
-
-// Tách danh sách blog thành một StatelessWidget riêng để tránh rebuild khi parent thay đổi
-class _BlogListView extends StatelessWidget {
-  const _BlogListView({
-    Key? key,
-    required this.blogs,
-    required this.isLoading,
-  }) : super(key: key);
-
-  final List<BlogEntity> blogs;
-  final bool isLoading;
-
-  @override
-  Widget build(BuildContext context) {
-    return SliverList(
-      delegate: SliverChildBuilderDelegate(
-        (context, index) {
-          if (index == blogs.length && isLoading) {
-            return const Padding(
-              padding: EdgeInsets.symmetric(vertical: 16.0),
-              child: Center(child: CircularProgressIndicator()),
-            );
-          }
-
-          if (index < blogs.length) {
-            return NewFeeds(
-              key: ValueKey('blog_${blogs[index].blogId}'),
-              blogs: blogs[index],
-            );
-          }
-
-          return null;
-        },
-        childCount: blogs.length + (isLoading ? 1 : 0),
-      ),
-    );
   }
 }

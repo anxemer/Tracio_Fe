@@ -8,7 +8,7 @@ import '../../../common/bloc/generic_data_cubit.dart';
 import '../../../common/widget/appbar/app_bar.dart';
 import '../../../common/widget/button/floating_button.dart';
 import '../../../core/configs/theme/assets/app_images.dart';
-import '../bloc/comment/get_commnet_cubit.dart';
+import '../bloc/comment/get_comment_cubit.dart';
 import '../widget/comment.dart';
 import '../widget/react_blog.dart';
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:tracio_fe/core/constants/app_size.dart';
 
 class BasicAppbar extends StatelessWidget implements PreferredSizeWidget {
   final Widget? title;
@@ -9,45 +10,61 @@ class BasicAppbar extends StatelessWidget implements PreferredSizeWidget {
   final double? height;
   final bool? centralTitle;
   final int? data;
-  const BasicAppbar(
-      {this.title,
-      this.hideBack = false,
-      this.action,
-      this.backgroundColor,
-      this.height,
-      super.key,
-      this.centralTitle,
-      this.data});
+  final EdgeInsetsGeometry? padding;
+
+  const BasicAppbar({
+    this.title,
+    this.hideBack = false,
+    this.action,
+    this.backgroundColor,
+    this.height,
+    this.centralTitle,
+    this.data,
+    this.padding,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: backgroundColor ?? Colors.transparent,
+      backgroundColor: backgroundColor ?? const Color.fromARGB(255, 75, 75, 75),
       elevation: 0,
       centerTitle: centralTitle ?? false,
-      automaticallyImplyLeading: false,
-      toolbarHeight: height ?? 80,
-      title: title ?? const Text(''),
-      titleSpacing: 0,
-      actions: [action ?? Container()],
+      automaticallyImplyLeading: false, // Don't automatically show back button
+      toolbarHeight: AppSize.appBarHeight.h,
+      title: Padding(
+        padding: padding ??
+            EdgeInsets.symmetric(
+                horizontal: !hideBack ? 0 : AppSize.apHorizontalPadding.w),
+        child: title ?? const Text(''),
+      ),
+      titleSpacing: hideBack ? 0 : 24.w,
+      actions: [
+        action ?? Container(),
+      ],
       leading: hideBack
           ? null
-          : IconButton(
-              onPressed: () {
-                Navigator.pop(context, data);
-              },
-              icon: Container(
-                height: 50.h,
-                width: 10.w,
-                decoration: const BoxDecoration(
-                    color: Colors.white, shape: BoxShape.circle),
-                child: const Icon(Icons.arrow_back_ios_new,
-                    size: 24, color: Colors.black),
+          : Padding(
+              padding: EdgeInsets.symmetric(
+                  horizontal:
+                      padding != null ? AppSize.apHorizontalPadding.w : 0),
+              child: IconButton(
+                onPressed: () {
+                  Navigator.pop(context, data);
+                },
+                icon: Container(
+                  height: AppSize.imageMedium.h,
+                  width: AppSize.imageMedium.w,
+                  decoration: const BoxDecoration(
+                      color: Colors.transparent, shape: BoxShape.circle),
+                  child: const Icon(Icons.arrow_back_ios_new,
+                      size: AppSize.iconSmall, color: Colors.white),
+                ),
               ),
             ),
     );
   }
 
   @override
-  Size get preferredSize => Size.fromHeight(height ?? 80);
+  Size get preferredSize => Size.fromHeight(AppSize.appBarHeight.h);
 }
