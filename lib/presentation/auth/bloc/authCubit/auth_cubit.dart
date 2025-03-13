@@ -1,10 +1,7 @@
-import 'dart:ffi';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tracio_fe/core/erorr/failure.dart';
 import 'package:tracio_fe/core/usecase/usecase.dart';
 import 'package:tracio_fe/data/auth/models/login_req.dart';
-import 'package:tracio_fe/domain/auth/entities/user.dart';
 import 'package:tracio_fe/domain/auth/usecases/get_cacher_user.dart';
 import 'package:tracio_fe/domain/auth/usecases/login.dart';
 import 'package:tracio_fe/domain/auth/usecases/logout.dart';

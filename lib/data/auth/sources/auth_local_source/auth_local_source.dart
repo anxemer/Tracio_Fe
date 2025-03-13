@@ -1,9 +1,6 @@
-import 'dart:convert';
-
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tracio_fe/data/auth/models/user_model.dart';
-import 'package:tracio_fe/domain/auth/entities/user.dart';
 
 import '../../../../core/erorr/exception.dart';
 import '../../../../service_locator.dart';

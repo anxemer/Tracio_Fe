@@ -1,8 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
 import 'package:tracio_fe/core/constants/api_url.dart';
-import 'package:tracio_fe/data/auth/sources/auth_local_source/auth_local_source.dart';
-import 'package:tracio_fe/service_locator.dart';
 
 /// This interceptor is used to show request and response logs
 class LoggerInterceptor extends Interceptor {

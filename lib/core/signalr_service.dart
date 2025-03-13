@@ -4,8 +4,6 @@ import 'package:signalr_netcore/json_hub_protocol.dart';
 import 'package:signalr_netcore/signalr_client.dart';
 import 'package:tracio_fe/core/constants/api_url.dart';
 import 'package:tracio_fe/data/auth/sources/auth_local_source/auth_local_source.dart';
-
-import '../main.dart';
 import '../service_locator.dart';
 
 class SignalRService {

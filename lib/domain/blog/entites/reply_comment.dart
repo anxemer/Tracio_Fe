@@ -1,6 +1,4 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'dart:io';
-
 import '../../../data/blog/models/response/blog_model.dart';
 
 class ReplyCommentEntity {

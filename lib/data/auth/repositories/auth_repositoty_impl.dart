@@ -1,13 +1,9 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tracio_fe/core/erorr/exception.dart';
 import 'package:tracio_fe/core/erorr/failure.dart';
 import 'package:tracio_fe/core/network/network_infor.dart';
 import 'package:tracio_fe/core/usecase/usecase.dart';
-import 'package:tracio_fe/data/auth/models/authentication_respone_model.dart';
-import 'package:tracio_fe/data/auth/models/login_req.dart';
 import 'package:tracio_fe/data/auth/models/register_req.dart';
 import 'package:tracio_fe/data/auth/models/user_model.dart';
 import 'package:tracio_fe/data/auth/sources/auth_remote_source/auth_api_service.dart';

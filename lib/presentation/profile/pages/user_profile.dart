@@ -5,8 +5,6 @@ import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
 import 'package:tracio_fe/common/widget/appbar/app_bar.dart';
 import 'package:tracio_fe/data/blog/models/request/get_blog_req.dart';
 import 'package:tracio_fe/presentation/blog/bloc/get_blog_cubit.dart';
-import 'package:tracio_fe/presentation/blog/bloc/get_blog_state.dart';
-import 'package:tracio_fe/presentation/blog/widget/post_blog.dart';
 import 'package:tracio_fe/presentation/profile/bloc/user_profile_cubit.dart';
 import 'package:tracio_fe/presentation/profile/bloc/user_profile_state.dart';
 import 'package:tracio_fe/presentation/profile/widgets/UserInformation.dart';
