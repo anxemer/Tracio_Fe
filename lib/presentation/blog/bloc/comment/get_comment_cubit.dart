@@ -9,6 +9,7 @@ class GetCommentCubit extends Cubit<GetCommentState> {
   GetCommentCubit() : super(GetCommentLoading());
 
   Future<void> getCommentBlog(GetCommentReq comment) async {
+    emit(GetCommentLoading());
     var result = await sl<GetCommentBlogUseCase>().call(comment);
     result.fold((error) => emit(GetCommentFailure(error)),
         (data) => emit(GetCommentLoaded(listComment: data)));

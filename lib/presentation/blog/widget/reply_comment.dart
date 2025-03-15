@@ -2,9 +2,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/domain/blog/entites/reply_comment.dart';
 
 import '../../../common/widget/button/text_button.dart';
+import '../../../core/configs/theme/app_colors.dart';
 import '../../../core/configs/theme/assets/app_images.dart';
 import '../../../data/blog/models/request/react_blog_req.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -38,19 +40,19 @@ class _ReplyCommentItemState extends State<ReplyCommentItem> {
     List<String> mediaUrls =
         widget.reply.mediaFiles.map((file) => file.mediaUrl ?? "").toList();
     return Padding(
-      padding: EdgeInsets.only(left: 20.w, bottom: 16.h),
+      padding: EdgeInsets.symmetric(vertical: 8.h),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Avatar
           ClipOval(
             child: SizedBox(
-              width: 50.w,
-              height: 50.h,
+              width: AppSize.iconMedium.w,
+              height: AppSize.iconMedium.h,
               child: Image.asset(AppImages.man),
             ),
           ),
-          SizedBox(width: 16.w),
+          SizedBox(width: 8.w),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -60,49 +62,73 @@ class _ReplyCommentItemState extends State<ReplyCommentItem> {
                     Text(
                       widget.reply.cyclistName.toString(),
                       style: TextStyle(
-                        fontSize: 24.sp,
+                        fontSize: AppSize.textMedium.sp,
                         fontWeight: FontWeight.bold,
                         color: Colors.black,
                       ),
                     ),
-                    SizedBox(width: 16.w),
+                    SizedBox(width: 8.w),
                     Text(
-                      timeago.format(widget.reply.createdAt!, locale: 'vi'),
-                      style: TextStyle(fontSize: 18.sp),
+                      timeago.format(widget.reply.createdAt!),
+                      style: TextStyle(fontSize: AppSize.textMedium.sp),
                     ),
                   ],
                 ),
                 SizedBox(height: 6.h),
                 // Nội dung reply
-                Row(
-                  children: [
-                    Text(
-                      '@${widget.reply.cyclistName}',
-                      style: TextStyle(
-                          fontSize: 32.sp,
-                          color: Colors.blue,
-                          fontWeight: FontWeight.w600),
-                    ),
-                    SizedBox(
-                      width: 10.w,
-                    ),
-                    Text(
-                      widget.reply.content.toString(),
-                      style: TextStyle(
-                        fontSize: 28.sp,
-                        color: Colors.black,
+                RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: '@${widget.reply.cyclistName} ',
+                        style: TextStyle(
+                            fontSize: AppSize.textLarge.sp,
+                            color: Colors.blue,
+                            fontWeight: FontWeight.w600),
                       ),
-                    ),
-                  ],
+                      TextSpan(
+                        text: widget.reply.content.toString(),
+                        style: TextStyle(
+                          fontSize: AppSize.textMedium.sp,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ],
+                  ),
+                  softWrap: true,
                 ),
                 SizedBox(height: 8.h),
                 mediaUrls.isEmpty
                     ? SizedBox()
                     : SizedBox(
-                        height: 200.h,
-                        width: 200.w,
-                        child: Image.network(mediaUrls[0], fit: BoxFit.cover),
+                        height: AppSize.imageMedium.h,
+                        width: AppSize.imageMedium.w,
+                        child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade100,
+                            ),
+                            width: MediaQuery.of(context).size.width,
+                            margin: EdgeInsets.symmetric(horizontal: 4.0),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: Image.network(mediaUrls[0],
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, url, error) => Icon(
+                                        Icons.error,
+                                        color: AppColors.background,
+                                      ),
+                                  loadingBuilder:
+                                      (context, child, loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return Center(
+                                      child: CircularProgressIndicator(),
+                                    );
+                                  }),
+                            )),
                       ),
+                SizedBox(
+                  height: 6.h,
+                ),
                 Row(
                   children: [
                     GestureDetector(
@@ -144,7 +170,7 @@ class _ReplyCommentItemState extends State<ReplyCommentItem> {
                               color: widget.reply.isReacted
                                   ? Colors.red
                                   : Colors.black,
-                              size: 30.sp,
+                              size: AppSize.iconMedium.sp,
                             ),
                             BasicTextButton(
                                 text: widget.reply.likesCount.toString(),
@@ -157,7 +183,7 @@ class _ReplyCommentItemState extends State<ReplyCommentItem> {
                                   .updateToReplyToReply(widget.reply),
                               child: Image.asset(
                                 AppImages.reply,
-                                width: 40.w,
+                                width: AppSize.iconMedium.w,
                               ),
                             )
                           ],

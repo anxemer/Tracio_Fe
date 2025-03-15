@@ -4,7 +4,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:tracio_fe/common/widget/picture/circle_picture.dart';
 import 'package:tracio_fe/core/configs/theme/app_colors.dart';
+import 'package:tracio_fe/core/configs/theme/assets/app_images.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/data/blog/models/request/get_blog_req.dart';
 import 'package:tracio_fe/presentation/auth/bloc/authCubit/auth_cubit.dart';
@@ -49,6 +51,7 @@ class _BlogPageState extends State<BlogPage> {
   void initState() {
     super.initState();
     widget.scrollController.addListener(_scrollListener);
+    // context.read<GetBlogCubit>().getBlog(GetBlogReq());
   }
 
   @override
@@ -106,32 +109,9 @@ class _BlogPageState extends State<BlogPage> {
                         onTap: () => AppNavigator.push(context,
                             UserProfilePage(userId: state.user.userId)),
                         child: SizedBox(
-                          child: CachedNetworkImage(
-                            imageUrl: state.user.profilePicture!,
-                            fit: BoxFit.cover,
-                            imageBuilder: (context, imageProvider) =>
-                                CircleAvatar(
-                              backgroundImage: imageProvider,
-                              radius: AppSize.iconSmall.w,
-                            ),
-                            placeholder: (context, url) => CircleAvatar(
-                              backgroundColor: Colors.grey.shade300,
-                              radius: AppSize.iconSmall.w,
-                              child: Icon(
-                                Icons.person,
-                                color: Colors.white,
-                                size: AppSize.iconSmall.w,
-                              ),
-                            ),
-                            errorWidget: (context, url, error) => CircleAvatar(
-                              backgroundColor: Colors.grey.shade300,
-                              radius: AppSize.iconSmall.w,
-                              child: Icon(
-                                Icons.person,
-                                size: AppSize.iconSmall.w,
-                              ),
-                            ),
-                          ),
+                          child: CirclePicture(
+                              imageUrl: state.user.profilePicture!,
+                              imageSize: AppSize.iconMedium),
                         )),
                     SizedBox(
                       width: 10.w,
@@ -218,16 +198,42 @@ class _BlogPageState extends State<BlogPage> {
         blogs: state.blogs!,
         isLoading: state.isLoading!,
       );
-    } else if (state is GetBlogLoading) {
+    } else if (state is GetBlogLoading || state is GetBlogInitial) {
       return const SliverFillRemaining(
         hasScrollBody: false,
         child: Center(child: CircularProgressIndicator()),
       );
-    } else {
-      return const SliverFillRemaining(
+    } else if (state is GetBlogFailure) {
+      Future.delayed(Duration.zero, () {
+        if (context.mounted) {
+          _showAuthFailureDialog(context);
+        }
+      });
+      return SliverFillRemaining(
         hasScrollBody: false,
-        child: Center(child: CircularProgressIndicator()),
+        child: Center(
+            child: Column(
+          children: [
+            Image.asset(
+              AppImages.error,
+              width: AppSize.imageLarge,
+            ),
+            Text('Can\'t load blog....'),
+            IconButton(
+                onPressed: () async {
+                  await context.read<GetBlogCubit>().getBlog(GetBlogReq());
+                },
+                icon: Icon(
+                  Icons.refresh_outlined,
+                  size: AppSize.iconLarge,
+                ))
+          ],
+        )),
       );
     }
+    return const SliverFillRemaining(
+      hasScrollBody: false,
+      child: Center(child: Text('data')),
+    );
   }
 }

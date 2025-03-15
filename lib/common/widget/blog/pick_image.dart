@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:photo_manager/photo_manager.dart';
+import 'package:tracio_fe/core/configs/theme/app_colors.dart';
+import 'package:tracio_fe/core/constants/app_size.dart';
 
 /// Widget hiển thị lưới ảnh từ thư viện và cho phép chụp ảnh
 class ImagePickerGrid extends StatefulWidget {
@@ -246,7 +248,7 @@ class _ImagePickerGridState extends State<ImagePickerGrid> {
                       child: Icon(
                         Icons.check_circle,
                         color: Colors.white,
-                        size: 40.w,
+                        size: AppSize.iconLarge.w,
                       ),
                     ),
                   ),
@@ -306,13 +308,13 @@ class _SelectedImagesViewerState extends State<SelectedImagesViewer> {
             itemCount: widget.selectedFiles.length,
             itemBuilder: (BuildContext context, int index) {
               return Padding(
-                padding: EdgeInsets.symmetric(horizontal: 80.h),
+                padding: EdgeInsets.symmetric(horizontal: 40.h),
                 child: Stack(
                   alignment: Alignment.topLeft,
                   children: [
                     Image.file(
                       widget.selectedFiles[index],
-                      width: widget.widgeImage ?? 600.w,
+                      width: widget.widgeImage ?? 400.w,
                       fit: BoxFit.cover,
                     ),
                     GestureDetector(
@@ -326,12 +328,12 @@ class _SelectedImagesViewerState extends State<SelectedImagesViewer> {
                         child: Icon(
                           Icons.close,
                           color: Colors.white,
-                          size: 32.w,
+                          size: AppSize.iconMedium.w,
                         ),
                       ),
                     ),
                     Positioned(
-                      bottom: 10,
+                      bottom: 20,
                       left: 0,
                       right: 0,
                       child: Row(
@@ -344,8 +346,8 @@ class _SelectedImagesViewerState extends State<SelectedImagesViewer> {
                             height: 8,
                             decoration: BoxDecoration(
                               color: _currentPage == index
-                                  ? Colors.white
-                                  : Colors.grey,
+                                  ? AppColors.background
+                                  : const Color.fromARGB(255, 255, 255, 255),
                               borderRadius: BorderRadius.circular(4),
                             ),
                           );

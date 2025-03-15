@@ -79,7 +79,8 @@ class _DetailBlocPageState extends State<DetailBlocPage> {
               height: 10.h,
             ),
             SizedBox(
-              height: MediaQuery.of(context).size.height / 2,
+              // width: 400.w,
+              height: MediaQuery.of(context).size.height / 1.2,
               child: Comment(blogId: widget.blog.blogId, cubit: commentCubit),
             )
             // Comment(blogId: widget.blog.blogId, cubit: commentCubit)

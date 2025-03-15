@@ -21,8 +21,9 @@ class AppTheme {
         ),
         contentPadding: const EdgeInsets.all(16),
         border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
-            borderSide: BorderSide.none),
+          borderRadius: BorderRadius.circular(20),
+          // borderSide: BorderSide.none
+        ),
         enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(20),
             borderSide: BorderSide.none)),

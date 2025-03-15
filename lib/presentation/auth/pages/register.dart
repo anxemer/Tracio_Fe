@@ -11,6 +11,7 @@ import 'package:tracio_fe/service_locator.dart';
 
 import '../../../common/widget/button/button.dart';
 import '../../../core/configs/theme/assets/app_images.dart';
+import '../../../core/constants/app_size.dart';
 import '../widgets/button_auth.dart';
 import '../widgets/input_field_auth.dart';
 
@@ -258,10 +259,12 @@ class RegisterPage extends StatelessWidget {
         ButtonDesign(
           ontap: () {},
           text: "Google",
-          icon: AppImages.logoGg,
+          image: AppImages.logoGg,
           fillColor: Colors.white,
           textColor: Colors.black,
           borderColor: Colors.green,
+          iconSize: AppSize.iconSmall,
+          fontSize: AppSize.textMedium,
         ),
         SizedBox(height: 20.h),
         ButtonDesign(
@@ -269,10 +272,12 @@ class RegisterPage extends StatelessWidget {
             AppNavigator.push(context, LoginPhone());
           },
           text: "Phone Number",
-          icon: AppImages.logoPhone,
+          image: AppImages.logoPhone,
           fillColor: Colors.white,
           textColor: Colors.black,
           borderColor: Colors.black,
+          iconSize: AppSize.iconSmall,
+          fontSize: AppSize.textMedium,
         ),
       ],
     );

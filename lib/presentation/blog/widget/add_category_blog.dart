@@ -3,6 +3,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tracio_fe/core/configs/theme/app_colors.dart';
+import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/presentation/blog/bloc/category/get_category_cubit.dart';
 import 'package:tracio_fe/presentation/blog/bloc/category/select_category_cubit.dart';
 
@@ -36,8 +37,8 @@ class _AddCategoryBlogState extends State<AddCategoryBlog> {
                   });
                 },
                 child: Container(
-                  width: 200.w,
-                  height: 20.h,
+                  width: 120.w,
+                  height: 10.h,
                   decoration: BoxDecoration(
                     color: context.read<SelectCategoryCubit>().selectedIndex ==
                             index
@@ -49,7 +50,8 @@ class _AddCategoryBlogState extends State<AddCategoryBlog> {
                     child: Text(
                       state.categories[index].categoryName.toString(),
                       style: TextStyle(
-                          fontWeight: FontWeight.w500, fontSize: 20.sp),
+                          fontWeight: FontWeight.w500,
+                          fontSize: AppSize.textMedium.sp),
                     ),
                   ),
                 ),

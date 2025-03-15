@@ -42,14 +42,17 @@ class _PostBlogState extends State<PostBlog> {
                   fontWeight: FontWeight.bold, fontSize: AppSize.textLarge.sp),
             ),
             subtitle: Text(
-              timeago.format(widget.blogEntity.createdAt!, locale: 'vi'),
+              timeago.format(widget.blogEntity.createdAt!),
               style: TextStyle(fontSize: AppSize.textSmall.sp),
             ),
-            imageUrl: Image.network(
-              widget.blogEntity.avatar,
-              height: AppSize.imageSmall.h,
-              fit: BoxFit.fill,
-              errorBuilder: (context, url, error) => CircleAvatar(
+            imageUrl: CachedNetworkImage(
+              imageUrl: widget.blogEntity.avatar,
+              fit: BoxFit.cover,
+              imageBuilder: (context, imageProvider) => CircleAvatar(
+                // radius: 30.sp,
+                backgroundImage: imageProvider,
+              ),
+              errorWidget: (context, url, error) => CircleAvatar(
                 backgroundColor: Colors.grey.shade300,
                 radius: AppSize.imageSmall / 2.w,
                 child: Icon(
@@ -57,6 +60,18 @@ class _PostBlogState extends State<PostBlog> {
                   size: AppSize.imageSmall / 2.w,
                 ),
               ),
+              // Image.network(
+              //   widget.blogEntity.avatar,
+              //   height: AppSize.imageSmall.h,
+              //   fit: BoxFit.fill,
+              //   errorBuilder: (context, url, error) => CircleAvatar(
+              //     backgroundColor: Colors.grey.shade300,
+              //     radius: AppSize.imageSmall / 2.w,
+              //     child: Icon(
+              //       Icons.person,
+              //       size: AppSize.imageSmall / 2.w,
+              //     ),
+              //   ),
             ),
             trailling: GestureDetector(
                 onTap: () => AppNavigator.push(
@@ -83,16 +98,14 @@ class _PostBlogState extends State<PostBlog> {
         ),
         GestureDetector(
             onDoubleTap: () async {
-              if (widget.blogEntity.isReacted == false) {
-                await sl<ReactBlogUseCase>().call(ReactBlogReq(
-                    entityId: widget.blogEntity.blogId, entityType: "blog"));
-                setState(() {
-                  widget.blogEntity.likesCount++;
-                  widget.blogEntity.isReacted = true;
-                  isAnimating = true;
-                });
-                widget.onLikeUpdated;
-              }
+              await sl<ReactBlogUseCase>().call(ReactBlogReq(
+                  entityId: widget.blogEntity.blogId, entityType: "blog"));
+              setState(() {
+                widget.blogEntity.likesCount++;
+                widget.blogEntity.isReacted = true;
+                isAnimating = true;
+              });
+              widget.onLikeUpdated;
             },
             child: mediaUrls.isNotEmpty
                 ? Stack(alignment: Alignment.center, children: [
@@ -112,7 +125,7 @@ class _PostBlogState extends State<PostBlog> {
                         child: Icon(
                           Icons.favorite,
                           color: const Color.fromARGB(255, 242, 81, 78),
-                          size: AppSize.iconLarge.w,
+                          size: 44.sp,
                         ),
                       ),
                     )

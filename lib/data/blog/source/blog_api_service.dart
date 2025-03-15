@@ -50,6 +50,9 @@ class BlogApiServiceImpl extends BlogApiService {
     if (response.statusCode == 200) {
       return BlogResponse.fromMap(response.data);
     } else {
+      if (response.statusCode == 401) {
+        throw AuthenticationFailure(response.statusMessage.toString());
+      }
       throw ServerFailure(response.statusMessage.toString());
     }
   }

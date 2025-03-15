@@ -121,7 +121,7 @@ class _CommentInputWidgetState extends State<CommentInputWidget> {
           if (inputData.mode != CommentMode.blogComment)
             Container(
               width: double.infinity,
-              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+              padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
               decoration: BoxDecoration(
                 color: Colors.grey.shade100,
                 borderRadius: BorderRadius.circular(8),
@@ -132,7 +132,7 @@ class _CommentInputWidgetState extends State<CommentInputWidget> {
                     child: Text(
                       'Replying to ${inputData.replyToUserName}',
                       style: TextStyle(
-                        fontSize: 32.sp,
+                        fontSize: AppSize.textMedium.sp,
                         fontWeight: FontWeight.w500,
                         color: inputData.mode == CommentMode.replyComment
                             ? Colors.blue
@@ -144,7 +144,7 @@ class _CommentInputWidgetState extends State<CommentInputWidget> {
                     onTap: widget.onReset,
                     child: Icon(
                       Icons.close,
-                      size: 36.sp,
+                      size: AppSize.iconMedium.sp,
                       color: Colors.grey,
                     ),
                   ),

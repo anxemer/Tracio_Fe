@@ -77,9 +77,9 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-      providers: [  
+      providers: [
         BlocProvider(create: (context) => SplashCubit()..appStarted()),
-        BlocProvider(create: (context) => AuthCubit()..checkUser()),
+        BlocProvider(create: (context) => AuthCubit()),
         BlocProvider(create: (context) => GetCommentCubit()),
         BlocProvider(create: (context) => GenericDataCubit()),
         BlocProvider(create: (context) => LocationBloc()),

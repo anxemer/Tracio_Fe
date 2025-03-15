@@ -39,13 +39,14 @@ class _CommentState extends State<Comment> {
   void initState() {
     super.initState();
     _commentInputCubit = CommentInputCubit(widget.blogId);
-
-    widget.cubit.getCommentBlog(GetCommentReq(
-        blogId: widget.blogId,
-        ascending: true,
-        commentId: 0,
-        pageNumber: 1,
-        pageSize: 10));
+    if (widget.cubit.state is GetCommentLoading) {
+      widget.cubit.getCommentBlog(GetCommentReq(
+          blogId: widget.blogId,
+          ascending: true,
+          commentId: 0,
+          pageNumber: 1,
+          pageSize: 10));
+    }
   }
 
   @override
@@ -192,7 +193,7 @@ class _CommentState extends State<Comment> {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(
-                        bottom: AppSize.apHorizontalPadding * 0.5,
+                        bottom: AppSize.apHorizontalPadding,
                         left: 10,
                         right: 10),
                     child: BlocBuilder<CommentInputCubit, CommentInputState>(
