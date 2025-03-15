@@ -1,6 +1,5 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 import 'package:tracio_fe/core/constants/api_url.dart';
 import 'package:tracio_fe/core/erorr/failure.dart';
 import 'package:tracio_fe/core/network/dio_client.dart';
@@ -11,7 +10,6 @@ import 'package:tracio_fe/data/blog/models/request/get_comment_req.dart';
 import 'package:tracio_fe/data/blog/models/request/get_reply_comment_req.dart';
 import 'package:tracio_fe/data/blog/models/request/react_blog_req.dart';
 import 'package:tracio_fe/data/blog/models/request/reply_comment_req.dart';
-import 'package:tracio_fe/data/blog/models/response/blog_model.dart';
 import 'package:tracio_fe/data/blog/models/response/blog_response.dart';
 import 'package:tracio_fe/data/blog/models/response/category_blog.dart';
 import 'package:tracio_fe/data/blog/models/response/comment_blog_model.dart';

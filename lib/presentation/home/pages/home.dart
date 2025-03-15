@@ -45,6 +45,7 @@ class _HomePageState extends State<HomePage> {
         BlocProvider(create: (context) => GetCommentCubit()),
       ],
       child: SafeArea(
+        bottom: true,
         child: Scaffold(
           appBar: _buildAppBar(),
           body: BlogPage(

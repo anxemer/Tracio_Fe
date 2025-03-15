@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tracio_fe/presentation/blog/bloc/get_blog_cubit.dart';
 import 'package:tracio_fe/presentation/blog/widget/new_feed.dart';
-import 'package:tracio_fe/presentation/blog/widget/post_blog.dart';
 
 import '../../../common/widget/appbar/app_bar.dart';
 import '../../../common/widget/button/floating_button.dart';

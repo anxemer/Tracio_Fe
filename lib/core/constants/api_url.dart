@@ -1,12 +1,17 @@
+import 'package:tracio_fe/data/map/models/get_place_req.dart';
+import 'package:tracio_fe/data/map/models/isochrone_req.dart';
+import 'package:tracio_fe/data/map/models/mapbox_direction_req.dart';
+
 class ApiUrl {
   //base Url
-  static const baseURL = 'https://192.168.1.9:';
+  static const baseURL = 'https://localhost:';
   // static const baseURL = 'https://10.10.1.66:';
   // static const baseURL = 'https://10.87.46.103:';
   static const hubUrl = 'http://10.87.46.103:5002/content-hub';
   //port
   static const portUser = '5003';
   static const portBlog = '5002';
+  static const portRoute = '5009';
 
   //Api User
   static const registerWithEP = '$portUser/api/auth/register-user';
@@ -41,4 +46,72 @@ class ApiUrl {
     return Uri.parse(
         '$portBlog/api/comments/$commentId/replies?pageNumber=$pageNumber&pageSize=$pageSize');
   }
+
+  //Api route
+  static Uri urlGetDirectionUsingMapbox(
+      MapboxDirectionsRequest mapboxDirectionReq) {
+    final coordsString = mapboxDirectionReq.coordinates
+        .map((c) => '${c.longitude},${c.latitude}')
+        .join(';');
+
+    final uri = Uri.https(
+      'api.mapbox.com',
+      '/directions/v5/mapbox/${mapboxDirectionReq.profile}/$coordsString',
+      {
+        'alternatives': mapboxDirectionReq.alternatives.toString(),
+        'annotations': mapboxDirectionReq.annotations,
+        'continue_straight': mapboxDirectionReq.continueStraight.toString(),
+        'geometries': mapboxDirectionReq.geometries,
+        'language': mapboxDirectionReq.language,
+        'overview': mapboxDirectionReq.overview,
+        'steps': mapboxDirectionReq.steps.toString(),
+        'access_token': mapboxDirectionReq.accessToken,
+      },
+    );
+
+    return uri;
+  }
+
+  static Uri urlGetEleUsingOpenElevation() {
+    return Uri.https("api.open-elevation.com", '/api/v1/lookup');
+  }
+
+  static Uri urlGetPlacesAutocomplete(GetPlaceReq request, String apiKey) {
+    final queryParams = {
+      'api_key': apiKey,
+      'input': request.searchText,
+    };
+
+    if (request.sessionToken != null && request.sessionToken!.isNotEmpty) {
+      queryParams['sessiontoken'] = request.sessionToken!;
+    }
+
+    return Uri.https('rsapi.goong.io', '/Place/AutoComplete', queryParams);
+  }
+
+  static Uri urlGetPlaceDetail(GetPlaceDetailReq request, String apiKey) {
+    final queryParams = {
+      'api_key': apiKey,
+      'place_id': request.placeId,
+    };
+    if (request.sessionToken != null && request.sessionToken!.isNotEmpty) {
+      queryParams['sessiontoken'] = request.sessionToken!;
+    }
+    return Uri.https('rsapi.goong.io', '/Place/Detail', queryParams);
+  }
+
+  static Uri urlGetIsochroneMapbox(IsochroneReq request) {
+    final coordsString = "${request.lng},${request.lat}";
+
+    final uri = Uri.https(
+      'api.mapbox.com',
+      '/isochrone/v1/mapbox/cycling/$coordsString',
+      request.toMap(),
+    );
+
+    return uri;
+  }
+
+  static const postRoute = '$portRoute/api/route';
+  static const locationHubUrl = 'http://localhost:$portRoute/locationHub';
 }

@@ -1,10 +1,8 @@
 import 'package:dartz/dartz.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:tracio_fe/core/erorr/failure.dart';
 import 'package:tracio_fe/core/usecase/usecase.dart';
 import 'package:tracio_fe/data/auth/models/login_req.dart';
 import 'package:tracio_fe/data/auth/models/register_req.dart';
-import 'package:tracio_fe/data/auth/models/user_model.dart';
 import 'package:tracio_fe/domain/auth/entities/user.dart';
 
 abstract class AuthRepository {

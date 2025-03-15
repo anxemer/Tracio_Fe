@@ -1,10 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:photo_manager/photo_manager.dart';
-import 'package:tracio_fe/presentation/blog/bloc/create_blog_cubit.dart';
 import 'package:tracio_fe/presentation/blog/pages/add_title_blog.dart';
 
 import '../../../common/widget/blog/pick_image.dart';

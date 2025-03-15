@@ -1,6 +1,5 @@
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:tracio_fe/data/auth/models/register_req.dart';
 
 abstract class AuthFirebaseService {
   Future<String> verifyEmail(String email);
