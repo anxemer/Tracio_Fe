@@ -147,6 +147,7 @@ class _ReactBlogState extends State<ReactBlog> {
                       : Icons.bookmark_border,
                   color: Colors.black,
                   size: AppSize.iconMedium * 1.2.sp,
+                  size: AppSize.iconMedium * 1.2.sp,
                 ),
               ),
             ],
