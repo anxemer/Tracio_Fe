@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
 import 'package:tracio_fe/common/widget/appbar/app_bar.dart';
+import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/data/blog/models/request/get_blog_req.dart';
 import 'package:tracio_fe/presentation/blog/bloc/get_blog_cubit.dart';
 import 'package:tracio_fe/presentation/profile/bloc/user_profile_cubit.dart';
@@ -29,7 +30,7 @@ class UserProfilePage extends StatelessWidget {
             style: TextStyle(
                 color: Colors.black,
                 fontWeight: FontWeight.bold,
-                fontSize: 40.sp),
+                fontSize: AppSize.textExtraLarge.sp),
           ),
           action: Row(
             children: [
@@ -40,6 +41,7 @@ class UserProfilePage extends StatelessWidget {
                 action: Icon(
                   Icons.more_vert_outlined,
                   color: Colors.black,
+                  size: AppSize.iconLarge,
                 ),
               ),
             ],
@@ -69,7 +71,7 @@ class UserProfilePage extends StatelessWidget {
                 },
               ),
               SizedBox(
-                height: 20.h,
+                height: 10.h,
               ),
               Container(
                 width: double.infinity,
@@ -83,7 +85,8 @@ class UserProfilePage extends StatelessWidget {
                       leading: Text(
                         'Activities',
                         style: TextStyle(
-                            fontSize: 32.sp, fontWeight: FontWeight.w600),
+                            fontSize: AppSize.textLarge.sp,
+                            fontWeight: FontWeight.w600),
                       ),
                       trailing: Icon(Icons.navigate_next),
                     ),
@@ -96,7 +99,8 @@ class UserProfilePage extends StatelessWidget {
                       leading: Text(
                         'Statistics',
                         style: TextStyle(
-                            fontSize: 32.sp, fontWeight: FontWeight.w600),
+                            fontSize: AppSize.textLarge.sp.sp,
+                            fontWeight: FontWeight.w600),
                       ),
                       trailing: Icon(Icons.navigate_next),
                     ),
@@ -109,7 +113,8 @@ class UserProfilePage extends StatelessWidget {
                       leading: Text(
                         'routesa',
                         style: TextStyle(
-                            fontSize: 32.sp, fontWeight: FontWeight.w600),
+                            fontSize: AppSize.textLarge.sp.sp,
+                            fontWeight: FontWeight.w600),
                       ),
                       trailing: Icon(Icons.navigate_next),
                     ),
@@ -135,7 +140,8 @@ class UserProfilePage extends StatelessWidget {
                           leading: Text(
                             'Blogs',
                             style: TextStyle(
-                                fontSize: 32.sp, fontWeight: FontWeight.w600),
+                                fontSize: AppSize.textLarge.sp.sp,
+                                fontWeight: FontWeight.w600),
                           ),
                           trailing: Icon(Icons.navigate_next),
                         ),

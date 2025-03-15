@@ -2,6 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
+import 'package:tracio_fe/common/widget/picture/circle_picture.dart';
+import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/domain/user/entities/user_profile_entity.dart';
 import 'package:tracio_fe/presentation/profile/pages/edit_profile.dart';
 
@@ -23,37 +25,42 @@ class Userinformation extends StatelessWidget {
       child: Column(
         children: [
           HeaderInformation(
-              widthImage: 100.w,
+              widthImage: AppSize.imageLarge.w,
               subtitle: Text(
                 '${user.district} ${user.city!}',
                 style: TextStyle(
                     color: Colors.grey,
                     fontWeight: FontWeight.w400,
-                    fontSize: 32.sp),
+                    fontSize: AppSize.textLarge.sp),
               ),
               title: Text(
                 user.userName!,
                 style: TextStyle(
                     color: Colors.black,
                     fontWeight: FontWeight.bold,
-                    fontSize: 40.sp),
+                    fontSize: AppSize.textExtraLarge.sp),
               ),
-              imageUrl: CachedNetworkImage(
-                imageUrl: user.profilePicture!,
-                fit: BoxFit.cover,
-              ),
+              imageUrl: CirclePicture(
+                  imageUrl: user.profilePicture!, imageSize: AppSize.iconLarge),
               trailling: InkWell(
-                onTap: () => AppNavigator.push(context, EditProfilePage(user: user,)),
+                onTap: () => AppNavigator.push(
+                    context,
+                    EditProfilePage(
+                      user: user,
+                    )),
                 child: SizedBox(
-                  child: Image.asset(AppImages.edit),
-                  width: 40.w,
+                  child: Image.asset(
+                    AppImages.edit,
+                    width: AppSize.iconMedium.w,
+                  ),
+                  // width: AppSize.imageSmall,
                 ),
               )),
           SizedBox(
-            height: 40.h,
+            height: 10.h,
           ),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20.h),
+            padding: EdgeInsets.symmetric(horizontal: 10.h),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -62,11 +69,11 @@ class Userinformation extends StatelessWidget {
                   style: TextStyle(
                       color: Colors.grey.shade700,
                       fontWeight: FontWeight.w400,
-                      fontSize: 24.sp),
+                      fontSize: AppSize.textLarge.sp),
                 ),
                 SizedBox(
-                  width: 300.w,
-                  height: 100.h,
+                  width: 150.w,
+                  height: 50.h,
                   // color: Colors.black,
                   child: Stack(
                     children: [
@@ -75,6 +82,7 @@ class Userinformation extends StatelessWidget {
                         child: Text(
                           'Beginner',
                           style: TextStyle(
+                              fontSize: AppSize.textMedium,
                               color: AppColors.primary,
                               fontWeight: FontWeight.w500),
                         ),
@@ -86,7 +94,7 @@ class Userinformation extends StatelessWidget {
                               color: Colors.grey.shade300,
                               borderRadius: BorderRadius.circular(10)),
                           width: double.infinity,
-                          height: 20.h,
+                          height: 10.h,
                         ),
                       ),
                       Align(
@@ -109,24 +117,26 @@ class Userinformation extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text('Following'),
                     Text(
                       '89',
                       style: TextStyle(
-                          fontWeight: FontWeight.w600, fontSize: 32.sp),
+                          fontWeight: FontWeight.w600,
+                          fontSize: AppSize.textLarge.sp),
                     )
                   ],
                 ),
                 Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text('Follower'),
                     Text(
                       '89',
                       style: TextStyle(
-                          fontWeight: FontWeight.w600, fontSize: 32.sp),
+                          fontWeight: FontWeight.w600,
+                          fontSize: AppSize.textLarge.sp),
                     )
                   ],
                 ),
@@ -137,29 +147,32 @@ class Userinformation extends StatelessWidget {
                     Text(
                       '89',
                       style: TextStyle(
-                          fontWeight: FontWeight.w600, fontSize: 32.sp),
+                          fontWeight: FontWeight.w600,
+                          fontSize: AppSize.textLarge.sp),
                     )
                   ],
                 ),
                 Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text('Challenges'),
                     Text(
                       '89',
                       style: TextStyle(
-                          fontWeight: FontWeight.w600, fontSize: 32.sp),
+                          fontWeight: FontWeight.w600,
+                          fontSize: AppSize.textLarge.sp),
                     )
                   ],
                 ),
                 Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text('Blogs'),
                     Text(
                       '89',
                       style: TextStyle(
-                          fontWeight: FontWeight.w600, fontSize: 32.sp),
+                          fontWeight: FontWeight.w600,
+                          fontSize: AppSize.textLarge.sp),
                     )
                   ],
                 ),

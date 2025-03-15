@@ -11,6 +11,8 @@ import 'package:tracio_fe/presentation/chat/page/chat.dart';
 import 'package:tracio_fe/presentation/notifications/page/notifications.dart';
 
 import '../../../data/blog/models/request/get_blog_req.dart';
+import '../../auth/bloc/authCubit/auth_cubit.dart';
+import '../../auth/pages/login.dart';
 import '../../blog/bloc/create_blog_cubit.dart';
 import '../../blog/bloc/get_blog_cubit.dart';
 
@@ -43,6 +45,7 @@ class _HomePageState extends State<HomePage> {
             create: (context) => GetBlogCubit()..getBlog(GetBlogReq())),
         BlocProvider(create: (context) => CreateBlogCubit()),
         BlocProvider(create: (context) => GetCommentCubit()),
+        BlocProvider(create: (context) => AuthCubit()..checkUser())
       ],
       child: SafeArea(
         bottom: true,
@@ -104,6 +107,22 @@ class _HomePageState extends State<HomePage> {
             size: AppSize.iconMedium.w,
           ),
           tooltip: "Message",
+        ),
+        IconButton(
+          padding: EdgeInsets.zero,
+          highlightColor: Colors.grey.shade600,
+          splashColor: Colors.white.withAlpha(30),
+          hoverColor: Colors.white.withAlpha(10),
+          onPressed: () async {
+            context.read<AuthCubit>().logout();
+            AppNavigator.pushReplacement(context, LoginPage());
+          },
+          icon: Icon(
+            Icons.output_sharp,
+            color: Colors.white,
+            size: AppSize.iconMedium.w,
+          ),
+          tooltip: "logout",
         )
       ],
     );

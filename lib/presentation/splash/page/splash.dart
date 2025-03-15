@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
 import 'package:tracio_fe/core/configs/theme/assets/app_images.dart';
+import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/presentation/auth/pages/login.dart';
 import 'package:tracio_fe/presentation/splash/bloc/splash_cubit.dart';
 import 'package:tracio_fe/common/widget/navbar/bottom_nav_bar_manager.dart';
@@ -31,7 +32,10 @@ class SplashPage extends StatelessWidget {
             ),
             Align(
               alignment: Alignment.center,
-              child: Image.asset(AppImages.logo2),
+              child: Image.asset(
+                AppImages.logo2,
+                width: AppSize.imageExtraLarge,
+              ),
             ),
             Align(
               alignment: Alignment.bottomLeft,

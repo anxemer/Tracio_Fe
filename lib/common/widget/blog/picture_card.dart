@@ -57,8 +57,9 @@ class _PictureCardState extends State<PictureCard> {
                                   margin: EdgeInsets.symmetric(horizontal: 4.0),
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(10),
-                                    child: Image.network(imageUrl,
-                                        fit: BoxFit.contain,
+                                    child: 
+                                    Image.network(imageUrl,
+                                        fit: BoxFit.cover,
                                         errorBuilder: (context, url, error) =>
                                             Icon(
                                               Icons.error,

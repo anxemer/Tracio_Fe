@@ -22,13 +22,16 @@ class InputFieldAuth extends StatelessWidget {
       child: Container(
         // color: AppColors.secondBackground,
         // height: MediaQuery.of(context).size.height,
-        decoration: BoxDecoration(boxShadow: [
-          BoxShadow(
-              color: Colors.black.withOpacity(.2),
-              blurRadius: 15,
-              spreadRadius: 2,
-              offset: Offset(0, 15))
-        ]),
+        decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey.shade300, width: 1),
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                  color: Colors.black.withOpacity(.2),
+                  blurRadius: 10,
+                  spreadRadius: 2,
+                  offset: Offset(0, 15))
+            ]),
         child: TextField(
           onTapOutside: (event) {
             FocusManager.instance.primaryFocus?.unfocus();
@@ -39,6 +42,9 @@ class InputFieldAuth extends StatelessWidget {
           controller: textController,
           style: TextStyle(color: Colors.black),
           decoration: InputDecoration(
+              // border: OutlineInputBorder(
+              //     borderSide: BorderSide(
+              //         color: const Color.fromARGB(255, 0, 0, 0), width: 2)),
               filled: true,
               suffixIcon: suffixIconl,
               prefixIcon: prefixIcon,

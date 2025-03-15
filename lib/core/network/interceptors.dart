@@ -2,6 +2,9 @@ import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
 import 'package:tracio_fe/core/constants/api_url.dart';
 
+import '../../data/auth/sources/auth_local_source/auth_local_source.dart';
+import '../../service_locator.dart';
+
 /// This interceptor is used to show request and response logs
 class LoggerInterceptor extends Interceptor {
   Logger logger = Logger(
@@ -46,8 +49,8 @@ class AuthorizationInterceptor extends Interceptor {
       return;
     }
     // String token = await sl<AuthLocalSource>().getToken();
-    String token =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJKYm9qZEVjQUxTWUdhRlBGUVNZTW00bG00TGsxIiwianRpIjoiODU3ODQzMjctOTdkOC00MmVlLWIyN2YtZDdlMzU2Y2E1YmYwIiwicm9sZSI6InVzZXIiLCJ1bmlxdWVfbmFtZSI6IlRyYW4gTWluaCBMb2MiLCJlbWFpbCI6InRybWlubG9jQGdtYWlsLmNvbSIsImN1c3RvbV9pZCI6IjYiLCJuYmYiOjE3NDE4MjMyODcsImV4cCI6MTc0MTgyNjg4NywiaWF0IjoxNzQxODIzMjg3LCJpc3MiOiJVc2VyIiwiYXVkIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NTAwMyJ9.CpW-HRDQGaO5AmRi8hL8ptAuMffi1fq87VBU18AV1kQ";
+    String token = await sl<AuthLocalSource>().getToken();
+
     options.headers['Authorization'] = "Bearer $token";
     handler.next(options); // continue with the Request
   }

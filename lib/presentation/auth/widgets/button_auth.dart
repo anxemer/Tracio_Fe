@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:tracio_fe/core/constants/app_size.dart';
 
 import '../../../core/configs/theme/app_colors.dart';
 
@@ -11,8 +12,8 @@ class ButtonAuth extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 300.w,
-      height: 120.h,
+      width: 200.w,
+      height: 60.h,
       decoration: BoxDecoration(
         color: AppColors.secondBackground,
         borderRadius: BorderRadius.circular(20),
@@ -31,7 +32,9 @@ class ButtonAuth extends StatelessWidget {
           children: [
             Text(
               title,
-              style: TextStyle(fontSize: 32.sp, fontWeight: FontWeight.w500),
+              style: TextStyle(
+                  fontSize: AppSize.textExtraLarge.sp,
+                  fontWeight: FontWeight.w500),
             ),
             SizedBox(
               width: 10.w,

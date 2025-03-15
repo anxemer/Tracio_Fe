@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/presentation/blog/pages/add_title_blog.dart';
 
 import '../../../common/widget/blog/pick_image.dart';
@@ -23,98 +24,6 @@ class _CreateBlogPageState extends State<CreateBlogPage> {
     // _fetchNewMedia();
     _pageController = PageController();
   }
-
-  // /// Lấy danh sách ảnh từ album
-  // _fetchNewMedia() async {
-  //   lastPage = currentPage;
-  //   final PermissionState ps = await PhotoManager.requestPermissionExtend();
-  //   if (ps.isAuth) {
-  //     List<AssetPathEntity> album =
-  //         await PhotoManager.getAssetPathList(type: RequestType.image);
-  //     List<AssetEntity> media =
-  //         await album[0].getAssetListPaged(page: currentPage, size: 60);
-
-  //     for (var asset in media) {
-  //       if (asset.type == AssetType.image) {
-  //         final file = await asset.file;
-  //         if (file != null) {
-  //           allFiles.add(File(file.path)); // Lưu ảnh vào danh sách tổng
-  //         }
-  //       }
-  //     }
-
-  //     List<Widget> temp = [];
-
-  //     if (currentPage == 0) {
-  //       temp.add(GestureDetector(
-  //         onTap: _takePicture,
-  //         child: Container(
-  //           color: Colors.grey.shade400,
-  //           child: Center(
-  //             child: Icon(
-  //               Icons.camera_alt_outlined,
-  //               size: 80.w,
-  //               color: Colors.white,
-  //             ),
-  //           ),
-  //         ),
-  //       ));
-  //     }
-  //     temp.addAll(media.map((asset) {
-  //       return FutureBuilder(
-  //         future: asset.thumbnailDataWithSize(ThumbnailSize(200, 200)),
-  //         builder: (context, snapshot) {
-  //           if (snapshot.connectionState == ConnectionState.done) {
-  //             return Image.memory(
-  //               snapshot.data!,
-  //               fit: BoxFit.cover,
-  //             );
-  //           }
-  //           return Container();
-  //         },
-  //       );
-  //     }).toList());
-
-  //     setState(() {
-  //       _mediaList.addAll(temp);
-  //       currentPage++;
-  //     });
-  //   }
-  // }
-
-  // Future<void> _takePicture() async {
-  //   try {
-  //     final XFile? photo =
-  //         await _imagePicker.pickImage(source: ImageSource.camera);
-  //     if (photo != null) {
-  //       File imageFile = File(photo.path);
-  //       setState(() {
-  //         // Thêm ảnh vào danh sách tổng
-  //         // allFiles.insert(0, imageFile);
-
-  //         // Thêm vào danh sách đã chọn
-  //         selectedFiles.add(imageFile);
-
-  //         // Thêm ảnh vào đầu danh sách hiển thị
-  //         // _mediaList.insert(
-  //         //     1,
-  //         //     Image.file(
-  //         //       imageFile,
-  //         //       fit: BoxFit.cover,
-  //         //     ));
-  //       });
-
-  //       // Cập nhật PageView để hiển thị ảnh vừa chụp
-  //       _pageController.animateToPage(
-  //         selectedFiles.length,
-  //         duration: const Duration(milliseconds: 300),
-  //         curve: Curves.easeInOut,
-  //       );
-  //     }
-  //   } catch (e) {
-  //     print('Lỗi khi chụp ảnh: $e');
-  //   }
-  // }
 
   /// Hàm chọn hoặc bỏ chọn ảnh
   void _onImageToggle(File file, bool isSelected) {
@@ -149,17 +58,6 @@ class _CreateBlogPageState extends State<CreateBlogPage> {
       }
     });
   }
-  //   if (adjustedIndex >= 0 && adjustedIndex < allFiles.length) {
-  //     setState(() {
-  //       File selectedFile = allFiles[adjustedIndex];
-  //       if (selectedFiles.contains(selectedFile)) {
-  //         selectedFiles.remove(selectedFile); // Bỏ chọn nếu đã có
-  //       } else {
-  //         selectedFiles.add(selectedFile); // Thêm vào danh sách chọn
-  //       }
-  //     });
-  //   }
-  // }
 
   @override
   void dispose() {
@@ -195,7 +93,7 @@ class _CreateBlogPageState extends State<CreateBlogPage> {
                 child: Text(
                   'Next',
                   style: TextStyle(
-                      fontSize: 32.sp,
+                      fontSize: AppSize.textExtraLarge.sp,
                       color: Colors.black,
                       fontWeight: FontWeight.bold),
                 ),
@@ -219,16 +117,17 @@ class _CreateBlogPageState extends State<CreateBlogPage> {
             // Tiêu đề 'Recent'
             Container(
               width: double.infinity,
-              height: 60.h,
+              height: 20.h,
               color: Colors.white,
-              padding: EdgeInsets.symmetric(horizontal: 20.w),
+              padding: EdgeInsets.symmetric(horizontal: 10.w),
               child: Text(
                 'Recent',
-                style: TextStyle(fontSize: 40.sp, fontWeight: FontWeight.w600),
+                style: TextStyle(
+                    fontSize: AppSize.textLarge.sp,
+                    fontWeight: FontWeight.w600),
               ),
             ),
 
-            // GridView hiển thị tất cả ảnh
             Expanded(
                 child: ImagePickerGrid(
                     selectedFiles: selectedFiles,

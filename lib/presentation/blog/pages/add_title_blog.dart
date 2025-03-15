@@ -11,6 +11,7 @@ import 'package:tracio_fe/common/widget/appbar/app_bar.dart';
 import 'package:tracio_fe/common/widget/button/button.dart';
 import 'package:tracio_fe/core/configs/theme/app_colors.dart';
 import 'package:tracio_fe/core/configs/theme/assets/app_images.dart';
+import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/data/blog/models/request/create_blog_req.dart';
 import 'package:tracio_fe/presentation/blog/bloc/category/get_category_cubit.dart';
 import 'package:tracio_fe/presentation/blog/bloc/category/select_category_cubit.dart';
@@ -69,7 +70,7 @@ class _AddTitleBlogPageState extends State<AddTitleBlogPage> {
             title: Text(
               'New Post',
               style: TextStyle(
-                  color: Colors.black,
+                  color: const Color.fromARGB(255, 255, 255, 255),
                   fontWeight: FontWeight.bold,
                   fontSize: 40.sp),
             ),
@@ -104,14 +105,15 @@ class _AddTitleBlogPageState extends State<AddTitleBlogPage> {
                                       (BuildContext context, int index) {
                                     return Padding(
                                       padding: EdgeInsets.symmetric(
-                                          horizontal: 80.h),
+                                          horizontal:
+                                              AppSize.apHorizontalPadding.h),
                                       child: Stack(
                                           alignment: Alignment.topRight,
                                           children: [
                                             Image.file(
                                               widget.file[index],
-                                              width: 600.w,
-                                              // height: 300,
+                                              width: 400.w,
+                                              // height: 300.h,
                                               fit: BoxFit.fill,
                                             ),
                                             Positioned(
@@ -137,7 +139,9 @@ class _AddTitleBlogPageState extends State<AddTitleBlogPage> {
                                                               index
                                                           ? AppColors
                                                               .secondBackground
-                                                          : Colors.grey,
+                                                          : const Color
+                                                              .fromARGB(255,
+                                                              255, 255, 255),
                                                       borderRadius:
                                                           BorderRadius.circular(
                                                               4),
@@ -167,10 +171,14 @@ class _AddTitleBlogPageState extends State<AddTitleBlogPage> {
                           Text(
                             'Add Category',
                             style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 32.sp),
+                                fontWeight: FontWeight.bold,
+                                fontSize: AppSize.textLarge.sp),
                           ),
                           SizedBox(
-                              height: 100.h,
+                            height: 10.h,
+                          ),
+                          SizedBox(
+                              height: 40.h,
                               child: BlocProvider(
                                 create: (context) => SelectCategoryCubit(),
                                 child: BlocBuilder<SelectCategoryCubit, int>(
@@ -210,7 +218,7 @@ class _AddTitleBlogPageState extends State<AddTitleBlogPage> {
                           }
                         },
                         child: SizedBox(
-                          height: 100.h,
+                          height: 50.h,
                           child: Row(
                             children: [
                               Image.asset(
@@ -264,44 +272,50 @@ class _AddTitleBlogPageState extends State<AddTitleBlogPage> {
         }
 
         return Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+          padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               ButtonDesign(
-                  height: 100.h,
-                  width: 300.w,
-                  ontap: () {
-                    print(widget.file);
-                    context.read<CreateBlogCubit>().CreateBlog(CreateBlogReq(
-                        categoryId: category,
-                        content: _titleCon.text,
-                        privacySetting: audience,
-                        status: 0,
-                        mediaFiles: widget.file));
-                  },
-                  text: 'Save',
-                  icon: AppImages.draft,
-                  fillColor: Colors.white,
-                  textColor: Colors.black,
-                  borderColor: Colors.black),
+                height: 40.h,
+                width: 140.w,
+                ontap: () {
+                  print(widget.file);
+                  context.read<CreateBlogCubit>().CreateBlog(CreateBlogReq(
+                      categoryId: category,
+                      content: _titleCon.text,
+                      privacySetting: audience,
+                      status: 0,
+                      mediaFiles: widget.file));
+                },
+                text: 'Save',
+                image: AppImages.draft,
+                fillColor: Colors.white,
+                textColor: Colors.black,
+                borderColor: Colors.black,
+                iconSize: AppSize.iconSmall,
+                fontSize: AppSize.textMedium,
+              ),
               ButtonDesign(
-                  height: 100.h,
-                  width: 300.w,
-                  ontap: () {
-                    print(category);
-                    context.read<CreateBlogCubit>().CreateBlog(CreateBlogReq(
-                        categoryId: category,
-                        content: _titleCon.text,
-                        privacySetting: audience,
-                        status: 1,
-                        mediaFiles: widget.file));
-                  },
-                  text: 'Share',
-                  icon: AppImages.share,
-                  fillColor: AppColors.secondBackground,
-                  textColor: Colors.white,
-                  borderColor: Colors.black)
+                height: 40.h,
+                width: 140.w,
+                ontap: () {
+                  print(category);
+                  context.read<CreateBlogCubit>().CreateBlog(CreateBlogReq(
+                      categoryId: category,
+                      content: _titleCon.text,
+                      privacySetting: audience,
+                      status: 1,
+                      mediaFiles: widget.file));
+                },
+                text: 'Share',
+                image: AppImages.share,
+                fillColor: AppColors.secondBackground,
+                textColor: Colors.white,
+                borderColor: Colors.black,
+                iconSize: AppSize.iconSmall,
+                fontSize: AppSize.textMedium,
+              )
             ],
           ),
         );

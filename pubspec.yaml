@@ -89,6 +89,7 @@ dependencies:
   timeago:
   cached_network_image:
   shimmer:
+  flutter_sticky_header:
   fixnum: ^1.1.1
 dev_dependencies:
   protoc_plugin: ^21.1.2
@@ -107,4 +108,4 @@ flutter:
     - assets/vectors/
 
     # token
-    - .env
+    # - .env

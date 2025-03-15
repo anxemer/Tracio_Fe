@@ -36,16 +36,13 @@ class BlogRepositoryImpl extends BlogRepository {
   });
   @override
   Future<Either<Failure, BlogResponse>> getBlogs(GetBlogReq params) async {
-    final bool isConnected = await networkInfo.isConnected;
-    if (isConnected) {
-      try {
-        var returnedData = await remoteDataSource.getBlogs(params);
-        return Right(returnedData);
-      } on ServerFailure {
-        return Left(ServerFailure(''));
-      }
-    } else {
-      return Left(NetworkFailure('Network error'));
+    try {
+      var returnedData = await remoteDataSource.getBlogs(params);
+      return Right(returnedData);
+    } on ServerFailure {
+      return Left(ServerFailure(''));
+    } on AuthenticationFailure {
+      return Left(AuthenticationFailure('UnAuthenticated'));
     }
 
     // return returnedData.fold((error) {

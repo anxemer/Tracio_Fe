@@ -7,7 +7,7 @@ import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
 import 'package:tracio_fe/common/widget/button/button.dart';
 import 'package:tracio_fe/core/configs/theme/app_colors.dart';
 import 'package:tracio_fe/core/configs/theme/assets/app_images.dart';
-import 'package:tracio_fe/core/erorr/failure.dart';
+import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/data/auth/models/login_req.dart';
 import 'package:tracio_fe/presentation/auth/bloc/authCubit/auth_cubit.dart';
 import 'package:tracio_fe/presentation/auth/pages/login_phone.dart';
@@ -16,7 +16,7 @@ import 'package:tracio_fe/presentation/auth/widgets/button_auth.dart';
 import 'package:tracio_fe/presentation/auth/widgets/input_field_auth.dart';
 import 'package:tracio_fe/service_locator.dart';
 
-import '../../home/pages/home.dart';
+import '../../../common/widget/navbar/bottom_nav_bar_manager.dart';
 import '../bloc/authCubit/auth_state.dart';
 
 class LoginPage extends StatefulWidget {
@@ -41,7 +41,7 @@ class _LoginPageState extends State<LoginPage> {
             Future.microtask(
               () {
                 EasyLoading.dismiss();
-                AppNavigator.pushAndRemove(context, HomePage());
+                AppNavigator.pushAndRemove(context, BottomNavBarManager());
               },
             );
           }
@@ -64,7 +64,7 @@ class _LoginPageState extends State<LoginPage> {
                             topRight: Radius.circular(50))),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 20),
+                          horizontal: 10, vertical: 10),
                       child: Column(
                         children: [
                           Align(
@@ -73,7 +73,7 @@ class _LoginPageState extends State<LoginPage> {
                               'Sign In',
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 60.sp,
+                                  fontSize: AppSize.textExtraLarge.sp,
                                   color: Colors.black),
                             ),
                           ),
@@ -129,16 +129,19 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _logoDisplay(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height / 2.8,
-      decoration: BoxDecoration(
-          image: DecorationImage(image: AssetImage(AppImages.logo))),
+    return Padding(
+      padding: EdgeInsets.all(AppSize.apSectionPadding * 1.4),
+      child: Container(
+        height: MediaQuery.of(context).size.height / 5,
+        decoration: BoxDecoration(
+            image: DecorationImage(image: AssetImage(AppImages.logo))),
+      ),
     );
   }
 
   Widget _forgotPassText() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.end,
       children: [
         TextButton(
             onPressed: () {},
@@ -147,7 +150,7 @@ class _LoginPageState extends State<LoginPage> {
               style: TextStyle(
                   fontWeight: FontWeight.w500,
                   color: Colors.black.withOpacity(.5),
-                  fontSize: 24.sp),
+                  fontSize: AppSize.textMedium.sp),
             ))
       ],
     );
@@ -191,7 +194,8 @@ class _LoginPageState extends State<LoginPage> {
           padding: const EdgeInsets.symmetric(horizontal: 10),
           child: Text(
             "or sign in with",
-            style: TextStyle(color: Colors.black, fontSize: 24.sp),
+            style:
+                TextStyle(color: Colors.black, fontSize: AppSize.textMedium.sp),
           ),
         ),
         Expanded(
@@ -210,21 +214,25 @@ class _LoginPageState extends State<LoginPage> {
         ButtonDesign(
           ontap: () {},
           text: "Google",
-          icon: AppImages.logoGg,
+          image: AppImages.logoGg,
           fillColor: Colors.white,
           textColor: Colors.black,
           borderColor: Colors.green,
+          iconSize: AppSize.iconSmall,
+          fontSize: AppSize.textMedium,
         ),
-        SizedBox(height: 20.h), // Khoảng cách tự động co giãn
+        SizedBox(height: 10.h), // Khoảng cách tự động co giãn
         ButtonDesign(
           ontap: () {
             AppNavigator.pushReplacement(context, LoginPhone());
           },
           text: "Phone Number",
-          icon: AppImages.logoPhone,
+          image: AppImages.logoPhone,
           fillColor: Colors.white,
           textColor: Colors.black,
           borderColor: Colors.black,
+          iconSize: AppSize.iconSmall,
+          fontSize: AppSize.textMedium,
         ),
       ],
     );
@@ -237,7 +245,7 @@ class _LoginPageState extends State<LoginPage> {
         Text(
           'Don\'t have an account?',
           style: TextStyle(
-              fontSize: 24.sp,
+              fontSize: AppSize.textMedium.sp,
               color: Colors.black,
               fontWeight: FontWeight.w500),
         ),
@@ -258,7 +266,7 @@ class _LoginPageState extends State<LoginPage> {
             child: Text(
               'Register',
               style: TextStyle(
-                  fontSize: 24.sp,
+                  fontSize: AppSize.textMedium.sp,
                   fontWeight: FontWeight.w500,
                   color: AppColors.secondBackground),
             ))

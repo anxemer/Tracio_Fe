@@ -84,10 +84,10 @@ class _ReactBlogState extends State<ReactBlog> {
                         color: widget.blogEntity.isReacted
                             ? Colors.red
                             : Colors.black87,
-                        size: AppSize.iconMedium*1.2.sp,
+                        size: AppSize.iconMedium * 1.2.sp,
                       )),
                   SizedBox(
-                    width: 10.w,
+                    width: 4.w,
                   ),
                   BasicTextButton(
                       text: widget.blogEntity.likesCount.toString(),
@@ -95,7 +95,7 @@ class _ReactBlogState extends State<ReactBlog> {
                 ],
               ),
               SizedBox(
-                width: 20.w,
+                width: 12.w,
               ),
               Row(
                 children: [
@@ -104,11 +104,11 @@ class _ReactBlogState extends State<ReactBlog> {
                     child: Icon(
                       Icons.comment_outlined,
                       color: Colors.black,
-                      size: AppSize.iconMedium*1.2.sp,
+                      size: AppSize.iconMedium * 1.2.sp,
                     ),
                   ),
                   SizedBox(
-                    width: 10.w,
+                    width: 6.w,
                   ),
                   BasicTextButton(
                       text: widget.blogEntity.commentsCount.toString(),
@@ -146,7 +146,7 @@ class _ReactBlogState extends State<ReactBlog> {
                       ? Icons.bookmark_added_rounded
                       : Icons.bookmark_border,
                   color: Colors.black,
-                  size: AppSize.iconMedium*1.2.sp,
+                  size: AppSize.iconMedium * 1.2.sp,
                 ),
               ),
             ],
