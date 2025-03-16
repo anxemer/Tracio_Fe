@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:tracio_fe/common/helper/is_dark_mode.dart';
 import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
 import 'package:tracio_fe/common/widget/blog/animation_react.dart';
 import 'package:tracio_fe/common/widget/blog/header_information.dart';
@@ -88,7 +89,7 @@ class _PostBlogState extends State<PostBlog> {
           child: Text(
             widget.blogEntity.content.toString(),
             style: TextStyle(
-                color: Colors.black,
+                color: context.isDarkMode ? Colors.white : Colors.black,
                 fontSize: AppSize.textMedium.sp,
                 fontWeight: FontWeight.w400),
           ),

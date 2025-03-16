@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tracio_fe/common/bloc/generic_data_cubit.dart';
 import 'package:tracio_fe/common/bloc/generic_data_state.dart';
+import 'package:tracio_fe/common/helper/is_dark_mode.dart';
 import 'package:tracio_fe/common/widget/button/text_button.dart';
 import 'package:tracio_fe/data/blog/models/request/get_reply_comment_req.dart';
 import 'package:tracio_fe/domain/blog/entites/comment_blog.dart';
@@ -84,11 +85,11 @@ class _CommentItemState extends State<CommentItem> {
                               backgroundImage: imageProvider,
                             ),
                             errorWidget: (context, url, error) => CircleAvatar(
-                              backgroundColor: Colors.grey.shade300,
+                              backgroundColor: Colors.transparent,
                               radius: AppSize.imageSmall / 2.4.w,
                               child: Icon(
                                 Icons.person,
-                                size: AppSize.imageSmall / 2.4.w,
+                                size: AppSize.imageSmall / 2.w,
                               ),
                             ),
                           )),
@@ -115,7 +116,9 @@ class _CommentItemState extends State<CommentItem> {
                                 style: TextStyle(
                                   fontSize: AppSize.textMedium.sp,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.black,
+                                  color: context.isDarkMode
+                                      ? Colors.white
+                                      : Colors.black,
                                 ),
                               ),
                               SizedBox(width: 20.w),
@@ -133,7 +136,9 @@ class _CommentItemState extends State<CommentItem> {
                             widget.comment.content.toString(),
                             style: TextStyle(
                               fontSize: AppSize.textLarge.sp,
-                              color: Colors.black,
+                              color: context.isDarkMode
+                                  ? Colors.white
+                                  : Colors.black,
                             ),
                           ),
                           SizedBox(height: 6.h),
@@ -157,7 +162,9 @@ class _CommentItemState extends State<CommentItem> {
                                                     error) =>
                                                 Icon(
                                                   Icons.error,
-                                                  color: AppColors.background,
+                                                  color: context.isDarkMode
+                                                      ? AppColors.primary
+                                                      : AppColors.background,
                                                 ),
                                             loadingBuilder: (context, child,
                                                 loadingProgress) {
@@ -216,7 +223,9 @@ class _CommentItemState extends State<CommentItem> {
                                             : Icons.favorite_border_outlined,
                                         color: widget.comment.isReacted
                                             ? Colors.red
-                                            : Colors.black,
+                                            : context.isDarkMode
+                                                ? Colors.white
+                                                : Colors.black,
                                         size: AppSize.iconMedium.sp,
                                       ),
                                       BasicTextButton(
@@ -253,6 +262,9 @@ class _CommentItemState extends State<CommentItem> {
                                     child: Image.asset(
                                       AppImages.reply,
                                       width: AppSize.iconMedium.w,
+                                      color: context.isDarkMode
+                                          ? Colors.white
+                                          : Colors.black,
                                     ),
                                   ),
                                   SizedBox(width: 10.w),
@@ -289,7 +301,9 @@ class _CommentItemState extends State<CommentItem> {
                                     ? "Hide ${widget.comment.repliesCount} reply"
                                     : "Show ${widget.comment.repliesCount} reply",
                                 style: TextStyle(
-                                  color: Colors.grey,
+                                  color: context.isDarkMode
+                                      ? Colors.white
+                                      : Colors.grey,
                                   fontSize: AppSize.textMedium.sp,
                                 ),
                               ),
