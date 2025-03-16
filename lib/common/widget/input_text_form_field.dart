@@ -12,6 +12,7 @@ class InputTextFormField extends StatefulWidget {
   final TextInputAction? textInputAction;
   final Function(String)? onFieldSubmitted;
   final String labelText;
+  final Widget? prefixIcon;
   const InputTextFormField({
     super.key,
     required this.controller,
@@ -25,6 +26,7 @@ class InputTextFormField extends StatefulWidget {
     this.hintTextSize = 14,
     this.onFieldSubmitted,
     required this.labelText,
+    this.prefixIcon,
   });
 
   @override
@@ -75,6 +77,7 @@ class _InputTextFormFieldState extends State<InputTextFormField> {
           _focusNode.unfocus();
         },
         decoration: InputDecoration(
+          prefixIcon: widget.prefixIcon,
           labelText: _isFocused ? widget.labelText : null,
           labelStyle: TextStyle(
             color: Colors.orange,

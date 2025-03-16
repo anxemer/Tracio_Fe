@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:tracio_fe/common/helper/is_dark_mode.dart';
 import 'package:tracio_fe/common/widget/button/text_button.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/domain/blog/entites/blog_entity.dart';
@@ -83,7 +84,9 @@ class _ReactBlogState extends State<ReactBlog> {
                             : Icons.favorite_border_outlined,
                         color: widget.blogEntity.isReacted
                             ? Colors.red
-                            : Colors.black87,
+                            : context.isDarkMode
+                                ? Colors.white
+                                : Colors.black,
                         size: AppSize.iconMedium * 1.2.sp,
                       )),
                   SizedBox(
@@ -103,7 +106,7 @@ class _ReactBlogState extends State<ReactBlog> {
                     onTap: widget.cmtAction,
                     child: Icon(
                       Icons.comment_outlined,
-                      color: Colors.black,
+                      color: context.isDarkMode ? Colors.white : Colors.black,
                       size: AppSize.iconMedium * 1.2.sp,
                     ),
                   ),
@@ -145,7 +148,7 @@ class _ReactBlogState extends State<ReactBlog> {
                   widget.blogEntity.isBookmarked
                       ? Icons.bookmark_added_rounded
                       : Icons.bookmark_border,
-                  color: Colors.black,
+                  color: context.isDarkMode ? Colors.white : Colors.black,
                   size: AppSize.iconMedium * 1.2.sp,
                 ),
               ),

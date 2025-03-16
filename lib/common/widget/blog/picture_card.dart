@@ -51,14 +51,13 @@ class _PictureCardState extends State<PictureCard> {
                             builder: (BuildContext context) {
                               return Container(
                                   decoration: BoxDecoration(
-                                    color: Colors.grey.shade100,
+                                    color: Colors.transparent,
                                   ),
                                   width: MediaQuery.of(context).size.width,
                                   margin: EdgeInsets.symmetric(horizontal: 4.0),
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(10),
-                                    child: 
-                                    Image.network(imageUrl,
+                                    child: Image.network(imageUrl,
                                         fit: BoxFit.cover,
                                         errorBuilder: (context, url, error) =>
                                             Icon(

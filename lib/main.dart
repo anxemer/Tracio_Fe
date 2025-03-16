@@ -21,6 +21,7 @@ import 'package:tracio_fe/presentation/blog/bloc/comment/get_comment_cubit.dart'
 import 'package:tracio_fe/presentation/splash/bloc/splash_cubit.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' as mp;
+import 'package:tracio_fe/presentation/theme/bloc/theme_cubit.dart';
 
 import 'service_locator.dart' as di;
 
@@ -54,7 +55,7 @@ Future<void> main() async {
   HydratedBloc.storage = await HydratedStorage.build(
     storageDirectory: kIsWeb
         ? HydratedStorage.webStorageDirectory
-        : await getTemporaryDirectory(),
+        : await getApplicationDocumentsDirectory(),
   );
 
   runApp(const MyApp());
@@ -92,17 +93,24 @@ class _MyAppState extends State<MyApp> {
         BlocProvider(create: (context) => LocationCubit()),
         BlocProvider(create: (context) => RouteCubit()),
         BlocProvider(create: (context) => GroupCubit()),
+        BlocProvider(create: (context) => ThemeCubit()),
       ],
-      child: ScreenUtilInit(
-        designSize: Size(360, 690),
-        minTextAdapt: true,
-        splitScreenMode: true,
-        builder: (context, child) => MaterialApp(
-          theme: AppTheme.appTheme,
-          debugShowCheckedModeBanner: false,
-          home: SplashPage(),
-          builder: EasyLoading.init(),
-        ),
+      child: BlocBuilder<ThemeCubit, ThemeMode>(
+        builder: (context, state) {
+          return ScreenUtilInit(
+            designSize: Size(360, 690),
+            minTextAdapt: true,
+            splitScreenMode: true,
+            builder: (context, child) => MaterialApp(
+              theme: AppTheme.appLightTheme,
+              darkTheme: AppTheme.appDarkTheme,
+              themeMode: state,
+              debugShowCheckedModeBanner: false,
+              home: SplashPage(),
+              builder: EasyLoading.init(),
+            ),
+          );
+        },
       ),
     );
   }

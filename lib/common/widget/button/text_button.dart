@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:tracio_fe/common/helper/is_dark_mode.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
 
 class BasicTextButton extends StatelessWidget {
@@ -15,7 +16,7 @@ class BasicTextButton extends StatelessWidget {
         style: TextStyle(
             fontWeight: FontWeight.w400,
             fontSize: AppSize.textMedium.sp * 1.2,
-            color: Colors.black87),
+            color: context.isDarkMode ? Colors.white : Colors.black87),
       ),
     );
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tracio_fe/common/bloc/generic_data_cubit.dart';
+import 'package:tracio_fe/common/helper/is_dark_mode.dart';
 import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
 import 'package:tracio_fe/common/widget/appbar/app_bar.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
@@ -108,22 +109,24 @@ class _HomePageState extends State<HomePage> {
           ),
           tooltip: "Message",
         ),
-        IconButton(
-          padding: EdgeInsets.zero,
-          highlightColor: Colors.grey.shade600,
-          splashColor: Colors.white.withAlpha(30),
-          hoverColor: Colors.white.withAlpha(10),
-          onPressed: () async {
-            context.read<AuthCubit>().logout();
-            AppNavigator.pushReplacement(context, LoginPage());
-          },
-          icon: Icon(
-            Icons.output_sharp,
-            color: Colors.white,
-            size: AppSize.iconMedium.w,
-          ),
-          tooltip: "logout",
-        )
+        // IconButton(
+        //   padding: EdgeInsets.zero,
+        //   highlightColor: Colors.grey.shade600,
+        //   splashColor: Colors.white.withAlpha(30),
+        //   hoverColor: Colors.white.withAlpha(10),
+        //   onPressed: () async {
+        //     context.read<AuthCubit>().logout();
+        //     AppNavigator.pushReplacement(context, LoginPage());
+        //   },
+        //   icon: Icon(
+        //     context.isDarkMode
+        //         ? Icons.dark_mode_rounded
+        //         : Icons.light_mode_rounded,
+        //     // color: Colors.white,
+        //     size: AppSize.iconMedium.w,
+        //   ),
+        //   tooltip: "logout",
+        // )
       ],
     );
   }
