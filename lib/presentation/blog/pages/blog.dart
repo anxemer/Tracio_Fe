@@ -107,10 +107,10 @@ class _BlogPageState extends State<BlogPage> {
                   children: [
                     InkWell(
                         onTap: () => AppNavigator.push(context,
-                            UserProfilePage(userId: state.user.userId)),
+                            UserProfilePage(userId: state.user!.userId)),
                         child: SizedBox(
                           child: CirclePicture(
-                              imageUrl: state.user.profilePicture!,
+                              imageUrl: state.user!.profilePicture!,
                               imageSize: AppSize.iconMedium),
                         )),
                     SizedBox(
@@ -139,17 +139,6 @@ class _BlogPageState extends State<BlogPage> {
                     ),
                   ],
                 )),
-          );
-        } else if (state is AuthFailure) {
-          Future.delayed(Duration.zero, () {
-            if (context.mounted) {
-              _showAuthFailureDialog(context);
-            }
-          });
-
-          return Padding(
-            padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 12.w),
-            child: Center(child: CircularProgressIndicator()),
           );
         }
         return Container();

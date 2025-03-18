@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tracio_fe/common/helper/is_dark_mode.dart';
 
 class InputTextFormField extends StatefulWidget {
   final TextEditingController controller;
@@ -56,6 +57,7 @@ class _InputTextFormFieldState extends State<InputTextFormField> {
 
   @override
   Widget build(BuildContext context) {
+    var isDark = context.isDarkMode;
     return Focus(
       onFocusChange: (hasFocus) {
         setState(() {
@@ -103,7 +105,8 @@ class _InputTextFormFieldState extends State<InputTextFormField> {
                 )
               : null,
           enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.grey.shade300),
+            borderSide: BorderSide(
+                color: isDark ? Colors.grey.shade300 : Colors.grey.shade700),
             borderRadius: BorderRadius.circular(20),
           ),
           focusedBorder: OutlineInputBorder(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tracio_fe/common/helper/is_dark_mode.dart';
 import 'package:tracio_fe/core/configs/theme/app_colors.dart';
+import 'package:tracio_fe/core/configs/theme/assets/app_images.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
 
 class CategoryService extends StatefulWidget {
@@ -33,6 +34,9 @@ class _CategoryServiceState extends State<CategoryService> {
                 child: AnimatedContainer(
                   duration: Duration(milliseconds: 400),
                   child: ChoiceChip(
+                    avatar: Image.asset(
+                      AppImages.man,
+                    ),
                     padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20)),

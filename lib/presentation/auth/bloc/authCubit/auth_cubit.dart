@@ -17,7 +17,7 @@ class AuthCubit extends Cubit<AuthState> {
       emit(AuthLoading());
       var result = await sl<LoginUseCase>().call(login);
       result.fold((failure) => emit(AuthFailure(failure)),
-          (data) => emit(AuthLoaded(user: data)));
+          (data) => emit(AuthLoaded()));
     } catch (e) {
       emit(AuthFailure(ExceptionFailure(e.toString())));
     }

@@ -38,6 +38,7 @@ dependencies:
   path_provider:
   firebase_core: ^3.11.0
   firebase_auth: ^5.4.2
+  jwt_decoder:
 
   cloud_firestore:
   cupertino_icons: ^1.0.8
@@ -85,6 +86,8 @@ dependencies:
   cached_network_image:
   flutter_sticky_header:
   fixnum: ^1.1.1
+  intl:
+  flutter_rating_bar:
 dev_dependencies:
   protoc_plugin: ^21.1.2
   flutter_test:

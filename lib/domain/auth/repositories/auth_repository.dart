@@ -5,11 +5,13 @@ import 'package:tracio_fe/data/auth/models/login_req.dart';
 import 'package:tracio_fe/data/auth/models/register_req.dart';
 import 'package:tracio_fe/domain/auth/entities/user.dart';
 
+import '../entities/authentication_response_entity.dart';
+
 abstract class AuthRepository {
   Future<Either<Failure, bool>> registerWithEmailAndPassword(RegisterReq user);
   Future<Either<Failure, String>> verifyEmail(String email);
   Future<Either<Failure, bool>> checkEmailVerified();
-  Future<Either<Failure, UserEntity>> login(LoginReq login);
+  Future<Either<Failure, AuthenticationResponseEntity>> login(LoginReq login);
   Future<Either<Failure, bool>> isloggedIn();
   Future<Either<Failure, NoParams>> logout();
   Future<Either<Failure, UserEntity>> getCachUser();

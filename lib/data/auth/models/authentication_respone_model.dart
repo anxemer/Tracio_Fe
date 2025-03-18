@@ -1,30 +1,24 @@
 import 'dart:convert';
 
-import 'user_model.dart';
+import 'package:tracio_fe/domain/auth/entities/authentication_response_entity.dart';
 
-AuthenticationResponseModel authenticationResponseModelFromJson(String str) =>
-    AuthenticationResponseModel.fromJson(json.decode(str));
-
-String authenticationResponseModelToJson(AuthenticationResponseModel data) =>
-    json.encode(data.toJson());
-
-class AuthenticationResponseModel {
-  final String token;
-  final UserModel user;
-
-  const AuthenticationResponseModel({
-    required this.token,
-    required this.user,
+class AuthenticationResponseModel extends AuthenticationResponseEntity {
+  AuthenticationResponseModel({
+    required super.accessToken,
+    required super.refreshToken,
+    required super.expiresAt,
   });
+  factory AuthenticationResponseModel.fromMap(Map<String, dynamic> map) {
+    return AuthenticationResponseModel(
+      accessToken: map['accessToken'] as String,
+      refreshToken: map['refreshToken'] as String,
+      expiresAt: DateTime.parse(map['expiresAt']),
+    );
+  }
 
-  factory AuthenticationResponseModel.fromJson(Map<String, dynamic> json) =>
-      AuthenticationResponseModel(
-        token: json["accessToken"],
-        user: UserModel.fromJson(json["user"]),
-      );
+  // Convert JSON string thành object
+  factory AuthenticationResponseModel.fromJson(String source) =>
+      AuthenticationResponseModel.fromMap(json.decode(source));
 
-  Map<String, dynamic> toJson() => {
-        "accessToken": token,
-        "user": user.toJson(),
-      };
+  // Convert object sang JSON string
 }
