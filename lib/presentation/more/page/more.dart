@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:tracio_fe/common/widget/appbar/app_bar.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/presentation/map/pages/library.dart';
+import 'package:tracio_fe/presentation/library/pages/library.dart';
+import 'package:tracio_fe/presentation/map/pages/route_planner.dart';
 
 class MorePage extends StatelessWidget {
   const MorePage({super.key});
@@ -77,7 +78,10 @@ class MorePage extends StatelessWidget {
             leading: Icon(Icons.directions, color: Colors.black54),
             title: Text('Route Planner'),
             onTap: () {
-              Navigator.pushNamed(context, '/route-planner');
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => RoutePlanner()),
+              );
             },
           ),
           Divider(),

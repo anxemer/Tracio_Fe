@@ -1,4 +1,5 @@
 class PostRouteReq {
+  final String routeName;
   final Location origin;
   final Location destination;
   final List<Location>? waypoints;
@@ -11,6 +12,7 @@ class PostRouteReq {
   final String staticImage;
 
   PostRouteReq({
+    required this.routeName,
     required this.origin,
     required this.destination,
     this.waypoints,
@@ -25,6 +27,7 @@ class PostRouteReq {
 
   factory PostRouteReq.fromJson(Map<String, dynamic> json) {
     return PostRouteReq(
+      routeName: json['routeName'],
       origin: Location.fromJson(json['origin']),
       destination: Location.fromJson(json['destination']),
       waypoints:
@@ -36,12 +39,13 @@ class PostRouteReq {
       avoidsRoads:
           (json['avoidsRoads'] as List?)?.map((e) => e as String).toList(),
       optimize: json['optimize'] ?? false,
-      staticImage: json['thumbnail'].toString(),
+      staticImage: json['routeThumbnail'].toString(),
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
+      'routeName': routeName.trim(),
       'origin': origin.toJson(),
       'destination': destination.toJson(),
       'waypoints': waypoints?.map((e) => e.toJson()).toList(),
@@ -51,7 +55,7 @@ class PostRouteReq {
       'avoid': avoid?.toJson(),
       'avoidsRoads': avoidsRoads,
       'optimize': optimize,
-      'thumbnail': staticImage,
+      'routeThumbnail': staticImage,
     };
   }
 }

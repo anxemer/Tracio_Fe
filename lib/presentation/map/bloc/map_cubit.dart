@@ -171,8 +171,11 @@ class MapCubit extends Cubit<MapCubitState> {
     final polylineOptions = PolylineAnnotationOptions(
       geometry: lineString,
       lineJoin: LineJoin.ROUND,
-      lineColor: Colors.blue.toInt(),
-      lineWidth: 3.0,
+      lineColor: Colors.deepOrange.shade600.toInt(),
+      lineWidth: 5.0,
+      lineBorderWidth: 1.0,
+      lineBorderColor: Colors.white.toInt(),
+      lineOpacity: 0.6,
     );
 
     await polylineAnnotationManager?.create(polylineOptions);
@@ -188,6 +191,7 @@ class MapCubit extends Cubit<MapCubitState> {
       return PointAnnotationOptions(
         geometry: Point(coordinates: entry.value),
         image: imageData,
+        iconAnchor: IconAnchor.BOTTOM,
       );
     });
 
@@ -256,7 +260,7 @@ class MapCubit extends Cubit<MapCubitState> {
       await mapboxMap?.style.removeStyleLayer("geojson_border");
       await mapboxMap?.style.removeStyleSource("geojson_data");
     } catch (e) {
-      print("Error removing polygon: $e");
+      debugPrint("Error removing polygon: $e");
     }
   }
 

@@ -1,5 +1,5 @@
 import 'package:map_elevation/map_elevation.dart';
-import 'package:tracio_fe/data/map/models/mapbox_direction_rep.dart';
+import 'package:tracio_fe/data/map/models/reponse/mapbox_direction_rep.dart';
 
 abstract class GetDirectionState {}
 

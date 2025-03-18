@@ -1,6 +1,7 @@
-import 'package:tracio_fe/data/map/models/get_place_req.dart';
-import 'package:tracio_fe/data/map/models/isochrone_req.dart';
-import 'package:tracio_fe/data/map/models/mapbox_direction_req.dart';
+import 'package:tracio_fe/data/map/models/request/get_place_req.dart';
+import 'package:tracio_fe/data/map/models/request/get_route_req.dart';
+import 'package:tracio_fe/data/map/models/request/isochrone_req.dart';
+import 'package:tracio_fe/data/map/models/request/mapbox_direction_req.dart';
 
 class ApiUrl {
   //base Url
@@ -47,6 +48,12 @@ class ApiUrl {
   }
 
   //Api route
+
+  static Uri urlGetRoutes(GetRouteReq request) {
+    return Uri.parse('$portRoute/api/route')
+        .replace(queryParameters: request.toMap());
+  }
+
   static Uri urlGetDirectionUsingMapbox(
       MapboxDirectionsRequest mapboxDirectionReq) {
     final coordsString = mapboxDirectionReq.coordinates

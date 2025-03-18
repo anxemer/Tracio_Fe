@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tracio_fe/core/configs/theme/app_colors.dart';
+import 'package:tracio_fe/core/constants/app_size.dart';
 
 class SnapshotDisplayPage extends StatelessWidget {
   final Uri snapshotImage;
@@ -27,7 +29,10 @@ class SnapshotDisplayPage extends StatelessWidget {
             child: Stack(
               children: [
                 Positioned.fill(
-                  child: Image.network(snapshotImage.toString()),
+                  child: Image.network(
+                    snapshotImage.toString(),
+                    fit: BoxFit.fill,
+                  ),
                 ),
                 Positioned(
                   top: 16,
@@ -48,31 +53,29 @@ class SnapshotDisplayPage extends StatelessWidget {
             ),
           ),
           Container(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.symmetric(
+                horizontal: AppSize.apHorizontalPadding,
+                vertical: AppSize.apVerticalPadding),
             child: Column(
               children: [
                 metricsSection,
-                const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   spacing: 20,
                   children: [
                     Flexible(
                       flex: 1,
-                      child: Container(
+                      child: SizedBox(
                         width: double.infinity,
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                              width: 1, color: AppColors.secondBackground),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
                         child: TextButton(
                           style: TextButton.styleFrom(
                             backgroundColor: Colors.transparent,
-                            padding: EdgeInsets.symmetric(vertical: 12),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
+                                borderRadius: BorderRadius.circular(8),
+                                side: BorderSide(
+                                  color: AppColors.secondBackground,
+                                  width: 1,
+                                )),
                           ),
                           onPressed: () {
                             if (Navigator.canPop(context)) {
@@ -81,7 +84,8 @@ class SnapshotDisplayPage extends StatelessWidget {
                           },
                           child: Text("Navigate",
                               style: TextStyle(
-                                  color: Colors.black87, fontSize: 16)),
+                                  color: Colors.black87,
+                                  fontSize: AppSize.textMedium.sp)),
                         ),
                       ),
                     ),
@@ -92,7 +96,6 @@ class SnapshotDisplayPage extends StatelessWidget {
                         child: TextButton(
                           style: TextButton.styleFrom(
                             backgroundColor: AppColors.secondBackground,
-                            padding: EdgeInsets.symmetric(vertical: 12),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
@@ -103,8 +106,9 @@ class SnapshotDisplayPage extends StatelessWidget {
                             }
                           },
                           child: Text("Save",
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 16)),
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: AppSize.textMedium.sp)),
                         ),
                       ),
                     )

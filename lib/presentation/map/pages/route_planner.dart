@@ -9,7 +9,6 @@ import 'package:tracio_fe/presentation/map/bloc/get_direction_cubit.dart';
 import 'package:tracio_fe/presentation/map/bloc/get_location_cubit.dart';
 import 'package:tracio_fe/presentation/map/bloc/map_cubit.dart';
 import 'package:tracio_fe/presentation/map/bloc/map_state.dart';
-import 'package:tracio_fe/presentation/map/bloc/route_cubit.dart';
 import 'package:tracio_fe/presentation/map/widgets/route_planner_map.dart';
 import 'package:tracio_fe/presentation/map/widgets/route_detail_panel.dart';
 import 'package:tracio_fe/presentation/map/widgets/top_action_bar.dart';
@@ -59,9 +58,6 @@ class _RoutePlannerState extends State<RoutePlanner> {
             ),
             BlocProvider(
               create: (context) => GetLocationCubit(),
-            ),
-            BlocProvider(
-              create: (context) => RouteCubit(),
             ),
           ],
           child: Stack(

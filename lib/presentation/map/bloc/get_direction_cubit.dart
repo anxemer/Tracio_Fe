@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tracio_fe/data/map/models/mapbox_direction_req.dart';
+import 'package:tracio_fe/data/map/models/request/mapbox_direction_req.dart';
 import 'package:tracio_fe/domain/map/usecase/get_direction_using_mapbox.dart';
 import 'package:tracio_fe/domain/map/usecase/get_elevation.dart';
 import 'package:tracio_fe/presentation/map/bloc/get_direction_state.dart';

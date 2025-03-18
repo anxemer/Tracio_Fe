@@ -1,4 +1,4 @@
-import 'package:tracio_fe/data/map/models/mapbox_direction_req.dart';
+import 'package:tracio_fe/data/map/models/request/mapbox_direction_req.dart';
 
 class MapboxDirectionsRequestEntity {
   final String profile; // e.g., "mapbox/cycling"

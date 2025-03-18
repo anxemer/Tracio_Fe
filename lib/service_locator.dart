@@ -44,6 +44,7 @@ import 'package:tracio_fe/domain/map/usecase/get_direction_using_mapbox.dart';
 import 'package:tracio_fe/domain/map/usecase/get_elevation.dart';
 import 'package:tracio_fe/domain/map/usecase/get_location_detail.dart';
 import 'package:tracio_fe/domain/map/usecase/get_locations.dart';
+import 'package:tracio_fe/domain/map/usecase/get_routes.dart';
 import 'package:tracio_fe/domain/map/usecase/post_route.dart';
 import 'package:tracio_fe/domain/blog/usecase/unBookmark.dart';
 import 'package:tracio_fe/domain/user/repositories/user_profile_repository.dart';
@@ -125,4 +126,5 @@ Future<void> initializeDependencies() async {
   sl.registerFactory<GetLocationDetailUseCase>(
       () => GetLocationDetailUseCase());
   sl.registerFactory<PostRouteUseCase>(() => PostRouteUseCase());
+  sl.registerFactory<GetRoutesUseCase>(() => GetRoutesUseCase());
 }

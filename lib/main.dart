@@ -12,6 +12,7 @@ import 'package:tracio_fe/common/helper/notification/noti_service.dart';
 import 'package:tracio_fe/common/bloc/generic_data_cubit.dart';
 import 'package:tracio_fe/core/configs/theme/app_theme.dart';
 import 'package:tracio_fe/firebase_options.dart';
+import 'package:tracio_fe/presentation/map/bloc/route_cubit.dart';
 import 'package:tracio_fe/presentation/splash/page/splash.dart';
 import 'package:tracio_fe/presentation/map/bloc/tracking_location_bloc.dart';
 import 'package:tracio_fe/presentation/auth/bloc/authCubit/auth_cubit.dart';
@@ -77,12 +78,13 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-      providers: [  
+      providers: [
         BlocProvider(create: (context) => SplashCubit()..appStarted()),
         BlocProvider(create: (context) => AuthCubit()..checkUser()),
         BlocProvider(create: (context) => GetCommentCubit()),
         BlocProvider(create: (context) => GenericDataCubit()),
         BlocProvider(create: (context) => LocationBloc()),
+        BlocProvider(create: (context) => RouteCubit()),
       ],
       child: ScreenUtilInit(
         designSize: Size(360, 690),

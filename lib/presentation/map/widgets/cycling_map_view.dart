@@ -29,30 +29,26 @@ class _CyclingMapViewState extends State<CyclingMapView> {
   Widget build(BuildContext context) {
     final mapCubit = context.read<MapCubit>();
 
-    return Scaffold(
-      body: Stack(
-        children: [
-          BlocConsumer<LocationBloc, LocationState>(
-            listener: (context, state) {
-              if (state is LocationUpdated) {
-                print(
-                    "Location updated: ${state.position.coords.latitude}, ${state.position.coords.longitude}");
-                _updateRoute(state.heading, state.position, mapCubit);
-              }
-            },
-            builder: (context, state) {
-              return mapbox.MapWidget(
-                key: const ValueKey("mapWidget"),
-                cameraOptions: mapCubit.camera,
-                onMapCreated: (map) {
-                  mapCubit.initializeMap(map, forRiding: true);
-                  isMapInitialized = true;
-                },
-              );
-            },
-          ),
-        ],
-      ),
+    return Stack(
+      children: [
+        BlocConsumer<LocationBloc, LocationState>(
+          listener: (context, state) {
+            if (state is LocationUpdated) {
+              _updateRoute(state.heading, state.position, mapCubit);
+            }
+          },
+          builder: (context, state) {
+            return mapbox.MapWidget(
+              key: const ValueKey("mapWidget"),
+              cameraOptions: mapCubit.camera,
+              onMapCreated: (map) {
+                mapCubit.initializeMap(map, forRiding: true);
+                isMapInitialized = true;
+              },
+            );
+          },
+        ),
+      ],
     );
   }
 

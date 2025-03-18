@@ -5,13 +5,11 @@ import 'package:tracio_fe/presentation/map/bloc/get_direction_cubit.dart';
 import 'package:tracio_fe/presentation/map/bloc/get_location_cubit.dart';
 import 'package:tracio_fe/presentation/map/bloc/map_cubit.dart';
 import 'package:tracio_fe/presentation/map/bloc/map_state.dart';
-import 'package:tracio_fe/presentation/map/bloc/route_cubit.dart';
-import 'package:tracio_fe/presentation/map/bloc/tracking_location_bloc.dart';
-import 'package:tracio_fe/presentation/map/bloc/tracking_location_event.dart';
 import 'package:tracio_fe/presentation/map/widgets/cycling_map_view.dart';
 import 'dart:async';
 import 'package:geolocator/geolocator.dart' as geolocator;
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' as mapbox;
+import 'package:tracio_fe/presentation/map/widgets/cycling_top_action_bar.dart';
 import 'package:tracio_fe/service_locator.dart';
 
 class CyclingPage extends StatefulWidget {
@@ -24,111 +22,90 @@ class CyclingPage extends StatefulWidget {
 class _CyclingPageState extends State<CyclingPage> {
   final double _fabHeight = 80;
   bool isPaused = false;
+  bool isRiding = false; // Indicates if ride is active
+  bool showHoldOptions = false; // Show Resume & Finish on long press
   final ITrackingGrpcService trackingService = sl<ITrackingGrpcService>();
 
-  void sendLocation() async {
-    final response = await trackingService.sendLocation(
-      routeId: 1,
-      latitude: 10.762622,
-      longitude: 106.660172,
-      altitude: 15.0,
-      timestamp: DateTime.now().millisecondsSinceEpoch,
-    );
-    print("=====================================");
-    print(response);
-  }
-
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  dispose() async {
+  void dispose() async {
     await trackingService.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
+    return Scaffold( 
       body: SafeArea(
         child: MultiBlocProvider(
           providers: [
             BlocProvider(create: (context) => MapCubit()),
-            BlocProvider(
-              create: (context) => GetDirectionCubit(),
-            ),
-            BlocProvider(
-              create: (context) => GetLocationCubit(),
-            ),
-            BlocProvider(
-              create: (context) => RouteCubit(),
-            ),
+            BlocProvider(create: (context) => GetDirectionCubit()),
+            BlocProvider(create: (context) => GetLocationCubit()),
           ],
           child: Stack(
             children: [
-              CyclingMapView(),
+              /// Map View
+              const CyclingMapView(),
+
+              /// Center Camera Button
               Positioned(
                 bottom: _fabHeight,
                 left: 10,
-                child: Column(
-                  children: [
-                    // Center camera button
-                    BlocBuilder<MapCubit, MapCubitState>(
-                      builder: (context, state) {
-                        return IconButton(
-                          style: IconButton.styleFrom(
-                            elevation: 2,
-                            backgroundColor: Colors.white,
-                            alignment: Alignment.center,
-                            padding: EdgeInsets.zero,
-                          ),
-                          icon: Icon(
-                            Icons.location_searching_outlined,
-                            color: Colors.black87,
-                          ),
-                          onPressed: () async {
-                            _centerCameraButton(context);
-                          },
-                        );
+                child: BlocBuilder<MapCubit, MapCubitState>(
+                  builder: (context, state) {
+                    return IconButton(
+                      style: IconButton.styleFrom(
+                        elevation: 2,
+                        backgroundColor: Colors.white,
+                      ),
+                      icon: const Icon(Icons.location_searching_outlined, color: Colors.black87),
+                      onPressed: () async {
+                        _centerCameraButton(context);
                       },
-                    ),
-                  ],
+                    );
+                  },
                 ),
               ),
+
+              /// **Bottom UI (Start / Pause Button & Metrics)**
               Positioned(
-                bottom: 20,
-                left: MediaQuery.of(context).size.width / 2 -
-                    40, // Center the button
-                child: ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      isPaused = !isPaused;
-                    });
-                    // Add logic to pause or start tracking
-                    if (isPaused) {
-                      // Pause logic
-                      context.read<LocationBloc>().add(PauseLocationTracking());
-                    } else {
-                      // Start logic
-                      context.read<LocationBloc>().add(StartLocationTracking());
-                    }
-                  },
-                  child: Text(isPaused ? "Start" : "Pause"),
+                bottom: 10,
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  child: Column(
+                    children: [
+                      /// **Metrics (Above Pause Button)**
+                      if (isRiding && !showHoldOptions)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 10.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              _buildMetricTile("Distance", "0.0 km"),
+                              _buildMetricTile("Duration", "00:00:00"),
+                              _buildMetricTile("Elevation", "0 m"),
+                              _buildMetricTile("Speed", "0 km/h"),
+                            ],
+                          ),
+                        ),
+
+                      /// **Pause Button with Gesture Detection**
+                      AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 300),
+                        child: showHoldOptions
+                            ? _resumeFinishButtons()
+                            : _pausePlayButton(),
+                      ),
+                    ],
+                  ),
                 ),
               ),
+
+              /// **Top Action Bar**
               Positioned(
-                bottom: 80,
-                left: MediaQuery.of(context).size.width / 2 -
-                    40, // Center the button
-                child: ElevatedButton(
-                  onPressed: () {
-                    context.read<LocationBloc>().add(StopLocationTracking());
-                  },
-                  child: Text("STOP"),
-                ),
+                top: 10,
+                right: 20,
+                child: const CyclingTopActionBar(),
               ),
             ],
           ),
@@ -137,21 +114,98 @@ class _CyclingPageState extends State<CyclingPage> {
     );
   }
 
+  /// **Helper: Metric Tile**
+  Widget _buildMetricTile(String label, String value) {
+    return Column(
+      children: [
+        Text(value, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        Text(label, style: const TextStyle(fontSize: 14, color: Colors.grey)),
+      ],
+    );
+  }
+
+  /// **Pause/Start Button**
+  Widget _pausePlayButton() {
+    return GestureDetector(
+      onLongPress: () {
+        setState(() {
+          showHoldOptions = true;
+        });
+      },
+      child: Container(
+        width: 80,
+        height: 80,
+        decoration: const BoxDecoration(
+          color: Colors.red,
+          shape: BoxShape.circle,
+        ),
+        child: IconButton(
+          icon: Icon(
+            isRiding ? Icons.pause : Icons.play_arrow,
+            color: Colors.white,
+            size: 40,
+          ),
+          onPressed: () {
+            setState(() {
+              isRiding = true;
+              isPaused = !isPaused;
+            });
+          },
+        ),
+      ),
+    );
+  }
+
+  /// **Resume & Finish Buttons**
+  Widget _resumeFinishButtons() {
+    return Container(
+      width: 250,
+      height: 80,
+      decoration: BoxDecoration(
+        color: Colors.black.withOpacity(0.8),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          _textButton("Resume", () {
+            setState(() {
+              showHoldOptions = false;
+              isPaused = false;
+            });
+          }),
+          _textButton("Finish Ride", () {
+            setState(() {
+              isPaused = false;
+              isRiding = false;
+              showHoldOptions = false;
+            });
+          }),
+        ],
+      ),
+    );
+  }
+
+  /// **Helper: Text Button**
+  Widget _textButton(String text, VoidCallback onPressed) {
+    return TextButton(
+      onPressed: onPressed,
+      child: Text(text, style: const TextStyle(fontSize: 16, color: Colors.white)),
+    );
+  }
+
+  /// **Function: Center Camera on Current Position**
   Future<void> _centerCameraButton(BuildContext context) async {
-    geolocator.LocationSettings locationSettings = geolocator.LocationSettings(
+    geolocator.LocationSettings locationSettings = const geolocator.LocationSettings(
       accuracy: geolocator.LocationAccuracy.high,
       distanceFilter: 100,
     );
-    await geolocator.Geolocator.getCurrentPosition(
-            locationSettings: locationSettings)
+    await geolocator.Geolocator.getCurrentPosition(locationSettings: locationSettings)
         .then((geolocator.Position? position) {
-      if (position != null) {
-        // Update camera position using MapCubit
-        if (context.mounted) {
-          BlocProvider.of<MapCubit>(context).animateCamera(
-            mapbox.Position(position.longitude, position.latitude),
-          );
-        }
+      if (position != null && context.mounted) {
+        BlocProvider.of<MapCubit>(context).animateCamera(
+          mapbox.Position(position.longitude, position.latitude),
+        );
       }
     });
   }
