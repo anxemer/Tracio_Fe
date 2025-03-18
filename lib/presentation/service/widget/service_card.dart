@@ -1,65 +1,136 @@
-// import 'package:flutter/material.dart';
-// import 'package:tracio_fe/common/helper/is_dark_mode.dart';
-// import 'package:tracio_fe/core/configs/theme/assets/app_images.dart';
-// import 'package:tracio_fe/core/constants/app_size.dart';
-// import 'package:tracio_fe/domain/shop/shop_service_entity.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:tracio_fe/common/helper/is_dark_mode.dart';
+import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
+import 'package:tracio_fe/common/helper/rating_start.dart';
+import 'package:tracio_fe/core/configs/theme/app_colors.dart';
+import 'package:tracio_fe/core/configs/theme/assets/app_images.dart';
+import 'package:tracio_fe/core/constants/app_size.dart';
+import 'package:tracio_fe/domain/shop/shop_service_entity.dart';
+import 'package:tracio_fe/presentation/service/page/detail_service.dart';
 
-// class ServiceCard extends StatelessWidget {
-//   const ServiceCard({super.key, required this.service});
-//   final ShopServiceEntity service;
-//   @override
-//   Widget build(BuildContext context) {
-//     final screenWidth = MediaQuery.of(context).size.width;
-//     final isDark = context.isDarkMode;
-//     return Container(
-//       constraints: BoxConstraints(maxWidth: screenWidth * 0.9),
-//       decoration: BoxDecoration(
-//           color: Theme.of(context).cardColor,
-//           borderRadius: BorderRadius.circular(20),
-//           boxShadow: [
-//             BoxShadow(
-//                 color: isDark
-//                     ? Colors.black.withValues(alpha: .3)
-//                     : Colors.grey.withValues(alpha: .3),
-//                 blurRadius: 5,
-//                 offset: Offset(0, 2))
-//           ]),
-//       child: Column(
-//         crossAxisAlignment: CrossAxisAlignment.start,
-//         children: [
-//           Stack(
-//             children: [
-//               AspectRatio(
-//                 aspectRatio: 16 / 9,
-//                 child: ClipRRect(
-//                   borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
-//                   child: Image.asset(
-//                     AppImages.picture,
-//                     width: double.infinity,
-//                     fit: BoxFit.cover,
-//                   ),
-//                 ),
-//               )
-//             ],
-//             //iamge
-//           ),
-//           //Sevice detail
-//           Padding(
-//             padding: EdgeInsets.all(screenWidth * 0.02),
-//             child: Column(
-//               children: [
-//                 Text(
-//                   service.serviceName,
-//                   style: TextStyle(
-//                       fontSize: AppSize.textMedium,
-//                       fontWeight: FontWeight.w600,
-//                       color: isDark ? Colors.white : Colors.black),
-//                 )
-//               ],
-//             ),
-//           )
-//         ],
-//       ),
-//     );
-//   }
-// }
+class ServiceCard extends StatelessWidget {
+  const ServiceCard({super.key, required this.service});
+  final ShopServiceEntity service;
+  @override
+  Widget build(BuildContext context) {
+    final isDark = context.isDarkMode;
+    return InkWell(
+      onTap: () => AppNavigator.push(context, DetailServicePage()),
+      child: Container(
+        // constraints: BoxConstraints(maxWidth: screenWidth),
+        decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                  color: isDark
+                      ? Colors.black.withValues(alpha: .3)
+                      : Colors.grey.withValues(alpha: .3),
+                  blurRadius: 5,
+                  offset: Offset(0, 2))
+            ]),
+        child: Padding(
+          padding: EdgeInsets.only(right: 12),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: Stack(children: [
+              Row(
+                children: [
+                  AspectRatio(
+                    aspectRatio: 1.2,
+                    child: Image.asset(
+                      AppImages.picture,
+                      // width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  Expanded(
+                      child: Container(
+                    padding: EdgeInsets.all(
+                        MediaQuery.of(context).size.width > 360 ? 12 : 8),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          service.serviceName,
+                          style: TextStyle(
+                              fontSize: AppSize.textLarge,
+                              fontWeight: FontWeight.w600),
+                        ),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.access_time_rounded,
+                              size: AppSize.iconSmall,
+                              color: isDark
+                                  ? AppColors.secondBackground
+                                  : AppColors.background,
+                            ),
+                            Text(
+                              service.formattedDuration,
+                              style: TextStyle(fontSize: AppSize.textMedium),
+                            ),
+                            Spacer(),
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.attach_money_rounded,
+                                  size: AppSize.iconMedium,
+                                  color: isDark
+                                      ? AppColors.secondBackground
+                                      : AppColors.background,
+                                ),
+                                Text(
+                                  service.formattedPrice,
+                                  style: TextStyle(fontSize: AppSize.textLarge),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.storefront_outlined,
+                              size: AppSize.iconSmall,
+                              color: isDark
+                                  ? AppColors.secondBackground
+                                  : AppColors.background,
+                            ),
+                            Text(
+                              'An Xểm',
+                              style: TextStyle(
+                                  fontSize: AppSize.textSmall,
+                                  color: isDark ? Colors.white : Colors.black),
+                            ),
+                            Spacer(),
+                            Icon(
+                              Icons.location_on_outlined,
+                              size: AppSize.iconSmall,
+                              color: isDark
+                                  ? AppColors.secondBackground
+                                  : AppColors.background,
+                            ),
+                            Text(
+                              '2 KM',
+                              style: TextStyle(
+                                  fontSize: AppSize.textSmall,
+                                  color: isDark ? Colors.white : Colors.black),
+                            ),
+                          ],
+                        ),
+                        RatingStart.ratingStart()
+                      ],
+                    ),
+                  ))
+                ],
+              ),
+            ]),
+          ),
+        ),
+      ),
+    );
+  }
+}

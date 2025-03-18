@@ -190,6 +190,8 @@ class _CommentInputWidgetState extends State<CommentInputWidget> {
                         color:
                             context.isDarkMode ? Colors.white : Colors.black),
                     decoration: InputDecoration(
+                      enabledBorder:
+                          OutlineInputBorder(borderSide: BorderSide.none),
                       focusedBorder:
                           OutlineInputBorder(borderSide: BorderSide.none),
                       filled: true,

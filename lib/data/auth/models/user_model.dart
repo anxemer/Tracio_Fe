@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:tracio_fe/domain/auth/entities/user.dart';
 
 class UserModel extends UserEntity {
-  final Session session;
   UserModel({
     super.userId,
     super.userName,
@@ -12,7 +11,6 @@ class UserModel extends UserEntity {
     // super.firebaseId,
     // super.phoneNumber,
     super.profilePicture,
-    required this.session,
   });
 
   // Chuyển đối tượng thành Map để convert sang JSON
@@ -22,7 +20,6 @@ class UserModel extends UserEntity {
       'userName': userName,
       'email': email,
       'profilePicture': profilePicture,
-      'session': session.toMap(),
     };
   }
 
@@ -34,7 +31,6 @@ class UserModel extends UserEntity {
       // firebaseId: map['firebaseId'] as String ,
       // phoneNumber: map['phoneNumber'] as String ,
       profilePicture: map['profilePicture'] as String? ?? "", // Tránh null
-      session: Session.fromMap(map['session']),
     );
   }
 
@@ -46,39 +42,4 @@ class UserModel extends UserEntity {
   String toJson() => json.encode(toMap());
 }
 
-class Session {
-  final String accessToken;
-  final String refreshToken;
-  final DateTime expiresAt;
 
-  Session({
-    required this.accessToken,
-    required this.refreshToken,
-    required this.expiresAt,
-  });
-
-  // Chuyển đối tượng thành Map JSON
-  Map<String, dynamic> toMap() {
-    return {
-      'accessToken': accessToken,
-      'refreshToken': refreshToken,
-      'expiresAt': expiresAt.toIso8601String(),
-    };
-  }
-
-  // Parse từ JSON Map
-  factory Session.fromMap(Map<String, dynamic> map) {
-    return Session(
-      accessToken: map['accessToken'] as String,
-      refreshToken: map['refreshToken'] as String,
-      expiresAt: DateTime.parse(map['expiresAt']),
-    );
-  }
-
-  // Convert JSON string thành object
-  factory Session.fromJson(String source) =>
-      Session.fromMap(json.decode(source));
-
-  // Convert object sang JSON string
-  String toJson() => json.encode(toMap());
-}

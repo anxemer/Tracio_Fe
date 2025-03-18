@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:tracio_fe/common/helper/is_dark_mode.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
 
 class BasicAppbar extends StatelessWidget implements PreferredSizeWidget {
@@ -57,9 +58,11 @@ class BasicAppbar extends StatelessWidget implements PreferredSizeWidget {
                   width: AppSize.imageMedium.w,
                   decoration: const BoxDecoration(
                       color: Colors.transparent, shape: BoxShape.circle),
-                  child: const Icon(Icons.arrow_back_ios_new,
+                  child: Icon(Icons.arrow_back_ios_new,
                       size: AppSize.iconSmall,
-                      color: Color.fromARGB(255, 0, 0, 0)),
+                      color: context.isDarkMode
+                          ? Colors.white
+                          : Color.fromARGB(255, 0, 0, 0)),
                 ),
               ),
             ),

@@ -10,9 +10,11 @@ import 'package:tracio_fe/data/auth/models/user_model.dart';
 import 'package:tracio_fe/data/auth/sources/auth_remote_source/auth_firebase_service.dart';
 import 'package:tracio_fe/service_locator.dart';
 
+import '../../models/authentication_respone_model.dart';
+
 abstract class AuthApiService {
   Future<Either> registerWithEmailAndPass(RegisterReq params);
-  Future<UserModel> login(LoginReq login);
+  Future<AuthenticationResponseModel> login(LoginReq login);
 }
 
 class AuthApiServiceImpl extends AuthApiService {
@@ -38,11 +40,12 @@ class AuthApiServiceImpl extends AuthApiService {
   }
 
   @override
-  Future<UserModel> login(LoginReq login) async {
+  Future<AuthenticationResponseModel> login(LoginReq login) async {
     var response = await sl<DioClient>()
         .post(ApiUrl.loginWithEP, data: login.toMap(), isMultipart: false);
     if (response.statusCode == 200) {
-      return (UserModel.fromMap(response.data['result']));
+      print(response);
+      return (AuthenticationResponseModel.fromMap(response.data['result']));
     } else if (response.statusCode == 400) {
       throw CredentialFailure("Lỗi server: ${response.data['message']}");
     } else {

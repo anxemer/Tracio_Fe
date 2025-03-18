@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:tracio_fe/common/helper/is_dark_mode.dart';
+import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/domain/blog/entites/blog_entity.dart';
 import 'package:tracio_fe/presentation/blog/widget/post_blog.dart';
 
@@ -32,9 +34,9 @@ class _DetailBlocPageState extends State<DetailBlocPage> {
           title: Text(
             'Blog',
             style: TextStyle(
-                color: Colors.black,
+                color: context.isDarkMode ? Colors.white : Colors.black,
                 fontWeight: FontWeight.bold,
-                fontSize: 40.sp),
+                fontSize: AppSize.textLarge.sp),
           ),
           action: Row(
             children: [
@@ -47,24 +49,6 @@ class _DetailBlocPageState extends State<DetailBlocPage> {
                   color: Colors.black,
                 ),
               ),
-              // FloatingButton(
-              //   elevation: 1,
-              //   backgroundColor: Colors.white,
-              //   onPressed: () {},
-              //   action: Icon(
-              //     Icons.chat_bubble_outline,
-              //     color: Colors.black,
-              //   ),
-              // ),
-              // FloatingButton(
-              //   elevation: 1,
-              //   backgroundColor: Colors.white,
-              //   onPressed: () {},
-              //   action: Icon(
-              //     Icons.search_outlined,
-              //     color: Colors.black,
-              //   ),
-              // ),
             ],
           ),
         ),

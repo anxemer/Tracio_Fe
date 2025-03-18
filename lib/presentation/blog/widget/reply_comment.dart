@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:tracio_fe/common/helper/is_dark_mode.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/domain/blog/entites/reply_comment.dart';
 
@@ -36,7 +37,7 @@ class _ReplyCommentItemState extends State<ReplyCommentItem> {
   @override
   Widget build(BuildContext context) {
     final commentInputCubit = context.read<CommentInputCubit>();
-
+    var isDark = context.isDarkMode;
     List<String> mediaUrls =
         widget.reply.mediaFiles.map((file) => file.mediaUrl ?? "").toList();
     return Padding(
@@ -64,7 +65,7 @@ class _ReplyCommentItemState extends State<ReplyCommentItem> {
                       style: TextStyle(
                         fontSize: AppSize.textMedium.sp,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                        color: isDark ? Colors.white : Colors.black,
                       ),
                     ),
                     SizedBox(width: 8.w),
@@ -90,7 +91,7 @@ class _ReplyCommentItemState extends State<ReplyCommentItem> {
                         text: widget.reply.content.toString(),
                         style: TextStyle(
                           fontSize: AppSize.textMedium.sp,
-                          color: Colors.black,
+                          color: isDark ? Colors.white : Colors.black,
                         ),
                       ),
                     ],
@@ -105,7 +106,7 @@ class _ReplyCommentItemState extends State<ReplyCommentItem> {
                         width: AppSize.imageMedium.w,
                         child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.grey.shade100,
+                              color: Colors.transparent,
                             ),
                             width: MediaQuery.of(context).size.width,
                             margin: EdgeInsets.symmetric(horizontal: 4.0),

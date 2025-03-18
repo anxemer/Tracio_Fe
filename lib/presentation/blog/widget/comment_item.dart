@@ -61,7 +61,7 @@ class _CommentItemState extends State<CommentItem> {
             children: [
               Container(
                 height: 2.h,
-                color: Colors.black45,
+                color: context.isDarkMode ? Colors.white : Colors.black45,
               ),
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 8.w),
