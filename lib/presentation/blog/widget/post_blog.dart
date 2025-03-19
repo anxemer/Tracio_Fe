@@ -62,18 +62,6 @@ class _PostBlogState extends State<PostBlog> {
                   size: AppSize.imageSmall / 2.w,
                 ),
               ),
-              // Image.network(
-              //   widget.blogEntity.avatar,
-              //   height: AppSize.imageSmall.h,
-              //   fit: BoxFit.fill,
-              //   errorBuilder: (context, url, error) => CircleAvatar(
-              //     backgroundColor: Colors.grey.shade300,
-              //     radius: AppSize.imageSmall / 2.w,
-              //     child: Icon(
-              //       Icons.person,
-              //       size: AppSize.imageSmall / 2.w,
-              //     ),
-              //   ),
             ),
             trailling: GestureDetector(
                 onTap: () => AppNavigator.push(

@@ -16,7 +16,8 @@ class ServiceCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = context.isDarkMode;
     return InkWell(
-      onTap: () => AppNavigator.push(context, DetailServicePage()),
+      onTap: () =>
+          AppNavigator.push(context, DetailServicePage(service: service)),
       child: Container(
         // constraints: BoxConstraints(maxWidth: screenWidth),
         decoration: BoxDecoration(
@@ -30,104 +31,100 @@ class ServiceCard extends StatelessWidget {
                   blurRadius: 5,
                   offset: Offset(0, 2))
             ]),
-        child: Padding(
-          padding: EdgeInsets.only(right: 12),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child: Stack(children: [
-              Row(
-                children: [
-                  AspectRatio(
-                    aspectRatio: 1.2,
-                    child: Image.asset(
-                      AppImages.picture,
-                      // width: double.infinity,
-                      fit: BoxFit.cover,
+
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: Row(
+            children: [
+              AspectRatio(
+                aspectRatio: 1.2,
+                child: Image.asset(
+                  AppImages.picture,
+                  // width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              Expanded(
+                  child: Container(
+                padding: EdgeInsets.all(
+                    MediaQuery.of(context).size.width > 360 ? 12 : 8),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      service.serviceName,
+                      style: TextStyle(
+                          fontSize: AppSize.textLarge.sp,
+                          fontWeight: FontWeight.w600),
                     ),
-                  ),
-                  Expanded(
-                      child: Container(
-                    padding: EdgeInsets.all(
-                        MediaQuery.of(context).size.width > 360 ? 12 : 8),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    Row(
                       children: [
+                        Icon(
+                          Icons.access_time_rounded,
+                          size: AppSize.iconSmall,
+                          color: isDark
+                              ? AppColors.secondBackground
+                              : AppColors.background,
+                        ),
                         Text(
-                          service.serviceName,
-                          style: TextStyle(
-                              fontSize: AppSize.textLarge,
-                              fontWeight: FontWeight.w600),
+                          service.formattedDuration,
+                          style: TextStyle(fontSize: AppSize.textMedium),
                         ),
+                        Spacer(),
                         Row(
                           children: [
                             Icon(
-                              Icons.access_time_rounded,
-                              size: AppSize.iconSmall,
+                              Icons.attach_money_rounded,
+                              size: AppSize.iconMedium,
                               color: isDark
                                   ? AppColors.secondBackground
                                   : AppColors.background,
                             ),
                             Text(
-                              service.formattedDuration,
-                              style: TextStyle(fontSize: AppSize.textMedium),
-                            ),
-                            Spacer(),
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.attach_money_rounded,
-                                  size: AppSize.iconMedium,
-                                  color: isDark
-                                      ? AppColors.secondBackground
-                                      : AppColors.background,
-                                ),
-                                Text(
-                                  service.formattedPrice,
-                                  style: TextStyle(fontSize: AppSize.textLarge),
-                                ),
-                              ],
+                              service.formattedPrice,
+                              style: TextStyle(fontSize: AppSize.textLarge),
                             ),
                           ],
                         ),
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.storefront_outlined,
-                              size: AppSize.iconSmall,
-                              color: isDark
-                                  ? AppColors.secondBackground
-                                  : AppColors.background,
-                            ),
-                            Text(
-                              'An Xểm',
-                              style: TextStyle(
-                                  fontSize: AppSize.textSmall,
-                                  color: isDark ? Colors.white : Colors.black),
-                            ),
-                            Spacer(),
-                            Icon(
-                              Icons.location_on_outlined,
-                              size: AppSize.iconSmall,
-                              color: isDark
-                                  ? AppColors.secondBackground
-                                  : AppColors.background,
-                            ),
-                            Text(
-                              '2 KM',
-                              style: TextStyle(
-                                  fontSize: AppSize.textSmall,
-                                  color: isDark ? Colors.white : Colors.black),
-                            ),
-                          ],
-                        ),
-                        RatingStart.ratingStart()
                       ],
                     ),
-                  ))
-                ],
-              ),
-            ]),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.storefront_outlined,
+                          size: AppSize.iconSmall,
+                          color: isDark
+                              ? AppColors.secondBackground
+                              : AppColors.background,
+                        ),
+                        Text(
+                          'An Xểm',
+                          style: TextStyle(
+                              fontSize: AppSize.textSmall,
+                              color: isDark ? Colors.white : Colors.black),
+                        ),
+                        Spacer(),
+                        Icon(
+                          Icons.location_on_outlined,
+                          size: AppSize.iconSmall,
+                          color: isDark
+                              ? AppColors.secondBackground
+                              : AppColors.background,
+                        ),
+                        Text(
+                          '2 KM',
+                          style: TextStyle(
+                              fontSize: AppSize.textSmall,
+                              color: isDark ? Colors.white : Colors.black),
+                        ),
+                      ],
+                    ),
+                    RatingStart.ratingStart()
+                  ],
+                ),
+              ))
+            ],
           ),
         ),
       ),

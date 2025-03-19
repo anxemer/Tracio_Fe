@@ -77,28 +77,35 @@ class NearLocation extends StatelessWidget {
                         ),
                       ),
                     ),
+                    SizedBox(
+                      height: AppSize.apVerticalPadding * 0.6.h,
+                    ),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       child: Row(
                         children: [
                           Icon(
                             Icons.storefront_outlined,
-                            size: AppSize.iconSmall,
+                            size: AppSize.iconMedium,
                             color: isDark
                                 ? AppColors.secondBackground
                                 : AppColors.background,
                           ),
-                          SizedBox(width: 4),
+                          SizedBox(width: 10),
                           Text(
                             'An Xểm',
                             style: TextStyle(
-                                fontSize: AppSize.textSmall,
-                                color: isDark ? Colors.white : Colors.black),
+                                fontSize: AppSize.textMedium,
+                                color: isDark
+                                    ? Colors.grey.shade200
+                                    : Colors.black87),
                           ),
-                          Spacer(),
+                          SizedBox(
+                            width: 20.w,
+                          ),
                           Icon(
                             Icons.location_on_outlined,
-                            size: AppSize.iconSmall,
+                            size: AppSize.iconMedium,
                             color: isDark
                                 ? AppColors.secondBackground
                                 : AppColors.background,
@@ -107,8 +114,10 @@ class NearLocation extends StatelessWidget {
                           Text(
                             '2 KM',
                             style: TextStyle(
-                                fontSize: AppSize.textSmall,
-                                color: isDark ? Colors.white : Colors.black),
+                                fontSize: AppSize.textMedium,
+                                color: isDark
+                                    ? Colors.grey.shade200
+                                    : Colors.black87),
                           ),
                         ],
                       ),

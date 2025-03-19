@@ -22,7 +22,7 @@ class ServiceGrid extends StatelessWidget {
 
           // Padding between sections
           SliverToBoxAdapter(
-            child: SizedBox(height: 10),
+            child: SizedBox(height: 20.h),
           ),
           SliverToBoxAdapter(
             child: Padding(
@@ -55,15 +55,16 @@ class ServiceGrid extends StatelessWidget {
           ),
           // Service grid section
           SliverPadding(
-            padding: EdgeInsets.symmetric(horizontal: 8.w),
+            padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 12.h),
             sliver: SliverGrid(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 1,
                 childAspectRatio: 3,
-                mainAxisSpacing: 8,
+                mainAxisSpacing: 20.h,
               ),
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
+                  if (index >= sampleBikeServices.length) return null;
                   final services = sampleBikeServices[index];
 
                   return GestureDetector(

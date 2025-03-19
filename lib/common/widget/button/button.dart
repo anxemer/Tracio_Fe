@@ -49,8 +49,12 @@ class ButtonDesign extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              icon ??
-                  Image.asset(image!, width: iconSize!.w, height: iconSize!.h),
+              icon != null
+                  ? icon! 
+                  : (image != null
+                      ? Image.asset(image!,
+                          width: iconSize!.w, height: iconSize!.h)
+                      : Container()),
               SizedBox(
                 width: 10.w,
               ),
