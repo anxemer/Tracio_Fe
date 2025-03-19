@@ -35,6 +35,7 @@ class _BottomNavBarManagerState extends State<BottomNavBarManager> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Column(
         children: [
           Expanded(

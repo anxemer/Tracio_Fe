@@ -28,50 +28,48 @@ class _CategoryServiceState extends State<CategoryService> {
       scrollDirection: Axis.horizontal,
       child: Row(
         children: List.generate(
-            categories.length,
-            (index) => Padding(
-                padding: EdgeInsets.all(8),
-                child: AnimatedContainer(
-                  duration: Duration(milliseconds: 400),
-                  child: ChoiceChip(
-                    avatar: Image.asset(
-                      AppImages.man,
-                    ),
-                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20)),
-                    label: Text(
-                      categories[index],
-                      style: TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: selectIndex == index
-                              ? AppSize.textLarge
-                              : AppSize.textMedium,
-                          color: isDark ? Colors.white : Colors.black),
-                    ),
-                    selectedColor: context.isDarkMode
-                        ? AppColors.primary
-                        : AppColors.background,
-                    selected: selectIndex == index,
-                    pressElevation: 0,
-                    backgroundColor: Colors.transparent,
-                    elevation: selectIndex == index ? 2 : 0,
-                    labelPadding:
-                        EdgeInsets.symmetric(horizontal: 4, vertical: 1),
-                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    side: BorderSide(
-                        color: selectIndex == index
-                            ? Colors.transparent
-                            : isDark
-                                ? Colors.grey.shade700
-                                : Colors.grey.shade300),
-                    onSelected: (bool selected) {
-                      setState(() {
-                        selectIndex = index;
-                      });
-                    },
+          categories.length,
+          (index) => Padding(
+              padding: EdgeInsets.all(8),
+              child: AnimatedContainer(
+                duration: Duration(milliseconds: 400),
+                child: ChoiceChip(
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20)),
+                  label: Text(
+                    categories[index],
+                    style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: selectIndex == index
+                            ? AppSize.textLarge
+                            : AppSize.textMedium,
+                        color: isDark ? Colors.grey.shade200 : Colors.black87),
                   ),
-                ))),
+                  selectedColor: context.isDarkMode
+                      ? AppColors.primary
+                      : AppColors.background,
+                  selected: selectIndex == index,
+                  pressElevation: 0,
+                  backgroundColor: Colors.transparent,
+                  elevation: selectIndex == index ? 2 : 0,
+                  labelPadding:
+                      EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  side: BorderSide(
+                      color: selectIndex == index
+                          ? Colors.transparent
+                          : isDark
+                              ? Colors.grey.shade700
+                              : Colors.grey.shade300),
+                  onSelected: (bool selected) {
+                    setState(() {
+                      selectIndex = index;
+                    });
+                  },
+                ),
+              )),
+        ),
       ),
     );
   }

@@ -33,7 +33,7 @@ class _DetailBlocPageState extends State<DetailBlocPage> {
           title: Text(
             'Blog',
             style: TextStyle(
-                color: context.isDarkMode ? Colors.white : Colors.black,
+                color: context.isDarkMode ? Colors.grey.shade200 : Colors.black87,
                 fontWeight: FontWeight.bold,
                 fontSize: AppSize.textLarge.sp),
           ),
