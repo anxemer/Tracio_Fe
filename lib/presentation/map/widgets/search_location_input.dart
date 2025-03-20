@@ -8,9 +8,11 @@ class SearchLocationInput extends StatefulWidget {
   final Color backgroundColor;
   final bool showPrefixIcon;
   final double limitResult;
+  final String searchedText;
 
   const SearchLocationInput(
       {super.key,
+      this.searchedText = "",
       this.backgroundColor = Colors.grey,
       this.showPrefixIcon = true,
       this.limitResult = 10});
@@ -28,6 +30,7 @@ class _SearchLocationInputState extends State<SearchLocationInput> {
   @override
   void initState() {
     super.initState();
+    _searchController.text = widget.searchedText;
     _searchController.addListener(_onSearchChanged);
   }
 

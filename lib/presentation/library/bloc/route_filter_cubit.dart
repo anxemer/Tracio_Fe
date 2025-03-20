@@ -23,13 +23,17 @@ class RouteFilterCubit extends Cubit<RouteFilterState> {
   }
 
   /// **Set Location & Update Active Field**
-  void setLocation(String? location) {
+  void setLocation(String? location, {double? longitude, double? latitude}) {
     emit(state.copyWith(
       location: location,
+      latitude: latitude,
+      longitude: longitude,
       activeField: {
         ...state.activeField,
-        "location":
-            location != null && location.isNotEmpty, // ✅ Update only "location"
+        "location": location != null &&
+            latitude != null &&
+            longitude != null &&
+            location.isNotEmpty,
       },
     ));
   }

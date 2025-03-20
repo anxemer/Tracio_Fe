@@ -5,6 +5,8 @@ class RouteFilterState extends Equatable {
   final DateTime? toDate;
   final String dateString;
   final String? location;
+  final double? latitude;
+  final double? longitude;
   final int lengthStart;
   final int lengthEnd;
   final int elevationStart;
@@ -26,6 +28,8 @@ class RouteFilterState extends Equatable {
       this.toDate,
       this.dateString = "Date",
       this.location,
+      this.latitude,
+      this.longitude,
       this.lengthStart = 0,
       this.lengthEnd = 50,
       this.elevationStart = 0,
@@ -52,6 +56,8 @@ class RouteFilterState extends Equatable {
     DateTime? toDate,
     String? dateString,
     String? location,
+    double? latitude,
+    double? longitude,
     int? lengthStart,
     int? lengthEnd,
     int? elevationStart,
@@ -68,6 +74,8 @@ class RouteFilterState extends Equatable {
         toDate: toDate ?? this.toDate,
         dateString: dateString ?? this.dateString,
         location: location ?? this.location,
+        latitude: latitude,
+        longitude: longitude,
         lengthStart: lengthStart ?? this.lengthStart,
         lengthEnd: lengthEnd ?? this.lengthEnd,
         elevationStart: elevationStart ?? this.elevationStart,
@@ -86,6 +94,8 @@ class RouteFilterState extends Equatable {
         toDate,
         dateString,
         location,
+        latitude,
+        longitude,
         lengthStart,
         lengthEnd,
         elevationStart,

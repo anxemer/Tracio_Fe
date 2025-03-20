@@ -11,18 +11,28 @@ import 'package:tracio_fe/presentation/map/bloc/get_location_state.dart';
 import 'package:tracio_fe/presentation/map/widgets/search_location_input.dart';
 import 'package:tracio_fe/presentation/map/widgets/search_location_result.dart';
 
-class RouteLocationFilter extends StatelessWidget {
+class RouteLocationFilter extends StatefulWidget {
   final ScrollController scrollController;
 
   const RouteLocationFilter({super.key, required this.scrollController});
+
+  @override
+  State<RouteLocationFilter> createState() => _RouteLocationFilterState();
+}
+
+class _RouteLocationFilterState extends State<RouteLocationFilter> {
+  bool isReset = false;
 
   @override
   Widget build(BuildContext context) {
     return BlocListener<GetLocationCubit, GetLocationState>(
         listener: (context, state) {
       if (state is GetLocationDetailLoaded) {
-        //TODO Get lat lng
-        if (Navigator.canPop(context)) Navigator.pop(context);
+        context.read<RouteFilterCubit>().setLocation(
+              state.placeDetail.name,
+              longitude: state.placeDetail.longitude,
+              latitude: state.placeDetail.latitude,
+            );
       } else if (state is GetLocationDetailFailure) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -33,7 +43,7 @@ class RouteLocationFilter extends StatelessWidget {
     }, child: BlocBuilder<RouteFilterCubit, RouteFilterState>(
       builder: (context, state) {
         return SingleChildScrollView(
-          controller: scrollController,
+          controller: widget.scrollController,
           keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -55,7 +65,11 @@ class RouteLocationFilter extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         TextButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            setState(() {
+                              isReset = true;
+                            });
+                          },
                           child: const Text(
                             "Reset",
                             style: TextStyle(color: AppColors.primary),
@@ -70,6 +84,14 @@ class RouteLocationFilter extends StatelessWidget {
                         ),
                         TextButton(
                           onPressed: () {
+                            if (isReset) {
+                              context
+                                  .read<RouteFilterCubit>()
+                                  .resetFilter("location");
+                            }
+                            setState(() {
+                              isReset = false;
+                            });
                             Navigator.pop(context);
                           },
                           child: const Text("Save",
@@ -82,6 +104,7 @@ class RouteLocationFilter extends StatelessWidget {
                 ),
               ),
               SearchLocationInput(
+                searchedText: state.location ?? "",
                 backgroundColor: Colors.white10,
                 showPrefixIcon: false,
                 limitResult: 3,
