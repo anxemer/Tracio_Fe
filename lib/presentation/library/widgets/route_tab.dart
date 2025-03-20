@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tracio_fe/data/map/models/request/get_route_req.dart';
-import 'package:tracio_fe/presentation/library/widgets/feature_section.dart';
+import 'package:tracio_fe/presentation/library/widgets/route_filter_widget.dart';
 import 'package:tracio_fe/presentation/library/widgets/route_list.dart';
 import 'package:tracio_fe/presentation/map/bloc/route_cubit.dart';
 import 'package:tracio_fe/presentation/map/bloc/route_state.dart';
-import 'package:tracio_fe/presentation/map/pages/route_planner.dart';
 
 class RouteTab extends StatefulWidget {
   const RouteTab({super.key});
@@ -25,6 +25,7 @@ class _RouteTabState extends State<RouteTab>
     final GetRouteReq request =
         GetRouteReq(pageNumber: 1, rowsPerPage: 10, sortDesc: false);
     Future.microtask(() {
+      // ignore: use_build_context_synchronously
       context.read<RouteCubit>().getRoutes(request);
     });
   }
@@ -33,44 +34,29 @@ class _RouteTabState extends State<RouteTab>
   Widget build(BuildContext context) {
     super.build(context);
 
-    return RefreshIndicator(
-      onRefresh: () async {
-        final GetRouteReq request =
-            GetRouteReq(pageNumber: 1, rowsPerPage: 10, sortDesc: false);
-        context.read<RouteCubit>().getRoutes(request);
-      },
-      child: BlocConsumer<RouteCubit, RouteState>(
-          builder: (context, state) {
-            if (state is GetRouteLoaded) {
-              return RouteList();
-            } else if (state is GetRouteLoading) {
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-            } else if (state is GetRouteFailure) {
-              return Center(
-                child: Text(state.errorMessage),
-              );
-            } else {
-              return Column(
-                children: [
-                  FeatureSection(
-                    banner: Image.asset("assets/images/routes.png"),
-                    title: "Plan Your Own Routes",
-                    description:
-                        "Use the Mobile Route Planner to plan your routes, in advance or on-the-fly, with turn-by-turn directions, waypoints, estimated ride times, and custom cues.",
-                    buttonText: "Start Planning",
-                    onPressed: () => _navigateTo(context, RoutePlanner()),
+    return Column(
+      children: [
+        BlocConsumer<RouteCubit, RouteState>(
+            listener: (context, state) {},
+            builder: (context, state) {
+              if (state is GetRouteLoaded && state.routes.isNotEmpty) {
+                return Container(
+                  width: double.infinity,
+                  height: 50.h,
+                  decoration: BoxDecoration(
+                    border: Border.symmetric(
+                        horizontal:
+                            BorderSide(width: 1, color: Colors.grey.shade300)),
+                    color: Colors.grey.shade100,
                   ),
-                ],
-              );
-            }
-          },
-          listener: (context, state) {}),
+                  child: RouteFilterWidget(),
+                );
+              } else {
+                return Container();
+              }
+            }),
+        Expanded(child: RouteList())
+      ],
     );
-  }
-
-  void _navigateTo(BuildContext context, Widget page) {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => page));
   }
 }

@@ -33,14 +33,14 @@ class GetRouteRepModel {
       throw FormatException("Missing 'result' field in API response");
     }
 
-    final List<dynamic> routesList = resultMap['items'];
+    final List<dynamic> routesList = resultMap['Items'];
     return GetRouteRepModel(
       routes: List<RouteEntity>.from(
           routesList.map((x) => RouteModel.fromMap(x as Map<String, dynamic>))),
-      pageNumber: resultMap['pageNumber'],
-      pageSize: resultMap['pageSize'],
-      totalRoutes: resultMap['totalRoutes'],
-      totalPages: resultMap['totalPages'],
+      pageNumber: resultMap['PageNumber'],
+      pageSize: resultMap['PageSize'],
+      totalRoutes: resultMap['TotalCount'],
+      totalPages: resultMap['TotalPages'],
     );
   }
 

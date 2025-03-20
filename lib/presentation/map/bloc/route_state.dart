@@ -1,5 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:tracio_fe/data/map/models/reponse/get_route_rep.dart';
+import 'package:tracio_fe/core/erorr/failure.dart';
 import 'package:tracio_fe/domain/map/entities/route.dart';
 
 abstract class RouteState {}
@@ -29,8 +29,8 @@ class GetRouteLoaded extends RouteState {
 }
 
 class GetRouteFailure extends RouteState {
-  final String errorMessage;
-  GetRouteFailure({required this.errorMessage});
+  final Failure failure;
+  GetRouteFailure({required this.failure});
 }
 
 class PostRouteLoading extends RouteState {}

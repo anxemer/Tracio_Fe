@@ -15,7 +15,7 @@ class _EditRouteTrackingState extends State<EditRouteTracking> {
   late TextEditingController _nameController;
   late TextEditingController _descriptionController;
 
-  final List<String> _options = ["Public", "Friends Only", "Private"];
+  final List<String> _options = ["Public", "Private"];
   int _selectedIndex = 0;
   @override
   void initState() {
@@ -117,7 +117,7 @@ class _EditRouteTrackingState extends State<EditRouteTracking> {
                       _selectedIndex = index;
                     });
                   },
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(50),
                   borderWidth: 1.5,
                   borderColor: Colors.grey,
                   selectedBorderColor: Colors.blue,

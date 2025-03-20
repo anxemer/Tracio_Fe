@@ -5,7 +5,15 @@ import 'package:tracio_fe/presentation/map/bloc/get_location_cubit.dart';
 import 'package:uuid/uuid.dart';
 
 class SearchLocationInput extends StatefulWidget {
-  const SearchLocationInput({super.key});
+  final Color backgroundColor;
+  final bool showPrefixIcon;
+  final double limitResult;
+
+  const SearchLocationInput(
+      {super.key,
+      this.backgroundColor = Colors.grey,
+      this.showPrefixIcon = true,
+      this.limitResult = 10});
 
   @override
   State<SearchLocationInput> createState() => _SearchLocationInputState();
@@ -13,9 +21,10 @@ class SearchLocationInput extends StatefulWidget {
 
 class _SearchLocationInputState extends State<SearchLocationInput> {
   final TextEditingController _searchController = TextEditingController();
-
   final Uuid _uuid = Uuid();
   String _sessionToken = "";
+  String _previousSearchText = "";
+
   @override
   void initState() {
     super.initState();
@@ -29,10 +38,8 @@ class _SearchLocationInputState extends State<SearchLocationInput> {
     super.dispose();
   }
 
-  String _previousSearchText = "";
   void _onSearchChanged() {
     final currentText = _searchController.text.trim();
-
     if (currentText == _previousSearchText) return;
 
     if (_sessionToken.isEmpty) {
@@ -41,26 +48,27 @@ class _SearchLocationInputState extends State<SearchLocationInput> {
 
     setState(() {});
     _previousSearchText = currentText;
-    context
-        .read<GetLocationCubit>()
-        .getLocationsAutoComplete(currentText, sessionToken: _sessionToken);
+    context.read<GetLocationCubit>().getLocationsAutoComplete(currentText,
+        sessionToken: _sessionToken, limit: widget.limitResult);
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(15.w),
-      color: Colors.grey.shade700,
+      color: widget.backgroundColor,
       child: TextField(
         controller: _searchController,
         onTapOutside: (event) {
           FocusManager.instance.primaryFocus?.unfocus();
         },
         decoration: InputDecoration(
-          prefixIcon: IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: const Icon(Icons.arrow_back),
-          ),
+          prefixIcon: widget.showPrefixIcon
+              ? IconButton(
+                  onPressed: () => Navigator.pop(context),
+                  icon: const Icon(Icons.arrow_back),
+                )
+              : null,
           suffixIcon: _searchController.text.isNotEmpty
               ? IconButton(
                   onPressed: () {

@@ -9,14 +9,14 @@ import 'package:tracio_fe/presentation/map/bloc/get_location_state.dart';
 import 'package:tracio_fe/presentation/map/bloc/map_cubit.dart';
 import 'package:tracio_fe/presentation/map/bloc/map_state.dart';
 
-class SearchOptions extends StatefulWidget {
-  const SearchOptions({super.key});
+class SearchLocationOptions extends StatefulWidget {
+  const SearchLocationOptions({super.key});
 
   @override
-  State<SearchOptions> createState() => _SearchOptionsState();
+  State<SearchLocationOptions> createState() => _SearchLocationOptionsState();
 }
 
-class _SearchOptionsState extends State<SearchOptions> {
+class _SearchLocationOptionsState extends State<SearchLocationOptions> {
   final TextEditingController _distanceController = TextEditingController();
   final TextEditingController _timeController = TextEditingController();
   final String accessToken = dotenv.get("MAPBOX_ACCESS_TOKEN");

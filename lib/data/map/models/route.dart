@@ -78,37 +78,37 @@ class RouteModel extends RouteEntity {
   /// Convert a Map (from JSON) to a `RouteModel` instance
   factory RouteModel.fromMap(Map<String, dynamic> map) {
     return RouteModel(
-      routeId: map['routeId'],
-      cyclistId: map['cyclistId'],
-      cyclistName: map['user']?['username'] ?? 'Unknown',
-      cyclistAvatar: map['user']?['avatar'] ?? '',
-      routeName: map['routeName'] ?? 'Unnamed Route',
-      routeThumbnail: map['routeThumbnail'] ?? '',
-      startLocation: GeoPoint.fromJson(map['startLocation']),
-      endLocation: GeoPoint.fromJson(map['endLocation']),
-      routePath: (map['waypoints'] as List?)
+      routeId: map['RouteId'],
+      cyclistId: map['CyclistId'],
+      cyclistName: map['User']?['Username'] ?? 'Unknown',
+      cyclistAvatar: map['User']?['Avatar'] ?? '',
+      routeName: map['RouteName'] ?? 'Unnamed Route',
+      routeThumbnail: map['RouteThumbnail'] ?? '',
+      startLocation: GeoPoint.fromJson(map['StartLocation']),
+      endLocation: GeoPoint.fromJson(map['EndLocation']),
+      routePath: (map['Waypoints'] as List?)
               ?.map((pos) => GeoPoint.fromJson(pos))
               .toList() ??
           [],
-      waypoints: (map['waypoints'] as List?)
+      waypoints: (map['Waypoints'] as List?)
           ?.map((pos) => GeoPoint.fromJson(pos))
           .toList(),
-      weighting: map['weighting'] ?? 0,
-      avoidsRoads: map['avoidsRoads'] != null
-          ? List<String>.from(map['avoidsRoads'])
+      weighting: map['Weighting'] ?? 0,
+      avoidsRoads: map['AvoidsRoads'] != null
+          ? List<String>.from(map['AvoidsRoads'])
           : [],
-      optimizeRoute: map['optimizeRoute'] ?? false,
-      totalDistance: (map['totalDistance'] as num?)?.toDouble() ?? 0.0,
-      elevationGain: (map['elevationGain'] as num?)?.toDouble() ?? 0.0,
-      movingTime: (map['movingTime'] as num?)?.toDouble() ?? 0.0,
-      avgSpeed: (map['avgSpeed'] as num?)?.toDouble() ?? 0.0,
-      mood: map['mood'],
-      reactionCounts: map['reactionCounts'] ?? 0,
-      difficulty: map['difficulty'] ?? 1,
-      isPublic: map['isPublic'] ?? true,
-      isGroup: map['isGroup'] ?? false,
-      isDeleted: map['isDeleted'] ?? false,
-      createdAt: DateTime.tryParse(map['createdAt'] ?? '') ?? DateTime.now(),
+      optimizeRoute: map['OptimizeRoute'] ?? false,
+      totalDistance: (map['TotalDistance'] as num?)?.toDouble() ?? 0.0,
+      elevationGain: (map['ElevationGain'] as num?)?.toDouble() ?? 0.0,
+      movingTime: (map['MovingTime'] as num?)?.toDouble() ?? 0.0,
+      avgSpeed: (map['AvgSpeed'] as num?)?.toDouble() ?? 0.0,
+      mood: map['Mood'],
+      reactionCounts: map['ReactionCounts'] ?? 0,
+      difficulty: map['Difficulty'] ?? 1,
+      isPublic: map['IsPublic'] ?? true,
+      isGroup: map['IsGroup'] ?? false,
+      isDeleted: map['IsDeleted'] ?? false,
+      createdAt: DateTime.tryParse(map['CreatedAt'] ?? '') ?? DateTime.now(),
     );
   }
 }

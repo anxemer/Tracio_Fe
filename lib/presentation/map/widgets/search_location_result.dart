@@ -4,8 +4,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tracio_fe/presentation/map/bloc/get_location_cubit.dart';
 import 'package:tracio_fe/presentation/map/bloc/get_location_state.dart';
 
-class SearchResult extends StatelessWidget {
-  const SearchResult({super.key});
+class SearchLocationResult extends StatelessWidget {
+  const SearchLocationResult({super.key});
 
   @override
   Widget build(BuildContext context) {

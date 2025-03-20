@@ -45,9 +45,9 @@ class AuthorizationInterceptor extends Interceptor {
       handler.next(options);
       return;
     }
-    // String token = await sl<AuthLocalSource>().getToken(); 
+    // String token = await sl<AuthLocalSource>().getToken();
     String token =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJGNUYxNGF2SWZBWDhKVFVSS2F2b25YZkdQUVMyIiwianRpIjoiMGRkMDA5NDEtZWUxZi00ZjM1LTg5NTctNDY5OGVlNzFlODNhIiwicm9sZSI6InVzZXIiLCJ1bmlxdWVfbmFtZSI6Ikzhu5ljIFRy4bqnbiBNaW5oIChTRTE3MTI0NikiLCJlbWFpbCI6InRybWlubG9jQGdtYWlsLmNvbSIsImN1c3RvbV9pZCI6IjYiLCJhdmF0YXIiOiJodHRwczovL3VzZXJhdmF0YXJ0cmFjaW8uczMuYW1hem9uYXdzLmNvbS83ZmNkMjNmYi03NDJhLTQ2YWYtODI0MC01YWRmYTU0YTQ1MmNfYXZhdGFyJTIwZmluYWwuanBnIiwibmJmIjoxNzQyMjk3Njc5LCJleHAiOjE3NDIzMDEyNzksImlhdCI6MTc0MjI5NzY3OSwiaXNzIjoiVXNlciIsImF1ZCI6Imh0dHBzOi8vbG9jYWxob3N0OjUwMDMifQ.ZVpIT0skjq_rn1RIkjldqlqD_MPwjKYoAnyX9yFo45I";
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ2djQzcVROTU5mZG9uNllxRW5FZlVmM2hGNWsyIiwianRpIjoiYjFkMmYwOTYtMmNhMC00MDhiLWI0OGMtOTc5MDhlODY1MmQxIiwicm9sZSI6InVzZXIiLCJ1bmlxdWVfbmFtZSI6Ikzhu5ljIFRy4bqnbiBNaW5oIChTRTE3MTI0NikiLCJlbWFpbCI6InRybWlubG9jQGdtYWlsLmNvbSIsImN1c3RvbV9pZCI6IjEiLCJhdmF0YXIiOiJodHRwczovL3VzZXJhdmF0YXJ0cmFjaW8uczMuYW1hem9uYXdzLmNvbS83ZmNkMjNmYi03NDJhLTQ2YWYtODI0MC01YWRmYTU0YTQ1MmNfYXZhdGFyJTIwZmluYWwuanBnIiwibmJmIjoxNzQyNDgyNjc3LCJleHAiOjE3NDI0ODYyNzcsImlhdCI6MTc0MjQ4MjY3NywiaXNzIjoiVXNlciIsImF1ZCI6Imh0dHBzOi8vbG9jYWxob3N0OjUwMDMifQ.Y6W4FbfDQUXpdQBVW6ZSFmYGtRPxvmFZ-NFTsw60hgI";
     options.headers['Authorization'] = "Bearer $token";
     handler.next(options); // continue with the Request
   }

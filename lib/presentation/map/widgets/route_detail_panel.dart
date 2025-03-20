@@ -12,7 +12,7 @@ import 'package:tracio_fe/presentation/map/bloc/get_direction_state.dart';
 import 'package:tracio_fe/presentation/map/bloc/map_cubit.dart';
 import 'package:tracio_fe/presentation/map/bloc/map_state.dart';
 import 'package:tracio_fe/presentation/map/bloc/route_cubit.dart';
-import 'package:tracio_fe/presentation/map/widgets/snapshot_display_page.dart';
+import 'package:tracio_fe/presentation/map/pages/snapshot_display_page.dart';
 
 //TODO: Hover Build Metric session for more detai info
 class RouteDetailPanel extends StatefulWidget {
@@ -131,7 +131,12 @@ class _RouteDetailPanelState extends State<RouteDetailPanel> {
                             ),
                           ),
                         );
-                        if (result == 'save') {
+                        if (result is Map<String, dynamic>) {
+                          final routeName = result["routeName"] as String?;
+                          final routeDescription =
+                              result["routeDescription"] as String?;
+                          final routePrivacy = result["routePrivacy"] as int?;
+
                           if (mapCubit.pointAnnotations.isEmpty) return;
 
                           final origin =
@@ -142,7 +147,9 @@ class _RouteDetailPanelState extends State<RouteDetailPanel> {
                               _extractWaypoints(mapCubit.pointAnnotations);
 
                           final request = PostRouteReq(
-                            routeName: "New Route",
+                            routeName: routeName ?? "New Route",
+                            routeDescription: routeDescription,
+                            privacy: routePrivacy!,
                             origin: origin,
                             destination: destination,
                             waypoints: waypoints,

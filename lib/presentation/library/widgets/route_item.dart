@@ -24,8 +24,8 @@ class _RouteItemState extends State<RouteItem> {
             borderRadius: BorderRadius.circular(8), // Rounded corners
             child: Image.network(
               widget.routeData.routeThumbnail,
-              width: 80,
-              height: 80,
+              width: 60,
+              height: 60,
               fit: BoxFit.fill,
               errorBuilder: (context, error, stackTrace) =>
                   Icon(Icons.broken_image, size: 80, color: Colors.grey),
@@ -62,9 +62,12 @@ class _RouteItemState extends State<RouteItem> {
             ),
           ),
 
-          /// More Options Menu (Right End)
           PopupMenuButton<String>(
-            icon: const Icon(Icons.more_vert), // 3-dot menu
+            offset: Offset(-30, 30),
+            color: Colors.white,
+            elevation: 1,
+            borderRadius: BorderRadius.all(Radius.circular(6)),
+            icon: const Icon(Icons.more_vert),
             onSelected: (value) {
               _handleMenuAction(value);
             },
@@ -92,8 +95,8 @@ class _RouteItemState extends State<RouteItem> {
           Icon(icon, color: isDestructive ? Colors.red : Colors.black54),
           const SizedBox(width: 10),
           Text(text,
-              style:
-                  TextStyle(color: isDestructive ? Colors.red : Colors.black)),
+              style: TextStyle(
+                  color: isDestructive ? Colors.red : Colors.black45)),
         ],
       ),
     );

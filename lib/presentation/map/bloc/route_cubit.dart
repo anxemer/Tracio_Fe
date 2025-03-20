@@ -27,7 +27,7 @@ class RouteCubit extends Cubit<RouteState> {
     var data = await sl<GetRoutesUseCase>().call(request);
 
     data.fold((error) {
-      emit(GetRouteFailure(errorMessage: error.toString()));
+      emit(GetRouteFailure(failure: error));
     }, (data) async {
       emit(GetRouteLoaded(
           routes: data.routes,
