@@ -30,7 +30,7 @@ class LocationApiServiceImpl extends LocationApiService {
       final response = await sl<DioClient>().get(uri.toString());
 
       if (response.statusCode == 200) {
-        return right(response.data);
+        return right(GetPlacesRep.fromMap(response.data));
       } else {
         return left(ExceptionFailure('Error: ${response.statusCode}'));
       }
