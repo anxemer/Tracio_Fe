@@ -86,6 +86,7 @@ class ApiUrl {
     final queryParams = {
       'api_key': apiKey,
       'input': request.searchText,
+      'limit': request.limit!.toInt().toString()
     };
 
     if (request.sessionToken != null && request.sessionToken!.isNotEmpty) {

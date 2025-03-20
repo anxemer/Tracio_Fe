@@ -13,15 +13,15 @@ class GetLocationCubit extends Cubit<GetLocationState> {
   Timer? _debounce;
 
   void getLocationsAutoComplete(String searchedText,
-      {String sessionToken = ""}) {
+      {String sessionToken = "", double limit = 10}) {
     if (_debounce?.isActive ?? false) _debounce?.cancel();
 
     _debounce = Timer(const Duration(milliseconds: 1800), () async {
       if (searchedText.isEmpty) return;
 
       emit(GetLocationsAutoCompleteLoading());
-      GetPlaceReq request =
-          GetPlaceReq(searchText: searchedText, sessionToken: sessionToken);
+      GetPlaceReq request = GetPlaceReq(
+          searchText: searchedText, sessionToken: sessionToken, limit: limit);
       var data = await sl<GetLocationAutoCompleteUseCase>().call(request);
 
       data.fold(
