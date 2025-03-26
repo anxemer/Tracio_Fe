@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:tracio_fe/common/helper/is_dark_mode.dart';
+import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
 import 'package:tracio_fe/core/configs/theme/app_colors.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:geolocator/geolocator.dart' as geolocator;
+import 'package:tracio_fe/presentation/service/page/my_booking.dart';
+import 'package:tracio_fe/presentation/service/page/plan_service.dart';
+import 'package:tracio_fe/presentation/service/widget/filter_view.dart';
 
 class CustomSearchBar extends StatefulWidget {
   const CustomSearchBar({super.key});
@@ -41,7 +43,7 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
 
   @override
   Widget build(BuildContext context) {
-    Position positionUser;
+    // Position positionUser;
     var isDark = context.isDarkMode;
     return SafeArea(
       child: Container(
@@ -57,8 +59,101 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Container(
+                    height: 40.h,
+                    width: 40.w,
+                    decoration: BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                            blurRadius: 5,
+                            color: context.isDarkMode
+                                ? Colors.transparent
+                                : Colors.grey.shade400,
+                            offset: Offset(0, 2))
+                      ],
+                      color: context.isDarkMode
+                          ? AppColors.darkGrey
+                          : Colors.grey.shade200,
+                      borderRadius:
+                          BorderRadius.circular(AppSize.borderRadiusLarge),
+                    ),
+                    child: Icon(
+                      Icons.arrow_back,
+                      color: isDark
+                          ? AppColors.secondBackground
+                          : AppColors.background,
+                      size: AppSize.iconMedium,
+                    )),
+                Spacer(),
+                InkWell(
+                  onTap: () => AppNavigator.push(context, MyBookingPage()),
+                  child: Container(
+                      height: 40.h,
+                      width: 40.w,
+                      decoration: BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(
+                              blurRadius: 5,
+                              color: context.isDarkMode
+                                  ? Colors.transparent
+                                  : Colors.grey.shade400,
+                              offset: Offset(0, 2))
+                        ],
+                        color: context.isDarkMode
+                            ? AppColors.darkGrey
+                            : Colors.grey.shade200,
+                        borderRadius:
+                            BorderRadius.circular(AppSize.borderRadiusLarge),
+                      ),
+                      child: Icon(
+                        Icons.calendar_today,
+                        color: isDark
+                            ? AppColors.secondBackground
+                            : AppColors.background,
+                        size: AppSize.iconMedium,
+                      )),
+                ),
+                SizedBox(
+                  width: 10.w,
+                ),
+                InkWell(
+                  onTap: () => AppNavigator.push(context, PlanServicePage()),
+                  child: Container(
+                      height: 40.h,
+                      width: 40.w,
+                      decoration: BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(
+                              blurRadius: 5,
+                              color: context.isDarkMode
+                                  ? Colors.transparent
+                                  : Colors.grey.shade400,
+                              offset: Offset(0, 2))
+                        ],
+                        color: context.isDarkMode
+                            ? AppColors.darkGrey
+                            : Colors.grey.shade200,
+                        borderRadius:
+                            BorderRadius.circular(AppSize.borderRadiusLarge),
+                      ),
+                      child: Icon(
+                        Icons.edit_calendar_rounded,
+                        color: isDark
+                            ? AppColors.secondBackground
+                            : AppColors.background,
+                        size: AppSize.iconMedium,
+                      )),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 10.h,
+            ),
             Row(
               children: [
                 Expanded(
@@ -110,20 +205,23 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
                   ),
                 ),
                 SizedBox(width: 8.w),
-                Container(
-                  height: 32.h,
-                  width: 32.h,
-                  decoration: BoxDecoration(
-                    color: isDark ? AppColors.darkGrey : Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(20.r),
-                  ),
-                  child: Center(
-                    child: Icon(
-                      Icons.tune,
-                      color: isDark
-                          ? AppColors.secondBackground
-                          : AppColors.background,
-                      size: AppSize.iconMedium.sp,
+                InkWell(
+                  onTap: () => AppNavigator.push(context, FilterView()),
+                  child: Container(
+                    height: 32.h,
+                    width: 32.h,
+                    decoration: BoxDecoration(
+                      color: isDark ? AppColors.darkGrey : Colors.grey.shade300,
+                      borderRadius: BorderRadius.circular(20.r),
+                    ),
+                    child: Center(
+                      child: Icon(
+                        Icons.tune,
+                        color: isDark
+                            ? AppColors.secondBackground
+                            : AppColors.background,
+                        size: AppSize.iconMedium.sp,
+                      ),
                     ),
                   ),
                 ),
@@ -133,20 +231,5 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
         ),
       ),
     );
-  }
-
-  Future<void> _getLocationUser(BuildContext context) async {
-    geolocator.LocationSettings locationSettings = geolocator.LocationSettings(
-      accuracy: geolocator.LocationAccuracy.high,
-      distanceFilter: 100,
-    );
-    await geolocator.Geolocator.getCurrentPosition(
-            locationSettings: locationSettings)
-        .then((geolocator.Position? position) {
-      if (position != null) {
-        // Update camera position using MapCubit
-        if (context.mounted) {}
-      }
-    });
   }
 }

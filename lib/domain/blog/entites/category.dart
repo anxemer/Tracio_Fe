@@ -1,7 +1,7 @@
-class CategoryBlogEntity {
+class CategoryEntity {
   final int? categoryId;
   final String? categoryName;
-  CategoryBlogEntity({
+  CategoryEntity({
     this.categoryId,
     this.categoryName,
   });

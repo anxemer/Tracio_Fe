@@ -1,23 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tracio_fe/common/helper/is_dark_mode.dart';
-import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
 import 'package:tracio_fe/common/helper/rating_start.dart';
 import 'package:tracio_fe/core/configs/theme/app_colors.dart';
 import 'package:tracio_fe/core/configs/theme/assets/app_images.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/domain/shop/shop_service_entity.dart';
-import 'package:tracio_fe/presentation/service/page/detail_service.dart';
+import 'package:tracio_fe/domain/shop/entities/shop_entity.dart';
+import 'package:tracio_fe/domain/shop/entities/shop_service_entity.dart';
+
+import '../../../common/helper/navigator/app_navigator.dart';
+import '../page/detail_service.dart';
 
 class ServiceCard extends StatelessWidget {
-  const ServiceCard({super.key, required this.service});
+  const ServiceCard({super.key, required this.service, required this.shop});
   final ShopServiceEntity service;
+  final ShopEntity shop;
   @override
   Widget build(BuildContext context) {
     final isDark = context.isDarkMode;
     return InkWell(
-      onTap: () =>
-          AppNavigator.push(context, DetailServicePage(service: service)),
+      onTap: () => AppNavigator.push(
+          context, DetailServicePage(service: service, shop: shop)),
       child: Container(
         // constraints: BoxConstraints(maxWidth: screenWidth),
         decoration: BoxDecoration(
@@ -26,10 +29,10 @@ class ServiceCard extends StatelessWidget {
             boxShadow: [
               BoxShadow(
                   color: isDark
-                      ? Colors.black.withValues(alpha: .3)
-                      : Colors.grey.withValues(alpha: .3),
+                      ? Colors.black.withOpacity(0.3)
+                      : Colors.grey.withOpacity(0.3),
                   blurRadius: 5,
-                  offset: Offset(0, 2))
+                  offset: const Offset(0, 2))
             ]),
 
         child: ClipRRect(
@@ -53,7 +56,7 @@ class ServiceCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      service.serviceName,
+                      service.name ?? 'No Service Name',
                       style: TextStyle(
                           fontSize: AppSize.textLarge.sp,
                           fontWeight: FontWeight.w600),
@@ -68,10 +71,10 @@ class ServiceCard extends StatelessWidget {
                               : AppColors.background,
                         ),
                         Text(
-                          service.formattedDuration,
+                          service.formattedDuration ?? '0 min',
                           style: TextStyle(fontSize: AppSize.textMedium),
                         ),
-                        Spacer(),
+                        const Spacer(),
                         Row(
                           children: [
                             Icon(
@@ -82,7 +85,7 @@ class ServiceCard extends StatelessWidget {
                                   : AppColors.background,
                             ),
                             Text(
-                              service.formattedPrice,
+                              service.price.toString(),
                               style: TextStyle(fontSize: AppSize.textLarge),
                             ),
                           ],
@@ -99,12 +102,12 @@ class ServiceCard extends StatelessWidget {
                               : AppColors.background,
                         ),
                         Text(
-                          'An Xểm',
+                          shop.shopName ?? 'No Shop Name',
                           style: TextStyle(
                               fontSize: AppSize.textSmall,
                               color: isDark ? Colors.white : Colors.black),
                         ),
-                        Spacer(),
+                        const Spacer(),
                         Icon(
                           Icons.location_on_outlined,
                           size: AppSize.iconSmall,

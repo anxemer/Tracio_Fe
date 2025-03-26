@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tracio_fe/common/helper/is_dark_mode.dart';
-import 'package:tracio_fe/domain/shop/shop_service_entity.dart';
+import 'package:tracio_fe/domain/shop/entities/service_response_entity.dart';
+import 'package:tracio_fe/domain/shop/entities/shop_service_entity.dart';
 import 'package:tracio_fe/presentation/service/widget/near_location.dart';
 import 'package:tracio_fe/presentation/service/widget/service_card.dart';
 
 import '../../../core/constants/app_size.dart';
 
 class ServiceGrid extends StatelessWidget {
-  const ServiceGrid({super.key});
+  const ServiceGrid({super.key, required this.services});
+  final ServiceResponseEntity services;
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +37,9 @@ class ServiceGrid extends StatelessWidget {
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: AppSize.textMedium.sp,
-                      color: context.isDarkMode ? Colors.white : Colors.black,
+                      color: context.isDarkMode
+                          ? Colors.grey.shade300
+                          : Colors.black87,
                     ),
                   ),
                   Text(
@@ -43,7 +47,9 @@ class ServiceGrid extends StatelessWidget {
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: AppSize.textMedium.sp,
-                      color: context.isDarkMode ? Colors.white : Colors.black,
+                      color: context.isDarkMode
+                          ? Colors.grey.shade300
+                          : Colors.black87,
                     ),
                   ),
                 ],
@@ -64,13 +70,11 @@ class ServiceGrid extends StatelessWidget {
               ),
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
-                  if (index >= sampleBikeServices.length) return null;
-                  final services = sampleBikeServices[index];
-
                   return GestureDetector(
                     onTap: () {},
                     child: ServiceCard(
-                      service: services,
+                      service: services.service[index],
+                      shop: services.shop[index],
                     ),
                   );
                 },

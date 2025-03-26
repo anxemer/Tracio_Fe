@@ -53,7 +53,7 @@ class NearLocation extends StatelessWidget {
                 margin: EdgeInsets.symmetric(horizontal: 8),
                 decoration: BoxDecoration(
                     color: Theme.of(context).cardColor,
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(20.r),
                     boxShadow: [
                       BoxShadow(
                           color: isDark

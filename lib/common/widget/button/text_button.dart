@@ -19,7 +19,7 @@ class BasicTextButton extends StatelessWidget {
     return GestureDetector(
       onTap: onPress,
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+        padding: EdgeInsets.symmetric(vertical: 8, horizontal: 4),
         decoration: BoxDecoration(
             border: Border.all(color: borderColor ?? Colors.transparent),
             borderRadius: BorderRadius.circular(8)),

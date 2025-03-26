@@ -25,7 +25,7 @@ class ReviewServiceCard extends StatelessWidget {
             thickness: .5,
             indent: 16,
             endIndent: 16,
-            color: isDark ? AppColors.darkGrey : Colors.grey.shade300,
+            color: isDark ? Colors.black26 : Colors.grey.shade300,
             height: 1,
           ),
           HeaderInformation(
@@ -39,7 +39,9 @@ class ReviewServiceCard extends StatelessWidget {
               ),
               subtitle: Text('2 day ago'),
               imageUrl: CirclePicture(
-                  imageUrl: AppImages.man, imageSize: AppSize.iconMedium)),
+                  imageUrl:
+                      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQoarw0HSRfLGUHep5w1Vg0cKesVkKIsQsjjg&s',
+                  imageSize: AppSize.iconMedium)),
           RatingStart.ratingStart(rating: 4.5),
           Text(
             'Service tốt jksfkjfskjhgsk skjfhsksf kjfhaskfh akfhaj hah h fafh asfh askfh alfha jalkf half hs',

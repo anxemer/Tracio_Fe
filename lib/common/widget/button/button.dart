@@ -29,46 +29,43 @@ class ButtonDesign extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: height ?? 40.h,
-      width: width ?? 300.w,
-      child: InkWell(
-        onTap: ontap,
-        borderRadius: BorderRadius.circular(20.r), // Tự động co giãn
-        child: Container(
-          decoration: BoxDecoration(
-            color: fillColor,
-            borderRadius: BorderRadius.circular(20.r),
-            border: Border.all(
-              width: 1.5.w,
-              color: borderColor,
-              strokeAlign: BorderSide.strokeAlignOutside,
+    return InkWell(
+      onTap: ontap,
+      // borderRadius: BorderRadius.circular(20.r), // Tự động co giãn
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 16.w),
+        decoration: BoxDecoration(
+          color: fillColor,
+          borderRadius: BorderRadius.circular(8.r),
+          border: Border.all(
+            width: 1.5.w,
+            color: borderColor,
+            strokeAlign: BorderSide.strokeAlignOutside,
+          ),
+        ),
+        // padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 15.h),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            icon != null
+                ? icon!
+                : (image != null
+                    ? Image.asset(image!,
+                        width: iconSize!.w, height: iconSize!.h)
+                    : Container()),
+            // SizedBox(
+            //   width: 10.w,
+            // ),
+            // SizedBox(width: 10.w),
+            Text(
+              text ?? '',
+              style: TextStyle(
+                fontSize: fontSize.sp, // Tự động điều chỉnh theo màn hình
+                fontWeight: FontWeight.w500,
+                color: textColor,
+              ),
             ),
-          ),
-          // padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 15.h),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              icon != null
-                  ? icon! 
-                  : (image != null
-                      ? Image.asset(image!,
-                          width: iconSize!.w, height: iconSize!.h)
-                      : Container()),
-              SizedBox(
-                width: 10.w,
-              ),
-              // SizedBox(width: 10.w),
-              Text(
-                text ?? '',
-                style: TextStyle(
-                  fontSize: fontSize.sp, // Tự động điều chỉnh theo màn hình
-                  fontWeight: FontWeight.w500,
-                  color: textColor,
-                ),
-              ),
-            ],
-          ),
+          ],
         ),
       ),
     );

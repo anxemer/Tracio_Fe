@@ -1,3 +1,4 @@
+import '../../../common/helper/media_file.dart';
 import '../../../data/blog/models/response/blog_model.dart';
 
 class BlogEntity {
@@ -6,7 +7,7 @@ class BlogEntity {
     required this.userId,
     required this.userName,
     required this.avatar,
-    required this.privacySetting,
+    required this.isPublic,
     required this.isReacted,
     required this.isBookmarked,
     required this.content,
@@ -21,7 +22,7 @@ class BlogEntity {
   final int userId;
   final String userName;
   final String avatar;
-  int privacySetting;
+  bool isPublic;
   bool isReacted;
   bool isBookmarked;
   final String content;
@@ -51,7 +52,7 @@ class BlogEntity {
       userId: userId ?? this.userId,
       userName: userName ?? this.userName,
       avatar: avatar ?? this.avatar,
-      privacySetting: privacySetting ?? this.privacySetting,
+      isPublic: isPublic,
       isReacted: isReacted ?? this.isReacted,
       isBookmarked: isBookmarked ?? this.isBookmarked,
       content: content ?? this.content,

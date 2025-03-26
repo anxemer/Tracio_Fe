@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
 import 'package:tracio_fe/common/widget/appbar/app_bar.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:tracio_fe/core/usecase/usecase.dart';
+import 'package:tracio_fe/domain/auth/usecases/logout.dart';
+import 'package:tracio_fe/presentation/auth/pages/login.dart';
 import 'package:tracio_fe/presentation/map/pages/library.dart';
+import 'package:tracio_fe/service_locator.dart';
+
+import '../../auth/bloc/authCubit/auth_cubit.dart';
 
 class MorePage extends StatelessWidget {
   const MorePage({super.key});
@@ -108,8 +116,11 @@ class MorePage extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.exit_to_app, color: Colors.black54),
             title: Text('Log Out'),
-            onTap: () {
-              Navigator.pushNamed(context, '/logout');
+            onTap: () async {
+              context.read<AuthCubit>().logout();
+              AppNavigator.push(context, LoginPage());
+              // await sl<LogoutUseCase>().call(NoParams());
+              // Navigator.pushNamed(context, '/logout');
             },
           ),
         ],
