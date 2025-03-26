@@ -20,10 +20,10 @@ class AppTheme {
     inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: Colors.transparent,
-        hintStyle: const TextStyle(
-          color: Color(0xffA7A7A7),
-          fontWeight: FontWeight.w400,
-        ),
+        // hintStyle: const TextStyle(
+        //   color: Colors.black54,
+        //   fontWeight: FontWeight.w400,
+        // ),
         contentPadding: const EdgeInsets.all(16),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(20),
@@ -34,7 +34,7 @@ class AppTheme {
             borderSide: BorderSide.none)),
     elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
+            backgroundColor: AppColors.secondBackground,
             elevation: 0,
             textStyle:
                 const TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
@@ -58,7 +58,7 @@ class AppTheme {
 
   static final appDarkTheme = ThemeData(
       primaryColor: AppColors.primary,
-      scaffoldBackgroundColor: AppColors.darkBackground,
+      scaffoldBackgroundColor: AppColors.darkGrey,
       brightness: Brightness.dark,
       fontFamily: 'CircularStd',
       snackBarTheme: const SnackBarThemeData(
@@ -69,7 +69,7 @@ class AppTheme {
           filled: true,
           fillColor: Colors.transparent,
           hintStyle: const TextStyle(
-            color: Color(0xffA7A7A7),
+            color: Colors.black87,
             fontWeight: FontWeight.w400,
           ),
           contentPadding: const EdgeInsets.all(16),
@@ -93,12 +93,12 @@ class AppTheme {
         selectionHandleColor: AppColors.background,
       ),
       appBarTheme: AppBarTheme(
-          backgroundColor: AppColors.darkBackground,
+          backgroundColor: AppColors.background,
           elevation: 0,
           iconTheme: IconThemeData(color: Colors.white)),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
           backgroundColor: Color(0xFF1E1E1E),
           selectedItemColor: AppColors.primary,
           unselectedItemColor: Colors.transparent),
-      cardColor: Color(0xFF1E1E1E));
+      cardColor: Colors.black38);
 }

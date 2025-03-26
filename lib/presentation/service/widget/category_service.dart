@@ -1,25 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:tracio_fe/common/helper/is_dark_mode.dart';
 import 'package:tracio_fe/core/configs/theme/app_colors.dart';
-import 'package:tracio_fe/core/configs/theme/assets/app_images.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
+import 'package:tracio_fe/domain/blog/entites/category.dart';
 
 class CategoryService extends StatefulWidget {
-  const CategoryService({super.key});
-
+  const CategoryService({super.key, required this.cateService});
+  final List<CategoryEntity> cateService;
   @override
   State<CategoryService> createState() => _CategoryServiceState();
 }
 
 class _CategoryServiceState extends State<CategoryService> {
   int selectIndex = 0;
-  final categories = [
-    'All',
-    'Repair',
-    'Maintenance',
-    'Customization',
-    'Accessories'
-  ];
+  // final categories = [
+  //   'All',
+  //   'Repair',
+  //   'Maintenance',
+  //   'Customization',
+  //   'Accessories'
+  // ];
   @override
   Widget build(BuildContext context) {
     var isDark = context.isDarkMode;
@@ -28,7 +28,7 @@ class _CategoryServiceState extends State<CategoryService> {
       scrollDirection: Axis.horizontal,
       child: Row(
         children: List.generate(
-          categories.length,
+          widget.cateService.length,
           (index) => Padding(
               padding: EdgeInsets.all(8),
               child: AnimatedContainer(
@@ -38,7 +38,7 @@ class _CategoryServiceState extends State<CategoryService> {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20)),
                   label: Text(
-                    categories[index],
+                    widget.cateService[index].categoryName!,
                     style: TextStyle(
                         fontWeight: FontWeight.w700,
                         fontSize: selectIndex == index

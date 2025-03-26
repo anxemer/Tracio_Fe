@@ -14,6 +14,7 @@ import 'package:tracio_fe/core/configs/theme/app_theme.dart';
 import 'package:tracio_fe/firebase_options.dart';
 import 'package:tracio_fe/presentation/groups/cubit/group_cubit.dart';
 import 'package:tracio_fe/presentation/map/bloc/route_cubit.dart';
+import 'package:tracio_fe/presentation/blog/bloc/category/get_category_cubit.dart';
 import 'package:tracio_fe/presentation/splash/page/splash.dart';
 import 'package:tracio_fe/presentation/map/bloc/tracking_location_bloc.dart';
 import 'package:tracio_fe/presentation/auth/bloc/authCubit/auth_cubit.dart';
@@ -23,6 +24,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' as mp;
 import 'package:tracio_fe/presentation/theme/bloc/theme_cubit.dart';
 
+import 'presentation/service/bloc/bookingservice/booking_service_cubit.dart';
+import 'presentation/service/bloc/cart_item_bloc/cart_item_cubit.dart';
 import 'service_locator.dart' as di;
 
 Future<void> main() async {
@@ -94,6 +97,10 @@ class _MyAppState extends State<MyApp> {
         BlocProvider(create: (context) => RouteCubit()),
         BlocProvider(create: (context) => GroupCubit()),
         BlocProvider(create: (context) => ThemeCubit()),
+        BlocProvider(create: (context) => CartItemCubit()..getCartitem()),
+        BlocProvider(
+          create: (context) => BookingServiceCubit(),
+        )
       ],
       child: BlocBuilder<ThemeCubit, ThemeMode>(
         builder: (context, state) {

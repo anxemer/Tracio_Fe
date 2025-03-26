@@ -7,16 +7,21 @@ import 'package:tracio_fe/common/widget/appbar/app_bar.dart';
 import 'package:tracio_fe/common/widget/button/text_button.dart';
 import 'package:tracio_fe/common/widget/picture/circle_picture.dart';
 import 'package:tracio_fe/core/configs/theme/app_colors.dart';
+import 'package:tracio_fe/domain/shop/usecase/add_to_cart.dart';
 import 'package:tracio_fe/presentation/service/widget/review_service.dart';
 
 import '../../../common/widget/button/button.dart';
 import '../../../core/configs/theme/assets/app_images.dart';
 import '../../../core/constants/app_size.dart';
-import '../../../domain/shop/shop_service_entity.dart';
+import '../../../domain/shop/entities/shop_entity.dart';
+import '../../../domain/shop/entities/shop_service_entity.dart';
+import '../../../service_locator.dart';
 
 class DetailServicePage extends StatefulWidget {
-  const DetailServicePage({super.key, required this.service});
+  const DetailServicePage(
+      {super.key, required this.service, required this.shop});
   final ShopServiceEntity service;
+  final ShopEntity shop;
 
   @override
   State<DetailServicePage> createState() => _DetailServicePageState();
@@ -28,12 +33,41 @@ class _DetailServicePageState extends State<DetailServicePage> {
     var isDark = context.isDarkMode;
     return Scaffold(
       appBar: BasicAppbar(
+        backgroundColor: Colors.transparent,
         title: Text(
           'Detail',
           style: TextStyle(
               color: context.isDarkMode ? Colors.grey.shade200 : Colors.black87,
               fontWeight: FontWeight.bold,
               fontSize: AppSize.textHeading.sp),
+        ),
+        action: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: AppSize.apHorizontalPadding.w,
+          ),
+          child: Container(
+              height: 40.h,
+              width: 40.w,
+              decoration: BoxDecoration(
+                boxShadow: [
+                  BoxShadow(
+                      blurRadius: 5,
+                      color: context.isDarkMode
+                          ? Colors.transparent
+                          : Colors.grey.shade400,
+                      offset: Offset(0, 2))
+                ],
+                color: context.isDarkMode
+                    ? AppColors.darkGrey
+                    : Colors.grey.shade200,
+                borderRadius: BorderRadius.circular(AppSize.borderRadiusLarge),
+              ),
+              child: Icon(
+                Icons.edit_calendar_rounded,
+                color:
+                    isDark ? AppColors.secondBackground : AppColors.background,
+                size: AppSize.iconMedium,
+              )),
         ),
         // height: 100.h,
       ),
@@ -62,8 +96,7 @@ class _DetailServicePageState extends State<DetailServicePage> {
                         thickness: 4,
                         indent: 16,
                         endIndent: 16,
-                        color:
-                            isDark ? AppColors.darkGrey : Colors.grey.shade300,
+                        color: isDark ? Colors.black26 : Colors.grey.shade300,
                         height: 1,
                       ),
                       SizedBox(
@@ -77,8 +110,7 @@ class _DetailServicePageState extends State<DetailServicePage> {
                         thickness: 4,
                         indent: 16,
                         endIndent: 16,
-                        color:
-                            isDark ? AppColors.darkGrey : Colors.grey.shade300,
+                        color: isDark ? Colors.black26 : Colors.grey.shade300,
                         height: 1,
                       ),
                       SizedBox(
@@ -92,8 +124,7 @@ class _DetailServicePageState extends State<DetailServicePage> {
                         thickness: 4,
                         indent: 16,
                         endIndent: 16,
-                        color:
-                            isDark ? AppColors.darkGrey : Colors.grey.shade300,
+                        color: isDark ? Colors.black26 : Colors.grey.shade300,
                         height: 1,
                       ),
                       ReviewService()
@@ -212,7 +243,7 @@ class _DetailServicePageState extends State<DetailServicePage> {
             children: [
               Expanded(
                 child: Text(
-                  widget.service.serviceName,
+                  widget.service.name!,
                   style: TextStyle(
                     color: isDark ? Colors.grey.shade300 : Colors.black87,
                     fontWeight: FontWeight.bold,
@@ -250,7 +281,7 @@ class _DetailServicePageState extends State<DetailServicePage> {
                     isDark ? AppColors.secondBackground : AppColors.background,
               ),
               Text(
-                widget.service.formattedPrice,
+                widget.service.price.toString(),
                 style: TextStyle(
                   color: isDark ? Colors.grey.shade300 : Colors.black87,
                   fontWeight: FontWeight.w600,
@@ -330,7 +361,7 @@ class _DetailServicePageState extends State<DetailServicePage> {
               Column(
                 children: [
                   Text(
-                    'An Xểm',
+                    widget.shop.shopName!,
                     style: TextStyle(
                       color: isDark ? Colors.grey.shade300 : Colors.black87,
                       fontWeight: FontWeight.w600,
@@ -390,7 +421,7 @@ class _DetailServicePageState extends State<DetailServicePage> {
                     isDark ? AppColors.secondBackground : AppColors.background,
               ),
               Text(
-                'Gò vấp, Hồ Chí Minh',
+                '${widget.shop.district!} ${widget.shop.city!}',
                 style: TextStyle(
                   color: isDark ? Colors.white : Colors.black,
                   fontWeight: FontWeight.w600,
@@ -409,9 +440,9 @@ class _DetailServicePageState extends State<DetailServicePage> {
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         ButtonDesign(
-          height: 40.h,
-          width: 140.w,
-          ontap: () {},
+          ontap: () {
+            sl<AddToCartUseCase>().call(widget.service.serviceId!);
+          },
           text: 'Add To Plan',
           // image: AppImages.draft,
           fillColor: Colors.transparent,
@@ -421,9 +452,12 @@ class _DetailServicePageState extends State<DetailServicePage> {
           fontSize: AppSize.textMedium,
         ),
         ButtonDesign(
-          height: 40.h,
-          width: 140.w,
-          ontap: () {},
+          ontap: () {
+            // CustomModalBottomSheet.show(
+            //     context: context, child: AddSchedule(cartItem: [cartItem], ));
+            // AppNavigator.push(context, AddSchedule(selectCount: 1));
+            // AppNavigator.push(context, MyBookingPage());
+          },
           text: 'Booking',
           // image: AppImages.share,
           fillColor: AppColors.secondBackground,

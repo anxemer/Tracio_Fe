@@ -1,6 +1,6 @@
 import 'package:tracio_fe/domain/blog/entites/reply_comment.dart';
 
-import 'blog_model.dart';
+import '../../../../common/helper/media_file.dart';
 
 class ReplyCommentModel extends ReplyCommentEntity {
   final DateTime? updatedAt;

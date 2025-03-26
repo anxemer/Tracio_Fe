@@ -14,6 +14,7 @@ class InputTextFormField extends StatefulWidget {
   final Function(String)? onFieldSubmitted;
   final String labelText;
   final Widget? prefixIcon;
+  final Function? ontap;
   const InputTextFormField({
     super.key,
     required this.controller,
@@ -28,6 +29,7 @@ class InputTextFormField extends StatefulWidget {
     this.onFieldSubmitted,
     required this.labelText,
     this.prefixIcon,
+    this.ontap,
   });
 
   @override
@@ -65,6 +67,7 @@ class _InputTextFormFieldState extends State<InputTextFormField> {
         });
       },
       child: TextFormField(
+        onTap: widget.ontap != null ? () => widget.ontap!() : null,
         focusNode: _focusNode,
         controller: widget.controller,
         obscureText: widget.isSecureField && !_passwordVisible,
