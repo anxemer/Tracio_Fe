@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:tracio_fe/common/widget/picture/circle_picture.dart';
 import 'package:tracio_fe/core/configs/theme/app_colors.dart';
 import 'package:tracio_fe/core/configs/theme/assets/app_images.dart';
@@ -188,9 +189,86 @@ class _BlogPageState extends State<BlogPage> {
         isLoading: state.isLoading!,
       );
     } else if (state is GetBlogLoading || state is GetBlogInitial) {
-      return const SliverFillRemaining(
+      return SliverFillRemaining(
         hasScrollBody: false,
-        child: Center(child: CircularProgressIndicator()),
+        child: Center(
+            child: Shimmer.fromColors(
+          baseColor: Colors.black26,
+          highlightColor: Colors.black54,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              AspectRatio(
+                aspectRatio: 16 / 9,
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(4),
+                    color: Colors.black38,
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 10.h,
+              ),
+              Container(
+                width: 160,
+                height: 16,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4),
+                  color: Colors.black26,
+                ),
+              ),
+              SizedBox(
+                height: 10.h,
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: List.generate(3, (index) {
+                  return Container(
+                    width: double.infinity,
+                    height: 12,
+                    margin: EdgeInsets.only(top: index == 0 ? 0 : 8),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(4),
+                      color: Colors.black26,
+                    ),
+                  );
+                }),
+              ),
+              // SizedBox(
+              //   height: 10.h,
+              // ),
+              // Row(
+              //   children: [
+              //     const CircleAvatar(
+              //       backgroundColor: Colors.black54,
+              //       child: Icon(
+              //         Icons.person,
+              //         color: Colors.white,
+              //       ),
+              //     ),
+              //     SizedBox(
+              //       height: 10.h,
+              //     ),
+              //     Column(
+              //       crossAxisAlignment: CrossAxisAlignment.start,
+              //       children: [120, 180].asMap().entries.map((e) {
+              //         return Container(
+              //           width: e.value.toDouble(),
+              //           height: 12,
+              //           margin: EdgeInsets.only(top: e.key == 0 ? 0 : 8),
+              //           decoration: BoxDecoration(
+              //             borderRadius: BorderRadius.circular(4),
+              //             color: Colors.black26,
+              //           ),
+              //         );
+              //       }).toList(),
+              //     ),
+              //   ],
+              // ),
+            ],
+          ),
+        )),
       );
     } else if (state is GetBlogFailure) {
       Future.delayed(Duration.zero, () {

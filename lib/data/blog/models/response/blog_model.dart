@@ -21,9 +21,9 @@ class BlogModels extends BlogEntity {
   factory BlogModels.fromJson(Map<String, dynamic> json) {
     return BlogModels(
       blogId: json["blogId"],
-      userId: json["userId"],
-      userName: json["userName"],
-      avatar: json["avatar"],
+      userId: json["creatorId"],
+      userName: json["creatorName"],
+      avatar: json["creatorAvatar"],
       isPublic: json["isPublic"],
       isReacted: json["isReacted"],
       isBookmarked: json["isBookmarked"],
@@ -34,7 +34,7 @@ class BlogModels extends BlogEntity {
               json["mediaFiles"]!.map((x) => MediaFile.fromJson(x))),
       createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
       updatedAt: DateTime.tryParse(json["updatedAt"] ?? ""),
-      likesCount: json["likesCount"],
+      likesCount: json["reactionsCount"],
       commentsCount: json["commentsCount"],
     );
   }

@@ -76,6 +76,7 @@ class FilterView extends StatelessWidget {
             //     return Container();
             //   },
             // ),
+
             Padding(
               padding: EdgeInsets.only(left: 20, top: 10),
               child: Text(
@@ -93,12 +94,12 @@ class FilterView extends StatelessWidget {
                   initMax: state.maxPrice,
                 );
               },
-            )
+            ),
           ],
         ),
         bottomNavigationBar: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
             child: Builder(builder: (context) {
               return InputFormButton(
                 color: Colors.black87,
