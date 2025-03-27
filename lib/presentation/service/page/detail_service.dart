@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tracio_fe/common/helper/is_dark_mode.dart';
 import 'package:tracio_fe/common/helper/rating_start.dart';
@@ -8,14 +9,18 @@ import 'package:tracio_fe/common/widget/button/text_button.dart';
 import 'package:tracio_fe/common/widget/picture/circle_picture.dart';
 import 'package:tracio_fe/core/configs/theme/app_colors.dart';
 import 'package:tracio_fe/domain/shop/usecase/add_to_cart.dart';
+import 'package:tracio_fe/presentation/service/bloc/bookingservice/booking_service_cubit.dart';
 import 'package:tracio_fe/presentation/service/widget/review_service.dart';
 
+import '../../../common/widget/blog/custom_bottomsheet.dart';
 import '../../../common/widget/button/button.dart';
+import '../../../common/widget/input_text_form_field.dart';
 import '../../../core/configs/theme/assets/app_images.dart';
 import '../../../core/constants/app_size.dart';
 import '../../../domain/shop/entities/shop_entity.dart';
 import '../../../domain/shop/entities/shop_service_entity.dart';
 import '../../../service_locator.dart';
+import '../widget/add_schedule.dart';
 
 class DetailServicePage extends StatefulWidget {
   const DetailServicePage(
@@ -28,6 +33,7 @@ class DetailServicePage extends StatefulWidget {
 }
 
 class _DetailServicePageState extends State<DetailServicePage> {
+  TextEditingController noteCon = TextEditingController();
   @override
   Widget build(BuildContext context) {
     var isDark = context.isDarkMode;
@@ -151,7 +157,7 @@ class _DetailServicePageState extends State<DetailServicePage> {
                         //   ),
                         // ],
                       ),
-                      child: buildButton(),
+                      child: buildButton(context),
                     ),
                   ),
                 ],
@@ -435,7 +441,9 @@ class _DetailServicePageState extends State<DetailServicePage> {
     );
   }
 
-  Widget buildButton() {
+  Widget buildButton(BuildContext context) {
+    var bookCubit = context.read<BookingServiceCubit>();
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
@@ -453,12 +461,51 @@ class _DetailServicePageState extends State<DetailServicePage> {
         ),
         ButtonDesign(
           ontap: () {
-            // CustomModalBottomSheet.show(
-            //     context: context, child: AddSchedule(cartItem: [cartItem], ));
+            CustomModalBottomSheet.show(
+                initialSize: .3,
+                maxSize: .4,
+                minSize: .1,
+                context: context,
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        topRight: Radius.circular(20)),
+                    color: context.isDarkMode
+                        ? AppColors.darkGrey
+                        : Colors.grey.shade200,
+                  ),
+                  padding: EdgeInsets.symmetric(
+                      horizontal: AppSize.apHorizontalPadding,
+                      vertical: AppSize.apVerticalPadding),
+                  // height: 100,
+                  // width: double.infinity,
+                  child: SingleChildScrollView(
+                    physics: BouncingScrollPhysics(),
+                    child: Column(
+                      children: [
+                        AddSchedule(
+                          service: widget.service,
+                        ),
+                        SizedBox(
+                          height: 16.h,
+                        ),
+                        InputTextFormField(
+                            controller: noteCon,
+                            labelText: 'Note',
+                            hint: 'Note',
+                            onFieldSubmitted: (value) {
+                              bookCubit.updateNote(
+                                  widget.service.serviceId.toString(), value);
+                            }),
+                      ],
+                    ),
+                  ),
+                ));
             // AppNavigator.push(context, AddSchedule(selectCount: 1));
             // AppNavigator.push(context, MyBookingPage());
           },
-          text: 'Booking',
+          text: 'Book Now',
           // image: AppImages.share,
           fillColor: AppColors.secondBackground,
           textColor: context.isDarkMode ? Colors.grey.shade200 : Colors.black87,

@@ -92,13 +92,13 @@ class BookingCartCreateDto {
 
   factory BookingCartCreateDto.fromJson(Map<String, dynamic> json) {
     return BookingCartCreateDto(
-      bookingQueueId: json["bookingQueueId"],
+      bookingQueueId: json["itemId"],
       note: json["note"],
     );
   }
 
   Map<String, dynamic> toJson() => {
-        "bookingQueueId": bookingQueueId,
+        "itemId": bookingQueueId,
         "note": note,
       };
 }

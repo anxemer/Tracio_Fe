@@ -6,35 +6,21 @@ import 'package:intl/intl.dart';
 import 'package:tracio_fe/common/helper/is_dark_mode.dart';
 import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
 import 'package:tracio_fe/data/shop/models/booking_service_req.dart';
+import 'package:tracio_fe/domain/shop/entities/booking_card_view.dart';
 import 'package:tracio_fe/domain/shop/entities/cart_item_entity.dart';
+import 'package:tracio_fe/domain/shop/entities/shop_service_entity.dart';
 import 'package:tracio_fe/presentation/service/bloc/bookingservice/booking_service_cubit.dart';
+import 'package:tracio_fe/presentation/service/page/my_booking.dart';
 import 'package:tracio_fe/presentation/service/page/service.dart';
 import 'package:tracio_fe/presentation/service/widget/custom_time_picker.dart';
 
+import '../../../common/helper/schedule_model.dart';
 import '../../../common/widget/blog/custom_bottomsheet.dart';
 import '../../../common/widget/button/text_button.dart';
 import '../../../core/configs/theme/app_colors.dart';
 import '../../../core/configs/theme/assets/app_images.dart';
 import '../../../core/constants/app_size.dart';
 import '../bloc/bookingservice/booking_service_state.dart';
-
-class ScheduleModel {
-  final DateTime date;
-  final TimeOfDay timeFrom;
-  final TimeOfDay timeTo;
-
-  ScheduleModel({
-    required this.date,
-    required this.timeFrom,
-    required this.timeTo,
-  });
-
-  @override
-  String toString() {
-    final DateFormat dateFormat = DateFormat('dd-MM-yyyy');
-    return '${dateFormat.format(date)}: ${timeFrom.format(navigatorKey.currentContext!)} - ${timeTo.format(navigatorKey.currentContext!)}';
-  }
-}
 
 // GlobalKey cho navigatorKey
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -43,9 +29,12 @@ class AddSchedule extends StatefulWidget {
   const AddSchedule({
     super.key,
     this.onSchedulesChanged,
-    required this.cartItem,
+    this.cartItem,
+    this.service,
   });
-  final List<CartItemEntity> cartItem;
+  // final List<BookingCardViewModel> bookingModel;
+  final List<CartItemEntity>? cartItem;
+  final ShopServiceEntity? service;
   final Function(List<ScheduleModel>)? onSchedulesChanged;
 
   @override
@@ -63,7 +52,7 @@ class _AddScheduleState extends State<AddSchedule> {
   TimeOfDay? _selectedTimeTo;
 
   // Danh sách lịch đã đặt
-  final List<ScheduleModel> _schedules = [];
+  List<ScheduleModel> _schedules = [];
 
   // Kiểm tra xem ngày đã được chọn chưa
   // bool _isDateSelected(DateTime date) {
@@ -93,8 +82,9 @@ class _AddScheduleState extends State<AddSchedule> {
       if (state is BookingServiceLoading) {
         EasyLoading.show(status: 'Loading...');
       } else if (state is BookingServiceSuccess) {
+        context.read<BookingServiceCubit>().clearBookingItem();
         EasyLoading.dismiss();
-        AppNavigator.push(context, ServicePage());
+        AppNavigator.push(context, MyBookingPage());
       } else if (state is BookingServiceFailure) {
         EasyLoading.dismiss();
         ScaffoldMessenger.of(context).showSnackBar(
@@ -102,14 +92,16 @@ class _AddScheduleState extends State<AddSchedule> {
         );
       }
     }, builder: (context, state) {
+      final bookingCubit = context.watch<BookingServiceCubit>();
       return Column(
         // mainAxisSize: MainAxisSize.min, // Đảm bảo chỉ chiếm không gian cần thiết
         children: [
           // ShowScheduleBottom(cartItem: widget.cartItem),
           BasicTextButton(
-            text: 'Schedule ${widget.cartItem.length} service',
+            text: 'Schedule ${bookingCubit.selectedServices.length} service',
             onPress: () {
-              if (widget.cartItem.isEmpty) {
+              if ((bookingCubit.selectedServices.isEmpty) &&
+                  widget.service == null) {
                 _showErrorSnackBar(context, 'Please Select Service');
               } else {
                 _showScheduleBottomSheet(context);
@@ -119,7 +111,8 @@ class _AddScheduleState extends State<AddSchedule> {
           ),
 
           // Hiển thị danh sách lịch đã đặt trong dialogbox riêng thay vì mở rộng trực tiếp
-          if (_schedules.isNotEmpty)
+          if (bookingCubit.schedules != null &&
+              bookingCubit.schedules!.isNotEmpty)
             InkWell(
               onTap: () {
                 _showScheduleListDialog(context);
@@ -135,7 +128,7 @@ class _AddScheduleState extends State<AddSchedule> {
                         color: Colors.blue, size: AppSize.iconSmall),
                     SizedBox(width: 4.w),
                     Text(
-                      '${_schedules.length} schedules selected',
+                      '${bookingCubit.schedules!.length} schedules selected',
                       style: TextStyle(
                         fontWeight: FontWeight.w500,
                         color: Colors.blue,
@@ -155,6 +148,8 @@ class _AddScheduleState extends State<AddSchedule> {
 
   // Hiển thị dialog danh sách lịch đã đặt
   void _showScheduleListDialog(BuildContext context) {
+    final bookingCubit = context.read<BookingServiceCubit>();
+
     var isDark = context.isDarkMode;
     showDialog(
       context: context,
@@ -194,7 +189,7 @@ class _AddScheduleState extends State<AddSchedule> {
                   height: AppSize
                       .cardHeight.h, // Chiều cao cố định cho phần services
                   child: ListView.builder(
-                    itemCount: widget.cartItem.length,
+                    itemCount: widget.cartItem?.length ?? 1,
                     itemBuilder: (context, index) {
                       return Container(
                         padding: EdgeInsets.all(4),
@@ -226,7 +221,11 @@ class _AddScheduleState extends State<AddSchedule> {
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
-                                        widget.cartItem[index].serviceName!,
+                                        (widget.cartItem != null &&
+                                                widget.cartItem!.length > index)
+                                            ? widget
+                                                .cartItem![index].serviceName!
+                                            : widget.service!.name!,
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: AppSize.textMedium.sp,
@@ -245,8 +244,13 @@ class _AddScheduleState extends State<AddSchedule> {
                                                 : AppColors.background,
                                           ),
                                           Text(
-                                            widget.cartItem[index].price
-                                                .toString(),
+                                            (widget.cartItem != null &&
+                                                    widget.cartItem!.length >
+                                                        index)
+                                                ? widget.cartItem![index].price
+                                                    .toString()
+                                                : widget.service!.price
+                                                    .toString(),
                                             style: TextStyle(
                                                 fontSize: AppSize.textSmall,
                                                 color: isDark
@@ -293,10 +297,10 @@ class _AddScheduleState extends State<AddSchedule> {
                 // Danh sách lịch trình - chiếm phần không gian còn lại
                 Expanded(
                   child: ListView.builder(
-                    itemCount: _schedules.length,
+                    itemCount: bookingCubit.schedules!.length,
                     // padding: EdgeInsets.symmetric(vertical: 8),
                     itemBuilder: (context, index) {
-                      final schedule = _schedules[index];
+                      final schedule = bookingCubit.schedules![index];
                       final DateFormat dateFormat = DateFormat('dd-MM-yyyy');
 
                       return ListTile(
@@ -310,8 +314,10 @@ class _AddScheduleState extends State<AddSchedule> {
                         trailing: IconButton(
                           icon: Icon(Icons.delete_outline, color: Colors.red),
                           onPressed: () {
+                            bookingCubit.removeSchedules(
+                                bookingCubit.schedules![index]);
                             setState(() {
-                              _schedules.removeAt(index);
+                              _schedules = List.from(bookingCubit.schedules!);
                             });
                             if (widget.onSchedulesChanged != null) {
                               widget.onSchedulesChanged!(_schedules);
@@ -367,7 +373,7 @@ class _AddScheduleState extends State<AddSchedule> {
                       ElevatedButton(
                         onPressed: () {
                           List<UserScheduleCreateDto> scheduleDtos =
-                              _schedules.map((schedule) {
+                              bookingCubit.schedules!.map((schedule) {
                             return UserScheduleCreateDto(
                                 date: schedule.date,
                                 timeFrom: _formatTime(schedule.timeFrom),
@@ -375,18 +381,31 @@ class _AddScheduleState extends State<AddSchedule> {
                           }).toList();
 
                           // If you have cart items, use bookingCartCreateDtos
-                          if (widget.cartItem.isNotEmpty) {
+                          if (bookingCubit.selectedServices.isNotEmpty) {
                             List<BookingCartCreateDto> bookingCartDtos =
-                                widget.cartItem.map((item) {
+                                widget.cartItem!.map((item) {
                               return BookingCartCreateDto(
-                                  bookingQueueId: item.bookingQueueId,
-                                  note: "");
+                                  bookingQueueId: item.itemId,
+                                  note: bookingCubit.serviceNotes[
+                                          item.itemId.toString()] ??
+                                      "");
                             }).toList();
 
                             context.read<BookingServiceCubit>().bookingServie(
                                 BookingServiceReq(
                                     bookingCreateDto: null,
                                     bookingCartCreateDtos: bookingCartDtos,
+                                    userScheduleCreateDtos: scheduleDtos));
+                          } else if (widget.service != null) {
+                            BookingCreateDto bookingCreateDto =
+                                BookingCreateDto(
+                                    serviceId: widget.service!.serviceId,
+                                    note: bookingCubit.serviceNotes[
+                                        widget.service!.serviceId.toString()]);
+                            context.read<BookingServiceCubit>().bookingServie(
+                                BookingServiceReq(
+                                    bookingCreateDto: bookingCreateDto,
+                                    bookingCartCreateDtos: null,
                                     userScheduleCreateDtos: scheduleDtos));
                           }
                         },
@@ -411,6 +430,8 @@ class _AddScheduleState extends State<AddSchedule> {
   }
 
   void _showScheduleBottomSheet(BuildContext context) {
+    final bookingCubit = context.read<BookingServiceCubit>();
+
     // Reset các giá trị khi mở bottom sheet mới
     _timeFromCon = TextEditingController();
     _timeToCon = TextEditingController();
@@ -758,7 +779,7 @@ class _AddScheduleState extends State<AddSchedule> {
                               timeTo: _selectedTimeTo!,
                             ));
                           });
-
+                          bookingCubit.updateSchedules(_schedules);
                           // Thông báo ra bên ngoài nếu có callback
                           if (widget.onSchedulesChanged != null) {
                             widget.onSchedulesChanged!(_schedules);

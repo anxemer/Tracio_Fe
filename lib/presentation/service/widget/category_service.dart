@@ -34,6 +34,7 @@ class _CategoryServiceState extends State<CategoryService> {
               child: AnimatedContainer(
                 duration: Duration(milliseconds: 400),
                 child: ChoiceChip(
+                  
                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20)),

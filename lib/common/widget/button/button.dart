@@ -33,6 +33,8 @@ class ButtonDesign extends StatelessWidget {
       onTap: ontap,
       // borderRadius: BorderRadius.circular(20.r), // Tự động co giãn
       child: Container(
+        height: height ?? 40.h,
+        width: width ?? 140.w,
         padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 16.w),
         decoration: BoxDecoration(
           color: fillColor,

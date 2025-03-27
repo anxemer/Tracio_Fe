@@ -1,4 +1,9 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:tracio_fe/domain/shop/entities/cart_item_entity.dart';
+import 'package:tracio_fe/presentation/service/widget/add_schedule.dart';
+
+import '../../../../common/helper/schedule_model.dart';
+
 abstract class BookingServiceState {}
 
 class BookingServiceInitital extends BookingServiceState {}
@@ -17,4 +22,16 @@ class BookingServiceFailure extends BookingServiceState {
   BookingServiceFailure({
     required this.message,
   });
+}
+
+class BookingServiceUpdated extends BookingServiceState {
+  final Map<String, String>? serviceNotes;
+  final List<CartItemEntity>? cartItems;
+  final List<ScheduleModel>? schedules;
+  BookingServiceUpdated({
+    this.serviceNotes,
+    this.cartItems,
+    this.schedules,
+  });
+ 
 }

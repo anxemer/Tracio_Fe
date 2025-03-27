@@ -94,6 +94,7 @@ dependencies:
   fixnum: ^1.1.1
   intl:
   flutter_rating_bar:
+  shimmer:
 dev_dependencies:
   protoc_plugin: ^21.1.2
   flutter_test:

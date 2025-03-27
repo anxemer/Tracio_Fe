@@ -4,18 +4,19 @@
 // import 'package:tracio_fe/common/helper/is_dark_mode.dart';
 // import 'package:tracio_fe/common/widget/button/text_button.dart';
 
+// import '../../../common/helper/schedule_model.dart';
 // import '../../../common/widget/blog/custom_bottomsheet.dart';
 // import '../../../core/configs/theme/app_colors.dart';
 // import '../../../core/constants/app_size.dart';
-// import '../../../domain/shop/entities/cart_item_entity.dart';
+// import '../../../domain/shop/entities/booking_card_view.dart';
+// import 'confirm_information_booking.dart';
 // import 'custom_time_picker.dart';
 
 // class ShowScheduleBottom extends StatefulWidget {
-//   const ShowScheduleBottom({super.key, required this.cartItem, this.onSchedulesChanged});
-//   final List<CartItemEntity> cartItem;
-//   final Function(List<ScheduleModel>)? onSchedulesChanged;
-
-
+//   const ShowScheduleBottom({super.key, required this.itemCount, required this.cartItem});
+//   final List<BookingCardViewModel> cartItem;
+//   // final Function(List<ScheduleModel>)? onSchedulesChanged;
+//   final int itemCount;
 //   @override
 //   State<ShowScheduleBottom> createState() => _ShowScheduleBottomState();
 // }
@@ -34,9 +35,9 @@
 //     return Column(
 //       children: [
 //         BasicTextButton(
-//           text: 'Schedule ${widget.cartItem.length} service',
+//           text: 'Schedule ${widget.itemCount} service',
 //           onPress: () {
-//             if (widget.cartItem.isEmpty) {
+//             if (widget.itemCount ==0) {
 //               _showErrorSnackBar(context, 'Please Select Service');
 //             } else {
 //               _showScheduleBottomSheet(context);
@@ -44,7 +45,8 @@
 //           },
 //           borderColor: Colors.black,
 //         ),
-        
+//         if(_schedules.isNotEmpty)
+//         ConfirmInformationBooking(schedules: _schedules, cartItem:widget.cartItem, confirm: (){})
 //       ],
 //     );
 //   }
@@ -398,9 +400,9 @@
 //                           });
 
 //                           // Thông báo ra bên ngoài nếu có callback
-//                           if (widget.onSchedulesChanged != null) {
-//                             widget.onSchedulesChanged!(_schedules);
-//                           }
+//                           // if (widget.onSchedulesChanged != null) {
+//                           //   widget.onSchedulesChanged!(_schedules);
+//                           // }
 
 //                           setModalState(() {
 //                             errorMessage = null; // Xóa lỗi nếu thành công
@@ -539,20 +541,4 @@
 
 // final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
-// class ScheduleModel {
-//   final DateTime date;
-//   final TimeOfDay timeFrom;
-//   final TimeOfDay timeTo;
 
-//   ScheduleModel({
-//     required this.date,
-//     required this.timeFrom,
-//     required this.timeTo,
-//   });
-
-//   @override
-//   String toString() {
-//     final DateFormat dateFormat = DateFormat('dd-MM-yyyy');
-//     return '${dateFormat.format(date)}: ${timeFrom.format(navigatorKey.currentContext!)} - ${timeTo.format(navigatorKey.currentContext!)}';
-//   }
-// }

@@ -51,6 +51,7 @@ class BasicAppbar extends StatelessWidget implements PreferredSizeWidget {
                       padding != null ? AppSize.apHorizontalPadding.w : 0),
               child: IconButton(
                 onPressed: () {
+                  
                   Navigator.pop(context, data);
                 },
                 icon: Container(

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tracio_fe/common/helper/is_dark_mode.dart';
 import 'package:tracio_fe/domain/shop/entities/service_response_entity.dart';
-import 'package:tracio_fe/domain/shop/entities/shop_service_entity.dart';
 import 'package:tracio_fe/presentation/service/widget/near_location.dart';
 import 'package:tracio_fe/presentation/service/widget/service_card.dart';
 
@@ -24,11 +23,11 @@ class ServiceGrid extends StatelessWidget {
 
           // Padding between sections
           SliverToBoxAdapter(
-            child: SizedBox(height: 20.h),
+            child: SizedBox(height: 10.h),
           ),
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 8),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -57,25 +56,22 @@ class ServiceGrid extends StatelessWidget {
             ),
           ),
           SliverToBoxAdapter(
-            child: SizedBox(height: 16),
+            child: SizedBox(height: 8),
           ),
           // Service grid section
           SliverPadding(
-            padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 12.h),
+            padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 8.h),
             sliver: SliverGrid(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 1,
                 childAspectRatio: 3,
-                mainAxisSpacing: 20.h,
+                mainAxisSpacing: 16.h,
               ),
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
-                  return GestureDetector(
-                    onTap: () {},
-                    child: ServiceCard(
-                      service: services.service[index],
-                      shop: services.shop[index],
-                    ),
+                  return ServiceCard(
+                    service: services.service[index],
+                    shop: services.shop[index],
                   );
                 },
                 childCount: 4,

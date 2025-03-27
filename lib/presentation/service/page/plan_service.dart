@@ -4,13 +4,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tracio_fe/common/helper/is_dark_mode.dart';
 import 'package:tracio_fe/common/widget/appbar/app_bar.dart';
+import 'package:tracio_fe/common/widget/input_text_form_field.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/domain/shop/entities/booking_card_view.dart';
-import 'package:tracio_fe/domain/shop/entities/cart_item_entity.dart';
 import 'package:tracio_fe/presentation/service/bloc/cart_item_bloc/cart_item_cubit.dart';
 import 'package:tracio_fe/presentation/service/widget/add_schedule.dart';
 
 import '../../../core/configs/theme/app_colors.dart';
+import '../bloc/bookingservice/booking_service_cubit.dart';
 import '../bloc/cart_item_bloc/cart_item_state.dart';
 import '../widget/booking_card.dart';
 
@@ -23,34 +24,47 @@ class PlanServicePage extends StatefulWidget {
 
 class _PlanServicePageState extends State<PlanServicePage>
     with TickerProviderStateMixin {
-  List<CartItemEntity> cartItem = [];
+  // List<CartItemEntity> cartItem = [];
 
-  List<CartItemEntity> selectedService = [];
+  // List<CartItemEntity> selectedService = [];
 
   late AnimationController screenAnimationController;
   final TextEditingController timeFromCon = TextEditingController();
   TextEditingController timeToCon = TextEditingController();
   final dateTimeController = TextEditingController();
+  List<BookingCardViewModel> bookingModel = [];
+  final Map<String, String> _serviceNotes = {};
+  final Map<String, TextEditingController> _controllers = {};
   @override
   void initState() {
+    context.read<BookingServiceCubit>().clearBookingItem();
     screenAnimationController =
         AnimationController(duration: Duration(milliseconds: 400), vsync: this);
     screenAnimationController.forward();
     // widget.animationController.forward();
     context.read<CartItemCubit>().getCartitem();
+    // bookingModel = selectedService.map((item) {
+    //   return BookingCardViewModel(
+    //       nameService: item.serviceName,
+    //       price: item.price.toString(),
+    //       shopName: item.shopName);
+    // }).toList();
+
     super.initState();
   }
 
   @override
   void dispose() {
     screenAnimationController.dispose();
-
+    _controllers.forEach((_, controller) => controller.dispose());
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    int selectedIndex = -1;
+    final bookingCubit = context.read<BookingServiceCubit>();
+
+    // int selectedIndex = -1;
     var isDark = context.isDarkMode;
     return Scaffold(
       appBar: BasicAppbar(
@@ -76,6 +90,14 @@ class _PlanServicePageState extends State<PlanServicePage>
                         scrollDirection: Axis.vertical,
                         itemCount: state.cart.length,
                         itemBuilder: (context, index) {
+                          final service = state.cart[index];
+                          final String serviceId = service.itemId.toString();
+                          final noteCon = _controllers.putIfAbsent(
+                            serviceId,
+                            () => TextEditingController(
+                              text: _serviceNotes[serviceId] ?? "",
+                            ),
+                          );
                           var animation = Tween(begin: 0.0, end: 1.0).animate(
                               CurvedAnimation(
                                   parent: screenAnimationController,
@@ -83,7 +105,7 @@ class _PlanServicePageState extends State<PlanServicePage>
                                       curve: Curves.fastOutSlowIn)));
                           screenAnimationController.forward();
                           bool isSelected =
-                              selectedService.contains(state.cart[index]);
+                              bookingCubit.selectedServices.contains(service);
                           return Padding(
                             padding: EdgeInsets.all(8.0),
                             child: BookingCard(
@@ -95,60 +117,97 @@ class _PlanServicePageState extends State<PlanServicePage>
                               animation: animation,
                               moreWidget: InkWell(
                                 onTap: () {
-                                  if (!isSelected) {
-                                    setState(() {
-                                      selectedService.add(state.cart[index]);
-                                    });
+                                  if (!bookingCubit.selectedServices
+                                      .contains(service)) {
+                                    bookingCubit.addService(service);
                                   } else {
-                                    setState(() {
-                                      selectedService.remove(state.cart[index]);
-                                    });
+                                    bookingCubit.removeService(service);
                                   }
+                                  setState(() {
+                                    isSelected = bookingCubit.selectedServices
+                                        .contains(service);
+                                  });
+                                  // if (!isSelected) {
+                                  //   setState(() {
+                                  //     selectedService.add(service);
+                                  //   });
+                                  // } else {
+                                  //   setState(() {
+                                  //     selectedService.remove(state.cart[index]);
+                                  //   });
+                                  // }
                                 },
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: !isSelected
-                                        ? Colors.blue.shade50
-                                        : Colors.green.shade50,
-                                    borderRadius: BorderRadius.circular(
-                                        AppSize.borderRadiusSmall),
-                                    border: Border.all(
-                                      color: selectedIndex != index
-                                          ? Colors.blue.shade100
-                                          : Colors.green.shade100,
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 4),
+                                      decoration: BoxDecoration(
+                                        color: !isSelected
+                                            ? Colors.blue.shade50
+                                            : Colors.green.shade50,
+                                        borderRadius: BorderRadius.circular(
+                                            AppSize.borderRadiusSmall),
+                                        border: Border.all(
+                                          color: !isSelected
+                                              ? Colors.blue.shade100
+                                              : Colors.green.shade100,
+                                        ),
+                                      ),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          !isSelected
+                                              ? Text(
+                                                  'Select this service',
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.w600,
+                                                    fontSize:
+                                                        AppSize.textMedium,
+                                                    color: Colors.blue.shade500,
+                                                  ),
+                                                )
+                                              : Text(
+                                                  'remove this service',
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.w600,
+                                                    fontSize:
+                                                        AppSize.textMedium,
+                                                    color:
+                                                        Colors.green.shade500,
+                                                  ),
+                                                ),
+                                          isSelected
+                                              ? Icon(
+                                                  Icons
+                                                      .playlist_add_check_sharp,
+                                                  size: AppSize.iconSmall,
+                                                  color: Colors.black,
+                                                )
+                                              : Container()
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      !isSelected
-                                          ? Text(
-                                              'Select this service',
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: AppSize.textMedium,
-                                                color: Colors.blue.shade500,
-                                              ),
-                                            )
-                                          : Text(
-                                              'remove this service',
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: AppSize.textMedium,
-                                                color: Colors.green.shade500,
-                                              ),
-                                            ),
-                                      isSelected
-                                          ? Icon(
-                                              Icons.playlist_add_check_sharp,
-                                              size: AppSize.iconSmall,
-                                              color: Colors.black,
-                                            )
-                                          : Container()
-                                    ],
-                                  ),
+                                    SizedBox(
+                                      height: 10.h,
+                                    ),
+                                    isSelected
+                                        ? SizedBox(
+                                            // height: 50,
+                                            // width: 200,
+                                            child: InputTextFormField(
+                                                controller: noteCon,
+                                                labelText: 'Note',
+                                                hint: 'Note',
+                                                onFieldSubmitted: (value) {
+                                                  bookingCubit.updateNote(
+                                                      service.itemId.toString(),
+                                                      value);
+                                                }),
+                                          )
+                                        : Container()
+                                  ],
                                 ),
                               ),
                             ),
@@ -167,9 +226,11 @@ class _PlanServicePageState extends State<PlanServicePage>
                           color: context.isDarkMode
                               ? AppColors.darkGrey
                               : Colors.grey.shade200,
-                      
                         ),
-                        child: AddSchedule(cartItem: selectedService,),
+                        child: AddSchedule(
+                          cartItem: bookingCubit.selectedServices,
+                          // bookingModel: bookingModel,
+                        ),
                       ),
                     ),
                   ]),

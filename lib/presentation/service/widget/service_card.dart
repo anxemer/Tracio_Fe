@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tracio_fe/common/helper/is_dark_mode.dart';
-import 'package:tracio_fe/common/helper/rating_start.dart';
 import 'package:tracio_fe/core/configs/theme/app_colors.dart';
 import 'package:tracio_fe/core/configs/theme/assets/app_images.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
@@ -52,14 +51,18 @@ class ServiceCard extends StatelessWidget {
                 padding: EdgeInsets.all(
                     MediaQuery.of(context).size.width > 360 ? 12 : 8),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
+                  // mainAxisAlignment: MainAxisAlignment.spaceAround,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      service.name ?? 'No Service Name',
-                      style: TextStyle(
-                          fontSize: AppSize.textLarge.sp,
-                          fontWeight: FontWeight.w600),
+                    Row(
+                      children: [
+                        Text(
+                          service.name ?? 'No Service Name',
+                          style: TextStyle(
+                              fontSize: AppSize.textLarge.sp,
+                              fontWeight: FontWeight.w600),
+                        ),
+                      ],
                     ),
                     Row(
                       children: [
@@ -71,10 +74,13 @@ class ServiceCard extends StatelessWidget {
                               : AppColors.background,
                         ),
                         Text(
-                          service.formattedDuration ?? '0 min',
+                          service.formattedDuration,
                           style: TextStyle(fontSize: AppSize.textMedium),
                         ),
                         const Spacer(),
+                        // SizedBox(
+                        //   width: 20.w,
+                        // ),
                         Row(
                           children: [
                             Icon(
@@ -92,6 +98,9 @@ class ServiceCard extends StatelessWidget {
                         ),
                       ],
                     ),
+                    SizedBox(
+                      height: 4.h,
+                    ),
                     Row(
                       children: [
                         Icon(
@@ -107,7 +116,10 @@ class ServiceCard extends StatelessWidget {
                               fontSize: AppSize.textSmall,
                               color: isDark ? Colors.white : Colors.black),
                         ),
-                        const Spacer(),
+                        // const Spacer(),
+                        SizedBox(
+                          width: 20.w,
+                        ),
                         Icon(
                           Icons.location_on_outlined,
                           size: AppSize.iconSmall,
@@ -123,7 +135,6 @@ class ServiceCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                    RatingStart.ratingStart()
                   ],
                 ),
               ))
