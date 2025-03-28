@@ -1,18 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:tracio_fe/common/widget/navbar/bottom_nav_bar_manager.dart';
-import 'package:tracio_fe/core/constants/api_url.dart';
-import 'package:tracio_fe/data/map/models/request/isochrone_req.dart';
+import 'package:tracio_fe/core/constants/app_size.dart';
+import 'package:tracio_fe/data/map/models/request/mapbox_direction_req.dart';
 import 'package:tracio_fe/domain/map/entities/place.dart';
+import 'package:tracio_fe/presentation/map/bloc/get_direction_cubit.dart';
 import 'package:tracio_fe/presentation/map/bloc/map_cubit.dart';
 import 'package:tracio_fe/presentation/map/bloc/map_state.dart';
 import 'package:tracio_fe/presentation/map/pages/search_location.dart';
 
-class CyclingTopActionBar extends StatelessWidget {
-  const CyclingTopActionBar({super.key});
+import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
+    as bg;
 
+class CyclingTopActionBar extends StatefulWidget {
+  final bool isRiding;
+  const CyclingTopActionBar({super.key, required this.isRiding});
+
+  @override
+  State<CyclingTopActionBar> createState() => _CyclingTopActionBarState();
+}
+
+class _CyclingTopActionBarState extends State<CyclingTopActionBar> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<MapCubit, MapCubitState>(builder: (context, state) {
@@ -29,108 +40,137 @@ class CyclingTopActionBar extends StatelessWidget {
             }
           }
         },
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            //Options button
-            IconButton(
-              style: IconButton.styleFrom(
-                  elevation: 2,
-                  shadowColor: Colors.black54,
-                  backgroundColor: Colors.white,
-                  alignment: Alignment.center,
-                  padding: EdgeInsets.zero),
-              icon: const Icon(
-                Icons.arrow_back,
-                color: Colors.black54,
-              ),
-              onPressed: () {
-                if (Navigator.canPop(context)) {
-                  Navigator.pop(context);
-                } else {
-                  final bottomNavBarState = context
-                      .findAncestorStateOfType<BottomNavBarManagerState>();
-                  if (bottomNavBarState != null) {
-                    bottomNavBarState.setSelectedIndex(0);
-                    bottomNavBarState.setNavVisible(true);
-                  }
-                }
-              },
-            ),
-            // Search location button
-            SizedBox(
-              width: 0.6.sw,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    elevation: 1,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+              horizontal: AppSize.apHorizontalPadding),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              //Options button
+              IconButton(
+                style: IconButton.styleFrom(
+                    elevation: 2,
+                    shadowColor: Colors.black54,
                     backgroundColor: Colors.white,
-                    foregroundColor: Colors.black,
-                    padding: EdgeInsets.symmetric(horizontal: 10)),
-                onPressed: () async {
-                  dynamic searchedCoordinate = await Navigator.push<dynamic>(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const SearchLocationPage()),
-                  );
-
-                  if (searchedCoordinate != null &&
-                      searchedCoordinate.runtimeType == PlaceDetailEntity) {
-                    if (context.mounted) {
-                      context.read<MapCubit>().animateCamera(Position(
-                          searchedCoordinate.longitude,
-                          searchedCoordinate.latitude));
-                      //Search annotation
-                      context.read<MapCubit>().addSearchAnnotation(Position(
-                          searchedCoordinate.longitude,
-                          searchedCoordinate.latitude));
-                      _showLocationOptions(context, searchedCoordinate);
-                    }
-                  } else if (searchedCoordinate != null &&
-                      searchedCoordinate.runtimeType == IsochroneReq) {
-                    if (context.mounted) {
-                      final uri =
-                          ApiUrl.urlGetIsochroneMapbox(searchedCoordinate);
-                      context.read<MapCubit>().addPolygonGeoJson(uri);
+                    alignment: Alignment.center,
+                    padding: EdgeInsets.zero),
+                icon: const Icon(
+                  Icons.arrow_back,
+                  color: Colors.black54,
+                ),
+                onPressed: () {
+                  if (Navigator.canPop(context)) {
+                    Navigator.pop(context);
+                  } else {
+                    final bottomNavBarState = context
+                        .findAncestorStateOfType<BottomNavBarManagerState>();
+                    if (bottomNavBarState != null) {
+                      bottomNavBarState.setSelectedIndex(0);
+                      bottomNavBarState.setNavVisible(true);
                     }
                   }
                 },
-                child: Row(
-                  children: const [
-                    Icon(
-                      Icons.search,
-                      color: Colors.black38,
-                    ),
-                    SizedBox(width: 10),
-                    Flexible(
-                      child: Text(
-                        'Search location',
-                        style: TextStyle(
-                            color: Colors.black54,
-                            overflow: TextOverflow.ellipsis),
-                      ),
-                    ),
-                  ],
-                ),
               ),
-            ),
+              // Search location button
 
-            //Options button
-            //TODO: Popup menu
-            IconButton(
-              style: IconButton.styleFrom(
-                  elevation: 2,
-                  shadowColor: Colors.black54,
-                  backgroundColor: Colors.white,
-                  alignment: Alignment.center,
-                  padding: EdgeInsets.zero),
-              icon: const Icon(
-                Icons.more_vert,
-                color: Colors.black54,
-              ),
-              onPressed: () {},
-            ),
-          ],
+              if (!widget.isRiding)
+                SizedBox(
+                  width: 0.6.sw,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        elevation: 1,
+                        backgroundColor: Colors.white,
+                        foregroundColor: Colors.black,
+                        padding: EdgeInsets.symmetric(horizontal: 10)),
+                    onPressed: () async {
+                      dynamic searchedCoordinate =
+                          await Navigator.push<dynamic>(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const SearchLocationPage()),
+                      );
+
+                      if (searchedCoordinate != null &&
+                          searchedCoordinate.runtimeType == PlaceDetailEntity) {
+                        if (context.mounted) {
+                          context.read<MapCubit>().animateCamera(Position(
+                              searchedCoordinate.longitude,
+                              searchedCoordinate.latitude));
+                          //Search annotation
+                          context.read<MapCubit>().addSearchAnnotation(Position(
+                              searchedCoordinate.longitude,
+                              searchedCoordinate.latitude));
+                          _showLocationOptions(context, searchedCoordinate);
+                        }
+                      }
+                    },
+                    child: Row(
+                      children: const [
+                        Icon(
+                          Icons.search,
+                          color: Colors.black38,
+                        ),
+                        SizedBox(width: 10),
+                        Flexible(
+                          child: Text(
+                            'Search location',
+                            style: TextStyle(
+                                color: Colors.black54,
+                                overflow: TextOverflow.ellipsis),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+              //Options button
+              PopupMenuButton<String>(
+                popUpAnimationStyle: AnimationStyle.noAnimation,
+                color: Colors.white,
+                offset: Offset(-10, 30),
+                icon: Container(
+                  padding: const EdgeInsets.all(8.0),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 2,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: const Icon(
+                    Icons.more_vert,
+                    color: Colors.black54,
+                  ),
+                ),
+                onSelected: (String value) {
+                  // Handle your menu item selection here
+                  print('Selected: $value');
+                },
+                itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                  const PopupMenuItem<String>(
+                    value: 'Route Planner',
+                    child: Text('Route Planner'),
+                  ),
+                  const PopupMenuDivider(),
+                  const PopupMenuItem<String>(
+                    value: 'Search',
+                    child: Text('Search'),
+                  ),
+                  const PopupMenuDivider(),
+                  const PopupMenuItem<String>(
+                    value: 'Navigation Settings',
+                    child: Text('Navigation Settings'),
+                  ),
+                ],
+              )
+            ],
+          ),
         ),
       );
     });
@@ -185,10 +225,32 @@ class CyclingTopActionBar extends StatelessWidget {
     });
   }
 
-  void _navigateToRoute(BuildContext context, PlaceDetailEntity place) {
+  void _navigateToRoute(BuildContext context, PlaceDetailEntity place) async {
     context
         .read<MapCubit>()
         .addPointAnnotation(Position(place.longitude, place.latitude));
+    bg.Location location = await bg.BackgroundGeolocation.getCurrentPosition();
+
+    List<Coordinate> coordinates = [
+      Coordinate(
+        location.coords.longitude,
+        location.coords.latitude,
+      ),
+      Coordinate(
+        place.longitude,
+        place.latitude,
+      )
+    ];
+
+    String accessToken = dotenv.env['MAPBOX_ACCESS_TOKEN']!;
+
+    final request = MapboxDirectionsRequest(
+      profile: 'cycling',
+      coordinates: coordinates,
+      accessToken: accessToken,
+    );
+
+    context.read<GetDirectionCubit>().getDirectionUsingMapbox(request);
   }
 
   void _addPointOfInterest(PlaceDetailEntity place) {

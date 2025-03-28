@@ -37,10 +37,23 @@ class _SnapshotDisplayPageState extends State<SnapshotDisplayPage> {
         TextEditingController(text: widget.routeDesc ?? "");
   }
 
-  void _slideUpToEdit(double height) {
+  void _calculateContainerHeight() {
+    // ✅ Get the back button's bottom position
+    final backButtonHeight = 56.h; // Estimated back button size
+    final paddingAboveButton = 16.h; // Adjust if needed
+    final safeAreaTop = MediaQuery.of(context).padding.top;
+    final calculatedHeight =
+        backButtonHeight + paddingAboveButton + safeAreaTop;
+
+    setState(() {
+      _containerHeight = MediaQuery.of(context).size.height - calculatedHeight;
+    });
+  }
+
+  void _slideUpToEdit() {
+    _calculateContainerHeight();
     setState(() {
       _isEditing = true;
-      _containerHeight = height.h;
     });
   }
 
@@ -148,8 +161,7 @@ class _SnapshotDisplayPageState extends State<SnapshotDisplayPage> {
                         : SnapshotReviewSection(
                             metricsSection: widget.metricsSection,
                             onEdit: () {
-                              _slideUpToEdit(
-                                  MediaQuery.of(context).size.height * 0.7);
+                              _slideUpToEdit();
                             },
                           ),
                   ),

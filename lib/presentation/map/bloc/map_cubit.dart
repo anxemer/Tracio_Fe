@@ -37,7 +37,9 @@ class MapCubit extends Cubit<MapCubitState> {
     this.mapboxMap = mapboxMap;
 
     await mapboxMap.location.updateSettings(LocationComponentSettings(
-        enabled: true, puckBearingEnabled: forRiding));
+      enabled: true,
+      puckBearingEnabled: forRiding,
+    ));
 
     await mapboxMap
         .setBounds(CameraBoundsOptions(maxZoom: 20.0, minZoom: 10.0));
@@ -57,10 +59,10 @@ class MapCubit extends Cubit<MapCubitState> {
 
     if (forRiding) {
       mapboxMap.compass.updateSettings(CompassSettings(
-        position: OrnamentPosition.BOTTOM_RIGHT,
-        marginRight: 20,
-        marginBottom: 80,
-      ));
+          position: OrnamentPosition.BOTTOM_LEFT,
+          marginLeft: 10,
+          marginBottom: 130,
+          enabled: true));
     } else {
       mapboxMap.gestures.updateSettings(GesturesSettings(rotateEnabled: false));
     }
@@ -129,8 +131,8 @@ class MapCubit extends Cubit<MapCubitState> {
   }
 
   Future<void> addPointAnnotation(Position position) async {
-    pointAnnotationManager ??=
-        await mapboxMap?.annotations.createPointAnnotationManager();
+    pointAnnotationManager ??= await mapboxMap?.annotations
+        .createPointAnnotationManager(below: "location-indicator");
 
     pointAnnotationManager?.setIconAllowOverlap(true);
 
@@ -165,20 +167,26 @@ class MapCubit extends Cubit<MapCubitState> {
   }
 
   Future<void> addPolylineRoute(LineString lineString) async {
-    polylineAnnotationManager ??=
-        await mapboxMap?.annotations.createPolylineAnnotationManager();
+    try {
+      polylineAnnotationManager ??= await mapboxMap?.annotations
+          .createPolylineAnnotationManager(
+              id: 'polyline-route', below: "country-label");
 
-    final polylineOptions = PolylineAnnotationOptions(
-      geometry: lineString,
-      lineJoin: LineJoin.ROUND,
-      lineColor: Colors.deepOrange.shade600.toInt(),
-      lineWidth: 5.0,
-      lineBorderWidth: 1.0,
-      lineBorderColor: Colors.white.toInt(),
-      lineOpacity: 0.6,
-    );
+      final polylineOptions = PolylineAnnotationOptions(
+        geometry: lineString,
+        lineJoin: LineJoin.NONE,
+        lineColor: Colors.deepOrange.shade600.toInt(),
+        lineWidth: 5.0,
+        lineBorderWidth: 1.0,
+        lineBorderColor: Colors.white.toInt(),
+        lineOpacity: 0.6,
+      );
 
-    await polylineAnnotationManager?.create(polylineOptions);
+      await polylineAnnotationManager?.create(polylineOptions);
+    } catch (e) {
+      print('Error adding polyline: $e');
+      // You may want to handle this error and show feedback to the user
+    }
   }
 
   Future<void> addMultiplePointAnnotations(List<Position> positions) async {

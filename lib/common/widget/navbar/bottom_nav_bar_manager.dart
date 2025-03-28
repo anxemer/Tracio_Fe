@@ -4,10 +4,10 @@ import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:tracio_fe/core/configs/theme/app_colors.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/presentation/exploration/page/exploration.dart';
+import 'package:tracio_fe/presentation/groups/pages/group.dart';
 import 'package:tracio_fe/presentation/home/pages/home.dart';
 import 'package:tracio_fe/presentation/map/pages/cycling.dart';
 import 'package:tracio_fe/presentation/more/page/more.dart';
-import 'package:tracio_fe/presentation/service/page/service.dart';
 
 class BottomNavBarManager extends StatefulWidget {
   const BottomNavBarManager({super.key});
@@ -25,7 +25,7 @@ class BottomNavBarManagerState extends State<BottomNavBarManager> {
     HomePage(),
     ExplorationPage(),
     CyclingPage(),
-    ServicePage(),
+    GroupPage(),
     MorePage(),
   ];
   void _onTabChanged(int index) {
@@ -113,8 +113,8 @@ class BottomNavBarManagerState extends State<BottomNavBarManager> {
                     text: "Ride",
                   ),
                   GButton(
-                    icon: Icons.shop_outlined,
-                    text: 'Services',
+                    icon: Icons.group_outlined,
+                    text: 'Groups',
                   ),
                   GButton(
                     icon: Icons.more_vert_outlined,

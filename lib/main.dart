@@ -8,8 +8,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:tracio_fe/common/helper/notification/noti_service.dart';
 import 'package:tracio_fe/common/bloc/generic_data_cubit.dart';
+import 'package:tracio_fe/core/services/notifications/notification_service.dart';
 import 'package:tracio_fe/core/configs/theme/app_theme.dart';
 import 'package:tracio_fe/firebase_options.dart';
 import 'package:tracio_fe/presentation/map/bloc/route_cubit.dart';
@@ -43,7 +43,7 @@ Future<void> main() async {
 
   await _requestPermissions();
 
-  await NotiService().initNotification();
+  await NotificationService.init();
 
   HydratedBloc.storage = await HydratedStorage.build(
     storageDirectory: kIsWeb
@@ -83,7 +83,7 @@ class _MyAppState extends State<MyApp> {
         BlocProvider(create: (context) => AuthCubit()..checkUser()),
         BlocProvider(create: (context) => GetCommentCubit()),
         BlocProvider(create: (context) => GenericDataCubit()),
-        BlocProvider(create: (context) => LocationBloc()),
+        BlocProvider(create: (context) => LocationCubit()),
         BlocProvider(create: (context) => RouteCubit()),
       ],
       child: ScreenUtilInit(

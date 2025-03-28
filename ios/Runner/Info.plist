@@ -74,6 +74,14 @@
 		<string>Motion usage description</string>
 		<!-- Permission options for the `camera` group -->
 		<key>NSCameraUsageDescription</key>
-		<string>camera</string>
+		<string>camera</string><!-- gal: Required -->
+		<key>NSPhotoLibraryAddUsageDescription</key>
+		<string>We need add only access to save medias</string>
+		<!-- gal: Required -->
+
+		<!-- gal: Required for saving to album -->
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>We need access to save medias</string>
+		<!-- gal: Required for saving to album -->
 	</dict>
 </plist>
