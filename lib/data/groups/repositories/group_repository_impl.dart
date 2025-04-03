@@ -1,0 +1,18 @@
+import 'package:dartz/dartz.dart';
+import 'package:tracio_fe/core/erorr/failure.dart';
+import 'package:tracio_fe/data/groups/models/request/post_group_req.dart';
+import 'package:tracio_fe/data/groups/source/group_api_service.dart';
+import 'package:tracio_fe/domain/groups/repositories/group_repository.dart';
+import 'package:tracio_fe/service_locator.dart';
+
+class GroupRepositoryImpl extends GroupRepository {
+  @override
+  Future<Either<Failure, dynamic>> postGroup(PostGroupReq request) async {
+    var returnedData = await sl<GroupApiService>().createGroup(request);
+    return returnedData.fold((error) {
+      return left(error);
+    }, (data) {
+      return right(data);
+    });
+  }
+}

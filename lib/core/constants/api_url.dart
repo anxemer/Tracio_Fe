@@ -13,6 +13,7 @@ class ApiUrl {
   static const portUser = '5003';
   static const portBlog = '5002';
   static const portRoute = '5009';
+  static const portGroup = '5003';
 
   //Api User
   static const registerWithEP = '$portUser/api/auth/register-user';
@@ -144,4 +145,15 @@ class ApiUrl {
 
     return uri;
   }
+
+  static const urlGetProvinces = 'https://provinces.open-api.vn/api/p/';
+
+  static Uri urlGetDistrictsByProvince(int provinceCode, {int depth = 2}) {
+    return Uri.https('provinces.open-api.vn', '/api/p/$provinceCode', {
+      'depth': depth.toString(),
+    });
+  }
+
+  static const postGroup = '$portGroup/api/group';
+
 }

@@ -9,6 +9,10 @@ import 'package:tracio_fe/data/auth/sources/auth_remote_source/auth_api_service.
 import 'package:tracio_fe/data/auth/sources/auth_remote_source/auth_firebase_service.dart';
 import 'package:tracio_fe/data/blog/repositories/blog_repository_impl.dart';
 import 'package:tracio_fe/data/blog/source/blog_api_service.dart';
+import 'package:tracio_fe/data/groups/repositories/group_repository_impl.dart';
+import 'package:tracio_fe/data/groups/repositories/vietnam_city_district_repository_impl.dart';
+import 'package:tracio_fe/data/groups/source/group_api_service.dart';
+import 'package:tracio_fe/data/groups/source/vietnam_city_district_service.dart';
 import 'package:tracio_fe/data/map/repositories/elevation_repository_impl.dart';
 import 'package:tracio_fe/data/map/repositories/location_repository_impl.dart';
 import 'package:tracio_fe/data/map/repositories/route_repository_impl.dart';
@@ -37,6 +41,11 @@ import 'package:tracio_fe/domain/blog/usecase/get_comment_blog.dart';
 import 'package:tracio_fe/domain/blog/usecase/get_reaction_blog.dart';
 import 'package:tracio_fe/domain/blog/usecase/get_reply_comment.dart';
 import 'package:tracio_fe/domain/blog/usecase/react_blog.dart';
+import 'package:tracio_fe/domain/groups/repositories/group_repository.dart';
+import 'package:tracio_fe/domain/groups/repositories/vietnam_city_district_repository.dart';
+import 'package:tracio_fe/domain/groups/usecases/get_city_usecase.dart';
+import 'package:tracio_fe/domain/groups/usecases/get_district_usecase.dart';
+import 'package:tracio_fe/domain/groups/usecases/post_group_usecase.dart';
 import 'package:tracio_fe/domain/map/repositories/elevation_repository.dart';
 import 'package:tracio_fe/domain/map/repositories/location_repository.dart';
 import 'package:tracio_fe/domain/map/repositories/route_repository.dart';
@@ -80,6 +89,9 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton<ElevationApiService>(
       () => ElevationApiServiceImpl());
   sl.registerLazySingleton<LocationApiService>(() => LocationApiServiceImpl());
+  sl.registerLazySingleton<VietnamCityDistrictService>(
+      () => VietnamCityDistrictServiceImpl());
+  sl.registerLazySingleton<GroupApiService>(() => GroupApiServiceImpl());
   //Services
   sl.registerLazySingleton<AuthRepository>(() => AuthRepositotyImpl());
   sl.registerLazySingleton<UserProfileRepository>(
@@ -91,6 +103,10 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton<ElevationRepository>(
       () => ElevationRepositoryImpl());
   sl.registerLazySingleton<LocationRepository>(() => LocationRepositoryImpl());
+  sl.registerLazySingleton<VietnamCityDistrictRepository>(
+      () => VietnamCityDistrictRepositoryImpl());
+  sl.registerLazySingleton<GroupRepository>(() => GroupRepositoryImpl());
+
   //gRPC & Hubs
   sl.registerLazySingleton<ITrackingGrpcService>(() => TrackingGrpcService());
   sl.registerLazySingleton<ITrackingHubService>(() => TrackingHubService());
@@ -127,4 +143,7 @@ Future<void> initializeDependencies() async {
       () => GetLocationDetailUseCase());
   sl.registerFactory<PostRouteUseCase>(() => PostRouteUseCase());
   sl.registerFactory<GetRoutesUseCase>(() => GetRoutesUseCase());
+  sl.registerFactory<GetDistrictUsecase>(() => GetDistrictUsecase());
+  sl.registerFactory<GetCityUsecase>(() => GetCityUsecase());
+  sl.registerFactory<PostGroupUsecase>(() => PostGroupUsecase());
 }
