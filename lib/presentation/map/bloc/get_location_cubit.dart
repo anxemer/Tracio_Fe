@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tracio_fe/data/map/models/reponse/get_place_rep.dart';
+import 'package:tracio_fe/data/map/models/response/get_place_rep.dart';
 import 'package:tracio_fe/data/map/models/request/get_place_req.dart';
 import 'package:tracio_fe/domain/map/usecase/get_location_detail.dart';
 import 'package:tracio_fe/domain/map/usecase/get_locations.dart';

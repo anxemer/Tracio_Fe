@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:tracio_fe/core/erorr/failure.dart';
-import 'package:tracio_fe/data/map/models/reponse/get_place_rep.dart';
+import 'package:tracio_fe/data/map/models/response/get_place_rep.dart';
 import 'package:tracio_fe/data/map/models/request/get_place_req.dart';
 import 'package:tracio_fe/data/map/source/location_api_service.dart';
 import 'package:tracio_fe/domain/map/repositories/location_repository.dart';

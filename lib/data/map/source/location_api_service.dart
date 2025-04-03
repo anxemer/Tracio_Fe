@@ -4,7 +4,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:tracio_fe/core/constants/api_url.dart';
 import 'package:tracio_fe/core/erorr/failure.dart';
 import 'package:tracio_fe/core/network/dio_client.dart';
-import 'package:tracio_fe/data/map/models/reponse/get_place_rep.dart';
+import 'package:tracio_fe/data/map/models/response/get_place_rep.dart';
 import 'package:tracio_fe/data/map/models/request/get_place_req.dart';
 import 'package:tracio_fe/service_locator.dart';
 
