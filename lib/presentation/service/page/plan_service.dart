@@ -6,7 +6,7 @@ import 'package:tracio_fe/common/helper/is_dark_mode.dart';
 import 'package:tracio_fe/common/widget/appbar/app_bar.dart';
 import 'package:tracio_fe/common/widget/input_text_form_field.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/domain/shop/entities/booking_card_view.dart';
+import 'package:tracio_fe/domain/shop/entities/response/booking_card_view.dart';
 import 'package:tracio_fe/presentation/service/bloc/cart_item_bloc/cart_item_cubit.dart';
 import 'package:tracio_fe/presentation/service/widget/add_schedule.dart';
 
@@ -37,12 +37,12 @@ class _PlanServicePageState extends State<PlanServicePage>
   final Map<String, TextEditingController> _controllers = {};
   @override
   void initState() {
-    context.read<BookingServiceCubit>().clearBookingItem();
     screenAnimationController =
         AnimationController(duration: Duration(milliseconds: 400), vsync: this);
     screenAnimationController.forward();
     // widget.animationController.forward();
     context.read<CartItemCubit>().getCartitem();
+    // context.read<CartItemCubit>().resetState();
     // bookingModel = selectedService.map((item) {
     //   return BookingCardViewModel(
     //       nameService: item.serviceName,
@@ -106,112 +106,138 @@ class _PlanServicePageState extends State<PlanServicePage>
                           screenAnimationController.forward();
                           bool isSelected =
                               bookingCubit.selectedServices.contains(service);
-                          return Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: BookingCard(
-                              service: BookingCardViewModel(
-                                  nameService: state.cart[index].serviceName!,
-                                  price: state.cart[index].price.toString(),
-                                  shopName: state.cart[index].shopName!),
-                              animationController: screenAnimationController,
-                              animation: animation,
-                              moreWidget: InkWell(
-                                onTap: () {
-                                  if (!bookingCubit.selectedServices
-                                      .contains(service)) {
-                                    bookingCubit.addService(service);
-                                  } else {
-                                    bookingCubit.removeService(service);
-                                  }
-                                  setState(() {
-                                    isSelected = bookingCubit.selectedServices
-                                        .contains(service);
-                                  });
-                                  // if (!isSelected) {
-                                  //   setState(() {
-                                  //     selectedService.add(service);
-                                  //   });
-                                  // } else {
-                                  //   setState(() {
-                                  //     selectedService.remove(state.cart[index]);
-                                  //   });
-                                  // }
-                                },
-                                child: Column(
-                                  children: [
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8, vertical: 4),
-                                      decoration: BoxDecoration(
-                                        color: !isSelected
-                                            ? Colors.blue.shade50
-                                            : Colors.green.shade50,
-                                        borderRadius: BorderRadius.circular(
-                                            AppSize.borderRadiusSmall),
-                                        border: Border.all(
+                          return Stack(children: [
+                            Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: BookingCard(
+                                service: BookingCardViewModel(
+                                    city: state.cart[index].city,
+                                    district: state.cart[index].district,
+                                    duration: state.cart[index].duration,
+                                    nameService: state.cart[index].serviceName!,
+                                    price: state.cart[index].price,
+                                    shopName: state.cart[index].shopName!),
+                                animationController: screenAnimationController,
+                                animation: animation,
+                                moreWidget: InkWell(
+                                  onTap: () {
+                                    if (!bookingCubit.selectedServices
+                                        .contains(service)) {
+                                      bookingCubit.addService(service);
+                                    } else {
+                                      bookingCubit.removeService(service);
+                                    }
+                                    setState(() {
+                                      isSelected = bookingCubit.selectedServices
+                                          .contains(service);
+                                    });
+                                    // if (!isSelected) {
+                                    //   setState(() {
+                                    //     selectedService.add(service);
+                                    //   });
+                                    // } else {
+                                    //   setState(() {
+                                    //     selectedService.remove(state.cart[index]);
+                                    //   });
+                                    // }
+                                  },
+                                  child: Column(
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8, vertical: 4),
+                                        decoration: BoxDecoration(
                                           color: !isSelected
-                                              ? Colors.blue.shade100
-                                              : Colors.green.shade100,
+                                              ? Colors.blue.shade50
+                                              : Colors.green.shade50,
+                                          borderRadius: BorderRadius.circular(
+                                              AppSize.borderRadiusSmall),
+                                          border: Border.all(
+                                            color: !isSelected
+                                                ? Colors.blue.shade100
+                                                : Colors.green.shade100,
+                                          ),
+                                        ),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            !isSelected
+                                                ? Text(
+                                                    'Select this service',
+                                                    style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      fontSize:
+                                                          AppSize.textMedium,
+                                                      color:
+                                                          Colors.blue.shade500,
+                                                    ),
+                                                  )
+                                                : Text(
+                                                    'remove this service',
+                                                    style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      fontSize:
+                                                          AppSize.textMedium,
+                                                      color:
+                                                          Colors.green.shade500,
+                                                    ),
+                                                  ),
+                                            isSelected
+                                                ? Icon(
+                                                    Icons
+                                                        .playlist_add_check_sharp,
+                                                    size: AppSize.iconSmall,
+                                                    color: Colors.black,
+                                                  )
+                                                : Container()
+                                          ],
                                         ),
                                       ),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          !isSelected
-                                              ? Text(
-                                                  'Select this service',
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.w600,
-                                                    fontSize:
-                                                        AppSize.textMedium,
-                                                    color: Colors.blue.shade500,
-                                                  ),
-                                                )
-                                              : Text(
-                                                  'remove this service',
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.w600,
-                                                    fontSize:
-                                                        AppSize.textMedium,
-                                                    color:
-                                                        Colors.green.shade500,
-                                                  ),
-                                                ),
-                                          isSelected
-                                              ? Icon(
-                                                  Icons
-                                                      .playlist_add_check_sharp,
-                                                  size: AppSize.iconSmall,
-                                                  color: Colors.black,
-                                                )
-                                              : Container()
-                                        ],
+                                      SizedBox(
+                                        height: 10.h,
                                       ),
-                                    ),
-                                    SizedBox(
-                                      height: 10.h,
-                                    ),
-                                    isSelected
-                                        ? SizedBox(
-                                            // height: 50,
-                                            // width: 200,
-                                            child: InputTextFormField(
-                                                controller: noteCon,
-                                                labelText: 'Note',
-                                                hint: 'Note',
-                                                onFieldSubmitted: (value) {
-                                                  bookingCubit.updateNote(
-                                                      service.itemId.toString(),
-                                                      value);
-                                                }),
-                                          )
-                                        : Container()
-                                  ],
+                                      isSelected
+                                          ? SizedBox(
+                                              // height: 50,
+                                              // width: 200,
+                                              child: InputTextFormField(
+                                                  controller: noteCon,
+                                                  labelText: 'Note',
+                                                  hint: 'Note',
+                                                  onFieldSubmitted: (value) {
+                                                    bookingCubit.updateNote(
+                                                        service.itemId
+                                                            .toString(),
+                                                        value);
+                                                  }),
+                                            )
+                                          : Container()
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
-                          );
+                            Positioned(
+                                top: 0,
+                                right: 0,
+                                child: IconButton(
+                                  icon: Icon(
+                                    Icons.cancel_outlined,
+                                    size: AppSize.iconMedium,
+                                    color: isDark
+                                        ? Colors.white
+                                        : AppColors.background,
+                                  ),
+                                  onPressed: () {
+                                    context
+                                        .read<CartItemCubit>()
+                                        .deleteCartItem(service.itemId!);
+                                  },
+                                )),
+                          ]);
                         },
                       ),
                     ),

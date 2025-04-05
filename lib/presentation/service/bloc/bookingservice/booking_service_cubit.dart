@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tracio_fe/core/erorr/failure.dart';
-import 'package:tracio_fe/domain/shop/entities/cart_item_entity.dart';
+import 'package:tracio_fe/domain/shop/entities/response/cart_item_entity.dart';
 import 'package:tracio_fe/domain/shop/usecase/booking_service.dart';
 import 'package:tracio_fe/presentation/service/bloc/bookingservice/booking_service_state.dart';
 
@@ -74,8 +74,12 @@ class BookingServiceCubit extends Cubit<BookingServiceState> {
   }
 
   void clearBookingItem() {
-    schedules!.clear();
-    selectedServices.clear();
-    serviceNotes.clear();
+    if (schedules != null &&
+        selectedServices.isNotEmpty &&
+        serviceNotes.isNotEmpty) {
+      schedules!.clear();
+      selectedServices.clear();
+      serviceNotes.clear();
+    }
   }
 }

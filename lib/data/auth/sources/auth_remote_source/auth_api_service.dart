@@ -6,7 +6,6 @@ import 'package:tracio_fe/core/erorr/failure.dart';
 import 'package:tracio_fe/core/network/dio_client.dart';
 import 'package:tracio_fe/data/auth/models/login_req.dart';
 import 'package:tracio_fe/data/auth/models/register_req.dart';
-import 'package:tracio_fe/data/auth/models/user_model.dart';
 import 'package:tracio_fe/data/auth/sources/auth_remote_source/auth_firebase_service.dart';
 import 'package:tracio_fe/service_locator.dart';
 
@@ -44,7 +43,7 @@ class AuthApiServiceImpl extends AuthApiService {
     var response = await sl<DioClient>()
         .post(ApiUrl.loginWithEP, data: login.toMap(), isMultipart: false);
     if (response.statusCode == 200) {
-      print(response);
+     
       return (AuthenticationResponseModel.fromMap(response.data['result']));
     } else if (response.statusCode == 400) {
       throw CredentialFailure("Lỗi server: ${response.data['message']}");

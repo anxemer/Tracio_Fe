@@ -7,7 +7,7 @@ class ApiUrl {
   // static const baseURL = 'https://192.168.1.9:';
   static const baseURL = 'http://103.28.33.123:';
   // static const baseURL = 'https://10.87.46.103:';
-  static const hubUrl = 'http://10.87.46.103:5002/content-hub';
+  static const hubUrl = 'http://103.28.33.123:5002/content-hub';
   //port
   static const portUser = '5003';
   static const portBlog = '5002';
@@ -33,7 +33,7 @@ class ApiUrl {
   }
 
   static const createBlog = '$portBlog/api/blogs';
-  static const categoryBlog = '$portBlog/categories';
+  static const categoryBlog = '$portBlog/api/blogs/categories';
   static const commentBlog = '$portBlog/api/comments';
   static const repCommentBlog = '$portBlog/api/replies';
   static const bookmarkBlog = '$portBlog/api/blogs/bookmarks';
@@ -130,5 +130,10 @@ class ApiUrl {
   static const getCartItem = '${portShop}/api/carts/items';
   static const getCateService = '${portShop}/api/categories';
   static const bookingService = '${portShop}/api/bookings';
-  static const getBooking = '${portShop}/api/bookings';
+  static const deleteCartItem = '${portShop}/api/carts';
+  // static const getBooking = '${portShop}/api/bookings';
+
+  //Get City
+  static const getCity =
+      'https://open.oapi.vn/location/provinces?page=0&size=63';
 }

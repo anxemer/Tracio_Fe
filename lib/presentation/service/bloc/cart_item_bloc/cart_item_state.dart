@@ -1,7 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:equatable/equatable.dart';
 import 'package:tracio_fe/core/erorr/failure.dart';
-import 'package:tracio_fe/domain/shop/entities/cart_item_entity.dart';
+import 'package:tracio_fe/domain/shop/entities/response/cart_item_entity.dart';
 
 abstract class CartItemState extends Equatable {
   final List<CartItemEntity> cart;

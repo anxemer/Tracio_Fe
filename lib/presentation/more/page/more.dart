@@ -116,9 +116,9 @@ class MorePage extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.exit_to_app, color: Colors.black54),
             title: Text('Log Out'),
-            onTap: () async {
+            onTap: () {
               context.read<AuthCubit>().logout();
-              AppNavigator.push(context, LoginPage());
+              AppNavigator.pushAndRemove(context, LoginPage());
               // await sl<LogoutUseCase>().call(NoParams());
               // Navigator.pushNamed(context, '/logout');
             },

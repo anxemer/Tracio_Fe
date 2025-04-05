@@ -10,6 +10,7 @@ import 'package:tracio_fe/common/widget/input_text_form_field.dart';
 import 'package:tracio_fe/core/configs/theme/app_colors.dart';
 import 'package:tracio_fe/core/configs/theme/assets/app_images.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
+import 'package:tracio_fe/core/erorr/failure.dart';
 import 'package:tracio_fe/core/extension/string_extension.dart';
 import 'package:tracio_fe/data/auth/models/login_req.dart';
 import 'package:tracio_fe/presentation/auth/bloc/authCubit/auth_cubit.dart';
@@ -45,12 +46,20 @@ class _LoginPageState extends State<LoginPage> {
               Future.microtask(
                 () {
                   EasyLoading.dismiss();
-                  AppNavigator.pushAndRemove(context, BottomNavBarManager());
+                  AppNavigator.pushReplacement(context, BottomNavBarManager());
                 },
               );
             }
           } else if (state is AuthFailure) {
-            EasyLoading.showError("Username/Password Wrong!");
+            if (state.failure is CredentialFailure) {
+              EasyLoading.showError("Username/Password Wrong!");
+            } else {
+              EasyLoading.showError("Error");
+            }
+          } else if (state is AuthLoggedOut) {
+            Future.microtask(() {
+              AppNavigator.pushAndRemove(context, LoginPage());
+            });
           }
         },
         child: Scaffold(
@@ -226,25 +235,13 @@ class _LoginPageState extends State<LoginPage> {
     return Column(
       children: [
         ButtonDesign(
+          width: AppSize.cardWidth.w,
           ontap: () {},
           text: "Google",
           image: AppImages.logoGg,
           fillColor: Colors.white,
           textColor: Colors.black,
           borderColor: Colors.green,
-          iconSize: AppSize.iconSmall,
-          fontSize: AppSize.textMedium,
-        ),
-        SizedBox(height: 10.h), // Khoảng cách tự động co giãn
-        ButtonDesign(
-          ontap: () {
-            AppNavigator.pushReplacement(context, LoginPhone());
-          },
-          text: "Phone Number",
-          image: AppImages.logoPhone,
-          fillColor: Colors.white,
-          textColor: Colors.black,
-          borderColor: Colors.black,
           iconSize: AppSize.iconSmall,
           fontSize: AppSize.textMedium,
         ),

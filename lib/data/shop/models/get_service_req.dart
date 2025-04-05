@@ -1,9 +1,12 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 class GetServiceReq {
   final int? categoryId;
   final String? status;
   final String? keyword;
   final int? shopId;
   final double? distance;
+  final double? priceFrom;
+  final double? priceTo;
   final String? city;
   final String? district;
   final double? latitude;
@@ -20,6 +23,8 @@ class GetServiceReq {
     this.keyword,
     this.shopId,
     this.distance,
+    this.priceFrom,
+    this.priceTo,
     this.city,
     this.district,
     this.latitude,
@@ -30,7 +35,6 @@ class GetServiceReq {
     this.pageSizeShop = 5,
     this.pageNumberShop = 1,
   });
-
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {};
 
@@ -39,6 +43,8 @@ class GetServiceReq {
     if (keyword != null) data['keyword'] = keyword;
     if (shopId != null) data['shopId'] = shopId;
     if (distance != null) data['distance'] = distance;
+    if (priceFrom != null) data['priceFrom'] = priceFrom;
+    if (priceTo != null) data['priceTo'] = priceTo;
     if (city != null) data['city'] = city;
     if (district != null) data['district'] = district;
     if (latitude != null) data['latitude'] = latitude;
@@ -59,6 +65,8 @@ class GetServiceReq {
     String? keyword,
     int? shopId,
     double? distance,
+    double? priceFrom,
+    double? priceTo,
     String? city,
     String? district,
     double? latitude,
@@ -70,11 +78,13 @@ class GetServiceReq {
     int? pageNumberShop,
   }) {
     return GetServiceReq(
-      categoryId: categoryId ?? this.categoryId,
+      categoryId: categoryId,
       status: status ?? this.status,
       keyword: keyword ?? this.keyword,
       shopId: shopId ?? this.shopId,
       distance: distance ?? this.distance,
+      priceFrom: priceFrom ?? this.priceFrom,
+      priceTo: priceTo ?? this.priceTo,
       city: city ?? this.city,
       district: district ?? this.district,
       latitude: latitude ?? this.latitude,
@@ -87,24 +97,24 @@ class GetServiceReq {
     );
   }
 
-  factory GetServiceReq.fromJson(Map<String, dynamic> json) {
-    return GetServiceReq(
-      categoryId: json['categoryId'],
-      status: json['status'],
-      keyword: json['keyword'],
-      shopId: json['shopId'],
-      distance: json['distance'],
-      city: json['city'],
-      district: json['district'],
-      latitude: json['latitude'],
-      longitude: json['longitude'],
-      isAscending: json['isAscending'] ?? true,
-      pageSizeService: json['pageSizeService'] ?? 10,
-      pageNumberService: json['pageNumberService'] ?? 1,
-      pageSizeShop: json['pageSizeShop'] ?? 5,
-      pageNumberShop: json['pageNumberShop'] ?? 1,
-    );
-  }
+  // factory GetServiceReq.fromJson(Map<String, dynamic> json) {
+  //   return GetServiceReq(
+  //     categoryId: json['categoryId'],
+  //     status: json['status'],
+  //     keyword: json['keyword'],
+  //     shopId: json['shopId'],
+  //     distance: json['distance'],
+  //     city: json['city'],
+  //     district: json['district'],
+  //     latitude: json['latitude'],
+  //     longitude: json['longitude'],
+  //     isAscending: json['isAscending'] ?? true,
+  //     pageSizeService: json['pageSizeService'] ?? 10,
+  //     pageNumberService: json['pageNumberService'] ?? 1,
+  //     pageSizeShop: json['pageSizeShop'] ?? 5,
+  //     pageNumberShop: json['pageNumberShop'] ?? 1,
+  //   );
+  // }
   Map<String, String> toQueryParams() {
     final Map<String, String> params = {};
 
@@ -113,6 +123,8 @@ class GetServiceReq {
     if (status != null) params['status'] = status!;
     if (keyword != null) params['keyword'] = keyword!;
     if (shopId != null) params['shopId'] = shopId.toString();
+    if (priceFrom != null) params['priceFrom'] = priceFrom.toString();
+    if (priceTo != null) params['priceTo'] = priceTo.toString();
     if (distance != null) params['distance'] = distance.toString();
     if (city != null) params['city'] = city!;
     if (district != null) params['district'] = district!;

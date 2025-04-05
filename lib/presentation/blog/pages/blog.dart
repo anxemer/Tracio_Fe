@@ -15,6 +15,7 @@ import 'package:tracio_fe/presentation/auth/pages/login.dart';
 import 'package:tracio_fe/presentation/blog/bloc/get_blog_cubit.dart';
 import 'package:tracio_fe/presentation/blog/pages/create_blog.dart';
 import 'package:tracio_fe/presentation/blog/widget/blog_list_view.dart';
+import 'package:tracio_fe/presentation/blog/widget/shortcut_key.dart';
 import 'package:tracio_fe/presentation/profile/pages/user_profile.dart';
 
 import '../../../common/helper/navigator/app_navigator.dart';
@@ -80,7 +81,16 @@ class _BlogPageState extends State<BlogPage> {
                 SliverToBoxAdapter(
                   child: _createBlogHeader(),
                 ),
-
+                SliverToBoxAdapter(
+                  child: Divider(
+                    thickness: 4,
+                    height: 2,
+                    color: Colors.grey.shade300,
+                  ),
+                ),
+                SliverToBoxAdapter(
+                  child: ShortcutKey(),
+                ),
                 // Main content based on state
                 _buildMainContent(state),
               ],
@@ -171,7 +181,8 @@ class _BlogPageState extends State<BlogPage> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                context.read<AuthCubit>().logout();
+                // Navigator.of(context).pop();
                 AppNavigator.pushAndRemove(context, LoginPage());
               },
               child: Text('Go to Login Now'),

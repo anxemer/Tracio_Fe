@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:tracio_fe/core/constants/app_size.dart';
 
 class ButtonDesign extends StatelessWidget {
   const ButtonDesign(
@@ -38,7 +39,7 @@ class ButtonDesign extends StatelessWidget {
         padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 16.w),
         decoration: BoxDecoration(
           color: fillColor,
-          borderRadius: BorderRadius.circular(8.r),
+          borderRadius: BorderRadius.circular(AppSize.borderRadiusLarge),
           border: Border.all(
             width: 1.5.w,
             color: borderColor,
@@ -58,7 +59,7 @@ class ButtonDesign extends StatelessWidget {
             // SizedBox(
             //   width: 10.w,
             // ),
-            // SizedBox(width: 10.w),
+            SizedBox(width: 4.w),
             Text(
               text ?? '',
               style: TextStyle(

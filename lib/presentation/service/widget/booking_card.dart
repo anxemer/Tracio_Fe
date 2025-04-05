@@ -5,7 +5,7 @@ import 'package:tracio_fe/common/helper/is_dark_mode.dart';
 import 'package:tracio_fe/common/widget/list_cell_animation_view.dart';
 import 'package:tracio_fe/core/configs/theme/assets/app_images.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/domain/shop/entities/booking_card_view.dart';
+import 'package:tracio_fe/domain/shop/entities/response/booking_card_view.dart';
 
 import '../../../core/configs/theme/app_colors.dart';
 
@@ -81,26 +81,6 @@ class _BookingCardState extends State<BookingCard> {
                                   : Colors.black87,
                             ),
                           ),
-                          Spacer(),
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.star_rate_rounded,
-                                size: AppSize.iconMedium,
-                                color: isDark
-                                    ? AppColors.secondBackground
-                                    : AppColors.background,
-                              ),
-                              Text(
-                                '4.5',
-                                style: TextStyle(
-                                    fontSize: AppSize.textMedium,
-                                    color: isDark
-                                        ? Colors.grey.shade300
-                                        : Colors.black87),
-                              )
-                            ],
-                          )
                         ],
                       ),
                       Row(
@@ -113,7 +93,7 @@ class _BookingCardState extends State<BookingCard> {
                                 : AppColors.background,
                           ),
                           Text(
-                            widget.service.price!,
+                            '${widget.service.formattedPrice} \$',
                             style: TextStyle(fontSize: AppSize.textMedium),
                           ),
                           SizedBox(
@@ -130,7 +110,7 @@ class _BookingCardState extends State<BookingCard> {
                             width: 4.w,
                           ),
                           Text(
-                            '',
+                            widget.service.formattedDuration,
                             style: TextStyle(fontSize: AppSize.textMedium),
                           ),
                         ],
@@ -148,7 +128,7 @@ class _BookingCardState extends State<BookingCard> {
                             width: 4.w,
                           ),
                           Text(
-                            'An Xểm',
+                            widget.service.shopName!,
                             style: TextStyle(
                                 fontSize: AppSize.textMedium,
                                 color: isDark
@@ -160,27 +140,30 @@ class _BookingCardState extends State<BookingCard> {
                           ),
                         ],
                       ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Icon(
-                            Icons.location_on_outlined,
-                            size: AppSize.iconMedium,
-                            color: isDark
-                                ? AppColors.secondBackground
-                                : AppColors.background,
-                          ),
-                          SizedBox(
-                            width: 4.w,
-                          ),
-                          Text(
-                            'Gò vấp, Hồ Chí Minh ',
-                            style: TextStyle(
-                                fontSize: AppSize.textMedium,
-                                color: isDark ? Colors.white : Colors.black),
-                          ),
-                        ],
-                      )
+                      widget.service.city != null
+                          ? Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Icon(
+                                  Icons.location_on_outlined,
+                                  size: AppSize.iconMedium,
+                                  color: isDark
+                                      ? AppColors.secondBackground
+                                      : AppColors.background,
+                                ),
+                                SizedBox(
+                                  width: 4.w,
+                                ),
+                                Text(
+                                  '${widget.service.district} - ${widget.service.city}',
+                                  style: TextStyle(
+                                      fontSize: AppSize.textMedium,
+                                      color:
+                                          isDark ? Colors.white : Colors.black),
+                                ),
+                              ],
+                            )
+                          : Container()
                       // Text(
                       //   'Labuan Bajo is a fishing town located at the western end of the large island of Flores in the East Nusa Tenggara province of Indonesia. It is in Komodo district.',
                       //   maxLines: 2,

@@ -1,39 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
+    as bg;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:tracio_fe/common/bloc/generic_data_cubit.dart';
-import 'package:tracio_fe/core/usecase/usecase.dart';
-import 'package:tracio_fe/domain/shop/entities/service_response_entity.dart';
-import 'package:tracio_fe/domain/shop/usecase/get_service.dart';
-import 'package:tracio_fe/presentation/blog/bloc/category/get_category_cubit.dart';
-import 'package:tracio_fe/presentation/blog/bloc/category/get_category_state.dart';
-import 'package:tracio_fe/presentation/service/widget/category_service.dart';
+import 'package:tracio_fe/common/helper/is_dark_mode.dart';
+import 'package:tracio_fe/data/shop/models/get_service_req.dart';
+import 'package:tracio_fe/presentation/service/bloc/service_bloc/cubit/get_near_service_cubit.dart';
+import 'package:tracio_fe/presentation/service/bloc/service_bloc/get_service_cubit.dart';
+import 'package:tracio_fe/presentation/service/bloc/service_bloc/get_service_state.dart';
 import 'package:tracio_fe/presentation/service/widget/custom_search_bar.dart';
 import 'package:tracio_fe/presentation/service/widget/service_grid.dart'
     show ServiceGrid;
 
-import '../../../common/bloc/generic_data_state.dart';
-import '../../../service_locator.dart';
-
-class ServicePage extends StatelessWidget {
+class ServicePage extends StatefulWidget {
   const ServicePage({super.key});
 
   @override
+  State<ServicePage> createState() => _ServicePageState();
+}
+
+class _ServicePageState extends State<ServicePage> {
+  @override
   Widget build(BuildContext context) {
+    var isDark = context.isDarkMode;
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => GenericDataCubit()
-            ..getData<ServiceResponseEntity>(sl<GetServiceUseCase>(),
-                params: NoParams()),
-        ),
-        BlocProvider(
-            create: (context) => GetCategoryCubit()..getCategoryService()),
+            create: (context) => GetServiceCubit()
+              ..getService(GetServiceReq(
+                pageNumberService: 1,
+                pageSizeService: 10,
+              ))),
+        BlocProvider(create: (context) => GetNearServiceCubit()..getNearShop()),
       ],
       child: Scaffold(
         resizeToAvoidBottomInset: false,
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        backgroundColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
         // appBar: AppBar(
         //   leading: CustomeSearchBar(),
         // ),
@@ -45,27 +48,28 @@ class ServicePage extends StatelessWidget {
               SizedBox(
                 height: 10.h,
               ),
-              BlocBuilder<GetCategoryCubit, GetCategoryState>(
-                builder: (context, state) {
-                  if (state is CategoryLoaded) {
-                    return CategoryService(
-                      cateService: state.categories,
-                    );
-                  }
-                  return Center(child: CircularProgressIndicator());
-                },
-              ),
+              // BlocBuilder<GetCategoryCubit, GetCategoryState>(
+              //   builder: (context, state) {
+              //     if (state is CategoryLoaded) {
+              //       return CategoryService(
+              //         cateService: state.categories,
+              //       );
+              //     }
+              //     return Center(child: CircularProgressIndicator());
+              //   },
+              // ),
               SizedBox(
                 height: 10.h,
               ),
-              BlocBuilder<GenericDataCubit, GenericDataState>(
+              BlocBuilder<GetServiceCubit, GetServiceState>(
                 builder: (context, state) {
-                  if (state is DataLoaded) {
+                  if (state is GetServiceLoaded) {
                     return ServiceGrid(
-                      services: state.data,
+                      services: state.service,
+                      // shop: state.shop,
                     );
                   }
-                  if (state is DataLoading) {
+                  if (state is GetServiceLoading) {
                     return Row(
                       children: [
                         Shimmer.fromColors(

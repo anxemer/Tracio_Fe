@@ -22,4 +22,5 @@ class AppImages {
   static const reply = '${basePath}reply.png';
   static const error = '${basePath}404.png';
   static const gallery = '${basePath}add-image.png';
+  static const serviceShop = '${basePath}service_shop.png';
 }

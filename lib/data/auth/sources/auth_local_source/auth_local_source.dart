@@ -44,18 +44,11 @@ class AuthLocalSourceImp extends AuthLocalSource {
 
   @override
   Future<void> saveToken(String token) async {
-   
-  
-
-
-    if (token != null) {
-      await sl<FlutterSecureStorage>().write(key: cachedToken, value: token);
-    }
+    await sl<FlutterSecureStorage>().write(key: cachedToken, value: token);
   }
 
   @override
   Future<void> saveUser(UserModel user) {
-         
     return sl<SharedPreferences>().setString(cachedUser, user.toJson());
   }
 

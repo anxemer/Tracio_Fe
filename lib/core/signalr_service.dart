@@ -3,8 +3,6 @@ import 'package:signalr_netcore/hub_connection.dart';
 import 'package:signalr_netcore/json_hub_protocol.dart';
 import 'package:signalr_netcore/signalr_client.dart';
 import 'package:tracio_fe/core/constants/api_url.dart';
-import 'package:tracio_fe/data/auth/sources/auth_local_source/auth_local_source.dart';
-import '../service_locator.dart';
 
 class SignalRService {
   late HubConnection _hubConnection;
@@ -13,7 +11,7 @@ class SignalRService {
   final _blogUpdatedController = StreamController<dynamic>.broadcast();
   final _joinedGroupController = StreamController<String>.broadcast();
   final _joinedBlogUpdateController = StreamController<String>.broadcast();
-  final _receiveNewCommentReactionController =
+  final _receiveNewCommentController =
       StreamController<Map<String, dynamic>>.broadcast();
   final _receiveNewBlogReactionController =
       StreamController<Map<String, dynamic>>.broadcast();
@@ -22,19 +20,19 @@ class SignalRService {
   Stream<String> get onJoinedGroup => _joinedGroupController.stream;
   Stream<String> get onJoinedBlogUpdate => _joinedBlogUpdateController.stream;
   Stream<Map<String, dynamic>> get onReceiveNewCommentReaction =>
-      _receiveNewCommentReactionController.stream;
+      _receiveNewCommentController.stream;
   Stream<Map<String, dynamic>> get onReceiveNewBlogReaction =>
       _receiveNewBlogReactionController.stream;
 
   bool get isConnected => _isConnected;
 
   Future<void> initConnection() async {
-    final token = await sl<AuthLocalSource>().getToken();
+    // final token = await sl<AuthLocalSource>().getToken();
     _hubConnection = HubConnectionBuilder()
         .withUrl(ApiUrl.hubUrl,
             options: HttpConnectionOptions(
-              accessTokenFactory: () => Future.value(token),
-              // // requestTimeout: 30000,
+              // accessTokenFactory: () => Future.value(token),
+              requestTimeout: 30000,
               // skipNegotiation: true,
               // transport: HttpTransportType.WebSockets,
             ))
@@ -57,11 +55,10 @@ class SignalRService {
   }
 
   void _registerHandlers() {
-    _hubConnection.on('BlogUpdated', _handleBlogUpdated);
-    _hubConnection.on('JoinedGroup', _handleJoinedGroup);
+    _hubConnection.on('JoinBlogs', _handleBlogUpdated);
+    _hubConnection.on('LeaveBlogs', _handleJoinedGroup);
     _hubConnection.on('JoinedBlogUpdate', _handleJoinedBlogUpdate);
-    _hubConnection.on(
-        'ReceiveNewCommentReaction', _handleReceiveNewCommentReaction);
+    _hubConnection.on('ReceiveNewComment', _handleReceiveNewCommentReaction);
     _hubConnection.on(
         'ReceiveNewBlogReaction', _handleReceiveNewCommentReaction);
 
@@ -82,7 +79,7 @@ class SignalRService {
     if (!_isConnected) await initConnection();
 
     try {
-      await _hubConnection.invoke('JoinBlogUpdates');
+      await _hubConnection.invoke('JoinBlogs');
       print('Joined blog updates');
     } catch (e) {
       print('Error joining blog updates: $e');
@@ -95,7 +92,7 @@ class SignalRService {
     if (!_isConnected) return;
 
     try {
-      await _hubConnection.invoke('LeaveBlogUpdates');
+      await _hubConnection.invoke('LeaveBlogs');
       print('Left blog updates');
     } catch (e) {
       print('Error leaving blog updates: $e');
@@ -152,12 +149,12 @@ class SignalRService {
     if (parameters != null && parameters.isNotEmpty) {
       final data = parameters[0];
       if (data is Map<String, dynamic>) {
-        _receiveNewCommentReactionController.add(data);
+        _receiveNewCommentController.add(data);
       } else {
         try {
           final Map<String, dynamic> parsedData =
               Map<String, dynamic>.from(data as Map);
-          _receiveNewCommentReactionController.add(parsedData);
+          _receiveNewCommentController.add(parsedData);
         } catch (e) {
           print('Error parsing ReceiveNewCommentReaction data: $e');
         }
@@ -187,7 +184,7 @@ class SignalRService {
     _blogUpdatedController.close();
     _joinedGroupController.close();
     _joinedBlogUpdateController.close();
-    _receiveNewCommentReactionController.close();
+    _receiveNewCommentController.close();
     _receiveNewBlogReactionController.close();
     closeConnection();
   }

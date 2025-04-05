@@ -92,9 +92,10 @@ class BlogApiServiceImpl extends BlogApiService {
         return List<CategoryModel>.from(response.data['result']['categories']
             .map((c) => CategoryModel.fromMap(c)));
       }
-      return response.data['message'];
+
+      return [];
     } on DioException catch (e) {
-      return e.response!.data['message'];
+      return [];
     }
   }
 
@@ -133,19 +134,15 @@ class BlogApiServiceImpl extends BlogApiService {
 
       var response = await sl<DioClient>()
           .post(ApiUrl.commentBlog, isMultipart: true, data: form);
-      print("Repository: Comment API response - ${response.data}");
       return Right(response.data['message']);
     } on DioException catch (e) {
       if (e.response != null) {
-        print("Repository: DioException - ${e.response?.data}");
         return Left(ServerFailure(
             e.response?.data['message'] ?? "Lỗi server: ${e.message}"));
       } else {
-        print("Repository: Network error - ${e.message}");
         return Left(NetworkFailure("Không có kết nối mạng: ${e.message}"));
       }
     } catch (e) {
-      print("Repository: Unexpected error - $e");
       return Left(ExceptionFailure("Lỗi không xác định: $e"));
     }
   }

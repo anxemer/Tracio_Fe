@@ -77,8 +77,6 @@ class AuthRepositotyImpl extends AuthRepository {
       } else {
         return Right(true);
       }
-    } on CacheException catch (e) {
-      return Left(CacheFailure('Token not found'));
     } on Exception catch (e) {
       return Left(NetworkFailure('Lỗi kết nối mạng'));
     }
@@ -103,7 +101,6 @@ class AuthRepositotyImpl extends AuthRepository {
       String token = remoteResponse.accessToken;
       Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
 
-      
       int userId = int.parse(decodedToken['custom_id'].toString());
       String uniqueName = decodedToken['unique_name'];
       String email = decodedToken['email'];
@@ -118,6 +115,8 @@ class AuthRepositotyImpl extends AuthRepository {
       return Right(remoteResponse);
     } on CredentialFailure catch (e) {
       return Left(e);
+    } on ServerException {
+      return Left(ServerFailure('Network is unreachable'));
     }
   }
 
@@ -126,7 +125,6 @@ class AuthRepositotyImpl extends AuthRepository {
     try {
       final user = await sl<AuthLocalSource>().getUser();
       return Right(user);
-      // ignore: empty_catches
     } catch (e) {
       return Left(CacheFailure(e.toString()));
     }

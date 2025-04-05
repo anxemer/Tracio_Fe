@@ -33,7 +33,7 @@ class ButtonAuth extends StatelessWidget {
             Text(
               title,
               style: TextStyle(
-                  fontSize: AppSize.textExtraLarge.sp,
+                  fontSize: AppSize.textHeading.sp,
                   fontWeight: FontWeight.w500),
             ),
             SizedBox(
