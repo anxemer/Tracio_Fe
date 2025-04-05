@@ -99,7 +99,6 @@ class GetBlogCubit extends Cubit<GetBlogState> {
       var returnedData = await sl<GetBlogsUseCase>().call(state.params);
 
       returnedData.fold((error) {
-        print("Error occurred: ${error.message}");
         emit(GetBlogFailure(
             blogs: state.blogs,
             errorMessage: error.message,
@@ -107,7 +106,6 @@ class GetBlogCubit extends Cubit<GetBlogState> {
             metaData: state.metaData,
             params: state.params));
       }, (data) {
-        print("success: ${data.blogs.length}");
         emit(GetBlogLoaded(
             blogs: data.blogs,
             isLoading: false,
@@ -115,8 +113,6 @@ class GetBlogCubit extends Cubit<GetBlogState> {
             metaData: data.paginationMetaDataEntity));
       });
     } catch (e) {
-      print("Error occurred: ${e}");
-
       emit(GetBlogFailure(
           blogs: state.blogs,
           errorMessage: e.toString(),

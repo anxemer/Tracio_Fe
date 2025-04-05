@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tracio_fe/common/helper/is_dark_mode.dart';
+import 'package:tracio_fe/core/configs/theme/app_colors.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/domain/blog/entites/blog_entity.dart';
 import 'package:tracio_fe/presentation/blog/widget/post_blog.dart';
@@ -29,14 +30,16 @@ class _DetailBlocPageState extends State<DetailBlocPage> {
     final reacCubit = context.read<GenericDataCubit>();
     return Scaffold(
         appBar: BasicAppbar(
+          backgroundColor: AppColors.lightBackground,
           height: 100.h,
           hideBack: false,
           title: Text(
             'Blog',
             style: TextStyle(
-                color: context.isDarkMode ? Colors.grey.shade200 : Colors.black87,
+                color:
+                    context.isDarkMode ? Colors.grey.shade200 : Colors.black87,
                 fontWeight: FontWeight.bold,
-                fontSize: AppSize.textLarge.sp),
+                fontSize: AppSize.textHeading.sp),
           ),
           action: Row(
             children: [

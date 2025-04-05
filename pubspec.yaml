@@ -95,6 +95,8 @@ dependencies:
   intl:
   flutter_rating_bar:
   shimmer:
+  badges:
+  animated_toggle_switch:
 dev_dependencies:
   protoc_plugin: ^21.1.2
   flutter_test:

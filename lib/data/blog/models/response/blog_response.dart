@@ -2,7 +2,7 @@
 import 'dart:convert';
 
 import 'package:tracio_fe/data/blog/models/response/blog_model.dart';
-import 'package:tracio_fe/data/blog/models/response/pagination_meta_data.dart';
+import 'package:tracio_fe/common/helper/pagination_meta_data.dart';
 import 'package:tracio_fe/domain/blog/entites/blog_response.dart';
 
 import '../../../../domain/blog/entites/blog_entity.dart';

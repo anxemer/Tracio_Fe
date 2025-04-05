@@ -5,14 +5,14 @@ import 'package:dio/dio.dart';
 class CreateBlogReq {
   final int categoryId;
   final String content;
-  final int privacySetting;
+  final bool isPublic;
   final int status;
   final List<File> mediaFiles;
 
   CreateBlogReq({
     required this.categoryId,
     required this.content,
-    required this.privacySetting,
+    required this.isPublic,
     required this.status,
     required this.mediaFiles,
   });
@@ -34,7 +34,7 @@ class CreateBlogReq {
       // BlogCreateDto phải đúng với API
       'CategoryId': categoryId.toString(), // Chuyển số thành chuỗi
       'Content': content,
-      'PrivacySetting': privacySetting.toString(),
+      'IsPublic': isPublic.toString(),
       'Status': status.toString(),
       'mediaFiles': files, // ✅ Đúng với API
     });

@@ -4,22 +4,21 @@ import 'package:tracio_fe/common/helper/is_dark_mode.dart';
 import 'package:tracio_fe/core/configs/theme/app_colors.dart';
 import 'package:tracio_fe/core/configs/theme/assets/app_images.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/domain/shop/entities/shop_entity.dart';
-import 'package:tracio_fe/domain/shop/entities/shop_service_entity.dart';
+import 'package:tracio_fe/domain/shop/entities/response/shop_entity.dart';
+import 'package:tracio_fe/domain/shop/entities/response/shop_service_entity.dart';
 
 import '../../../common/helper/navigator/app_navigator.dart';
 import '../page/detail_service.dart';
 
 class ServiceCard extends StatelessWidget {
-  const ServiceCard({super.key, required this.service, required this.shop});
+  const ServiceCard({super.key, required this.service});
   final ShopServiceEntity service;
-  final ShopEntity shop;
   @override
   Widget build(BuildContext context) {
     final isDark = context.isDarkMode;
     return InkWell(
-      onTap: () => AppNavigator.push(
-          context, DetailServicePage(service: service, shop: shop)),
+      onTap: () =>
+          AppNavigator.push(context, DetailServicePage(service: service)),
       child: Container(
         // constraints: BoxConstraints(maxWidth: screenWidth),
         decoration: BoxDecoration(
@@ -57,7 +56,7 @@ class ServiceCard extends StatelessWidget {
                     Row(
                       children: [
                         Text(
-                          service.name ?? 'No Service Name',
+                          service.serviceName ?? 'No Service Name',
                           style: TextStyle(
                               fontSize: AppSize.textLarge.sp,
                               fontWeight: FontWeight.w600),
@@ -111,7 +110,7 @@ class ServiceCard extends StatelessWidget {
                               : AppColors.background,
                         ),
                         Text(
-                          shop.shopName ?? 'No Shop Name',
+                          service.shopName ?? 'No Shop Name',
                           style: TextStyle(
                               fontSize: AppSize.textSmall,
                               color: isDark ? Colors.white : Colors.black),

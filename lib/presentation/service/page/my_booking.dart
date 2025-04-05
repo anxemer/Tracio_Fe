@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tracio_fe/common/helper/is_dark_mode.dart';
 import 'package:tracio_fe/common/widget/appbar/app_bar.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/domain/shop/entities/shop_service_entity.dart';
 import 'package:tracio_fe/presentation/service/bloc/get_booking/get_booking_cubit.dart';
+import 'package:tracio_fe/presentation/service/widget/plan_service_icon.dart';
 import 'package:tracio_fe/presentation/service/widget/waitting_service.dart';
 
 import '../../../common/widget/bottom_top_move_animation.dart';
 import '../../../core/configs/theme/app_colors.dart';
-import '../widget/pending_list_view.dart';
+import '../widget/pending_service.dart';
 
 class MyBookingPage extends StatefulWidget {
   const MyBookingPage({super.key});
@@ -34,7 +33,7 @@ class _MyBookingPageState extends State<MyBookingPage>
         AnimationController(duration: Duration(milliseconds: 400), vsync: this);
     tabAnimationController =
         AnimationController(duration: Duration(milliseconds: 400), vsync: this);
-    indexView = PendingListView(
+    indexView = PendingService(
       // servicePending: widget.serviceBooking,
       animationController: screenAnimationController,
     );
@@ -57,40 +56,43 @@ class _MyBookingPageState extends State<MyBookingPage>
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => GetBookingCubit()..getBookingPending(),
+      create: (context) => GetBookingCubit(),
       child: Scaffold(
         appBar: BasicAppbar(
-          backgroundColor: Colors.transparent,
-          title: Text('My Booking'),
-          action: Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: AppSize.apHorizontalPadding.w,
+            backgroundColor: Colors.transparent,
+            title: Text('My Booking'),
+            action: PlanServiceIcon()
+            //  Padding(
+            //   padding: EdgeInsets.symmetric(
+            //     horizontal: AppSize.apHorizontalPadding.w,
+            //   ),
+            //   child:
+            //    Container(
+            //       height: 40.h,
+            //       width: 40.w,
+            //       decoration:
+            //        BoxDecoration(
+            //           boxShadow: [
+            //             BoxShadow(
+            //                 blurRadius: 5,
+            //                 color: context.isDarkMode
+            //                     ? Colors.transparent
+            //                     : Colors.grey.shade400,
+            //                 offset: Offset(0, 2))
+            //           ],
+            //           color: context.isDarkMode
+            //               ? AppColors.darkGrey
+            //               : Colors.grey.shade200,
+            //           borderRadius:
+            //               BorderRadius.circular(AppSize.borderRadiusLarge),
+            //           border: Border.all(color: Colors.grey.shade200)),
+            //       child: Icon(
+            //         Icons.edit_calendar_rounded,
+            //         color: Colors.black87,
+            //         size: AppSize.iconMedium,
+            //       )),
+            // ),
             ),
-            child: Container(
-                height: 40.h,
-                width: 40.w,
-                decoration: BoxDecoration(
-                    boxShadow: [
-                      BoxShadow(
-                          blurRadius: 5,
-                          color: context.isDarkMode
-                              ? Colors.transparent
-                              : Colors.grey.shade400,
-                          offset: Offset(0, 2))
-                    ],
-                    color: context.isDarkMode
-                        ? AppColors.darkGrey
-                        : Colors.grey.shade200,
-                    borderRadius:
-                        BorderRadius.circular(AppSize.borderRadiusLarge),
-                    border: Border.all(color: Colors.grey.shade200)),
-                child: Icon(
-                  Icons.edit_calendar_rounded,
-                  color: Colors.black87,
-                  size: AppSize.iconMedium,
-                )),
-          ),
-        ),
         body: BottomTopMoveAnimationView(
           animationController: screenAnimationController,
           child: Column(
@@ -144,27 +146,27 @@ class _MyBookingPageState extends State<MyBookingPage>
                             : AppColors.darkGrey,
                     "Waitting"),
                 _getTopBarUi(() {
-                  tabClick(TopBarType.Upcoming);
+                  tabClick(TopBarType.Processing);
                 },
-                    topBarType == TopBarType.Upcoming
+                    topBarType == TopBarType.Processing
                         ? context.isDarkMode
                             ? AppColors.secondBackground
                             : AppColors.background
                         : context.isDarkMode
                             ? Colors.grey.shade300
                             : AppColors.darkGrey,
-                    "Upcoming"),
+                    "Processing"),
                 _getTopBarUi(() {
-                  tabClick(TopBarType.Finished);
+                  tabClick(TopBarType.Completed);
                 },
-                    topBarType == TopBarType.Finished
+                    topBarType == TopBarType.Completed
                         ? context.isDarkMode
                             ? AppColors.secondBackground
                             : AppColors.background
                         : context.isDarkMode
                             ? Colors.grey.shade300
                             : AppColors.darkGrey,
-                    "Finished"),
+                    "Completed"),
               ],
             ),
             SizedBox(
@@ -208,16 +210,18 @@ class _MyBookingPageState extends State<MyBookingPage>
       tabAnimationController.reverse().then((f) {
         if (tabType == TopBarType.Pending) {
           setState(() {
-            indexView = PendingListView(
+            indexView = PendingService(
               // servicePending: widget.serviceBooking,
               animationController: tabAnimationController,
             );
           });
         } else if (tabType == TopBarType.Waitting) {
           setState(() {
-            indexView = WaittingService();
+            indexView = WaittingService(
+              animationController: tabAnimationController,
+            );
           });
-        } else if (tabType == TopBarType.Finished) {
+        } else if (tabType == TopBarType.Completed) {
           // setState(() {
           //   indexView = PendingListView();
           // });
@@ -233,4 +237,4 @@ class _MyBookingPageState extends State<MyBookingPage>
   }
 }
 
-enum TopBarType { Pending, Waitting, Upcoming, Finished }
+enum TopBarType { Pending, Waitting, Processing, Completed }

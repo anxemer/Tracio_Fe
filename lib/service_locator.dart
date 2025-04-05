@@ -63,6 +63,7 @@ import 'package:tracio_fe/domain/blog/usecase/unBookmark.dart';
 import 'package:tracio_fe/domain/shop/repositories/shop_service_repository.dart';
 import 'package:tracio_fe/domain/shop/usecase/add_to_cart.dart';
 import 'package:tracio_fe/domain/shop/usecase/booking_service.dart';
+import 'package:tracio_fe/domain/shop/usecase/delete_cart_item.dart';
 import 'package:tracio_fe/domain/shop/usecase/get_booking.dart';
 import 'package:tracio_fe/domain/shop/usecase/get_cart_item.dart';
 import 'package:tracio_fe/domain/shop/usecase/get_cate_service.dart';
@@ -168,4 +169,6 @@ Future<void> initializeDependencies() async {
   sl.registerFactory<GetCateServiceUseCase>(() => GetCateServiceUseCase());
   sl.registerFactory<BookingServiceUseCase>(() => BookingServiceUseCase());
   sl.registerFactory<GetBookingUseCase>(() => GetBookingUseCase());
+  sl.registerFactory<DeleteCartItemUseCase>(() => DeleteCartItemUseCase());
+  
 }

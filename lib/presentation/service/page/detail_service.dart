@@ -3,13 +3,15 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tracio_fe/common/helper/is_dark_mode.dart';
+import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
 import 'package:tracio_fe/common/helper/rating_start.dart';
 import 'package:tracio_fe/common/widget/appbar/app_bar.dart';
 import 'package:tracio_fe/common/widget/button/text_button.dart';
 import 'package:tracio_fe/common/widget/picture/circle_picture.dart';
 import 'package:tracio_fe/core/configs/theme/app_colors.dart';
-import 'package:tracio_fe/domain/shop/usecase/add_to_cart.dart';
 import 'package:tracio_fe/presentation/service/bloc/bookingservice/booking_service_cubit.dart';
+import 'package:tracio_fe/presentation/service/page/shop_service.dart';
+import 'package:tracio_fe/presentation/service/widget/plan_service_icon.dart';
 import 'package:tracio_fe/presentation/service/widget/review_service.dart';
 
 import '../../../common/widget/blog/custom_bottomsheet.dart';
@@ -17,16 +19,13 @@ import '../../../common/widget/button/button.dart';
 import '../../../common/widget/input_text_form_field.dart';
 import '../../../core/configs/theme/assets/app_images.dart';
 import '../../../core/constants/app_size.dart';
-import '../../../domain/shop/entities/shop_entity.dart';
-import '../../../domain/shop/entities/shop_service_entity.dart';
-import '../../../service_locator.dart';
+import '../../../domain/shop/entities/response/shop_service_entity.dart';
+import '../bloc/cart_item_bloc/cart_item_cubit.dart';
 import '../widget/add_schedule.dart';
 
 class DetailServicePage extends StatefulWidget {
-  const DetailServicePage(
-      {super.key, required this.service, required this.shop});
+  const DetailServicePage({super.key, required this.service});
   final ShopServiceEntity service;
-  final ShopEntity shop;
 
   @override
   State<DetailServicePage> createState() => _DetailServicePageState();
@@ -68,12 +67,7 @@ class _DetailServicePageState extends State<DetailServicePage> {
                     : Colors.grey.shade200,
                 borderRadius: BorderRadius.circular(AppSize.borderRadiusLarge),
               ),
-              child: Icon(
-                Icons.edit_calendar_rounded,
-                color:
-                    isDark ? AppColors.secondBackground : AppColors.background,
-                size: AppSize.iconMedium,
-              )),
+              child: PlanServiceIcon()),
         ),
         // height: 100.h,
       ),
@@ -249,7 +243,7 @@ class _DetailServicePageState extends State<DetailServicePage> {
             children: [
               Expanded(
                 child: Text(
-                  widget.service.name!,
+                  widget.service.serviceName!,
                   style: TextStyle(
                     color: isDark ? Colors.grey.shade300 : Colors.black87,
                     fontWeight: FontWeight.bold,
@@ -367,7 +361,7 @@ class _DetailServicePageState extends State<DetailServicePage> {
               Column(
                 children: [
                   Text(
-                    widget.shop.shopName!,
+                    widget.service.shopName!,
                     style: TextStyle(
                       color: isDark ? Colors.grey.shade300 : Colors.black87,
                       fontWeight: FontWeight.w600,
@@ -409,11 +403,17 @@ class _DetailServicePageState extends State<DetailServicePage> {
               Spacer(),
               BasicTextButton(
                 fontSize: AppSize.textSmall,
-                onPress: () {},
-                text: 'View Shop',
+                onPress: () {
+                  AppNavigator.push(
+                      context,
+                      ShopServicepage(
+                        shopId: widget.service.shopId!,
+                      ));
+                },
+                text: 'View Shop ',
                 borderColor:
                     isDark ? AppColors.secondBackground : AppColors.background,
-              )
+              ),
             ],
           ),
           SizedBox(
@@ -427,7 +427,7 @@ class _DetailServicePageState extends State<DetailServicePage> {
                     isDark ? AppColors.secondBackground : AppColors.background,
               ),
               Text(
-                '${widget.shop.district!} ${widget.shop.city!}',
+                '${widget.service.district!} ${widget.service.city!}',
                 style: TextStyle(
                   color: isDark ? Colors.white : Colors.black,
                   fontWeight: FontWeight.w600,
@@ -443,16 +443,27 @@ class _DetailServicePageState extends State<DetailServicePage> {
 
   Widget buildButton(BuildContext context) {
     var bookCubit = context.read<BookingServiceCubit>();
-
+    var cartItemCubit = context.read<CartItemCubit>();
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         ButtonDesign(
-          ontap: () {
-            sl<AddToCartUseCase>().call(widget.service.serviceId!);
+          ontap: () async {
+            bool isInCart = cartItemCubit.cartItem.any(
+              (cartItem) => cartItem.serviceId == widget.service.serviceId!,
+            );
+
+            if (isInCart) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Service is already in cart!')),
+              );
+            } else {
+              context
+                  .read<CartItemCubit>()
+                  .addCartItem(widget.service.serviceId!);
+            }
           },
           text: 'Add To Plan',
-          // image: AppImages.draft,
           fillColor: Colors.transparent,
           textColor: context.isDarkMode ? Colors.grey.shade200 : Colors.black87,
           borderColor:

@@ -20,6 +20,7 @@ import 'package:tracio_fe/presentation/blog/widget/add_category_blog.dart';
 import 'package:tracio_fe/presentation/blog/widget/choose_audience_blog.dart';
 import 'package:tracio_fe/presentation/home/pages/home.dart';
 
+import '../../../common/widget/navbar/bottom_nav_bar_manager.dart';
 import '../bloc/create_blog_state.dart';
 
 class AddTitleBlogPage extends StatefulWidget {
@@ -83,7 +84,7 @@ class _AddTitleBlogPageState extends State<AddTitleBlogPage> {
               }
               if (state is CreateBlogSuccess) {
                 Future.microtask(() {
-                  AppNavigator.pushAndRemove(context, HomePage());
+                  AppNavigator.pushAndRemove(context, BottomNavBarManager());
                 });
               }
               return Padding(
@@ -284,7 +285,7 @@ class _AddTitleBlogPageState extends State<AddTitleBlogPage> {
                   context.read<CreateBlogCubit>().CreateBlog(CreateBlogReq(
                       categoryId: category,
                       content: _titleCon.text,
-                      privacySetting: audience,
+                      isPublic: audience == 0,
                       status: 0,
                       mediaFiles: widget.file));
                 },
@@ -304,7 +305,7 @@ class _AddTitleBlogPageState extends State<AddTitleBlogPage> {
                   context.read<CreateBlogCubit>().CreateBlog(CreateBlogReq(
                       categoryId: category,
                       content: _titleCon.text,
-                      privacySetting: audience,
+                      isPublic: audience == 1,
                       status: 1,
                       mediaFiles: widget.file));
                 },
@@ -329,15 +330,15 @@ class _AddTitleBlogPageState extends State<AddTitleBlogPage> {
         'Public',
         style: TextStyle(color: Colors.grey.shade500),
       );
-    } else if (index == 1) {
+    } else {
       return Text(
         'Private',
         style: TextStyle(color: Colors.grey.shade500),
       );
     }
-    return Text(
-      'Follower Only',
-      style: TextStyle(color: Colors.grey.shade500),
-    );
+    // return Text(
+    //   'Follower Only',
+    //   style: TextStyle(color: Colors.grey.shade500),
+    // );
   }
 }
