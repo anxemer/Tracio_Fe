@@ -45,6 +45,8 @@ import 'package:tracio_fe/domain/groups/repositories/group_repository.dart';
 import 'package:tracio_fe/domain/groups/repositories/vietnam_city_district_repository.dart';
 import 'package:tracio_fe/domain/groups/usecases/get_city_usecase.dart';
 import 'package:tracio_fe/domain/groups/usecases/get_district_usecase.dart';
+import 'package:tracio_fe/domain/groups/usecases/get_group_detail_usecase.dart';
+import 'package:tracio_fe/domain/groups/usecases/get_group_list_usecase.dart';
 import 'package:tracio_fe/domain/groups/usecases/post_group_usecase.dart';
 import 'package:tracio_fe/domain/map/repositories/elevation_repository.dart';
 import 'package:tracio_fe/domain/map/repositories/location_repository.dart';
@@ -146,4 +148,6 @@ Future<void> initializeDependencies() async {
   sl.registerFactory<GetDistrictUsecase>(() => GetDistrictUsecase());
   sl.registerFactory<GetCityUsecase>(() => GetCityUsecase());
   sl.registerFactory<PostGroupUsecase>(() => PostGroupUsecase());
+  sl.registerFactory<GetGroupDetailUsecase>(() => GetGroupDetailUsecase());
+  sl.registerFactory<GetGroupListUsecase>(() => GetGroupListUsecase());
 }

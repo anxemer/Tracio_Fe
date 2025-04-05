@@ -12,6 +12,7 @@ import 'package:tracio_fe/common/bloc/generic_data_cubit.dart';
 import 'package:tracio_fe/core/services/notifications/notification_service.dart';
 import 'package:tracio_fe/core/configs/theme/app_theme.dart';
 import 'package:tracio_fe/firebase_options.dart';
+import 'package:tracio_fe/presentation/groups/cubit/group_cubit.dart';
 import 'package:tracio_fe/presentation/map/bloc/route_cubit.dart';
 import 'package:tracio_fe/presentation/splash/page/splash.dart';
 import 'package:tracio_fe/presentation/map/bloc/tracking_location_bloc.dart';
@@ -85,6 +86,7 @@ class _MyAppState extends State<MyApp> {
         BlocProvider(create: (context) => GenericDataCubit()),
         BlocProvider(create: (context) => LocationCubit()),
         BlocProvider(create: (context) => RouteCubit()),
+        BlocProvider(create: (context) => GroupCubit()),
       ],
       child: ScreenUtilInit(
         designSize: Size(360, 690),

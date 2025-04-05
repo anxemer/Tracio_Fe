@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tracio_fe/core/configs/theme/app_colors.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
+import 'package:tracio_fe/data/groups/models/request/get_group_list_req.dart';
+import 'package:tracio_fe/presentation/groups/cubit/group_cubit.dart';
+import 'package:tracio_fe/presentation/groups/cubit/group_state.dart';
 import 'package:tracio_fe/presentation/groups/pages/create_group.dart';
+import 'package:tracio_fe/presentation/groups/widgets/my_group_item.dart';
 import 'package:tracio_fe/presentation/groups/widgets/recommend_group_item.dart';
 
 class GroupTab extends StatefulWidget {
@@ -18,96 +23,186 @@ class _GroupTabState extends State<GroupTab>
   bool get wantKeepAlive => true;
 
   @override
+  void initState() {
+    super.initState();
+    if (context.read<GroupCubit>().state is! GetGroupListSuccess) {
+      _onRefresh();
+    }
+  }
+
+  void _onRefresh() async {
+    GetGroupListReq request = GetGroupListReq(
+      pageNumber: 1,
+      rowsPerPage: 10,
+    );
+    context.read<GroupCubit>().getGroupList(request);
+  }
+
+  @override
   Widget build(BuildContext context) {
     super.build(context);
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          // Create your group
-          Container(
-            width: double.infinity,
-            color: Colors.white,
-            padding: EdgeInsets.symmetric(
-                horizontal: AppSize.apHorizontalPadding,
-                vertical: AppSize.apVerticalPadding / 2),
-            child: Row(
-              children: [
-                Text("Create your own Group"),
-                Spacer(),
-                TextButton(
-                  style: ButtonStyle(
-                    backgroundColor: WidgetStatePropertyAll(Colors.white),
-                    shape: WidgetStatePropertyAll(RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5.0))),
-                    side: WidgetStatePropertyAll(
-                        BorderSide(color: AppColors.primary, width: 1)),
-                  ),
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => CreateGroupScreen()));
-                  },
-                  child: Text(
-                    "Create a group",
-                    style: TextStyle(
-                        fontSize: AppSize.textSmall.sp,
-                        color: AppColors.primary),
+    return RefreshIndicator(
+      displacement: 20,
+      color: AppColors.primary,
+      onRefresh: () async {
+        _onRefresh();
+      },
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Column(
+          children: [
+            // Create your group
+            Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border(
+                  bottom: BorderSide(
+                    color: Colors.grey.shade300,
+                    width: 1,
                   ),
                 ),
-              ],
-            ),
-          ),
-
-          // List my group
-          SizedBox(height: AppSize.apSectionPadding),
-
-          // Groups near you
-          Padding(
-            padding: const EdgeInsets.symmetric(
-                horizontal: AppSize.apHorizontalPadding),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  spacing: AppSize.apHorizontalPadding / 2,
-                  children: [
-                    Icon(
-                      Icons.local_attraction_rounded,
-                      size: AppSize.iconMedium,
+              ),
+              padding: EdgeInsets.symmetric(
+                  horizontal: AppSize.apHorizontalPadding,
+                  vertical: AppSize.apVerticalPadding / 2),
+              child: Row(
+                children: [
+                  Text("Create your own Group"),
+                  Spacer(),
+                  TextButton(
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStatePropertyAll(Colors.white),
+                      shape: WidgetStatePropertyAll(RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5.0))),
+                      side: WidgetStatePropertyAll(
+                          BorderSide(color: AppColors.primary, width: 1)),
                     ),
-                    Text("Popular Public Groups Near You",
-                        style: TextStyle(
-                            fontSize: AppSize.textSmall.sp,
-                            fontWeight: FontWeight.w600)),
-                  ],
-                ),
-
-                // List of recommended groups
-                SizedBox(height: 16),
-              ],
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => CreateGroupScreen()));
+                    },
+                    child: Text(
+                      "Create a group",
+                      style: TextStyle(
+                          fontSize: AppSize.textSmall.sp,
+                          color: AppColors.primary),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          Wrap(
-            spacing: AppSize.apHorizontalPadding / 4,
-            runSpacing: AppSize.apHorizontalPadding / 4,
-            children: List.generate(
-              12,
-              (index) {
-                return RecommendGroupItem(
-                  groupImageUrl: 'https://www.eurobasket.com/logos/torr.png',
-                  groupName: 'Group tên dài quá dài',
-                  address: 'Hà nội, Hồ Chí Minh, Bình Định, Bình Dương',
-                  memberCount: 12126,
-                );
+
+            // List my group
+            BlocConsumer<GroupCubit, GroupState>(
+              listener: (context, state) {
+                if (state is GroupFailure) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                          'Something went wrong, please try later!\n${state.errorMessage}'),
+                    ),
+                  );
+                }
+              },
+              builder: (context, state) {
+                if (state is GetGroupListSuccess) {
+                  if (state.groupList.isEmpty) {
+                    return Center(child: Text("No groups found"));
+                  } else {
+                    return ListView.builder(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: AppSize.apHorizontalPadding / 4),
+                      itemCount: state.groupList.length,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        return MyGroupItem(
+                          group: state.groupList[index],
+                        );
+                      },
+                    );
+                  }
+                } else {
+                  return SizedBox.shrink();
+                }
               },
             ),
-          ),
 
-          const SizedBox(
-            height: AppSize.apVerticalPadding,
-          ),
-        ],
+            // Groups near you
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: AppSize.apHorizontalPadding,
+                  vertical: AppSize.apSectionPadding),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    spacing: AppSize.apHorizontalPadding / 2,
+                    children: [
+                      Icon(
+                        Icons.local_attraction_rounded,
+                        size: AppSize.iconMedium,
+                      ),
+                      Text("Popular Public Groups Near You",
+                          style: TextStyle(
+                              fontSize: AppSize.textSmall.sp,
+                              fontWeight: FontWeight.w600)),
+                    ],
+                  ),
+
+                  // List of recommended groups
+                ],
+              ),
+            ),
+            BlocConsumer<GroupCubit, GroupState>(
+              listener: (context, state) {
+                if (state is GroupFailure) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                          'Something went wrong, please try later!\n${state.errorMessage}'),
+                    ),
+                  );
+                }
+              },
+              builder: (context, state) {
+                if (state is GetGroupListSuccess) {
+                  if (state.groupList.isEmpty) {
+                    return Center(child: Text("No groups found"));
+                  } else {
+                    return GridView.builder(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: AppSize.apHorizontalPadding / 4),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: AppSize.apHorizontalPadding / 4,
+                        mainAxisSpacing: AppSize.apHorizontalPadding / 4,
+                        childAspectRatio: 0.65,
+                      ),
+                      itemCount: state.groupList.length,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        return RecommendGroupItem(
+                          group: state.groupList[index],
+                        );
+                      },
+                    );
+                  }
+                } else {
+                  return SizedBox.shrink();
+                }
+              },
+            ),
+
+            const SizedBox(
+              height: AppSize.apVerticalPadding,
+            ),
+          ],
+        ),
       ),
     );
   }

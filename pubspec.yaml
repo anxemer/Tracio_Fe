@@ -88,7 +88,7 @@ dependencies:
   flutter_easyloading:
   timeago:
   cached_network_image:
-
+  shimmer:
   fixnum: ^1.1.1
 dev_dependencies:
   protoc_plugin: ^21.1.2

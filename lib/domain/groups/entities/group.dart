@@ -1,23 +1,46 @@
-import 'package:tracio_fe/data/groups/models/response/group_rep.dart';
-
-class Group extends GroupResponseModel {
+class Group {
+  final int groupId;
+  final String groupName;
+  final String? description;
+  final String groupThumbnail;
+  final bool isPublic;
+  final int maxParticipants;
+  final String district;
+  final String city;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
+  final int participantCount;
+  final Creator creator;
   Group({
-    required super.groupId,
-    required super.groupName,
-    super.description,
-    required super.groupThumbnail,
-    required super.isPublic,
-    required super.maxParticipants,
-    required super.district,
-    required super.city,
-    required super.createdAt,
-    required super.updatedAt,
+    required this.groupId,
+    required this.groupName,
+    this.description,
+    required this.groupThumbnail,
+    required this.isPublic,
+    required this.maxParticipants,
+    required this.district,
+    required this.city,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.participantCount,
+    required this.creator,
   });
 
-  // Example of a UI-specific method
   String get formattedDate {
-    return "${createdAt.day}-${createdAt.month}-${createdAt.year}"; // Example format
+    return "${createdAt!.day}-${createdAt!.month}-${createdAt!.year}";
   }
 
   int get remainingSpots => maxParticipants - 50;
+}
+
+
+class Creator {
+  final int userId;
+  final String username;
+  final String profilePicture;
+  Creator({
+    required this.userId,
+    required this.username,
+    required this.profilePicture,
+  });
 }

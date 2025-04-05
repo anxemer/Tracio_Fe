@@ -1,80 +1,100 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
+import 'package:tracio_fe/core/constants/app_size.dart';
+import 'package:tracio_fe/domain/groups/entities/group.dart';
+import 'package:tracio_fe/presentation/groups/pages/group_detail.dart';
 
 class MyGroupItem extends StatelessWidget {
-  final String groupImageUrl;
-  final String groupName;
-  final int memberCount;
-  final String address;
-  final int postCount;
+  final Group group;
 
-  const MyGroupItem({
-    super.key,
-    required this.groupImageUrl,
-    required this.groupName,
-    required this.memberCount,
-    required this.address,
-    required this.postCount,
-  });
+  const MyGroupItem({super.key, required this.group});
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Container(
-        padding: const EdgeInsets.all(12.0),
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey.withOpacity(0.3)),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Row(
-          children: [
-            // Left side: Group Image
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Image.network(
-                groupImageUrl,
-                width: 80,
-                height: 80,
-                fit: BoxFit.cover,
+    return Column(
+      children: [
+        ListTile(
+          tileColor: Colors.white,
+          contentPadding: EdgeInsets.all(AppSize.apHorizontalPadding * 0.5),
+          leading: ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: CachedNetworkImage(
+              imageUrl: group.groupThumbnail,
+              width: 60,
+              height: 60,
+              fit: BoxFit.cover,
+              placeholder: (context, url) => Container(
+                width: 60,
+                height: 60,
+                color: Colors.grey[200],
+                child: const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ),
+              errorWidget: (context, url, error) => Container(
+                width: 60,
+                height: 60,
+                color: Colors.grey[200],
+                child: Container(
+                  width: 60,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Center(
+                    child: Icon(
+                      Icons.error,
+                      color: Colors.red,
+                    ),
+                  ),
+                ),
               ),
             ),
-            const SizedBox(width: 12),
-            // Right side: Group Info
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    groupName,
-                    style: TextStyle(
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black),
-                  ),
-                  SizedBox(height: 4),
-                  Text(
-                    '$memberCount members',
-                    style: TextStyle(
-                        fontSize: 14.0, color: Colors.grey.withOpacity(0.7)),
-                  ),
-                  SizedBox(height: 4),
-                  Text(
-                    address,
-                    style: TextStyle(
-                        fontSize: 12.0, color: Colors.grey.withOpacity(0.6)),
-                  ),
-                  SizedBox(height: 4),
-                  Text(
-                    '$postCount posts',
-                    style: TextStyle(
-                        fontSize: 12.0, color: Colors.grey.withOpacity(0.6)),
-                  ),
-                ],
-              ),
+          ),
+          title: Text(
+            group.groupName,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
             ),
-          ],
+          ),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '${group.participantCount}/${group.maxParticipants} members',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey.shade600,
+                ),
+              ),
+              Text(
+                '${group.city}, ${group.district}',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey.shade600,
+                ),
+              ),
+            ],
+          ),
+          trailing: Icon(
+            Icons.arrow_forward_ios,
+            size: 20,
+          ),
+          onTap: () async {
+            AppNavigator.push(
+                context,
+                GroupDetailScreen(
+                  groupId: group.groupId,
+                ));
+          },
         ),
-      ),
+        Divider(
+          height: 0.1,
+        )
+      ],
     );
   }
 }

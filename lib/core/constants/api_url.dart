@@ -5,7 +5,7 @@ import 'package:tracio_fe/data/map/models/request/mapbox_direction_req.dart';
 
 class ApiUrl {
   //base Url
-  static const baseURL = 'http://localhost:';
+  static const baseURL = 'https://user.tracio.space/';
   // static const baseURL = 'https://10.10.1.66:';
   // static const baseURL = 'https://10.87.46.103:';
   static const hubUrl = 'http://10.87.46.103:5002/content-hub';
@@ -13,7 +13,7 @@ class ApiUrl {
   static const portUser = '5003';
   static const portBlog = '5002';
   static const portRoute = '5009';
-  static const portGroup = '5003';
+  static const portGroup = '';
 
   //Api User
   static const registerWithEP = '$portUser/api/auth/register-user';
@@ -155,5 +155,11 @@ class ApiUrl {
   }
 
   static const postGroup = '$portGroup/api/group';
+  static Uri urlGetGroupList([Map<String, String>? params]) {
+    return Uri.parse('$portGroup/api/group').replace(queryParameters: params);
+  }
 
+  static Uri urlGetGroupDetail(int groupId) {
+    return Uri.parse('$portGroup/api/group/$groupId');
+  }
 }

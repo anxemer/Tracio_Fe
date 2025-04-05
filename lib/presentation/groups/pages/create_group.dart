@@ -25,6 +25,12 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
   int currentStep = 0;
 
   @override
+  void initState() {
+    context.read<GroupCubit>().refreshState();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -33,15 +39,8 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
         data: Theme.of(context).copyWith(
             colorScheme:
                 ColorScheme.light(primary: AppColors.secondBackground)),
-        child: MultiBlocProvider(
-          providers: [
-            BlocProvider(
-              create: (context) => FormGroupCubit()..validateStep(0),
-            ),
-            BlocProvider(
-              create: (context) => GroupCubit(),
-            ),
-          ],
+        child: BlocProvider(
+          create: (context) => FormGroupCubit()..validateStep(0),
           child: BlocBuilder<FormGroupCubit, FormGroupState>(
             builder: (context, state) {
               return Column(
@@ -102,7 +101,10 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                                 } else if (state is PostGroupSuccess) {
                                   if (state.isSuccess) {
                                     AppNavigator.push(
-                                        context, GroupDetailScreen());
+                                        context,
+                                        GroupDetailScreen(
+                                          groupId: state.groupId,
+                                        ));
                                   }
                                 }
                               },
