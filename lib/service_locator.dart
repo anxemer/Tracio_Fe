@@ -170,5 +170,4 @@ Future<void> initializeDependencies() async {
   sl.registerFactory<BookingServiceUseCase>(() => BookingServiceUseCase());
   sl.registerFactory<GetBookingUseCase>(() => GetBookingUseCase());
   sl.registerFactory<DeleteCartItemUseCase>(() => DeleteCartItemUseCase());
-  
 }

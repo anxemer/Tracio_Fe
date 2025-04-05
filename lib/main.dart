@@ -90,45 +90,44 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-      providers: [
-        BlocProvider(create: (context) => SplashCubit()..appStarted()),
-        BlocProvider(create: (context) => AuthCubit()),
-        BlocProvider(create: (context) => GetCommentCubit()),
-        BlocProvider(create: (context) => GenericDataCubit()),
-        BlocProvider(create: (context) => LocationCubit()),
-        BlocProvider(create: (context) => RouteCubit()),
-        BlocProvider(create: (context) => GroupCubit()),
-        BlocProvider(create: (context) => ThemeCubit()),
-        BlocProvider(create: (context) => CartItemCubit()..getCartitem()),
-        BlocProvider(create: (context) => GetServiceCubit()),
-        BlocProvider(
-            create: (context) => GetCategoryCubit()..getCategoryService()),
-        BlocProvider(
-          create: (context) => BookingServiceCubit(),
-        ),
-        BlocProvider(
-          create: (context) => FilterCubit(),
-        ),
-        // BlocProvider(create: (context) => AuthCubit()..checkUser())
-      ],
-      child: BlocBuilder<ThemeCubit, ThemeMode>(
-        builder: (context, state) {
-          return ScreenUtilInit(
-            designSize: Size(360, 690),
-            minTextAdapt: true,
-            splitScreenMode: true,
-            builder: (context, child) => MaterialApp(
-              theme: AppTheme.appLightTheme,
-              darkTheme: AppTheme.appDarkTheme,
-              themeMode: state,
-              debugShowCheckedModeBanner: false,
-              home: SplashPage(),
-              builder: EasyLoading.init(),
-            ),
-          );
-        },
-      ),
-    );
+        providers: [
+          BlocProvider(create: (context) => SplashCubit()..appStarted()),
+          BlocProvider(create: (context) => AuthCubit()),
+          BlocProvider(create: (context) => GetCommentCubit()),
+          BlocProvider(create: (context) => GenericDataCubit()),
+          BlocProvider(create: (context) => LocationCubit()),
+          BlocProvider(create: (context) => RouteCubit()),
+          BlocProvider(create: (context) => GroupCubit()),
+          BlocProvider(create: (context) => ThemeCubit()),
+          BlocProvider(create: (context) => CartItemCubit()..getCartitem()),
+          BlocProvider(create: (context) => GetServiceCubit()),
+          BlocProvider(
+              create: (context) => GetCategoryCubit()..getCategoryService()),
+          BlocProvider(
+            create: (context) => BookingServiceCubit(),
+          ),
+          BlocProvider(
+            create: (context) => FilterCubit(),
+          ),
+          // BlocProvider(create: (context) => AuthCubit()..checkUser())
+        ],
+        child: BlocBuilder<ThemeCubit, ThemeMode>(
+          builder: (context, state) {
+            return ScreenUtilInit(
+              designSize: Size(360, 690),
+              minTextAdapt: true,
+              splitScreenMode: true,
+              builder: (context, child) => MaterialApp(
+                theme: AppTheme.appLightTheme,
+                darkTheme: AppTheme.appDarkTheme,
+                themeMode: state,
+                debugShowCheckedModeBanner: false,
+                home: SplashPage(),
+                builder: EasyLoading.init(),
+              ),
+            );
+          },
+        ));
   }
 }
 
