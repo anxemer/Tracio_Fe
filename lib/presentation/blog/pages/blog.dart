@@ -284,7 +284,7 @@ class _BlogPageState extends State<BlogPage> {
     } else if (state is GetBlogFailure) {
       Future.delayed(Duration.zero, () {
         if (context.mounted) {
-          _showAuthFailureDialog(context);
+          // _showAuthFailureDialog(context);
         }
       });
       return SliverFillRemaining(
