@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:tracio_fe/common/helper/is_dark_mode.dart';
 import 'package:tracio_fe/core/configs/theme/app_colors.dart';
+
+import '../../../core/configs/theme/app_colors.dart';
 
 class BasicNavbar extends StatefulWidget {
   const BasicNavbar({super.key});
@@ -20,7 +23,7 @@ class _BasicNavbarState extends State<BasicNavbar> {
       height: 60,
       child: Container(
         decoration: BoxDecoration(
-            color: Colors.white,
+            color: context.isDarkMode ? Color(0xFF1E1E1E) : Colors.white,
             border: Border(
               top: BorderSide(width: .8, color: Colors.grey.shade200),
             )),

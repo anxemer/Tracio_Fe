@@ -1,9 +1,13 @@
+import 'dart:ffi';
+
 import 'package:dartz/dartz.dart';
-import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:tracio_fe/core/erorr/exception.dart';
 import 'package:tracio_fe/core/erorr/failure.dart';
 import 'package:tracio_fe/core/network/network_infor.dart';
 import 'package:tracio_fe/core/usecase/usecase.dart';
+import 'package:tracio_fe/data/auth/models/authentication_respone_model.dart';
 import 'package:tracio_fe/data/auth/models/register_req.dart';
 import 'package:tracio_fe/data/auth/models/user_model.dart';
 import 'package:tracio_fe/data/auth/sources/auth_remote_source/auth_api_service.dart';
@@ -11,10 +15,11 @@ import 'package:tracio_fe/data/auth/sources/auth_remote_source/auth_firebase_ser
 import 'package:tracio_fe/domain/auth/entities/user.dart';
 import 'package:tracio_fe/domain/auth/repositories/auth_repository.dart';
 
+import '../../../domain/auth/entities/authentication_response_entity.dart';
 import '../../../service_locator.dart';
 import '../sources/auth_local_source/auth_local_source.dart';
 
-typedef _DataSourceChoose = Future<UserModel> Function();
+typedef _DataSourceChoose = Future<AuthenticationResponseModel> Function();
 
 class AuthRepositotyImpl extends AuthRepository {
   // final AuthLocalSource localSource;
@@ -37,35 +42,27 @@ class AuthRepositotyImpl extends AuthRepository {
 
   @override
   Future<Either<Failure, String>> verifyEmail(String email) async {
-    if (await sl<NetworkInfor>().isConnected) {
-      try {
-        await sl<AuthFirebaseService>().verifyEmail(email);
-        return Right('Verify Susscess');
-      } on Failure catch (e) {
-        return Left(e);
-      }
-    } else {
-      return Left(NetworkFailure('Không có kết nối mạng'));
+    try {
+      var result = await sl<AuthFirebaseService>().verifyEmail(email);
+      return Right(result);
+    } on FirebaseAuthException {
+      return Left(ExceptionFailure('Verify email fail'));
     }
   }
 
   @override
   Future<Either<Failure, bool>> checkEmailVerified() async {
-    if (await sl<NetworkInfor>().isConnected) {
-      try {
-        await sl<AuthFirebaseService>().checkEmailVeriy();
+    try {
+      bool isVerify = await sl<AuthFirebaseService>().checkEmailVerify();
 
-        return Right(true);
-      } on Failure catch (e) {
-        return Left(e);
-      }
-    } else {
-      return Left(NetworkFailure('Không có kết nối mạng'));
+      return Right(isVerify);
+    } on Failure catch (e) {
+      return Left(e);
     }
   }
 
   @override
-  Future<Either<Failure, UserEntity>> login(login) async {
+  Future<Either<Failure, AuthenticationResponseEntity>> login(login) async {
     return await _authenticate(() {
       return sl<AuthApiService>().login(login);
     });
@@ -80,8 +77,6 @@ class AuthRepositotyImpl extends AuthRepository {
       } else {
         return Right(true);
       }
-    } on CacheException catch (e) {
-      return Left(CacheFailure('Token not found'));
     } on Exception catch (e) {
       return Left(NetworkFailure('Lỗi kết nối mạng'));
     }
@@ -99,33 +94,30 @@ class AuthRepositotyImpl extends AuthRepository {
     }
   }
 
-  Future<Either<Failure, UserModel>> _authenticate(
+  Future<Either<Failure, AuthenticationResponseModel>> _authenticate(
       _DataSourceChoose getDataSource) async {
-    bool isConnected = await sl<NetworkInfor>().isConnected;
-    // print("Kết nối mạng: $isConnected");
+    try {
+      final remoteResponse = await getDataSource();
+      String token = remoteResponse.accessToken;
+      Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
 
-    // print('Token $token');
-    if (isConnected) {
-      try {
-        final remoteResponse = await getDataSource();
-        String token = remoteResponse.session.accessToken;
-        await sl<AuthLocalSource>().saveToken(token);
-        print('Token $token');
-        sl<AuthLocalSource>().saveUser(remoteResponse);
-        return Right(remoteResponse);
-      } on DioException catch (e) {
-        if (e.response != null) {
-          return Left(ServerFailure(
-              e.response?.data['message'] ?? "Lỗi server: ${e.message}"));
-        } else {
-          return Left(NetworkFailure("Không có kết nối mạng: ${e.message}"));
-        }
-      } catch (e) {
-        return Left(ExceptionFailure("Lỗi không xác định: $e"));
-      }
+      int userId = int.parse(decodedToken['custom_id'].toString());
+      String uniqueName = decodedToken['unique_name'];
+      String email = decodedToken['email'];
+      String avatar = decodedToken['avatar'];
+      UserModel user = UserModel(
+          email: email,
+          profilePicture: avatar,
+          userId: userId,
+          userName: uniqueName);
+      await sl<AuthLocalSource>().saveToken(token);
+      sl<AuthLocalSource>().saveUser(user);
+      return Right(remoteResponse);
+    } on CredentialFailure catch (e) {
+      return Left(e);
+    } on ServerException {
+      return Left(ServerFailure('Network is unreachable'));
     }
-
-    return Left(NetworkFailure("Không có kết nối mạng"));
   }
 
   @override
@@ -133,7 +125,6 @@ class AuthRepositotyImpl extends AuthRepository {
     try {
       final user = await sl<AuthLocalSource>().getUser();
       return Right(user);
-      // ignore: empty_catches
     } catch (e) {
       return Left(CacheFailure(e.toString()));
     }

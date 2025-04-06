@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:tracio_fe/common/helper/is_dark_mode.dart';
 import 'package:tracio_fe/common/widget/button/text_button.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/domain/blog/entites/blog_entity.dart';
@@ -51,7 +52,7 @@ class _ReactBlogState extends State<ReactBlog> {
                               id: widget.blogEntity.blogId, type: 'blog'));
                           setState(() {
                             // if (widget.blogEntity.likesCount > 0) {
-                            //   widget.blogEntity.likesCount--;
+                            widget.blogEntity.likesCount--;
                             // }
 
                             widget.blogEntity.isReacted = false;
@@ -70,7 +71,7 @@ class _ReactBlogState extends State<ReactBlog> {
                             // context.read<ReactBlogCubit>().reactBlog(isReact);
 
                             setState(() {
-                              // widget.blogEntity.likesCount++;
+                              widget.blogEntity.likesCount++;
                               // widget.blogEntity.reactionId = data.reactionId!;
                               widget.blogEntity.isReacted = isReact;
                             });
@@ -83,19 +84,21 @@ class _ReactBlogState extends State<ReactBlog> {
                             : Icons.favorite_border_outlined,
                         color: widget.blogEntity.isReacted
                             ? Colors.red
-                            : Colors.black87,
-                        size: AppSize.iconMedium.sp,
+                            : context.isDarkMode
+                                ? Colors.white
+                                : Colors.black,
+                        size: AppSize.iconSmall,
                       )),
-                  SizedBox(
-                    width: 10.w,
-                  ),
+                  // SizedBox(
+                  //   width: 2.w,
+                  // ),
                   BasicTextButton(
                       text: widget.blogEntity.likesCount.toString(),
                       onPress: widget.textReactionAction),
                 ],
               ),
               SizedBox(
-                width: 20.w,
+                width: 6.w,
               ),
               Row(
                 children: [
@@ -103,13 +106,13 @@ class _ReactBlogState extends State<ReactBlog> {
                     onTap: widget.cmtAction,
                     child: Icon(
                       Icons.comment_outlined,
-                      color: Colors.black,
-                      size: AppSize.iconMedium.sp,
+                      color: context.isDarkMode ? Colors.white : Colors.black,
+                      size: AppSize.iconSmall,
                     ),
                   ),
-                  SizedBox(
-                    width: 10.w,
-                  ),
+                  // SizedBox(
+                  //   width: 2.w,
+                  // ),
                   BasicTextButton(
                       text: widget.blogEntity.commentsCount.toString(),
                       onPress: widget.cmtAction),
@@ -145,8 +148,8 @@ class _ReactBlogState extends State<ReactBlog> {
                   widget.blogEntity.isBookmarked
                       ? Icons.bookmark_added_rounded
                       : Icons.bookmark_border,
-                  color: Colors.black,
-                  size: AppSize.iconMedium * 1.2.sp,
+                  color: context.isDarkMode ? Colors.white : Colors.black,
+                  size: AppSize.iconSmall,
                 ),
               ),
             ],

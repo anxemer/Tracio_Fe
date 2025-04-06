@@ -1,9 +1,5 @@
-import 'dart:convert';
-
+import '../../../../common/helper/media_file.dart';
 import '../../../../domain/blog/entites/blog_entity.dart';
-
-List<BlogModels> blogModelListFromJson(String str) => List<BlogModels>.from(
-    json.decode(str)['result']['blogs'].map((x) => BlogModels.fromJson(x)));
 
 class BlogModels extends BlogEntity {
   BlogModels({
@@ -11,7 +7,7 @@ class BlogModels extends BlogEntity {
     required super.blogId,
     required super.userName,
     required super.avatar,
-    required super.privacySetting,
+    required super.isPublic,
     required super.isReacted,
     required super.isBookmarked,
     required super.content,
@@ -25,10 +21,10 @@ class BlogModels extends BlogEntity {
   factory BlogModels.fromJson(Map<String, dynamic> json) {
     return BlogModels(
       blogId: json["blogId"],
-      userId: json["userId"],
-      userName: json["userName"],
-      avatar: json["avatar"],
-      privacySetting: json["privacySetting"],
+      userId: json["creatorId"],
+      userName: json["creatorName"],
+      avatar: json["creatorAvatar"],
+      isPublic: json["isPublic"],
       isReacted: json["isReacted"],
       isBookmarked: json["isBookmarked"],
       content: json["content"],
@@ -38,7 +34,7 @@ class BlogModels extends BlogEntity {
               json["mediaFiles"]!.map((x) => MediaFile.fromJson(x))),
       createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
       updatedAt: DateTime.tryParse(json["updatedAt"] ?? ""),
-      likesCount: json["likesCount"],
+      likesCount: json["reactionsCount"],
       commentsCount: json["commentsCount"],
     );
   }
@@ -48,36 +44,14 @@ class BlogModels extends BlogEntity {
         "userId": userId,
         "userName": userName,
         "avatar": avatar,
-        "privacySetting": privacySetting,
+        "isPublic": isPublic,
         "isReacted": isReacted,
         "isBookmarked": isBookmarked,
         "content": content,
-        "mediaFiles": mediaFiles.map((x) => x?.toJson()).toList(),
+        "mediaFiles": mediaFiles.map((x) => x.toJson()).toList(),
         "createdAt": createdAt?.toIso8601String(),
         "updatedAt": updatedAt?.toIso8601String(),
         "likesCount": likesCount,
         "commentsCount": commentsCount,
-      };
-}
-
-class MediaFile {
-  MediaFile({
-    required this.mediaId,
-    required this.mediaUrl,
-  });
-
-  final int? mediaId;
-  final String? mediaUrl;
-
-  factory MediaFile.fromJson(Map<String, dynamic> json) {
-    return MediaFile(
-      mediaId: json["mediaId"],
-      mediaUrl: json["mediaUrl"],
-    );
-  }
-
-  Map<String, dynamic> toJson() => {
-        "mediaId": mediaId,
-        "mediaUrl": mediaUrl,
       };
 }

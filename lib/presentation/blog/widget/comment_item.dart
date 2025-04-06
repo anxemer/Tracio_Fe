@@ -1,16 +1,20 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tracio_fe/common/bloc/generic_data_cubit.dart';
 import 'package:tracio_fe/common/bloc/generic_data_state.dart';
+import 'package:tracio_fe/common/helper/is_dark_mode.dart';
 import 'package:tracio_fe/common/widget/button/text_button.dart';
 import 'package:tracio_fe/data/blog/models/request/get_reply_comment_req.dart';
 import 'package:tracio_fe/domain/blog/entites/comment_blog.dart';
 import 'package:tracio_fe/domain/blog/entites/reply_comment.dart';
 import 'package:tracio_fe/domain/blog/usecase/get_reply_comment.dart';
 
+import '../../../core/configs/theme/app_colors.dart';
 import '../../../core/configs/theme/assets/app_images.dart';
+import '../../../core/constants/app_size.dart';
 import '../../../data/blog/models/request/react_blog_req.dart';
 import '../../../domain/blog/usecase/react_blog.dart';
 import '../../../domain/blog/usecase/un_react_blog.dart';
@@ -57,10 +61,10 @@ class _CommentItemState extends State<CommentItem> {
             children: [
               Container(
                 height: 2.h,
-                color: Colors.black45,
+                color: context.isDarkMode ? Colors.white : Colors.black45,
               ),
               Padding(
-                padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 16.w),
+                padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 8.w),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -70,22 +74,37 @@ class _CommentItemState extends State<CommentItem> {
                         // Avatar
                         ClipOval(
                           child: SizedBox(
-                            width: 60.w,
-                            height: 60.h,
-                            child: Image.asset(AppImages.man),
-                          ),
+                              // width: AppSize.imageSmall.w,
+                              // height: AppSize.imageSmall.h,
+                              child: CachedNetworkImage(
+                            imageUrl: widget.comment.avatar!,
+                            fit: BoxFit.cover,
+                            imageBuilder: (context, imageProvider) =>
+                                CircleAvatar(
+                              // radius: 30.sp,
+                              backgroundImage: imageProvider,
+                            ),
+                            errorWidget: (context, url, error) => CircleAvatar(
+                              backgroundColor: Colors.transparent,
+                              radius: AppSize.imageSmall / 2.4.w,
+                              child: Icon(
+                                Icons.person,
+                                size: AppSize.imageSmall / 2.w,
+                              ),
+                            ),
+                          )),
                         ),
                         Container(
                           width: 2.w,
                           height:
                               _showReplies && widget.comment.repliesCount != 0
                                   ? (120 + widget.comment.repliesCount * 120).h
-                                  : 120.h, // Điều chỉnh chiều cao của thanh dọc
+                                  : 40.h, // Điều chỉnh chiều cao của thanh dọc
                           color: Colors.grey.withOpacity(0.5),
                         ),
                       ],
                     ),
-                    SizedBox(width: 16.w),
+                    SizedBox(width: 8.w),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -95,36 +114,72 @@ class _CommentItemState extends State<CommentItem> {
                               Text(
                                 widget.comment.userName.toString(),
                                 style: TextStyle(
-                                  fontSize: 28.sp,
+                                  fontSize: AppSize.textMedium.sp,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.black,
+                                  color: context.isDarkMode
+                                      ? Colors.white
+                                      : Colors.black,
                                 ),
                               ),
                               SizedBox(width: 20.w),
                               Text(
-                                timeago.format(widget.comment.createdAt!,
-                                    locale: 'vi'),
-                                style: TextStyle(fontSize: 20.sp),
+                                timeago.format(
+                                  widget.comment.createdAt!,
+                                ),
+                                style:
+                                    TextStyle(fontSize: AppSize.textMedium.sp),
                               ),
                             ],
                           ),
-                          SizedBox(height: 8.h),
+                          SizedBox(height: 4.h),
                           Text(
                             widget.comment.content.toString(),
                             style: TextStyle(
-                              fontSize: 32.sp,
-                              color: Colors.black,
+                              fontSize: AppSize.textLarge.sp,
+                              color: context.isDarkMode
+                                  ? Colors.white
+                                  : Colors.black,
                             ),
                           ),
-                          SizedBox(height: 12.h),
+                          SizedBox(height: 6.h),
                           mediaUrls.isEmpty
                               ? SizedBox()
                               : SizedBox(
-                                  height: 300.h,
-                                  width: 300.w,
-                                  child: Image.network(mediaUrls[0],
-                                      fit: BoxFit.cover),
+                                  height: AppSize.imageLarge.h,
+                                  width: AppSize.imageLarge.w,
+                                  child: Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey.shade100,
+                                      ),
+                                      width: MediaQuery.of(context).size.width,
+                                      margin:
+                                          EdgeInsets.symmetric(horizontal: 4.0),
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(10),
+                                        child: Image.network(mediaUrls[0],
+                                            fit: BoxFit.cover,
+                                            errorBuilder: (context, url,
+                                                    error) =>
+                                                Icon(
+                                                  Icons.error,
+                                                  color: context.isDarkMode
+                                                      ? AppColors.primary
+                                                      : AppColors.background,
+                                                ),
+                                            loadingBuilder: (context, child,
+                                                loadingProgress) {
+                                              if (loadingProgress == null)
+                                                return child;
+                                              return Center(
+                                                child:
+                                                    CircularProgressIndicator(),
+                                              );
+                                            }),
+                                      )),
                                 ),
+                          SizedBox(
+                            height: 6.h,
+                          ),
                           Row(
                             children: [
                               GestureDetector(
@@ -168,8 +223,10 @@ class _CommentItemState extends State<CommentItem> {
                                             : Icons.favorite_border_outlined,
                                         color: widget.comment.isReacted
                                             ? Colors.red
-                                            : Colors.black,
-                                        size: 40.sp,
+                                            : context.isDarkMode
+                                                ? Colors.white
+                                                : Colors.black,
+                                        size: AppSize.iconMedium.sp,
                                       ),
                                       BasicTextButton(
                                           text: widget.comment.likesCount
@@ -177,7 +234,7 @@ class _CommentItemState extends State<CommentItem> {
                                           onPress: () {})
                                     ],
                                   )),
-                              SizedBox(width: 20.w),
+                              SizedBox(width: 10.w),
                               Row(
                                 children: [
                                   GestureDetector(
@@ -204,7 +261,10 @@ class _CommentItemState extends State<CommentItem> {
                                     },
                                     child: Image.asset(
                                       AppImages.reply,
-                                      width: 40.w,
+                                      width: AppSize.iconMedium.w,
+                                      color: context.isDarkMode
+                                          ? Colors.white
+                                          : Colors.black,
                                     ),
                                   ),
                                   SizedBox(width: 10.w),
@@ -216,7 +276,7 @@ class _CommentItemState extends State<CommentItem> {
                               ),
                             ],
                           ),
-                          SizedBox(height: 8.h),
+                          SizedBox(height: 4.h),
                           if (widget.comment.repliesCount > 0)
                             GestureDetector(
                               onTap: () async {
@@ -241,8 +301,10 @@ class _CommentItemState extends State<CommentItem> {
                                     ? "Hide ${widget.comment.repliesCount} reply"
                                     : "Show ${widget.comment.repliesCount} reply",
                                 style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 24.sp,
+                                  color: context.isDarkMode
+                                      ? Colors.white
+                                      : Colors.grey,
+                                  fontSize: AppSize.textMedium.sp,
                                 ),
                               ),
                             ),
@@ -252,19 +314,22 @@ class _CommentItemState extends State<CommentItem> {
                                 if (state is DataLoading) {
                                   return Padding(
                                     padding:
-                                        EdgeInsets.symmetric(vertical: 16.h),
+                                        EdgeInsets.symmetric(vertical: 8.h),
                                     child: Center(
                                         child: CircularProgressIndicator()),
                                   );
                                 } else if (state is DataLoaded) {
-                                  final double itemHeight = 120.h;
-                                  final double padding = 20.h;
+                                  final double itemHeight =
+                                      AppSize.cardHeight.h;
+                                  final double padding =
+                                      AppSize.apHorizontalPadding.h;
                                   final double totalHeight =
                                       (itemHeight + padding) *
                                           state.data.length;
 
-                                  final double minHeight = 450.h;
-                                  final double maxHeight = 2000.h;
+                                  final double minHeight = 200.h;
+                                  final double maxHeight =
+                                      MediaQuery.of(context).size.height;
                                   final double dynamicHeight =
                                       totalHeight.clamp(minHeight, maxHeight);
                                   return Column(
@@ -277,16 +342,14 @@ class _CommentItemState extends State<CommentItem> {
                                           itemBuilder: (context, index) {
                                             return Padding(
                                               padding: EdgeInsets.symmetric(
-                                                  horizontal: 20.h,
-                                                  vertical: 10.h),
+                                                  horizontal: 6.h,
+                                                  vertical: 2.h),
                                               child: ReplyCommentItem(
                                                   reply: state.data[index]),
                                             );
                                           },
                                         ),
                                       ),
-
-                                  
                                     ],
                                   );
                                 } else if (state is FailureLoadData) {
@@ -314,6 +377,4 @@ class _CommentItemState extends State<CommentItem> {
       ),
     );
   }
-
-
 }

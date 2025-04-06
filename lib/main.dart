@@ -8,12 +8,16 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:tracio_fe/common/bloc/filter_cubit.dart';
 import 'package:tracio_fe/common/bloc/generic_data_cubit.dart';
 import 'package:tracio_fe/core/services/notifications/notification_service.dart';
 import 'package:tracio_fe/core/configs/theme/app_theme.dart';
+import 'package:tracio_fe/core/signalr_service.dart';
 import 'package:tracio_fe/firebase_options.dart';
 import 'package:tracio_fe/presentation/groups/cubit/group_cubit.dart';
 import 'package:tracio_fe/presentation/map/bloc/route_cubit.dart';
+import 'package:tracio_fe/presentation/blog/bloc/category/get_category_cubit.dart';
+import 'package:tracio_fe/presentation/service/bloc/service_bloc/get_service_cubit.dart';
 import 'package:tracio_fe/presentation/splash/page/splash.dart';
 import 'package:tracio_fe/presentation/map/bloc/tracking_location_bloc.dart';
 import 'package:tracio_fe/presentation/auth/bloc/authCubit/auth_cubit.dart';
@@ -21,11 +25,18 @@ import 'package:tracio_fe/presentation/blog/bloc/comment/get_comment_cubit.dart'
 import 'package:tracio_fe/presentation/splash/bloc/splash_cubit.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' as mp;
-
+import 'package:tracio_fe/presentation/theme/bloc/theme_cubit.dart';
+import 'presentation/service/bloc/bookingservice/booking_service_cubit.dart';
+import 'presentation/service/bloc/cart_item_bloc/cart_item_cubit.dart';
 import 'service_locator.dart' as di;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    statusBarColor: Colors.grey.shade700,
+    statusBarIconBrightness: Brightness.light,
+    statusBarBrightness: Brightness.dark,
+  ));
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
     statusBarColor: Colors.grey.shade700,
     statusBarIconBrightness: Brightness.light,
@@ -39,7 +50,7 @@ Future<void> main() async {
   } catch (e) {
     debugPrint("⚠️ Failed to load .env file: $e");
   }
-
+  await SignalRService().initConnection();
   await di.initializeDependencies();
 
   await _requestPermissions();
@@ -49,7 +60,7 @@ Future<void> main() async {
   HydratedBloc.storage = await HydratedStorage.build(
     storageDirectory: kIsWeb
         ? HydratedStorage.webStorageDirectory
-        : await getTemporaryDirectory(),
+        : await getApplicationDocumentsDirectory(),
   );
 
   runApp(const MyApp());
@@ -79,27 +90,44 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-      providers: [
-        BlocProvider(create: (context) => SplashCubit()..appStarted()),
-        BlocProvider(create: (context) => AuthCubit()..checkUser()),
-        BlocProvider(create: (context) => GetCommentCubit()),
-        BlocProvider(create: (context) => GenericDataCubit()),
-        BlocProvider(create: (context) => LocationCubit()),
-        BlocProvider(create: (context) => RouteCubit()),
-        BlocProvider(create: (context) => GroupCubit()),
-      ],
-      child: ScreenUtilInit(
-        designSize: Size(360, 690),
-        minTextAdapt: true,
-        splitScreenMode: true,
-        builder: (context, child) => MaterialApp(
-          theme: AppTheme.appTheme,
-          debugShowCheckedModeBanner: false,
-          home: SplashPage(),
-          builder: EasyLoading.init(),
-        ),
-      ),
-    );
+        providers: [
+          BlocProvider(create: (context) => SplashCubit()..appStarted()),
+          BlocProvider(create: (context) => AuthCubit()),
+          BlocProvider(create: (context) => GetCommentCubit()),
+          BlocProvider(create: (context) => GenericDataCubit()),
+          BlocProvider(create: (context) => LocationCubit()),
+          BlocProvider(create: (context) => RouteCubit()),
+          BlocProvider(create: (context) => GroupCubit()),
+          BlocProvider(create: (context) => ThemeCubit()),
+          BlocProvider(create: (context) => CartItemCubit()..getCartitem()),
+          BlocProvider(create: (context) => GetServiceCubit()),
+          BlocProvider(
+              create: (context) => GetCategoryCubit()..getCategoryService()),
+          BlocProvider(
+            create: (context) => BookingServiceCubit(),
+          ),
+          BlocProvider(
+            create: (context) => FilterCubit(),
+          ),
+          // BlocProvider(create: (context) => AuthCubit()..checkUser())
+        ],
+        child: BlocBuilder<ThemeCubit, ThemeMode>(
+          builder: (context, state) {
+            return ScreenUtilInit(
+              designSize: Size(360, 690),
+              minTextAdapt: true,
+              splitScreenMode: true,
+              builder: (context, child) => MaterialApp(
+                theme: AppTheme.appLightTheme,
+                darkTheme: AppTheme.appDarkTheme,
+                themeMode: state,
+                debugShowCheckedModeBanner: false,
+                home: SplashPage(),
+                builder: EasyLoading.init(),
+              ),
+            );
+          },
+        ));
   }
 }
 

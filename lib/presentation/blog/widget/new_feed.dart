@@ -22,7 +22,7 @@ class NewFeeds extends StatelessWidget {
     return Column(
       children: [
         PostBlog(
-          blogEntity: blogs,
+          blogEntity: blogs, onLikeUpdated: () => blogs.likesCount++,
           // morewdget: _comment(),
         ),
         const SizedBox(height: 10),

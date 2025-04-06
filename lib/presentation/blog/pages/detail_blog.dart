@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:tracio_fe/common/helper/is_dark_mode.dart';
+import 'package:tracio_fe/core/configs/theme/app_colors.dart';
+import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/domain/blog/entites/blog_entity.dart';
 import 'package:tracio_fe/presentation/blog/widget/post_blog.dart';
 
 import '../../../common/bloc/generic_data_cubit.dart';
 import '../../../common/widget/appbar/app_bar.dart';
 import '../../../common/widget/button/floating_button.dart';
+import '../../../core/configs/theme/assets/app_images.dart';
 import '../bloc/comment/get_comment_cubit.dart';
 import '../widget/comment.dart';
 import '../widget/react_blog.dart';
@@ -26,14 +30,16 @@ class _DetailBlocPageState extends State<DetailBlocPage> {
     final reacCubit = context.read<GenericDataCubit>();
     return Scaffold(
         appBar: BasicAppbar(
+          backgroundColor: AppColors.lightBackground,
           height: 100.h,
           hideBack: false,
           title: Text(
             'Blog',
             style: TextStyle(
-                color: Colors.black,
+                color:
+                    context.isDarkMode ? Colors.grey.shade200 : Colors.black87,
                 fontWeight: FontWeight.bold,
-                fontSize: 40.sp),
+                fontSize: AppSize.textHeading.sp),
           ),
           action: Row(
             children: [
@@ -46,24 +52,6 @@ class _DetailBlocPageState extends State<DetailBlocPage> {
                   color: Colors.black,
                 ),
               ),
-              // FloatingButton(
-              //   elevation: 1,
-              //   backgroundColor: Colors.white,
-              //   onPressed: () {},
-              //   action: Icon(
-              //     Icons.chat_bubble_outline,
-              //     color: Colors.black,
-              //   ),
-              // ),
-              // FloatingButton(
-              //   elevation: 1,
-              //   backgroundColor: Colors.white,
-              //   onPressed: () {},
-              //   action: Icon(
-              //     Icons.search_outlined,
-              //     color: Colors.black,
-              //   ),
-              // ),
             ],
           ),
         ),
@@ -79,7 +67,8 @@ class _DetailBlocPageState extends State<DetailBlocPage> {
               height: 10.h,
             ),
             SizedBox(
-              height: MediaQuery.of(context).size.height / 2,
+              // width: 400.w,
+              height: MediaQuery.of(context).size.height / 1.2,
               child: Comment(blogId: widget.blog.blogId, cubit: commentCubit),
             )
             // Comment(blogId: widget.blog.blogId, cubit: commentCubit)

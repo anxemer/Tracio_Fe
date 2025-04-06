@@ -11,7 +11,7 @@ import 'package:tracio_fe/data/blog/models/request/get_reply_comment_req.dart';
 import 'package:tracio_fe/data/blog/models/request/react_blog_req.dart';
 import 'package:tracio_fe/data/blog/models/request/reply_comment_req.dart';
 import 'package:tracio_fe/data/blog/models/response/blog_response.dart';
-import 'package:tracio_fe/data/blog/models/response/category_blog.dart';
+import 'package:tracio_fe/data/blog/models/response/category_model.dart';
 import 'package:tracio_fe/data/blog/models/response/comment_blog_model.dart';
 import 'package:tracio_fe/data/blog/models/response/get_reaction_blog.dart';
 import 'package:tracio_fe/data/blog/models/response/reply_comment_model.dart';
@@ -25,7 +25,7 @@ abstract class BlogApiService {
   Future<bool> createBlog(CreateBlogReq react);
   Future<Either> bookmarkBlog(int blogId);
   Future<Either> unBookmarkBlog(int blogId);
-  Future<List<CategoryBlogModel>> getCategoryBlog();
+  Future<List<CategoryModel>> getCategoryBlog();
   Future<Either> unReactBlog(UnReactionParam params);
   Future<List<GetReactionBlogResponse>> getReactBlog(int reactId);
   Future<Either> commentBlog(CommentBlogReq comment);
@@ -50,6 +50,9 @@ class BlogApiServiceImpl extends BlogApiService {
     if (response.statusCode == 200) {
       return BlogResponse.fromMap(response.data);
     } else {
+      if (response.statusCode == 401) {
+        throw AuthenticationFailure(response.statusMessage.toString());
+      }
       throw ServerFailure(response.statusMessage.toString());
     }
   }
@@ -82,17 +85,17 @@ class BlogApiServiceImpl extends BlogApiService {
   }
 
   @override
-  Future<List<CategoryBlogModel>> getCategoryBlog() async {
+  Future<List<CategoryModel>> getCategoryBlog() async {
     try {
       var response = await sl<DioClient>().get(ApiUrl.categoryBlog);
       if (response.statusCode == 200) {
-        return List<CategoryBlogModel>.from(response.data['result']
-                ['categories']
-            .map((c) => CategoryBlogModel.fromMap(c)));
+        return List<CategoryModel>.from(response.data['result']['categories']
+            .map((c) => CategoryModel.fromMap(c)));
       }
-      return response.data['message'];
+
+      return [];
     } on DioException catch (e) {
-      return e.response!.data['message'];
+      return [];
     }
   }
 
@@ -131,19 +134,15 @@ class BlogApiServiceImpl extends BlogApiService {
 
       var response = await sl<DioClient>()
           .post(ApiUrl.commentBlog, isMultipart: true, data: form);
-      print("Repository: Comment API response - ${response.data}");
       return Right(response.data['message']);
     } on DioException catch (e) {
       if (e.response != null) {
-        print("Repository: DioException - ${e.response?.data}");
         return Left(ServerFailure(
             e.response?.data['message'] ?? "Lỗi server: ${e.message}"));
       } else {
-        print("Repository: Network error - ${e.message}");
         return Left(NetworkFailure("Không có kết nối mạng: ${e.message}"));
       }
     } catch (e) {
-      print("Repository: Unexpected error - $e");
       return Left(ExceptionFailure("Lỗi không xác định: $e"));
     }
   }

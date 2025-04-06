@@ -1,0 +1,530 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:tracio_fe/common/helper/is_dark_mode.dart';
+import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
+import 'package:tracio_fe/common/helper/rating_start.dart';
+import 'package:tracio_fe/common/widget/appbar/app_bar.dart';
+import 'package:tracio_fe/common/widget/button/text_button.dart';
+import 'package:tracio_fe/common/widget/picture/circle_picture.dart';
+import 'package:tracio_fe/core/configs/theme/app_colors.dart';
+import 'package:tracio_fe/presentation/service/bloc/bookingservice/booking_service_cubit.dart';
+import 'package:tracio_fe/presentation/service/page/shop_service.dart';
+import 'package:tracio_fe/presentation/service/widget/plan_service_icon.dart';
+import 'package:tracio_fe/presentation/service/widget/review_service.dart';
+
+import '../../../common/widget/blog/custom_bottomsheet.dart';
+import '../../../common/widget/button/button.dart';
+import '../../../common/widget/input_text_form_field.dart';
+import '../../../core/configs/theme/assets/app_images.dart';
+import '../../../core/constants/app_size.dart';
+import '../../../domain/shop/entities/response/shop_service_entity.dart';
+import '../bloc/cart_item_bloc/cart_item_cubit.dart';
+import '../widget/add_schedule.dart';
+
+class DetailServicePage extends StatefulWidget {
+  const DetailServicePage({super.key, required this.service});
+  final ShopServiceEntity service;
+
+  @override
+  State<DetailServicePage> createState() => _DetailServicePageState();
+}
+
+class _DetailServicePageState extends State<DetailServicePage> {
+  TextEditingController noteCon = TextEditingController();
+  @override
+  Widget build(BuildContext context) {
+    var isDark = context.isDarkMode;
+    return Scaffold(
+      appBar: BasicAppbar(
+        backgroundColor: Colors.transparent,
+        title: Text(
+          'Detail',
+          style: TextStyle(
+              color: context.isDarkMode ? Colors.grey.shade200 : Colors.black87,
+              fontWeight: FontWeight.bold,
+              fontSize: AppSize.textHeading.sp),
+        ),
+        action: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: AppSize.apHorizontalPadding.w,
+          ),
+          child: Container(
+              height: 40.h,
+              width: 40.w,
+              decoration: BoxDecoration(
+                boxShadow: [
+                  BoxShadow(
+                      blurRadius: 5,
+                      color: context.isDarkMode
+                          ? Colors.transparent
+                          : Colors.grey.shade400,
+                      offset: Offset(0, 2))
+                ],
+                color: context.isDarkMode
+                    ? AppColors.darkGrey
+                    : Colors.grey.shade200,
+                borderRadius: BorderRadius.circular(AppSize.borderRadiusLarge),
+              ),
+              child: PlanServiceIcon()),
+        ),
+        // height: 100.h,
+      ),
+      body: SafeArea(
+        child: Column(
+          children: [
+            // buildHeader(),
+            Expanded(
+              child: Stack(
+                children: [
+                  // Main scrollable content
+                  ListView(
+                    padding: const EdgeInsets.only(
+                        bottom:
+                            70), // Add padding to prevent content from being hidden behind the button
+                    children: [
+                      buildImage(),
+                      SizedBox(
+                        height: 10.h,
+                      ),
+                      buildTitle(),
+                      SizedBox(
+                        height: 10.h,
+                      ),
+                      Divider(
+                        thickness: 4,
+                        indent: 16,
+                        endIndent: 16,
+                        color: isDark ? Colors.black26 : Colors.grey.shade300,
+                        height: 1,
+                      ),
+                      SizedBox(
+                        height: 10.h,
+                      ),
+                      shopInformation(),
+                      SizedBox(
+                        height: 10.h,
+                      ),
+                      Divider(
+                        thickness: 4,
+                        indent: 16,
+                        endIndent: 16,
+                        color: isDark ? Colors.black26 : Colors.grey.shade300,
+                        height: 1,
+                      ),
+                      SizedBox(
+                        height: 10.h,
+                      ),
+                      buildDescription(),
+                      SizedBox(
+                        height: 20.h,
+                      ),
+                      Divider(
+                        thickness: 4,
+                        indent: 16,
+                        endIndent: 16,
+                        color: isDark ? Colors.black26 : Colors.grey.shade300,
+                        height: 1,
+                      ),
+                      ReviewService()
+                    ],
+                  ),
+
+                  // Fixed button at bottom
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: context.isDarkMode
+                            ? AppColors.darkGrey
+                            : Colors.grey.shade200,
+                        // boxShadow: [
+                        //   BoxShadow(
+                        //     color: Colors.black,
+                        //     blurRadius: 5,
+                        //     offset: const Offset(0, -3),
+                        //   ),
+                        // ],
+                      ),
+                      child: buildButton(context),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildHeader() {
+    var isDark = context.isDarkMode;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      child: Row(
+        // mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              style: ButtonStyle(
+                shape: WidgetStatePropertyAll(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    side: BorderSide(
+                        color: context.isDarkMode
+                            ? Colors.grey.shade400
+                            : Colors.grey.shade700,
+                        width: 1),
+                  ),
+                ),
+                fixedSize: WidgetStatePropertyAll(Size(40, 40)),
+              ),
+              icon: Icon(Icons.arrow_back_ios_new_outlined)),
+          SizedBox(
+            width: 20.h,
+          ),
+          Text(
+            'Detail',
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: AppSize.textExtraLarge,
+              color: context.isDarkMode ? Colors.white : Colors.black,
+            ),
+          ),
+          IconButton(
+              onPressed: () {},
+              style: ButtonStyle(
+                shape: WidgetStatePropertyAll(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    side: BorderSide(color: Color(0xffECECEC), width: 1),
+                  ),
+                ),
+                fixedSize: WidgetStatePropertyAll(Size(40, 40)),
+              ),
+              icon: Icon(Icons.playlist_add_check_outlined)),
+        ],
+      ),
+    );
+  }
+
+  Widget buildImage() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: AspectRatio(
+            aspectRatio: 1.4,
+            child: Image.asset(
+              AppImages.picture,
+              fit: BoxFit.cover,
+            )),
+      ),
+    );
+  }
+
+  Padding buildTitle() {
+    var isDark = context.isDarkMode;
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Text(
+                  widget.service.serviceName!,
+                  style: TextStyle(
+                    color: isDark ? Colors.grey.shade300 : Colors.black87,
+                    fontWeight: FontWeight.bold,
+                    fontSize: AppSize.textHeading,
+                  ),
+                ),
+              ),
+              RatingStart.ratingStart(rating: 5)
+            ],
+          ),
+          SizedBox(
+            height: 10.h,
+          ),
+          Row(
+            children: [
+              Icon(
+                Icons.access_time_sharp,
+                color:
+                    isDark ? AppColors.secondBackground : AppColors.background,
+              ),
+              Text(
+                widget.service.formattedDuration,
+                style: TextStyle(
+                  color: isDark ? Colors.grey.shade300 : Colors.black87,
+                  fontWeight: FontWeight.w600,
+                  fontSize: AppSize.textLarge,
+                ),
+              ),
+              SizedBox(
+                width: 10.h,
+              ),
+              Icon(
+                Icons.attach_money_rounded,
+                color:
+                    isDark ? AppColors.secondBackground : AppColors.background,
+              ),
+              Text(
+                widget.service.price.toString(),
+                style: TextStyle(
+                  color: isDark ? Colors.grey.shade300 : Colors.black87,
+                  fontWeight: FontWeight.w600,
+                  fontSize: AppSize.textLarge,
+                ),
+              ),
+              SizedBox(
+                width: 10.w,
+              ),
+              Row(
+                children: [
+                  Icon(
+                    Icons.location_on_sharp,
+                    color: isDark
+                        ? AppColors.secondBackground
+                        : AppColors.background,
+                  ),
+                  Text(
+                    '2 km',
+                    style: TextStyle(
+                      color: isDark ? Colors.grey.shade300 : Colors.black87,
+                      fontWeight: FontWeight.w600,
+                      fontSize: AppSize.textLarge,
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Padding buildDescription() {
+    var isDark = context.isDarkMode;
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Description',
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: AppSize.textHeading,
+                color: isDark ? Colors.grey.shade300 : Colors.black87),
+          ),
+          Text(
+            'In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document or a typeface without relying on meaningful content.',
+            style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: AppSize.textMedium,
+                color: isDark ? Colors.grey.shade300 : Colors.black87),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget shopInformation() {
+    var isDark = context.isDarkMode;
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              CirclePicture(
+                  imageUrl:
+                      'https://bizweb.dktcdn.net/100/481/209/products/img-5958-jpeg.jpg?v=1717069788060',
+                  imageSize: AppSize.iconLarge),
+              SizedBox(
+                width: 10.w,
+              ),
+              Column(
+                children: [
+                  Text(
+                    widget.service.shopName!,
+                    style: TextStyle(
+                      color: isDark ? Colors.grey.shade300 : Colors.black87,
+                      fontWeight: FontWeight.w600,
+                      fontSize: AppSize.textLarge,
+                    ),
+                  ),
+                  Container(
+                    height: 28,
+                    width: 100,
+                    decoration: BoxDecoration(
+                        color: Colors.transparent,
+                        border: Border.all(color: AppColors.secondBackground),
+                        borderRadius: BorderRadius.circular(10)),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.timer_outlined,
+                          color: isDark
+                              ? AppColors.secondBackground
+                              : AppColors.background,
+                          size: AppSize.iconSmall,
+                        ),
+                        Text(
+                          '7h - 22h',
+                          style: TextStyle(
+                            color:
+                                isDark ? Colors.grey.shade300 : Colors.black87,
+                            fontWeight: FontWeight.w600,
+                            fontSize: AppSize.textSmall,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              Spacer(),
+              BasicTextButton(
+                fontSize: AppSize.textSmall,
+                onPress: () {
+                  AppNavigator.push(
+                      context,
+                      ShopServicepage(
+                        shopId: widget.service.shopId!,
+                      ));
+                },
+                text: 'View Shop ',
+                borderColor:
+                    isDark ? AppColors.secondBackground : AppColors.background,
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 10.h,
+          ),
+          Row(
+            children: [
+              Icon(
+                Icons.location_on_sharp,
+                color:
+                    isDark ? AppColors.secondBackground : AppColors.background,
+              ),
+              Text(
+                '${widget.service.district!} ${widget.service.city!}',
+                style: TextStyle(
+                  color: isDark ? Colors.white : Colors.black,
+                  fontWeight: FontWeight.w600,
+                  fontSize: AppSize.textLarge,
+                ),
+              ),
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget buildButton(BuildContext context) {
+    var bookCubit = context.read<BookingServiceCubit>();
+    var cartItemCubit = context.read<CartItemCubit>();
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        ButtonDesign(
+          ontap: () async {
+            bool isInCart = cartItemCubit.cartItem.any(
+              (cartItem) => cartItem.serviceId == widget.service.serviceId!,
+            );
+
+            if (isInCart) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Service is already in cart!')),
+              );
+            } else {
+              context
+                  .read<CartItemCubit>()
+                  .addCartItem(widget.service.serviceId!);
+            }
+          },
+          text: 'Add To Plan',
+          fillColor: Colors.transparent,
+          textColor: context.isDarkMode ? Colors.grey.shade200 : Colors.black87,
+          borderColor:
+              context.isDarkMode ? Colors.grey.shade200 : Colors.black87,
+          fontSize: AppSize.textMedium,
+        ),
+        ButtonDesign(
+          ontap: () {
+            CustomModalBottomSheet.show(
+                initialSize: .3,
+                maxSize: .4,
+                minSize: .1,
+                context: context,
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        topRight: Radius.circular(20)),
+                    color: context.isDarkMode
+                        ? AppColors.darkGrey
+                        : Colors.grey.shade200,
+                  ),
+                  padding: EdgeInsets.symmetric(
+                      horizontal: AppSize.apHorizontalPadding,
+                      vertical: AppSize.apVerticalPadding),
+                  // height: 100,
+                  // width: double.infinity,
+                  child: SingleChildScrollView(
+                    physics: BouncingScrollPhysics(),
+                    child: Column(
+                      children: [
+                        AddSchedule(
+                          service: widget.service,
+                        ),
+                        SizedBox(
+                          height: 16.h,
+                        ),
+                        InputTextFormField(
+                            controller: noteCon,
+                            labelText: 'Note',
+                            hint: 'Note',
+                            onFieldSubmitted: (value) {
+                              bookCubit.updateNote(
+                                  widget.service.serviceId.toString(), value);
+                            }),
+                      ],
+                    ),
+                  ),
+                ));
+            // AppNavigator.push(context, AddSchedule(selectCount: 1));
+            // AppNavigator.push(context, MyBookingPage());
+          },
+          text: 'Book Now',
+          // image: AppImages.share,
+          fillColor: AppColors.secondBackground,
+          textColor: context.isDarkMode ? Colors.grey.shade200 : Colors.black87,
+          borderColor:
+              context.isDarkMode ? Colors.grey.shade200 : Colors.black87,
+          fontSize: AppSize.textMedium,
+        )
+      ],
+    );
+  }
+}

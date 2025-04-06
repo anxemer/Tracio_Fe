@@ -5,18 +5,20 @@ import 'package:tracio_fe/data/map/models/request/mapbox_direction_req.dart';
 
 class ApiUrl {
   //base Url
-  static const baseURL = 'https://user.tracio.space/';
-  // static const baseURL = 'https://10.10.1.66:';
+  // static const baseURL = 'https://192.168.1.9:';
+  static const baseURL = 'https://user.tracio.space';
   // static const baseURL = 'https://10.87.46.103:';
-  static const hubUrl = 'http://10.87.46.103:5002/content-hub';
+  static const hubUrl = 'http://103.28.33.123:5002/content-hub';
   //port
   static const portUser = '5003';
   static const portBlog = '5002';
   static const portRoute = '5009';
   static const portGroup = '';
+  static const portShop = '5004';
 
   //Api User
   static const registerWithEP = '$portUser/api/auth/register-user';
+  static const sendVerifyEmail = '$portUser/api/auth/send-verify-email';
   static const loginWithEP = '$portUser/api/auth/login';
   static const userProfile = '$portUser/api/users';
 
@@ -33,7 +35,7 @@ class ApiUrl {
   }
 
   static const createBlog = '$portBlog/api/blogs';
-  static const categoryBlog = '$portBlog/categories';
+  static const categoryBlog = '$portBlog/api/blogs/categories';
   static const commentBlog = '$portBlog/api/comments';
   static const repCommentBlog = '$portBlog/api/replies';
   static const bookmarkBlog = '$portBlog/api/blogs/bookmarks';
@@ -122,6 +124,22 @@ class ApiUrl {
 
   static const postRoute = '$portRoute/api/route';
   static const locationHubUrl = 'http://localhost:$portRoute/locationHub';
+
+  //Api Shop service
+  static Uri urlGetService([Map<String, String>? params]) {
+    return Uri.parse('$portShop/api/services').replace(queryParameters: params);
+  }
+
+  static Uri urlGetBooking([Map<String, String>? params]) {
+    return Uri.parse('$portShop/api/bookings').replace(queryParameters: params);
+  }
+
+  static const getService = '$portShop/api/services';
+  static const addToCart = '$portShop/api/carts';
+  static const getCartItem = '$portShop/api/carts/items';
+  static const getCateService = '$portShop/api/categories';
+  static const bookingService = '$portShop/api/bookings';
+  static const deleteCartItem = '$portShop/api/carts';
 
   static Uri urlGetStaticImageMapbox(String accessToken, List<num> start,
       List<num> end, String polylineEncoded) {

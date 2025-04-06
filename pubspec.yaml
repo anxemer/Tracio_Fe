@@ -38,6 +38,7 @@ dependencies:
   path_provider:
   firebase_core: ^3.11.0
   firebase_auth: ^5.4.2
+  jwt_decoder:
 
   cloud_firestore:
   cupertino_icons: ^1.0.8
@@ -70,8 +71,6 @@ dependencies:
   #Image saver
   gal: ^2.3.1
 
-  intl:
-
   flutter_dotenv: ^5.2.1
   hydrated_bloc:
   dio: ^5.8.0+1
@@ -88,8 +87,13 @@ dependencies:
   flutter_easyloading:
   timeago:
   cached_network_image:
-  shimmer:
+  flutter_sticky_header:
   fixnum: ^1.1.1
+  intl:
+  flutter_rating_bar:
+  shimmer:
+  badges:
+  animated_toggle_switch:
 dev_dependencies:
   protoc_plugin: ^21.1.2
   flutter_test:

@@ -12,7 +12,8 @@ import 'package:tracio_fe/data/blog/models/request/reply_comment_req.dart';
 import 'package:tracio_fe/data/blog/models/response/blog_response.dart';
 import 'package:tracio_fe/data/blog/models/response/get_reaction_blog.dart';
 import 'package:tracio_fe/data/blog/source/blog_api_service.dart';
-import 'package:tracio_fe/domain/blog/entites/category_blog.dart';
+import 'package:tracio_fe/data/shop/models/booking_service_req.dart';
+import 'package:tracio_fe/domain/blog/entites/category.dart';
 import 'package:tracio_fe/domain/blog/entites/reaction_response_entity.dart';
 import 'package:tracio_fe/domain/blog/entites/reply_comment.dart';
 import 'package:tracio_fe/domain/blog/repositories/blog_repository.dart';
@@ -22,7 +23,7 @@ import '../../../domain/blog/usecase/un_react_blog.dart';
 import '../models/request/get_blog_req.dart';
 import '../models/request/get_comment_req.dart';
 
-typedef _ConcreteOrBlogChooser = Future<BlogResponse> Function();
+// typedef _ConcreteOrBlogChooser = Future<BlogResponse> Function();
 
 class BlogRepositoryImpl extends BlogRepository {
   final NetworkInfor networkInfo;
@@ -36,16 +37,13 @@ class BlogRepositoryImpl extends BlogRepository {
   });
   @override
   Future<Either<Failure, BlogResponse>> getBlogs(GetBlogReq params) async {
-    final bool isConnected = await networkInfo.isConnected;
-    if (isConnected) {
-      try {
-        var returnedData = await remoteDataSource.getBlogs(params);
-        return Right(returnedData);
-      } on ServerFailure {
-        return Left(ServerFailure(''));
-      }
-    } else {
-      return Left(NetworkFailure('Network error'));
+    try {
+      var returnedData = await remoteDataSource.getBlogs(params);
+      return Right(returnedData);
+    } on ServerFailure {
+      return Left(ServerFailure(''));
+    } on AuthenticationFailure {
+      return Left(AuthenticationFailure('UnAuthenticated'));
     }
 
     // return returnedData.fold((error) {
@@ -83,7 +81,7 @@ class BlogRepositoryImpl extends BlogRepository {
   }
 
   @override
-  Future<Either<Failure, List<CategoryBlogEntity>>> getCategoryBlog() async {
+  Future<Either<Failure, List<CategoryEntity>>> getCategoryBlog() async {
     var returnData = await remoteDataSource.getCategoryBlog();
     return Right(returnData);
   }
@@ -175,4 +173,6 @@ class BlogRepositoryImpl extends BlogRepository {
       return Left(e);
     }
   }
+
+  
 }

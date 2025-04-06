@@ -16,10 +16,10 @@ class AuthCubit extends Cubit<AuthState> {
     try {
       emit(AuthLoading());
       var result = await sl<LoginUseCase>().call(login);
-      result.fold((failure) => emit(AuthFailure(failure: failure)),
-          (data) => emit(AuthLoaded(user: data)));
+      result.fold((failure) => emit(AuthFailure(failure)),
+          (data) => emit(AuthLoaded()));
     } catch (e) {
-      emit(AuthFailure(failure: ExceptionFailure(e.toString())));
+      emit(AuthFailure(ExceptionFailure(e.toString())));
     }
   }
 
@@ -32,10 +32,10 @@ class AuthCubit extends Cubit<AuthState> {
     try {
       emit(AuthLoading());
       final result = await sl<GetCacherUserUseCase>().call(NoParams());
-      result.fold((error) => emit(AuthFailure(failure: error)),
+      result.fold((error) => emit(AuthFailure(error)),
           (data) => emit(AuthLoaded(user: data)));
     } catch (e) {
-      emit(AuthFailure(failure: ExceptionFailure(e.toString())));
+      emit(AuthFailure(ExceptionFailure(e.toString())));
     }
   }
 }

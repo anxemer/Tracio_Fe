@@ -2,20 +2,19 @@ import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 abstract class AuthFirebaseService {
-  Future<Either> verifyEmail(String email);
-  Future<bool> checkEmailVeriy();
+  Future<String> verifyEmail(String email);
+  Future<bool> checkEmailVerify();
   Future<Either> changePasswordFirebase(String pass);
 }
 
 class AuthFirebaseServiceImpl extends AuthFirebaseService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
-
   @override
-  Future<Either> verifyEmail(String email) async {
+  Future<String> verifyEmail(String email) async {
     try {
       String firebaseId;
-      
+
       UserCredential userCredential = await _firebaseAuth
           .createUserWithEmailAndPassword(email: email, password: '12345678');
       User? user = userCredential.user;
@@ -26,22 +25,22 @@ class AuthFirebaseServiceImpl extends AuthFirebaseService {
       if (user != null && !user.emailVerified) {
         firebaseId = user.uid;
         await user.sendEmailVerification();
-        return right(firebaseId);
+        return firebaseId;
       }
-      return left(true);
+      return 'Verify email failed';
     } on FirebaseAuthException {
       String errorMessage = 'Lỗi không xác định.';
 
-      return left(false);
+      return errorMessage;
     }
   }
 
   @override
-  Future<bool> checkEmailVeriy() async {
-    for (int i = 0; i <= 10; i++) {
+  Future<bool> checkEmailVerify() async {
+    for (int i = 0; i <= 5; i++) {
       User? user = _firebaseAuth.currentUser;
-     
-      await Future.delayed(Duration(seconds: 3)); // Kiểm tra sau mỗi 3 giây
+
+      await Future.delayed(Duration(seconds: 2)); // Kiểm tra sau mỗi 3 giây
       await user?.reload(); // Refresh user info
 
       if (user?.emailVerified ?? false) {
@@ -55,6 +54,7 @@ class AuthFirebaseServiceImpl extends AuthFirebaseService {
   Future<Either> changePasswordFirebase(String pass) async {
     try {
       User user = await _firebaseAuth.currentUser!;
+
       var result = await user.updatePassword(pass);
 
       return right('Change password success');

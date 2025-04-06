@@ -21,6 +21,8 @@ import 'package:tracio_fe/data/map/source/location_api_service.dart';
 import 'package:tracio_fe/data/map/source/route_api_service.dart';
 import 'package:tracio_fe/data/map/source/tracking_grpc_service.dart';
 import 'package:tracio_fe/data/map/source/tracking_hub_service.dart';
+import 'package:tracio_fe/data/shop/repositories/shop_service_repository_impl.dart';
+import 'package:tracio_fe/data/shop/source/shop_api_service.dart';
 import 'package:tracio_fe/data/user/repositories/user_profile_repository_impl.dart';
 import 'package:tracio_fe/data/user/source/user_api_source.dart';
 import 'package:tracio_fe/domain/auth/repositories/auth_repository.dart';
@@ -58,6 +60,14 @@ import 'package:tracio_fe/domain/map/usecase/get_locations.dart';
 import 'package:tracio_fe/domain/map/usecase/get_routes.dart';
 import 'package:tracio_fe/domain/map/usecase/post_route.dart';
 import 'package:tracio_fe/domain/blog/usecase/unBookmark.dart';
+import 'package:tracio_fe/domain/shop/repositories/shop_service_repository.dart';
+import 'package:tracio_fe/domain/shop/usecase/add_to_cart.dart';
+import 'package:tracio_fe/domain/shop/usecase/booking_service.dart';
+import 'package:tracio_fe/domain/shop/usecase/delete_cart_item.dart';
+import 'package:tracio_fe/domain/shop/usecase/get_booking.dart';
+import 'package:tracio_fe/domain/shop/usecase/get_cart_item.dart';
+import 'package:tracio_fe/domain/shop/usecase/get_cate_service.dart';
+import 'package:tracio_fe/domain/shop/usecase/get_service.dart';
 import 'package:tracio_fe/domain/user/repositories/user_profile_repository.dart';
 import 'package:tracio_fe/domain/user/usecase/get_user_profile.dart';
 
@@ -94,6 +104,7 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton<VietnamCityDistrictService>(
       () => VietnamCityDistrictServiceImpl());
   sl.registerLazySingleton<GroupApiService>(() => GroupApiServiceImpl());
+  sl.registerLazySingleton<ShopApiService>(() => ShopApiServiceImpl());
   //Services
   sl.registerLazySingleton<AuthRepository>(() => AuthRepositotyImpl());
   sl.registerLazySingleton<UserProfileRepository>(
@@ -109,6 +120,8 @@ Future<void> initializeDependencies() async {
       () => VietnamCityDistrictRepositoryImpl());
   sl.registerLazySingleton<GroupRepository>(() => GroupRepositoryImpl());
 
+  sl.registerLazySingleton<ShopServiceRepository>(
+      () => ShopServiceRepositoryImpl(remoteDataSource: sl()));
   //gRPC & Hubs
   sl.registerLazySingleton<ITrackingGrpcService>(() => TrackingGrpcService());
   sl.registerLazySingleton<ITrackingHubService>(() => TrackingHubService());
@@ -150,4 +163,11 @@ Future<void> initializeDependencies() async {
   sl.registerFactory<PostGroupUsecase>(() => PostGroupUsecase());
   sl.registerFactory<GetGroupDetailUsecase>(() => GetGroupDetailUsecase());
   sl.registerFactory<GetGroupListUsecase>(() => GetGroupListUsecase());
+  sl.registerFactory<GetServiceUseCase>(() => GetServiceUseCase());
+  sl.registerFactory<AddToCartUseCase>(() => AddToCartUseCase());
+  sl.registerFactory<GetCartItemUseCase>(() => GetCartItemUseCase());
+  sl.registerFactory<GetCateServiceUseCase>(() => GetCateServiceUseCase());
+  sl.registerFactory<BookingServiceUseCase>(() => BookingServiceUseCase());
+  sl.registerFactory<GetBookingUseCase>(() => GetBookingUseCase());
+  sl.registerFactory<DeleteCartItemUseCase>(() => DeleteCartItemUseCase());
 }

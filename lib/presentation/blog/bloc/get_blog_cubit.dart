@@ -92,25 +92,34 @@ class GetBlogCubit extends Cubit<GetBlogState> {
   }
 
   Future<void> getBlog(GetBlogReq param) async {
-    emit(GetBlogLoading(
-        blogs: [], metaData: state.metaData, params: param, isLoading: true));
+    try {
+      emit(GetBlogLoading(
+          blogs: [], metaData: state.metaData, params: param, isLoading: true));
 
-    var returnedData = await sl<GetBlogsUseCase>().call(state.params);
+      var returnedData = await sl<GetBlogsUseCase>().call(state.params);
 
-    returnedData.fold((error) {
+      returnedData.fold((error) {
+        emit(GetBlogFailure(
+            blogs: state.blogs,
+            errorMessage: error.message,
+            isLoading: false,
+            metaData: state.metaData,
+            params: state.params));
+      }, (data) {
+        emit(GetBlogLoaded(
+            blogs: data.blogs,
+            isLoading: false,
+            params: state.params,
+            metaData: data.paginationMetaDataEntity));
+      });
+    } catch (e) {
       emit(GetBlogFailure(
           blogs: state.blogs,
-          errorMessage: error.message,
+          errorMessage: e.toString(),
           isLoading: false,
           metaData: state.metaData,
           params: state.params));
-    }, (data) {
-      emit(GetBlogLoaded(
-          blogs: data.blogs,
-          isLoading: false,
-          params: state.params,
-          metaData: data.paginationMetaDataEntity));
-    });
+    }
   }
 
   Future<void> getMoreBlogs() async {

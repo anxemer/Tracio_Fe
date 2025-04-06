@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:tracio_fe/common/helper/is_dark_mode.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
 
 import '../../../common/widget/blog/pick_image.dart';
@@ -109,7 +110,7 @@ class _CommentInputWidgetState extends State<CommentInputWidget> {
     // }
 
     return Container(
-      color: Colors.white,
+      color: context.isDarkMode ? Color(0xFF1E1E1E) : Colors.white,
       // padding: EdgeInsets.only(
       //     left: 16.w,
       //     right: 16.w,
@@ -121,9 +122,9 @@ class _CommentInputWidgetState extends State<CommentInputWidget> {
           if (inputData.mode != CommentMode.blogComment)
             Container(
               width: double.infinity,
-              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+              padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
               decoration: BoxDecoration(
-                color: Colors.grey.shade100,
+                color: context.isDarkMode ? Colors.white : Colors.grey.shade100,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
@@ -132,7 +133,7 @@ class _CommentInputWidgetState extends State<CommentInputWidget> {
                     child: Text(
                       'Replying to ${inputData.replyToUserName}',
                       style: TextStyle(
-                        fontSize: 32.sp,
+                        fontSize: AppSize.textMedium.sp,
                         fontWeight: FontWeight.w500,
                         color: inputData.mode == CommentMode.replyComment
                             ? Colors.blue
@@ -144,8 +145,8 @@ class _CommentInputWidgetState extends State<CommentInputWidget> {
                     onTap: widget.onReset,
                     child: Icon(
                       Icons.close,
-                      size: 36.sp,
-                      color: Colors.grey,
+                      size: AppSize.iconMedium.sp,
+                      color: context.isDarkMode ? Colors.white : Colors.grey,
                     ),
                   ),
                 ],
@@ -168,7 +169,9 @@ class _CommentInputWidgetState extends State<CommentInputWidget> {
             height: AppSize.bottomNavBarHeight * 0.8.h,
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(60.sp),
-                border: Border.all(color: Colors.black45, width: 1.w)),
+                border: Border.all(
+                    color: context.isDarkMode ? Colors.white : Colors.black45,
+                    width: 1.w)),
             child: Row(
               children: [
                 SizedBox(width: 8.w),
@@ -183,11 +186,18 @@ class _CommentInputWidgetState extends State<CommentInputWidget> {
                 Expanded(
                   child: TextField(
                     controller: _textController,
-                    style: const TextStyle(color: Colors.black),
+                    style: TextStyle(
+                        color:
+                            context.isDarkMode ? Colors.white : Colors.black),
                     decoration: InputDecoration(
+                      enabledBorder:
+                          OutlineInputBorder(borderSide: BorderSide.none),
+                      focusedBorder:
+                          OutlineInputBorder(borderSide: BorderSide.none),
                       filled: true,
                       hintText: inputData.hintText,
-                      fillColor: Colors.white,
+                      fillColor:
+                          context.isDarkMode ? Color(0xFF1E1E1E) : Colors.white,
                       contentPadding: const EdgeInsets.symmetric(vertical: 15),
                       // border: InputBorder.none,
                     ),
@@ -199,6 +209,9 @@ class _CommentInputWidgetState extends State<CommentInputWidget> {
                   icon: Icon(
                     Icons.image_outlined,
                     size: AppSize.iconLarge.sp,
+                    color: context.isDarkMode
+                        ? Colors.white
+                        : Colors.grey.shade700,
                   ),
                   onPressed: () {
                     showModalBottomSheet(
@@ -232,7 +245,9 @@ class _CommentInputWidgetState extends State<CommentInputWidget> {
                 IconButton(
                   icon: Icon(
                     Icons.send_rounded,
-                    color: AppColors.background,
+                    color: context.isDarkMode
+                        ? AppColors.primary
+                        : AppColors.background,
                     size: AppSize.iconLarge.sp,
                   ),
                   onPressed: () {

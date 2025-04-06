@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:tracio_fe/common/helper/is_dark_mode.dart';
 import 'package:tracio_fe/core/configs/theme/app_colors.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/presentation/exploration/page/exploration.dart';
@@ -70,9 +71,13 @@ class BottomNavBarManagerState extends State<BottomNavBarManager> {
             height: _isNavVisible ? _navHeight : 0,
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: context.isDarkMode ? Color(0xFF1E1E1E) : Colors.white,
                 border: Border(
-                  top: BorderSide(width: .8, color: Colors.grey.shade200),
+                  top: BorderSide(
+                      width: .8,
+                      color: context.isDarkMode
+                          ? Colors.white
+                          : Colors.grey.shade200),
                 ),
               ),
               width: MediaQuery.of(context).size.width,
@@ -88,7 +93,7 @@ class BottomNavBarManagerState extends State<BottomNavBarManager> {
                     vertical: AppSize.apVerticalPadding / 2.h),
                 iconSize: AppSize.iconSmall.w,
                 curve: Curves.easeIn,
-                color: Colors.grey.shade600,
+                color: context.isDarkMode ? Colors.white : Colors.grey.shade600,
                 hoverColor: AppColors.background.withAlpha(80),
                 rippleColor: Colors.transparent,
                 activeColor: AppColors.primary,

@@ -96,7 +96,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
               color: Colors.white,
               size: AppSize.iconMedium.w,
             ),
-            tooltip: "Settings",
+            tooltip: "Go Back",
           ),
           Spacer(),
           IconButton(

@@ -70,15 +70,15 @@ class _UserBlogListState extends State<UserBlogList> {
             ),
             action: Row(
               children: [
-                FloatingButton(
-                  elevation: 0,
-                  backgroundColor: Colors.transparent,
-                  onPressed: () {},
-                  action: Icon(
-                    Icons.more_vert_outlined,
-                    color: Colors.black,
-                  ),
-                ),
+                // FloatingButton(
+                //   elevation: 0,
+                //   backgroundColor: Colors.transparent,
+                //   onPressed: () {},
+                //   action: Icon(
+                //     Icons.more_vert_outlined,
+                //     color: Colors.black,
+                //   ),
+                // ),
               ],
             )),
         body: BlocBuilder<GetBlogCubit, GetBlogState>(
@@ -98,8 +98,19 @@ class _UserBlogListState extends State<UserBlogList> {
                   }
 
                   if (index < state.blogs!.length) {
-                    return NewFeeds(
-                      blogs: state.blogs![index],
+                    return Container(
+                      decoration: BoxDecoration(
+                        border: Border(
+                          top: BorderSide(
+                            color: Colors.grey[300]!,
+                            width: 0.7,
+                          ),
+                        ),
+                      ),
+                      child: NewFeeds(
+                        key: ValueKey('blog_${state.blogs![index].blogId}'),
+                        blogs: state.blogs![index],
+                      ),
                     );
                   }
                   return null;

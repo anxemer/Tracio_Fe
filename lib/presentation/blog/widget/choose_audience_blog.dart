@@ -66,25 +66,25 @@ class _ChooseAudienceBlogState extends State<ChooseAudienceBlog> {
                 },
               ),
             ),
-            ListTile(
-              leading: Image.asset(
-                AppImages.follower,
-                width: 40,
-              ), // Ảnh tiêu đề
-              title: const Text('Follower Only'),
-              trailing: Checkbox(
-                checkColor: Colors.black,
-                activeColor: Colors.white,
-                shape: const CircleBorder(), // Làm checkbox hình tròn
-                value: widget.selectedIndex == 2,
-                onChanged: (bool? newValue) {
-                  setState(() {
-                    widget.selectedIndex = newValue == true ? 2 : null;
-                    widget.selectedIndex == 2;
-                  });
-                },
-              ),
-            )
+            // ListTile(
+            //   leading: Image.asset(
+            //     AppImages.follower,
+            //     width: 40,
+            //   ), // Ảnh tiêu đề
+            //   title: const Text('Follower Only'),
+            //   trailing: Checkbox(
+            //     checkColor: Colors.black,
+            //     activeColor: Colors.white,
+            //     shape: const CircleBorder(), // Làm checkbox hình tròn
+            //     value: widget.selectedIndex == 2,
+            //     onChanged: (bool? newValue) {
+            //       setState(() {
+            //         widget.selectedIndex = newValue == true ? 2 : null;
+            //         widget.selectedIndex == 2;
+            //       });
+            //     },
+            //   ),
+            // )
           ],
         ),
       ),

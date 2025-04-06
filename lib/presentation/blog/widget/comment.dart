@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:tracio_fe/common/helper/is_dark_mode.dart';
 import 'package:tracio_fe/common/widget/drag_handle/drag_handle.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/data/blog/models/request/comment_blog_req.dart';
@@ -39,13 +40,14 @@ class _CommentState extends State<Comment> {
   void initState() {
     super.initState();
     _commentInputCubit = CommentInputCubit(widget.blogId);
-
-    widget.cubit.getCommentBlog(GetCommentReq(
-        blogId: widget.blogId,
-        ascending: true,
-        commentId: 0,
-        pageNumber: 1,
-        pageSize: 10));
+    if (widget.cubit.state is GetCommentLoading) {
+      widget.cubit.getCommentBlog(GetCommentReq(
+          blogId: widget.blogId,
+          ascending: true,
+          commentId: 0,
+          pageNumber: 1,
+          pageSize: 10));
+    }
   }
 
   @override
@@ -135,7 +137,7 @@ class _CommentState extends State<Comment> {
           result.fold(
             (error) {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Gửi phản hồi thất bại')),
+                SnackBar(content: Text('Reply comment fail')),
               );
             },
             (success) {
@@ -168,7 +170,7 @@ class _CommentState extends State<Comment> {
               topRight: Radius.circular(AppSize.borderRadiusLarge),
             ),
             child: Container(
-              color: Colors.white,
+              color: context.isDarkMode ? Color(0xFF1E1E1E) : Colors.white,
               child: Column(
                 children: [
                   SizedBox(
@@ -192,7 +194,7 @@ class _CommentState extends State<Comment> {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(
-                        bottom: AppSize.apHorizontalPadding * 0.5,
+                        bottom: AppSize.apHorizontalPadding,
                         left: 10,
                         right: 10),
                     child: BlocBuilder<CommentInputCubit, CommentInputState>(
