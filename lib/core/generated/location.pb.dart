@@ -14,18 +14,14 @@ import 'dart:core' as $core;
 import 'package:fixnum/fixnum.dart' as $fixnum;
 import 'package:protobuf/protobuf.dart' as $pb;
 
-class LocationRequest extends $pb.GeneratedMessage {
-  factory LocationRequest({
-    $core.int? routeId,
+class Location extends $pb.GeneratedMessage {
+  factory Location({
     $core.double? latitude,
     $core.double? longitude,
     $core.double? altitude,
     $fixnum.Int64? timestamp,
   }) {
     final $result = create();
-    if (routeId != null) {
-      $result.routeId = routeId;
-    }
     if (latitude != null) {
       $result.latitude = latitude;
     }
@@ -40,16 +36,97 @@ class LocationRequest extends $pb.GeneratedMessage {
     }
     return $result;
   }
+  Location._() : super();
+  factory Location.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
+  factory Location.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
+
+  static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'Location', createEmptyInstance: create)
+    ..a<$core.double>(1, _omitFieldNames ? '' : 'latitude', $pb.PbFieldType.OD)
+    ..a<$core.double>(2, _omitFieldNames ? '' : 'longitude', $pb.PbFieldType.OD)
+    ..a<$core.double>(3, _omitFieldNames ? '' : 'altitude', $pb.PbFieldType.OD)
+    ..aInt64(4, _omitFieldNames ? '' : 'timestamp')
+    ..hasRequiredFields = false
+  ;
+
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.deepCopy] instead. '
+  'Will be removed in next major version')
+  Location clone() => Location()..mergeFromMessage(this);
+  @$core.Deprecated(
+  'Using this can add significant overhead to your binary. '
+  'Use [GeneratedMessageGenericExtensions.rebuild] instead. '
+  'Will be removed in next major version')
+  Location copyWith(void Function(Location) updates) => super.copyWith((message) => updates(message as Location)) as Location;
+
+  $pb.BuilderInfo get info_ => _i;
+
+  @$core.pragma('dart2js:noInline')
+  static Location create() => Location._();
+  Location createEmptyInstance() => create();
+  static $pb.PbList<Location> createRepeated() => $pb.PbList<Location>();
+  @$core.pragma('dart2js:noInline')
+  static Location getDefault() => _defaultInstance ??= $pb.GeneratedMessage.$_defaultFor<Location>(create);
+  static Location? _defaultInstance;
+
+  @$pb.TagNumber(1)
+  $core.double get latitude => $_getN(0);
+  @$pb.TagNumber(1)
+  set latitude($core.double v) { $_setDouble(0, v); }
+  @$pb.TagNumber(1)
+  $core.bool hasLatitude() => $_has(0);
+  @$pb.TagNumber(1)
+  void clearLatitude() => clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.double get longitude => $_getN(1);
+  @$pb.TagNumber(2)
+  set longitude($core.double v) { $_setDouble(1, v); }
+  @$pb.TagNumber(2)
+  $core.bool hasLongitude() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearLongitude() => clearField(2);
+
+  @$pb.TagNumber(3)
+  $core.double get altitude => $_getN(2);
+  @$pb.TagNumber(3)
+  set altitude($core.double v) { $_setDouble(2, v); }
+  @$pb.TagNumber(3)
+  $core.bool hasAltitude() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearAltitude() => clearField(3);
+
+  @$pb.TagNumber(4)
+  $fixnum.Int64 get timestamp => $_getI64(3);
+  @$pb.TagNumber(4)
+  set timestamp($fixnum.Int64 v) { $_setInt64(3, v); }
+  @$pb.TagNumber(4)
+  $core.bool hasTimestamp() => $_has(3);
+  @$pb.TagNumber(4)
+  void clearTimestamp() => clearField(4);
+}
+
+class LocationRequest extends $pb.GeneratedMessage {
+  factory LocationRequest({
+    $core.int? routeId,
+    $core.Iterable<Location>? locations,
+  }) {
+    final $result = create();
+    if (routeId != null) {
+      $result.routeId = routeId;
+    }
+    if (locations != null) {
+      $result.locations.addAll(locations);
+    }
+    return $result;
+  }
   LocationRequest._() : super();
   factory LocationRequest.fromBuffer($core.List<$core.int> i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromBuffer(i, r);
   factory LocationRequest.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'LocationRequest', createEmptyInstance: create)
     ..a<$core.int>(1, _omitFieldNames ? '' : 'routeId', $pb.PbFieldType.O3, protoName: 'routeId')
-    ..a<$core.double>(2, _omitFieldNames ? '' : 'latitude', $pb.PbFieldType.OD)
-    ..a<$core.double>(3, _omitFieldNames ? '' : 'longitude', $pb.PbFieldType.OD)
-    ..a<$core.double>(4, _omitFieldNames ? '' : 'altitude', $pb.PbFieldType.OD)
-    ..aInt64(5, _omitFieldNames ? '' : 'timestamp')
+    ..pc<Location>(2, _omitFieldNames ? '' : 'locations', $pb.PbFieldType.PM, subBuilder: Location.create)
     ..hasRequiredFields = false
   ;
 
@@ -84,40 +161,7 @@ class LocationRequest extends $pb.GeneratedMessage {
   void clearRouteId() => clearField(1);
 
   @$pb.TagNumber(2)
-  $core.double get latitude => $_getN(1);
-  @$pb.TagNumber(2)
-  set latitude($core.double v) { $_setDouble(1, v); }
-  @$pb.TagNumber(2)
-  $core.bool hasLatitude() => $_has(1);
-  @$pb.TagNumber(2)
-  void clearLatitude() => clearField(2);
-
-  @$pb.TagNumber(3)
-  $core.double get longitude => $_getN(2);
-  @$pb.TagNumber(3)
-  set longitude($core.double v) { $_setDouble(2, v); }
-  @$pb.TagNumber(3)
-  $core.bool hasLongitude() => $_has(2);
-  @$pb.TagNumber(3)
-  void clearLongitude() => clearField(3);
-
-  @$pb.TagNumber(4)
-  $core.double get altitude => $_getN(3);
-  @$pb.TagNumber(4)
-  set altitude($core.double v) { $_setDouble(3, v); }
-  @$pb.TagNumber(4)
-  $core.bool hasAltitude() => $_has(3);
-  @$pb.TagNumber(4)
-  void clearAltitude() => clearField(4);
-
-  @$pb.TagNumber(5)
-  $fixnum.Int64 get timestamp => $_getI64(4);
-  @$pb.TagNumber(5)
-  set timestamp($fixnum.Int64 v) { $_setInt64(4, v); }
-  @$pb.TagNumber(5)
-  $core.bool hasTimestamp() => $_has(4);
-  @$pb.TagNumber(5)
-  void clearTimestamp() => clearField(5);
+  $core.List<Location> get locations => $_getList(1);
 }
 
 class LocationResponse extends $pb.GeneratedMessage {
