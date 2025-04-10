@@ -23,7 +23,8 @@ class RouteRepositoryImpl extends RouteRepository {
   }
 
   @override
-  Future<Either<Failure, GetRouteRepModel>> getRoutes(GetRouteReq request) async {
+  Future<Either<Failure, GetRouteRepModel>> getRoutes(
+      GetRouteReq request) async {
     var returnedData = await sl<RouteApiService>().getRoutes(request);
     return returnedData.fold((error) {
       return left(error);
@@ -35,6 +36,28 @@ class RouteRepositoryImpl extends RouteRepository {
   @override
   Future<Either<Failure, dynamic>> postRoute(PostRouteReq request) async {
     var returnedData = await sl<RouteApiService>().postRoute(request);
+    return returnedData.fold((error) {
+      return left(error);
+    }, (data) {
+      return right(data);
+    });
+  }
+
+  @override
+  Future<Either<Failure, dynamic>> finishTracking(
+      Map<String, dynamic> request) async {
+    var returnedData = await sl<RouteApiService>().finishTracking(request);
+    return returnedData.fold((error) {
+      return left(error);
+    }, (data) {
+      return right(data);
+    });
+  }
+
+  @override
+  Future<Either<Failure, dynamic>> startTracking(
+      Map<String, dynamic> request) async {
+    var returnedData = await sl<RouteApiService>().startTracking(request);
     return returnedData.fold((error) {
       return left(error);
     }, (data) {

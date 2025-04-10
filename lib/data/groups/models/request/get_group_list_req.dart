@@ -8,6 +8,7 @@ class GetGroupListReq {
   final String? filterField;
   final String? sortField;
   final bool? sortDesc;
+  final bool? getMyGroups;
   GetGroupListReq({
     required this.pageNumber,
     required this.rowsPerPage,
@@ -15,6 +16,7 @@ class GetGroupListReq {
     this.filterField,
     this.sortField,
     this.sortDesc,
+    this.getMyGroups,
   });
 
   GetGroupListReq copyWith({
@@ -24,6 +26,7 @@ class GetGroupListReq {
     String? filterField,
     String? sortField,
     bool? sortDesc,
+    bool? getMyGroups,
   }) {
     return GetGroupListReq(
       pageNumber: pageNumber ?? this.pageNumber,
@@ -32,6 +35,7 @@ class GetGroupListReq {
       filterField: filterField ?? this.filterField,
       sortField: sortField ?? this.sortField,
       sortDesc: sortDesc ?? this.sortDesc,
+      getMyGroups: getMyGroups ?? this.getMyGroups,
     );
   }
 
@@ -43,6 +47,7 @@ class GetGroupListReq {
       'filterField': filterField,
       'sortField': sortField,
       'sortDesc': sortDesc,
+      'getMyGroups': getMyGroups,
     };
   }
 
@@ -54,6 +59,7 @@ class GetGroupListReq {
       if (filterValue != null) 'filterValue': filterValue!,
       'rowsPerPage': rowsPerPage.toString(),
       'pageNumber': pageNumber.toString(),
+      if (getMyGroups != null) 'getMyGroups': getMyGroups.toString(),
     };
   }
 
@@ -67,6 +73,8 @@ class GetGroupListReq {
           map['filterField'] != null ? map['filterField'] as String : null,
       sortField: map['sortField'] != null ? map['sortField'] as String : null,
       sortDesc: map['sortDesc'] != null ? map['sortDesc'] as bool : null,
+      getMyGroups:
+          map['getMyGroups'] != null ? map['getMyGroups'] as bool : null,
     );
   }
 
@@ -89,7 +97,8 @@ class GetGroupListReq {
         other.filterValue == filterValue &&
         other.filterField == filterField &&
         other.sortField == sortField &&
-        other.sortDesc == sortDesc;
+        other.sortDesc == sortDesc &&
+        other.getMyGroups == getMyGroups;
   }
 
   @override
@@ -99,6 +108,7 @@ class GetGroupListReq {
         filterValue.hashCode ^
         filterField.hashCode ^
         sortField.hashCode ^
-        sortDesc.hashCode;
+        sortDesc.hashCode ^
+        getMyGroups.hashCode;
   }
 }

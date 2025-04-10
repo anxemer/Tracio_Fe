@@ -11,6 +11,8 @@ message Location {
   double longitude = 2;
   optional double altitude = 3;
   int64 timestamp = 4;
+  optional double speed = 5;    // kilometer per hour
+  optional double distance = 6; // kilometer from previous location
 }
 
 message LocationRequest {

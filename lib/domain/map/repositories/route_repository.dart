@@ -11,4 +11,6 @@ abstract class RouteRepository {
   Future<Either<Failure, MapboxDirectionResponse>> getDirectionUsingMapbox(
       MapboxDirectionsRequest request);
   Future<Either<Failure, dynamic>> postRoute(PostRouteReq request);
+  Future<Either<Failure, dynamic>> startTracking(Map<String, dynamic> request);
+  Future<Either<Failure, dynamic>> finishTracking(Map<String, dynamic> request);
 }

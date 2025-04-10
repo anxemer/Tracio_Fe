@@ -6,6 +6,7 @@ import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/data/groups/models/request/get_group_list_req.dart';
 import 'package:tracio_fe/presentation/groups/cubit/group_cubit.dart';
 import 'package:tracio_fe/presentation/groups/cubit/group_state.dart';
+import 'package:tracio_fe/presentation/groups/cubit/invitation_bloc.dart';
 import 'package:tracio_fe/presentation/groups/pages/create_group.dart';
 import 'package:tracio_fe/presentation/groups/widgets/my_group_item.dart';
 import 'package:tracio_fe/presentation/groups/widgets/recommend_group_item.dart';
@@ -31,10 +32,8 @@ class _GroupTabState extends State<GroupTab>
   }
 
   void _onRefresh() async {
-    GetGroupListReq request = GetGroupListReq(
-      pageNumber: 1,
-      rowsPerPage: 10,
-    );
+    GetGroupListReq request =
+        GetGroupListReq(pageNumber: 1, rowsPerPage: 5, getMyGroups: true);
     context.read<GroupCubit>().getGroupList(request);
   }
 
@@ -82,7 +81,11 @@ class _GroupTabState extends State<GroupTab>
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => CreateGroupScreen()));
+                              builder: (context) => BlocProvider.value(
+                                    value: BlocProvider.of<InvitationBloc>(
+                                        context),
+                                    child: CreateGroupScreen(),
+                                  )));
                     },
                     child: Text(
                       "Create a group",
@@ -108,13 +111,11 @@ class _GroupTabState extends State<GroupTab>
                 }
               },
               builder: (context, state) {
-                if (state is GetGroupListSuccess) {
+                if (state is GetGroupListSuccess && state.hasMyGroups) {
                   if (state.groupList.isEmpty) {
                     return Center(child: Text("No groups found"));
                   } else {
                     return ListView.builder(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: AppSize.apHorizontalPadding / 4),
                       itemCount: state.groupList.length,
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
@@ -132,31 +133,35 @@ class _GroupTabState extends State<GroupTab>
             ),
 
             // Groups near you
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: AppSize.apHorizontalPadding,
-                  vertical: AppSize.apSectionPadding),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    spacing: AppSize.apHorizontalPadding / 2,
-                    children: [
-                      Icon(
-                        Icons.local_attraction_rounded,
-                        size: AppSize.iconMedium,
-                      ),
-                      Text("Popular Public Groups Near You",
-                          style: TextStyle(
-                              fontSize: AppSize.textSmall.sp,
-                              fontWeight: FontWeight.w600)),
-                    ],
-                  ),
+            BlocBuilder<GroupCubit, GroupState>(builder: (context, state) {
+              if (state is GetGroupListSuccess && !state.hasMyGroups) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: AppSize.apHorizontalPadding,
+                      vertical: AppSize.apSectionPadding),
+                  child: Column(children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      spacing: AppSize.apHorizontalPadding / 2,
+                      children: [
+                        Icon(
+                          Icons.local_attraction_rounded,
+                          size: AppSize.iconMedium,
+                        ),
+                        Text("Popular Public Groups Near You",
+                            style: TextStyle(
+                                fontSize: AppSize.textSmall.sp,
+                                fontWeight: FontWeight.w600)),
+                      ],
+                    ),
+                  ]),
+                );
+              } else {
+                return SizedBox.shrink();
+              }
+            }),
 
-                  // List of recommended groups
-                ],
-              ),
-            ),
+            // List of recommended groups
             BlocConsumer<GroupCubit, GroupState>(
               listener: (context, state) {
                 if (state is GroupFailure) {
@@ -169,7 +174,7 @@ class _GroupTabState extends State<GroupTab>
                 }
               },
               builder: (context, state) {
-                if (state is GetGroupListSuccess) {
+                if (state is GetGroupListSuccess && !state.hasMyGroups) {
                   if (state.groupList.isEmpty) {
                     return Center(child: Text("No groups found"));
                   } else {
@@ -188,6 +193,7 @@ class _GroupTabState extends State<GroupTab>
                       itemBuilder: (context, index) {
                         return RecommendGroupItem(
                           group: state.groupList[index],
+                          membership: state.groupList[index].membership,
                         );
                       },
                     );

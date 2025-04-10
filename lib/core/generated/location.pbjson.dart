@@ -21,9 +21,13 @@ const Location$json = {
     {'1': 'longitude', '3': 2, '4': 1, '5': 1, '10': 'longitude'},
     {'1': 'altitude', '3': 3, '4': 1, '5': 1, '9': 0, '10': 'altitude', '17': true},
     {'1': 'timestamp', '3': 4, '4': 1, '5': 3, '10': 'timestamp'},
+    {'1': 'speed', '3': 5, '4': 1, '5': 1, '9': 1, '10': 'speed', '17': true},
+    {'1': 'distance', '3': 6, '4': 1, '5': 1, '9': 2, '10': 'distance', '17': true},
   ],
   '8': [
     {'1': '_altitude'},
+    {'1': '_speed'},
+    {'1': '_distance'},
   ],
 };
 
@@ -31,7 +35,9 @@ const Location$json = {
 final $typed_data.Uint8List locationDescriptor = $convert.base64Decode(
     'CghMb2NhdGlvbhIaCghsYXRpdHVkZRgBIAEoAVIIbGF0aXR1ZGUSHAoJbG9uZ2l0dWRlGAIgAS'
     'gBUglsb25naXR1ZGUSHwoIYWx0aXR1ZGUYAyABKAFIAFIIYWx0aXR1ZGWIAQESHAoJdGltZXN0'
-    'YW1wGAQgASgDUgl0aW1lc3RhbXBCCwoJX2FsdGl0dWRl');
+    'YW1wGAQgASgDUgl0aW1lc3RhbXASGQoFc3BlZWQYBSABKAFIAVIFc3BlZWSIAQESHwoIZGlzdG'
+    'FuY2UYBiABKAFIAlIIZGlzdGFuY2WIAQFCCwoJX2FsdGl0dWRlQggKBl9zcGVlZEILCglfZGlz'
+    'dGFuY2U=');
 
 @$core.Deprecated('Use locationRequestDescriptor instead')
 const LocationRequest$json = {

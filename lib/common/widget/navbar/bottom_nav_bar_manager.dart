@@ -11,7 +11,9 @@ import 'package:tracio_fe/presentation/map/pages/cycling.dart';
 import 'package:tracio_fe/presentation/more/page/more.dart';
 
 class BottomNavBarManager extends StatefulWidget {
-  const BottomNavBarManager({super.key});
+  final int? selectedIndex;
+  final bool? isNavVisible;
+  const BottomNavBarManager({super.key, this.selectedIndex, this.isNavVisible});
 
   @override
   State<BottomNavBarManager> createState() => BottomNavBarManagerState();
@@ -19,6 +21,7 @@ class BottomNavBarManager extends StatefulWidget {
 
 class BottomNavBarManagerState extends State<BottomNavBarManager> {
   int _selectedIndex = 0;
+
   final double _navHeight = 60;
   bool _isNavVisible = true;
 
@@ -46,6 +49,13 @@ class BottomNavBarManagerState extends State<BottomNavBarManager> {
     setState(() {
       _isNavVisible = isVisible;
     });
+  }
+
+  @override
+  void initState() {
+    _selectedIndex = widget.selectedIndex ?? 0;
+    _isNavVisible = widget.isNavVisible ?? true;
+    super.initState();
   }
 
   @override

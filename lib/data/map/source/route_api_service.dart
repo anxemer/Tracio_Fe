@@ -13,6 +13,8 @@ abstract class RouteApiService {
   Future<Either> getRoutes(GetRouteReq request);
   Future<Either> postRoute(PostRouteReq request);
   Future<Either> getRouteUsingMapBox(MapboxDirectionsRequest request);
+  Future<Either<Failure, dynamic>> startTracking(Map<String, dynamic> request);
+  Future<Either<Failure, dynamic>> finishTracking(Map<String, dynamic> request);
 }
 
 class RouteApiServiceImpl extends RouteApiService {
@@ -65,6 +67,52 @@ class RouteApiServiceImpl extends RouteApiService {
 
       if (response.statusCode == 201) {
         return right(response.data);
+      } else {
+        return left(ExceptionFailure('Error: ${response.statusCode}'));
+      }
+    } on DioException catch (e) {
+      return left(
+          ExceptionFailure(e.response?.data['message'] ?? 'An error occurred'));
+    } catch (e) {
+      return left(ExceptionFailure('An unexpected error occurred: $e'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, dynamic>> finishTracking(
+      Map<String, dynamic> request) async {
+    try {
+      var response =
+          await sl<DioClient>().post(ApiUrl.finishTracking, data: request);
+
+      if (response.statusCode == 201) {
+        return right(response.data);
+      } else if (response.statusCode == 403) {
+        return Left(AuthorizationFailure(
+            'You do not have permission to perform this action.', 403));
+      } else {
+        return left(ExceptionFailure('Error: ${response.statusCode}'));
+      }
+    } on DioException catch (e) {
+      return left(
+          ExceptionFailure(e.response?.data['message'] ?? 'An error occurred'));
+    } catch (e) {
+      return left(ExceptionFailure('An unexpected error occurred: $e'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, dynamic>> startTracking(
+      Map<String, dynamic> request) async {
+    try {
+      var response =
+          await sl<DioClient>().post(ApiUrl.startTracking, data: request);
+
+      if (response.statusCode == 201) {
+        return right(response.data);
+      } else if (response.statusCode == 403) {
+        return Left(AuthorizationFailure(
+            'You do not have permission to perform this action.', 403));
       } else {
         return left(ExceptionFailure('Error: ${response.statusCode}'));
       }
