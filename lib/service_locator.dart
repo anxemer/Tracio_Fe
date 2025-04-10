@@ -3,6 +3,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tracio_fe/core/network/network_infor.dart';
+import 'package:tracio_fe/core/services/signalR/implement/group_route_hub_service.dart';
+import 'package:tracio_fe/core/services/signalR/signalr_core_service.dart';
 import 'package:tracio_fe/core/signalr_service.dart';
 import 'package:tracio_fe/data/auth/repositories/auth_repositoty_impl.dart';
 import 'package:tracio_fe/data/auth/sources/auth_remote_source/auth_api_service.dart';
@@ -10,13 +12,17 @@ import 'package:tracio_fe/data/auth/sources/auth_remote_source/auth_firebase_ser
 import 'package:tracio_fe/data/blog/repositories/blog_repository_impl.dart';
 import 'package:tracio_fe/data/blog/source/blog_api_service.dart';
 import 'package:tracio_fe/data/groups/repositories/group_repository_impl.dart';
+import 'package:tracio_fe/data/groups/repositories/invitation_repository_impl.dart';
 import 'package:tracio_fe/data/groups/repositories/vietnam_city_district_repository_impl.dart';
 import 'package:tracio_fe/data/groups/source/group_api_service.dart';
+import 'package:tracio_fe/data/groups/source/invitation_api_service.dart';
 import 'package:tracio_fe/data/groups/source/vietnam_city_district_service.dart';
 import 'package:tracio_fe/data/map/repositories/elevation_repository_impl.dart';
+import 'package:tracio_fe/data/map/repositories/image_repository_impl.dart';
 import 'package:tracio_fe/data/map/repositories/location_repository_impl.dart';
 import 'package:tracio_fe/data/map/repositories/route_repository_impl.dart';
 import 'package:tracio_fe/data/map/source/elevation_api_service.dart';
+import 'package:tracio_fe/data/map/source/image_url_api_service.dart';
 import 'package:tracio_fe/data/map/source/location_api_service.dart';
 import 'package:tracio_fe/data/map/source/route_api_service.dart';
 import 'package:tracio_fe/data/map/source/tracking_grpc_service.dart';
@@ -44,17 +50,28 @@ import 'package:tracio_fe/domain/blog/usecase/get_reaction_blog.dart';
 import 'package:tracio_fe/domain/blog/usecase/get_reply_comment.dart';
 import 'package:tracio_fe/domain/blog/usecase/react_blog.dart';
 import 'package:tracio_fe/domain/groups/repositories/group_repository.dart';
+import 'package:tracio_fe/domain/groups/repositories/invitation_repository.dart';
 import 'package:tracio_fe/domain/groups/repositories/vietnam_city_district_repository.dart';
 import 'package:tracio_fe/domain/groups/usecases/get_city_usecase.dart';
 import 'package:tracio_fe/domain/groups/usecases/get_district_usecase.dart';
 import 'package:tracio_fe/domain/groups/usecases/get_group_detail_usecase.dart';
 import 'package:tracio_fe/domain/groups/usecases/get_group_list_usecase.dart';
+import 'package:tracio_fe/domain/groups/usecases/get_group_route_usecase.dart';
+import 'package:tracio_fe/domain/groups/usecases/get_participant_list_usecase.dart';
+import 'package:tracio_fe/domain/groups/usecases/invitations/accept_group_invitation_usecase.dart';
+import 'package:tracio_fe/domain/groups/usecases/invitations/invite_user_usecase.dart';
+import 'package:tracio_fe/domain/groups/usecases/invitations/request_to_join_group_usecase.dart';
+import 'package:tracio_fe/domain/groups/usecases/invitations/response_join_group_request_usecase.dart';
+import 'package:tracio_fe/domain/groups/usecases/leave_group_usecase.dart';
+import 'package:tracio_fe/domain/groups/usecases/post_group_route_usecase.dart';
 import 'package:tracio_fe/domain/groups/usecases/post_group_usecase.dart';
 import 'package:tracio_fe/domain/map/repositories/elevation_repository.dart';
+import 'package:tracio_fe/domain/map/repositories/image_repository.dart';
 import 'package:tracio_fe/domain/map/repositories/location_repository.dart';
 import 'package:tracio_fe/domain/map/repositories/route_repository.dart';
 import 'package:tracio_fe/domain/map/usecase/get_direction_using_mapbox.dart';
 import 'package:tracio_fe/domain/map/usecase/get_elevation.dart';
+import 'package:tracio_fe/domain/map/usecase/get_image_url_usecase.dart';
 import 'package:tracio_fe/domain/map/usecase/get_location_detail.dart';
 import 'package:tracio_fe/domain/map/usecase/get_locations.dart';
 import 'package:tracio_fe/domain/map/usecase/get_routes.dart';
@@ -76,16 +93,14 @@ import 'data/auth/sources/auth_local_source/auth_local_source.dart';
 import 'domain/blog/usecase/rep_comment.dart';
 import 'domain/blog/usecase/un_react_blog.dart';
 
-// Tối ưu dependency injection
 final sl = GetIt.instance;
 
 Future<void> initializeDependencies() async {
-  // Core services - những thứ cần thiết ngay lập tức
   sl.registerSingleton<DioClient>(DioClient());
   final sharedPreferences = await SharedPreferences.getInstance();
   sl.registerSingleton(sharedPreferences);
 
-  // Các service cơ bản - đăng ký lazy để tạo khi cần
+  // * SERVICES
   sl.registerLazySingleton<FlutterSecureStorage>(() => FlutterSecureStorage());
   sl.registerLazySingleton(() => Connectivity());
   sl.registerLazySingleton<NetworkInfor>(() => NetworkInforIml(sl()));
@@ -105,7 +120,12 @@ Future<void> initializeDependencies() async {
       () => VietnamCityDistrictServiceImpl());
   sl.registerLazySingleton<GroupApiService>(() => GroupApiServiceImpl());
   sl.registerLazySingleton<ShopApiService>(() => ShopApiServiceImpl());
-  //Services
+  sl.registerLazySingleton<ShopServiceRepository>(
+      () => ShopServiceRepositoryImpl(remoteDataSource: sl()));
+  sl.registerLazySingleton<ImageUrlApiService>(() => ImageUrlApiServiceImpl());
+  sl.registerLazySingleton<InvitationApiService>(
+      () => InvitationApiServiceImpl());
+  // * REPOSITORIES
   sl.registerLazySingleton<AuthRepository>(() => AuthRepositotyImpl());
   sl.registerLazySingleton<UserProfileRepository>(
       () => UserProfileRepositoryImpl(dataSource: sl()));
@@ -119,14 +139,19 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton<VietnamCityDistrictRepository>(
       () => VietnamCityDistrictRepositoryImpl());
   sl.registerLazySingleton<GroupRepository>(() => GroupRepositoryImpl());
+  sl.registerLazySingleton<ImageRepository>(() => ImageRepositoryImpl());
+  sl.registerLazySingleton<InvitationRepository>(
+      () => InvitationRepositoryImpl());
+  // * gRPC & Hubs
+  sl.registerLazySingleton(() => SignalRCoreService());
 
-  sl.registerLazySingleton<ShopServiceRepository>(
-      () => ShopServiceRepositoryImpl(remoteDataSource: sl()));
-  //gRPC & Hubs
   sl.registerLazySingleton<ITrackingGrpcService>(() => TrackingGrpcService());
   sl.registerLazySingleton<ITrackingHubService>(() => TrackingHubService());
-  // Use cases - thường không cần là singleton vì không giữ state
-  // Có thể sử dụng registerFactory nếu không cần lưu trữ state
+
+  //when hub services is depended on SignalRCoreService
+  sl.registerLazySingleton(
+      () => GroupRouteHubService(sl<SignalRCoreService>()));
+  // * USECASES--use registerFactory
   sl.registerFactory<GetBlogsUseCase>(() => GetBlogsUseCase());
   sl.registerFactory<GetReactBlogUseCase>(() => GetReactBlogUseCase());
   sl.registerFactory<ReactBlogUseCase>(() => ReactBlogUseCase());
@@ -170,4 +195,17 @@ Future<void> initializeDependencies() async {
   sl.registerFactory<BookingServiceUseCase>(() => BookingServiceUseCase());
   sl.registerFactory<GetBookingUseCase>(() => GetBookingUseCase());
   sl.registerFactory<DeleteCartItemUseCase>(() => DeleteCartItemUseCase());
+  sl.registerFactory<PostGroupRouteUsecase>(() => PostGroupRouteUsecase());
+  sl.registerFactory<GetImageUrlUsecase>(() => GetImageUrlUsecase());
+  sl.registerFactory<GetGroupRouteUsecase>(() => GetGroupRouteUsecase());
+  sl.registerFactory<GetParticipantListUsecase>(
+      () => GetParticipantListUsecase());
+  sl.registerFactory<RequestToJoinGroupUsecase>(
+      () => RequestToJoinGroupUsecase());
+  sl.registerFactory<AcceptGroupInvitationUsecase>(
+      () => AcceptGroupInvitationUsecase());
+  sl.registerFactory<ResponseJoinGroupRequestUsecase>(
+      () => ResponseJoinGroupRequestUsecase());
+  sl.registerFactory<InviteUserUsecase>(() => InviteUserUsecase());
+  sl.registerFactory<LeaveGroupUsecase>(() => LeaveGroupUsecase());
 }

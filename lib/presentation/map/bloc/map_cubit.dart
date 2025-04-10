@@ -10,7 +10,9 @@ import 'package:tracio_fe/common/helper/custom_paint/numbered_circle_painter.dar
 import 'package:tracio_fe/core/configs/utils/color_utils.dart';
 import 'package:tracio_fe/core/constants/api_url.dart';
 import 'package:tracio_fe/core/constants/app_urls.dart';
+import 'package:tracio_fe/domain/map/usecase/get_image_url_usecase.dart';
 import 'package:tracio_fe/presentation/map/bloc/map_state.dart';
+import 'package:tracio_fe/service_locator.dart';
 
 class MapCubit extends Cubit<MapCubitState> {
   MapCubit() : super(MapCubitInitial());
@@ -31,6 +33,10 @@ class MapCubit extends Cubit<MapCubitState> {
   PolylineAnnotationManager? polylineAnnotationManager;
   PolygonAnnotationManager? polygonAnnotationManager;
   PointAnnotationOptions? searchAnnotation;
+
+  final Map<String, PointAnnotation> _userAnnotations = {};
+  final Map<String, PointAnnotationManager> _managers = {};
+  final Map<String, Uint8List> _imageCache = {};
 
   Future<void> initializeMap(MapboxMap mapboxMap,
       {bool forRiding = false}) async {
@@ -309,5 +315,118 @@ class MapCubit extends Cubit<MapCubitState> {
     } catch (e) {
       emit(StaticImageFailure(errorMessage: "Error capturing snapshot: $e"));
     }
+  }
+
+  Future<void> addUserMarker({
+    required String id,
+    required String imageUrl,
+    required Position position,
+    double imageSize = 1.0,
+    Color borderColor = Colors.white,
+    double borderSize = 6.0,
+  }) async {
+    final bytes = await _fetchAndResizeImage(
+      url: imageUrl,
+      size: 100,
+      borderColor: borderColor,
+      borderSize: borderSize,
+    );
+
+    final manager = await mapboxMap?.annotations
+        .createPointAnnotationManager(id: 'user_$id');
+    final annotation = await manager?.create(
+      PointAnnotationOptions(
+        geometry: Point(coordinates: position),
+        image: bytes,
+      ),
+    );
+
+    _userAnnotations[id] = annotation!;
+    _managers[id] = manager!;
+  }
+
+  /// Public: Update existing marker location
+  Future<void> updateUserMarker({
+    required String id,
+    required Position newPosition,
+  }) async {
+    if (!_userAnnotations.containsKey(id)) return;
+    final marker = _userAnnotations[id]!;
+    final updated = PointAnnotation(
+        id: marker.id, geometry: Point(coordinates: newPosition));
+    await _managers[id]?.update(updated);
+    _userAnnotations[id] = updated;
+  }
+
+  /// Public: Remove all user markers
+  Future<void> clearAllMarkers() async {
+    for (final manager in _managers.values) {
+      await manager.deleteAll();
+    }
+    _userAnnotations.clear();
+    _managers.clear();
+  }
+
+  Future<Uint8List> _fetchAndResizeImage({
+    required String url,
+    required int size,
+    required Color borderColor,
+    required double borderSize,
+  }) async {
+    if (_imageCache.containsKey(url)) {
+      return _imageCache[url]!;
+    }
+
+    final response = await sl<GetImageUrlUsecase>().call(url);
+    return response.fold(
+      (error) {
+        debugPrint('[Image Error] ${error.message}');
+        throw Exception("Failed to load image from $url");
+      },
+      (data) async {
+        final image = Uint8List.fromList(data);
+        final resized =
+            await _resizeImageBytes(image, size, borderColor, borderSize);
+        _imageCache[url] = resized; 
+        return resized;
+      },
+    );
+  }
+
+  /// Private: Resize and circle image
+  Future<Uint8List> _resizeImageBytes(
+    Uint8List data,
+    int size,
+    Color borderColor,
+    double borderSize,
+  ) async {
+    final codec = await ui.instantiateImageCodec(data,
+        targetWidth: size, targetHeight: size);
+    final frame = await codec.getNextFrame();
+    final uiImage = frame.image;
+
+    final recorder = ui.PictureRecorder();
+    final canvas = Canvas(recorder);
+    final radius = size / 2;
+    final center = Offset(radius, radius);
+
+    final borderPaint = Paint()
+      ..color = borderColor
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = borderSize;
+
+    final clipPath = Path()
+      ..addOval(
+          Rect.fromCircle(center: center, radius: radius - borderSize / 2));
+
+    canvas.drawCircle(center, radius, Paint()..color = Colors.transparent);
+    canvas.clipPath(clipPath);
+    canvas.drawImage(uiImage, Offset.zero, Paint());
+    canvas.drawCircle(center, radius - borderSize / 2, borderPaint);
+
+    final picture = recorder.endRecording();
+    final img = await picture.toImage(size, size);
+    final byteData = await img.toByteData(format: ui.ImageByteFormat.png);
+    return byteData!.buffer.asUint8List();
   }
 }

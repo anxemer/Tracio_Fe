@@ -13,6 +13,7 @@ abstract class RouteApiService {
   Future<Either> getRoutes(GetRouteReq request);
   Future<Either> postRoute(PostRouteReq request);
   Future<Either> getRouteUsingMapBox(MapboxDirectionsRequest request);
+  Future<Either> startTracking(Map<String, dynamic> request);
 }
 
 class RouteApiServiceImpl extends RouteApiService {
@@ -74,5 +75,11 @@ class RouteApiServiceImpl extends RouteApiService {
     } catch (e) {
       return left(ExceptionFailure('An unexpected error occurred: $e'));
     }
+  }
+
+  @override
+  Future<Either> startTracking(Map<String, dynamic> request) {
+    // TODO: implement start
+    throw UnimplementedError();
   }
 }

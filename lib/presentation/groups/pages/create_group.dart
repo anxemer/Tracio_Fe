@@ -9,6 +9,7 @@ import 'package:tracio_fe/data/groups/models/request/post_group_req.dart';
 import 'package:tracio_fe/presentation/groups/cubit/form_group_cubit.dart';
 import 'package:tracio_fe/presentation/groups/cubit/group_cubit.dart';
 import 'package:tracio_fe/presentation/groups/cubit/group_state.dart';
+import 'package:tracio_fe/presentation/groups/cubit/invitation_bloc.dart';
 import 'package:tracio_fe/presentation/groups/pages/group_detail.dart';
 import 'package:tracio_fe/presentation/groups/widgets/group_info_step.dart';
 import 'package:tracio_fe/presentation/groups/widgets/group_location_step.dart';
@@ -102,8 +103,13 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
                                   if (state.isSuccess) {
                                     AppNavigator.push(
                                         context,
-                                        GroupDetailScreen(
-                                          groupId: state.groupId,
+                                        BlocProvider.value(
+                                          value:
+                                              BlocProvider.of<InvitationBloc>(
+                                                  context),
+                                          child: GroupDetailScreen(
+                                            groupId: state.groupId,
+                                          ),
                                         ));
                                   }
                                 }

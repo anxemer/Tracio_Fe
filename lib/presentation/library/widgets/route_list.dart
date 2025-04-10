@@ -41,7 +41,8 @@ class _RouteListState extends State<RouteList> {
           color: AppColors.primary,
           onRefresh: _fetchRoutes,
           child: ListView(
-            physics: const AlwaysScrollableScrollPhysics(),
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
             children: [
               if (state is GetRouteLoaded && state.routes.isNotEmpty)
                 ...state.routes.map((route) => RouteItem(routeData: route)),

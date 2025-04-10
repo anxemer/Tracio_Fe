@@ -163,7 +163,7 @@ class GroupDetailSkeleton extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  "Create an event",
+                  "Create an activity",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: AppColors.primary,

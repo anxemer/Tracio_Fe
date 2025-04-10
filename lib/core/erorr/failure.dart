@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:equatable/equatable.dart';
 
 abstract class Failure extends Equatable {
@@ -31,4 +32,10 @@ class CredentialFailure extends Failure {
 
 class AuthenticationFailure extends Failure {
   const AuthenticationFailure(String message) : super(message);
+}
+
+class AuthorizationFailure extends Failure {
+  final int statusCode;
+
+  const AuthorizationFailure(super.message, this.statusCode);
 }
