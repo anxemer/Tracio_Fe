@@ -3,10 +3,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
 import 'package:tracio_fe/core/configs/theme/assets/app_images.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
+import 'package:tracio_fe/data/auth/sources/auth_local_source/auth_local_source.dart';
 import 'package:tracio_fe/presentation/auth/pages/login.dart';
+import 'package:tracio_fe/presentation/shop_owner/page/dash_board.dart';
 import 'package:tracio_fe/presentation/splash/bloc/splash_cubit.dart';
 import 'package:tracio_fe/common/widget/navbar/bottom_nav_bar_manager.dart';
 
+import '../../../service_locator.dart';
 import '../bloc/splash_state.dart';
 
 class SplashPage extends StatelessWidget {
@@ -21,6 +24,10 @@ class SplashPage extends StatelessWidget {
             AppNavigator.pushReplacement(context, LoginPage());
           }
           if (state is Authenticated) {
+            var user = context.read<AuthLocalSource>().getUser();
+            if (user.role == 'admin') {
+              AppNavigator.pushReplacement(context, DashboardScreen());
+            }
             AppNavigator.pushReplacement(context, BottomNavBarManager());
           }
         },

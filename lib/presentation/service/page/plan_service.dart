@@ -42,6 +42,8 @@ class _PlanServicePageState extends State<PlanServicePage>
     screenAnimationController.forward();
     // widget.animationController.forward();
     context.read<CartItemCubit>().getCartitem();
+    context.read<BookingServiceCubit>().clearBookingItem();
+
     // context.read<CartItemCubit>().resetState();
     // bookingModel = selectedService.map((item) {
     //   return BookingCardViewModel(
@@ -57,6 +59,7 @@ class _PlanServicePageState extends State<PlanServicePage>
   void dispose() {
     screenAnimationController.dispose();
     _controllers.forEach((_, controller) => controller.dispose());
+
     super.dispose();
   }
 
@@ -254,9 +257,9 @@ class _PlanServicePageState extends State<PlanServicePage>
                               : Colors.grey.shade200,
                         ),
                         child: AddSchedule(
-                          cartItem: bookingCubit.selectedServices,
-                          // bookingModel: bookingModel,
-                        ),
+                            // cartItem: bookingCubit.selectedServices,
+                            // bookingModel: bookingModel,
+                            ),
                       ),
                     ),
                   ]),

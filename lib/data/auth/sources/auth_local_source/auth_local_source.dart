@@ -4,17 +4,20 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tracio_fe/data/auth/models/user_model.dart';
 
 import '../../../../core/erorr/exception.dart';
+import '../../../../domain/auth/entities/user.dart';
 import '../../../../service_locator.dart';
 
 abstract class AuthLocalSource {
   Future<String> getToken();
-  Future<UserModel> getUser();
+  UserEntity getUser();
   Future<void> saveToken(String token);
   Future<void> saveUser(UserModel user);
+  Future<void> saveRefrshToken(String token);
   Future<void> clearCache();
 }
 
 const cachedToken = 'TOKEN';
+const cachedRefreshToken = 'RefreshToken';
 const cachedUser = 'USER';
 
 class AuthLocalSourceImp extends AuthLocalSource {
@@ -33,10 +36,10 @@ class AuthLocalSourceImp extends AuthLocalSource {
   }
 
   @override
-  Future<UserModel> getUser() {
+  UserModel getUser() {
     final jsonString = sl<SharedPreferences>().getString(cachedUser);
     if (jsonString != null) {
-      return Future.value(UserModel.fromJson(jsonString));
+      return UserModel.fromJson(jsonString);
     } else {
       throw CacheException();
     }
@@ -56,5 +59,11 @@ class AuthLocalSourceImp extends AuthLocalSource {
   Future<void> clearCache() async {
     await sl<FlutterSecureStorage>().deleteAll();
     await sl<SharedPreferences>().remove(cachedUser);
+  }
+
+  @override
+  Future<void> saveRefrshToken(String refreshToken) async {
+    await sl<FlutterSecureStorage>()
+        .write(key: cachedRefreshToken, value: refreshToken);
   }
 }

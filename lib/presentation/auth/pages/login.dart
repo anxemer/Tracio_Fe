@@ -13,11 +13,13 @@ import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/core/erorr/failure.dart';
 import 'package:tracio_fe/core/extension/string_extension.dart';
 import 'package:tracio_fe/data/auth/models/login_req.dart';
+import 'package:tracio_fe/data/auth/sources/auth_local_source/auth_local_source.dart';
 import 'package:tracio_fe/presentation/auth/bloc/authCubit/auth_cubit.dart';
 import 'package:tracio_fe/presentation/auth/pages/login_phone.dart';
 import 'package:tracio_fe/presentation/auth/pages/verify_email.dart';
 import 'package:tracio_fe/presentation/auth/widgets/button_auth.dart';
 import 'package:tracio_fe/presentation/auth/widgets/input_field_auth.dart';
+import 'package:tracio_fe/presentation/shop_owner/page/dash_board.dart';
 import 'package:tracio_fe/service_locator.dart';
 
 import '../../../common/widget/navbar/bottom_nav_bar_manager.dart';
@@ -42,13 +44,20 @@ class _LoginPageState extends State<LoginPage> {
           if (state is AuthLoading) {
             EasyLoading.show(status: 'Loading...');
           } else if (state is AuthLoaded) {
+            var user = sl<AuthLocalSource>().getUser();
             if (sl<SharedPreferences>().getString('USER') != null) {
-              Future.microtask(
-                () {
-                  EasyLoading.dismiss();
-                  AppNavigator.pushReplacement(context, BottomNavBarManager());
-                },
-              );
+              if (user.role == 'admin') {
+                Future.microtask(
+                  () {
+                    EasyLoading.dismiss();
+                    AppNavigator.pushReplacement(context, DashboardScreen());
+                  },
+                );
+              } else {
+                EasyLoading.dismiss();
+
+                AppNavigator.pushReplacement(context, BottomNavBarManager());
+              }
             }
           } else if (state is AuthFailure) {
             if (state.failure is CredentialFailure) {

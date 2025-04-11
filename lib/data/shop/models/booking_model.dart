@@ -5,6 +5,7 @@ import '../../../common/helper/media_file.dart';
 class BookingModel extends BookingEntity {
   BookingModel({
     required super.bookingId,
+    required super.bookingDetailId,
     required super.serviceName,
     required super.receivedAt,
     required super.serviceMediaFile,
@@ -39,6 +40,8 @@ class BookingModel extends BookingEntity {
   factory BookingModel.fromMap(Map<String, dynamic> map) {
     return BookingModel(
       bookingId: map['bookingId'] != null ? map['bookingId'] as int : null,
+      bookingDetailId:
+          map['bookingDetailId'] != null ? map['bookingDetailId'] as int : null,
       serviceName:
           map['serviceName'] != null ? map['serviceName'] as String : null,
       receivedAt: map['receivedAt'] != null

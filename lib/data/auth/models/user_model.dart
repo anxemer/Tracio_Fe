@@ -8,6 +8,7 @@ class UserModel extends UserEntity {
     super.userId,
     super.userName,
     super.email,
+    super.role,
     // super.firebaseId,
     // super.phoneNumber,
     super.profilePicture,
@@ -19,6 +20,7 @@ class UserModel extends UserEntity {
       'userId': userId,
       'userName': userName,
       'email': email,
+      'role': role,
       'profilePicture': profilePicture,
     };
   }
@@ -28,6 +30,7 @@ class UserModel extends UserEntity {
       userId: map['userId'] as int,
       userName: map['userName'] as String,
       email: map['email'] as String,
+      role: map['role'] as String,
       // firebaseId: map['firebaseId'] as String ,
       // phoneNumber: map['phoneNumber'] as String ,
       profilePicture: map['profilePicture'] as String? ?? "", // Tránh null
@@ -41,5 +44,3 @@ class UserModel extends UserEntity {
   // Convert object sang JSON string
   String toJson() => json.encode(toMap());
 }
-
-

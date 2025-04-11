@@ -1,12 +1,16 @@
 class PaginationMetaDataEntity {
-  final int ? pageNumber;
-  final int ? pageSize;
-  final int ? totalBlogs;
-  final int ? totalPages;
+  final bool? isSeen;
+  final int? pageNumber;
+  final int? pageSize;
+  final int? totalSeenBlogs;
+  final int? totalSeenBlogPages;
+  final int? totalPages;
   PaginationMetaDataEntity({
-     this.pageNumber,
-     this.pageSize,
-     this.totalBlogs,
-     this.totalPages,
+    this.isSeen,
+    this.pageNumber,
+    this.pageSize,
+    this.totalSeenBlogs,
+    this.totalSeenBlogPages,
+    this.totalPages,
   });
 }

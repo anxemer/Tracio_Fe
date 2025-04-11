@@ -15,7 +15,7 @@ class UserApiSourceImpl extends UserApiSource {
     var response = await sl<DioClient>().get('${ApiUrl.userProfile}/$userId');
 
     if (response.statusCode == 200) {
-      return UserprofileModel.fromJson(response.data['result']);
+      return UserprofileModel.fromMap(response.data['result']);
     } else {
       throw ServerException();
     }

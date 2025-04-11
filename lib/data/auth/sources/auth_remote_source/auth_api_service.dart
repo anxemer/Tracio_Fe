@@ -42,8 +42,7 @@ class AuthApiServiceImpl extends AuthApiService {
   Future<AuthenticationResponseModel> login(LoginReq login) async {
     var response = await sl<DioClient>()
         .post(ApiUrl.loginWithEP, data: login.toMap(), isMultipart: false);
-    if (response.statusCode == 200) {
-     
+    if (response.statusCode == 201) {
       return (AuthenticationResponseModel.fromMap(response.data['result']));
     } else if (response.statusCode == 400) {
       throw CredentialFailure("Lỗi server: ${response.data['message']}");

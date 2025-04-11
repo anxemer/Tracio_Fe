@@ -99,18 +99,22 @@ class AuthRepositotyImpl extends AuthRepository {
     try {
       final remoteResponse = await getDataSource();
       String token = remoteResponse.accessToken;
+      String refreshToken = remoteResponse.refreshToken;
       Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
 
       int userId = int.parse(decodedToken['custom_id'].toString());
       String uniqueName = decodedToken['unique_name'];
+      String role = decodedToken['role'];
       String email = decodedToken['email'];
       String avatar = decodedToken['avatar'];
       UserModel user = UserModel(
+          role: role,
           email: email,
           profilePicture: avatar,
           userId: userId,
           userName: uniqueName);
       await sl<AuthLocalSource>().saveToken(token);
+      await sl<AuthLocalSource>().saveRefrshToken(refreshToken);
       sl<AuthLocalSource>().saveUser(user);
       return Right(remoteResponse);
     } on CredentialFailure catch (e) {

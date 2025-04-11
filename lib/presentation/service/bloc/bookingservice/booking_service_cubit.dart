@@ -2,20 +2,35 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tracio_fe/core/erorr/failure.dart';
 import 'package:tracio_fe/domain/shop/entities/response/cart_item_entity.dart';
 import 'package:tracio_fe/domain/shop/usecase/booking_service.dart';
+import 'package:tracio_fe/domain/shop/usecase/reschedule_booking.dart';
 import 'package:tracio_fe/presentation/service/bloc/bookingservice/booking_service_state.dart';
 
 import '../../../../common/helper/schedule_model.dart';
 import '../../../../service_locator.dart';
 
-class BookingServiceCubit extends Cubit<BookingServiceState> {
+class  BookingServiceCubit extends Cubit<BookingServiceState> {
   BookingServiceCubit() : super(BookingServiceInitital());
   List<CartItemEntity> selectedServices = [];
+  List<int> reschedule = [];
   Map<String, String> serviceNotes = {};
   List<ScheduleModel>? schedules;
   void bookingServie(params) async {
     try {
       emit(BookingServiceLoading());
       var response = await sl<BookingServiceUseCase>().call(params);
+      response.fold((error) {
+        emit(BookingServiceFailure(message: error.message));
+      }, (data) {
+        emit(BookingServiceSuccess(isSuccess: data));
+      });
+    } on ExceptionFailure catch (e) {
+      emit(BookingServiceFailure(message: e.message));
+    }
+  }
+
+  void rescheduleBooking(params) async {
+    try {
+      var response = await sl<RescheduleBookingUseCase>().call(params);
       response.fold((error) {
         emit(BookingServiceFailure(message: error.message));
       }, (data) {
@@ -73,13 +88,22 @@ class BookingServiceCubit extends Cubit<BookingServiceState> {
     ));
   }
 
+  void addRescheduleBooking(int rescheduleId) {
+    reschedule.add(rescheduleId);
+    emit(RescheduleBookingUpdate(bookingId: reschedule, schedules: schedules));
+  }
+
+  void removeRescheduleBooking(int rescheduleId) {
+    reschedule.remove(rescheduleId);
+    emit(RescheduleBookingUpdate(bookingId: reschedule, schedules: schedules));
+  }
+
   void clearBookingItem() {
-    if (schedules != null &&
-        selectedServices.isNotEmpty &&
-        serviceNotes.isNotEmpty) {
+    if (schedules != null) {
       schedules!.clear();
-      selectedServices.clear();
-      serviceNotes.clear();
     }
+    selectedServices.clear();
+    serviceNotes.clear();
+    reschedule.clear();
   }
 }

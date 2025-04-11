@@ -4,6 +4,7 @@ import 'package:tracio_fe/common/helper/media_file.dart';
 
 class BookingEntity {
   final int? bookingId;
+  final int? bookingDetailId;
   final String? serviceName;
   final DateTime? receivedAt;
   final List<MediaFile>? serviceMediaFile;
@@ -18,6 +19,7 @@ class BookingEntity {
   final double? price;
   BookingEntity({
     this.bookingId,
+    this.bookingDetailId,
     this.serviceName,
     this.receivedAt,
     this.serviceMediaFile,
@@ -31,6 +33,4 @@ class BookingEntity {
     this.shopNote,
     this.price,
   });
-
- 
 }

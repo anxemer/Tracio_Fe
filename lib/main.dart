@@ -15,6 +15,9 @@ import 'package:tracio_fe/core/configs/theme/app_theme.dart';
 import 'package:tracio_fe/core/signalr_service.dart';
 import 'package:tracio_fe/firebase_options.dart';
 import 'package:tracio_fe/presentation/blog/bloc/category/get_category_cubit.dart';
+import 'package:tracio_fe/presentation/service/bloc/bookingservice/cubit/get_booking_detail_cubit.dart';
+import 'package:tracio_fe/presentation/service/bloc/bookingservice/reschedule_booking/cubit/reschedule_booking_cubit.dart';
+import 'package:tracio_fe/presentation/service/bloc/get_booking/get_booking_cubit.dart';
 import 'package:tracio_fe/presentation/service/bloc/service_bloc/get_service_cubit.dart';
 import 'package:tracio_fe/presentation/splash/page/splash.dart';
 import 'package:tracio_fe/presentation/map/bloc/tracking_location_bloc.dart';
@@ -26,6 +29,7 @@ import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' as mp;
 import 'package:tracio_fe/presentation/theme/bloc/theme_cubit.dart';
 import 'presentation/service/bloc/bookingservice/booking_service_cubit.dart';
 import 'presentation/service/bloc/cart_item_bloc/cart_item_cubit.dart';
+import 'presentation/shop_owner/bloc/cubit/resolve_booking_cubit.dart';
 import 'service_locator.dart' as di;
 
 Future<void> main() async {
@@ -43,7 +47,7 @@ Future<void> main() async {
   } catch (e) {
     debugPrint("⚠️ Failed to load .env file: $e");
   }
-  await SignalRService().initConnection();
+  // await SignalRService().initConnection();
   await di.initializeDependencies();
 
   await _requestPermissions();
@@ -92,6 +96,11 @@ class _MyAppState extends State<MyApp> {
         BlocProvider(create: (context) => ThemeCubit()),
         BlocProvider(create: (context) => CartItemCubit()..getCartitem()),
         BlocProvider(create: (context) => GetServiceCubit()),
+        BlocProvider(create: (context) => GetBookingCubit()),
+        BlocProvider(create: (context) => GetBookingDetailCubit()),
+        BlocProvider(
+          create: (context) => ResolveBookingShopCubit(),
+        ),
         BlocProvider(
             create: (context) => GetCategoryCubit()..getCategoryService()),
         BlocProvider(
@@ -99,6 +108,9 @@ class _MyAppState extends State<MyApp> {
         ),
         BlocProvider(
           create: (context) => FilterCubit(),
+        ),
+        BlocProvider(
+          create: (context) => RescheduleBookingCubit(),
         ),
         // BlocProvider(create: (context) => AuthCubit()..checkUser())
       ],

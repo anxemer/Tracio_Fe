@@ -34,6 +34,12 @@ class DetailServicePage extends StatefulWidget {
 class _DetailServicePageState extends State<DetailServicePage> {
   TextEditingController noteCon = TextEditingController();
   @override
+  void initState() {
+    context.read<BookingServiceCubit>().clearBookingItem();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     var isDark = context.isDarkMode;
     return Scaffold(

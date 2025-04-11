@@ -4,7 +4,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tracio_fe/common/helper/is_dark_mode.dart';
 import 'package:tracio_fe/common/widget/appbar/app_bar.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
+import 'package:tracio_fe/data/shop/models/get_booking_req.dart';
+import 'package:tracio_fe/presentation/service/bloc/bookingservice/cubit/get_booking_detail_cubit.dart';
+import 'package:tracio_fe/presentation/service/bloc/bookingservice/resolve_overlap_service/cubit/resolve_overlap_service_cubit.dart';
 import 'package:tracio_fe/presentation/service/bloc/get_booking/get_booking_cubit.dart';
+import 'package:tracio_fe/presentation/service/widget/booking_status_tab.dart';
 import 'package:tracio_fe/presentation/service/widget/plan_service_icon.dart';
 import 'package:tracio_fe/presentation/service/widget/waitting_service.dart';
 
@@ -29,6 +33,7 @@ class _MyBookingPageState extends State<MyBookingPage>
 
   @override
   void initState() {
+    
     screenAnimationController =
         AnimationController(duration: Duration(milliseconds: 400), vsync: this);
     tabAnimationController =
@@ -55,8 +60,18 @@ class _MyBookingPageState extends State<MyBookingPage>
   Widget indexView = Container();
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => GetBookingCubit(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => GetBookingCubit(),
+        ),
+        BlocProvider(
+          create: (context) => ResolveOverlapServiceCubit(),
+        ),
+        BlocProvider(
+          create: (context) => GetBookingDetailCubit(),
+        ),
+      ],
       child: Scaffold(
         appBar: BasicAppbar(
             backgroundColor: Colors.transparent,
@@ -221,16 +236,30 @@ class _MyBookingPageState extends State<MyBookingPage>
               animationController: tabAnimationController,
             );
           });
+        } else if (tabType == TopBarType.Processing) {
+          // setState(() {
+          //   indexView = PendingListView();
+          // });
+          setState(() {
+            indexView = BookingStatusTab(
+              status: 'Processing',
+              animationController: tabAnimationController,
+              hasSolve: false,
+            );
+          });
         } else if (tabType == TopBarType.Completed) {
           // setState(() {
           //   indexView = PendingListView();
           // });
-          // setState(() {
-          //   indexView = FavoritesListView(
-          //     animationController: tabAnimationController,
-          //   );
-          // });
+          setState(() {
+            indexView = BookingStatusTab(
+              status: 'Complete',
+              animationController: tabAnimationController,
+              hasSolve: false,
+            );
+          });
         }
+
         tabAnimationController.forward();
       });
     }

@@ -125,9 +125,7 @@ class GetBlogCubit extends Cubit<GetBlogState> {
   Future<void> getMoreBlogs() async {
     final currentState = state;
 
-    if (currentState is GetBlogLoaded &&
-        currentState.isLoading == false &&
-        currentState.blogs!.length < currentState.metaData.totalBlogs!) {
+    if (currentState is GetBlogLoaded && currentState.isLoading == false) {
       try {
         emit(GetBlogLoaded(
           blogs: currentState.blogs,
@@ -137,8 +135,8 @@ class GetBlogCubit extends Cubit<GetBlogState> {
         ));
 
         final nextPage = currentState.metaData.pageNumber! + 1;
-        final result = await sl<GetBlogsUseCase>().call(GetBlogReq(
-            pageNumber: nextPage, pageSize: currentState.params.pageSize));
+        final result = await sl<GetBlogsUseCase>().call(
+            GetBlogReq(pageNumber: nextPage, isSeen: state.metaData.isSeen));
 
         result.fold((error) {
           emit(GetBlogFailure(
@@ -150,12 +148,10 @@ class GetBlogCubit extends Cubit<GetBlogState> {
         }, (data) {
           final updatedBlogs = List<BlogEntity>.from(currentState.blogs!);
           updatedBlogs.addAll(data.blogs);
-
           emit(GetBlogLoaded(
               blogs: updatedBlogs,
               metaData: data.paginationMetaDataEntity,
-              params: GetBlogReq(
-                  pageNumber: nextPage, pageSize: currentState.params.pageSize),
+              params: GetBlogReq(),
               isLoading: false));
         });
       } catch (e) {

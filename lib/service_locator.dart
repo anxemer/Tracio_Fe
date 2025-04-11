@@ -51,13 +51,20 @@ import 'package:tracio_fe/domain/blog/usecase/unBookmark.dart';
 import 'package:tracio_fe/domain/shop/repositories/shop_service_repository.dart';
 import 'package:tracio_fe/domain/shop/usecase/add_to_cart.dart';
 import 'package:tracio_fe/domain/shop/usecase/booking_service.dart';
+import 'package:tracio_fe/domain/shop/usecase/cancel_booking.dart';
 import 'package:tracio_fe/domain/shop/usecase/delete_cart_item.dart';
 import 'package:tracio_fe/domain/shop/usecase/get_booking.dart';
+import 'package:tracio_fe/domain/shop/usecase/get_booking_detail.dart';
 import 'package:tracio_fe/domain/shop/usecase/get_cart_item.dart';
 import 'package:tracio_fe/domain/shop/usecase/get_cate_service.dart';
 import 'package:tracio_fe/domain/shop/usecase/get_service.dart';
+import 'package:tracio_fe/domain/shop/usecase/reschedule_booking.dart';
+import 'package:tracio_fe/domain/shop/usecase/submit_booking.dart';
+import 'package:tracio_fe/domain/shop/usecase/waiting_booking.dart';
 import 'package:tracio_fe/domain/user/repositories/user_profile_repository.dart';
 import 'package:tracio_fe/domain/user/usecase/get_user_profile.dart';
+import 'package:tracio_fe/presentation/service/bloc/bookingservice/reschedule_booking/cubit/reschedule_booking_cubit.dart';
+import 'package:tracio_fe/presentation/service/widget/waitting_service.dart';
 
 import 'core/network/dio_client.dart';
 import 'data/auth/sources/auth_local_source/auth_local_source.dart';
@@ -145,5 +152,10 @@ Future<void> initializeDependencies() async {
   sl.registerFactory<BookingServiceUseCase>(() => BookingServiceUseCase());
   sl.registerFactory<GetBookingUseCase>(() => GetBookingUseCase());
   sl.registerFactory<DeleteCartItemUseCase>(() => DeleteCartItemUseCase());
-  
+  sl.registerFactory<SubmitBookingUseCase>(() => SubmitBookingUseCase());
+  sl.registerFactory<RescheduleBookingUseCase>(
+      () => RescheduleBookingUseCase());
+  sl.registerFactory<CancelBookingUseCase>(() => CancelBookingUseCase());
+  sl.registerFactory<GetBookingDetailUseCase>(() => GetBookingDetailUseCase());
+  sl.registerFactory<WaitingBookingUseCase>(() => WaitingBookingUseCase());
 }

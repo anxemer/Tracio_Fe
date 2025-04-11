@@ -18,11 +18,9 @@ class AddSchedule extends StatefulWidget {
   const AddSchedule({
     super.key,
     this.onSchedulesChanged,
-    this.cartItem,
     this.service,
   });
   // final List<BookingCardViewModel> bookingModel;
-  final List<CartItemEntity>? cartItem;
   final ShopServiceEntity? service;
   final Function(List<ScheduleModel>)? onSchedulesChanged;
 

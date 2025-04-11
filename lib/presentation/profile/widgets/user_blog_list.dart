@@ -3,11 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:tracio_fe/data/blog/models/request/get_blog_req.dart';
 import 'package:tracio_fe/presentation/blog/bloc/get_blog_cubit.dart';
 import 'package:tracio_fe/presentation/blog/widget/new_feed.dart';
 
 import '../../../common/widget/appbar/app_bar.dart';
-import '../../../common/widget/button/floating_button.dart';
 import '../../blog/bloc/get_blog_state.dart';
 
 class UserBlogList extends StatefulWidget {
@@ -88,14 +88,14 @@ class _UserBlogListState extends State<UserBlogList> {
                 physics: const BouncingScrollPhysics(),
                 scrollDirection: Axis.vertical,
                 controller: scrollController,
-                itemCount: state.blogs!.length + (state.isLoading! ? 1 : 0),
+                itemCount: state.blogs!.length,
                 itemBuilder: (context, index) {
-                  if (index == state.blogs!.length && state.isLoading!) {
-                    return const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 16.0),
-                      child: Center(child: CircularProgressIndicator()),
-                    );
-                  }
+                  // if (index == state.blogs!.length && state.isLoading!) {
+                  //   return const Padding(
+                  //     padding: EdgeInsets.symmetric(vertical: 16.0),
+                  //     child: Center(child: CircularProgressIndicator()),
+                  //   );
+                  // }
 
                   if (index < state.blogs!.length) {
                     return Container(
@@ -120,7 +120,7 @@ class _UserBlogListState extends State<UserBlogList> {
               return const Center(child: CircularProgressIndicator());
             } else {
               // GetBlogInitial or other states
-              return const Center(child: CircularProgressIndicator());
+              return const Center(child: Text('Lỗi nè'));
             }
           },
         ));

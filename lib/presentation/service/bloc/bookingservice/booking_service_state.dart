@@ -33,5 +33,13 @@ class BookingServiceUpdated extends BookingServiceState {
     this.cartItems,
     this.schedules,
   });
- 
+}
+
+class RescheduleBookingUpdate extends BookingServiceState {
+  final List<int>? bookingId;
+  final List<ScheduleModel>? schedules;
+  RescheduleBookingUpdate({
+    this.bookingId,
+    this.schedules,
+  });
 }

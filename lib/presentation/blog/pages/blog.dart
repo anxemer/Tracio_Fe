@@ -71,7 +71,9 @@ class _BlogPageState extends State<BlogPage> {
           return RefreshIndicator(
             color: AppColors.background,
             onRefresh: () async {
-              await context.read<GetBlogCubit>().getBlog(GetBlogReq());
+              await context
+                  .read<GetBlogCubit>()
+                  .getBlog(GetBlogReq(isSeen: true));
             },
             child: CustomScrollView(
               controller: widget.scrollController,
@@ -195,6 +197,26 @@ class _BlogPageState extends State<BlogPage> {
 
   Widget _buildMainContent(GetBlogState state) {
     if (state is GetBlogLoaded) {
+      if (state.blogs!.isEmpty) {
+        return SliverToBoxAdapter(
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height - kToolbarHeight,
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Image.asset(
+                    AppImages.error,
+                    width: AppSize.imageLarge,
+                  ),
+                  SizedBox(height: 16.h),
+                  Text('No blogs yet. Pull down to refresh.'),
+                ],
+              ),
+            ),
+          ),
+        );
+      }
       return BlogListView(
         blogs: state.blogs!,
         isLoading: state.isLoading!,
@@ -287,31 +309,42 @@ class _BlogPageState extends State<BlogPage> {
           _showAuthFailureDialog(context);
         }
       });
-      return SliverFillRemaining(
-        hasScrollBody: false,
-        child: Center(
+      return SliverToBoxAdapter(
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height - kToolbarHeight,
+          child: Center(
             child: Column(
-          children: [
-            Image.asset(
-              AppImages.error,
-              width: AppSize.imageLarge,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Image.asset(
+                  AppImages.error,
+                  width: AppSize.imageLarge,
+                ),
+                SizedBox(height: 16.h),
+                Text('No blogs yet. Pull down to refresh.'),
+              ],
             ),
-            Text('Can\'t load blog....'),
-            IconButton(
-                onPressed: () async {
-                  await context.read<GetBlogCubit>().getBlog(GetBlogReq());
-                },
-                icon: Icon(
-                  Icons.refresh_outlined,
-                  size: AppSize.iconLarge,
-                ))
-          ],
-        )),
+          ),
+        ),
       );
     }
-    return const SliverFillRemaining(
-      hasScrollBody: false,
-      child: Center(child: Text('data')),
+    return SliverToBoxAdapter(
+      child: SizedBox(
+        height: MediaQuery.of(context).size.height - kToolbarHeight,
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Image.asset(
+                AppImages.error,
+                width: AppSize.imageLarge,
+              ),
+              SizedBox(height: 16.h),
+              Text('No blogs yet. Pull down to refresh.'),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

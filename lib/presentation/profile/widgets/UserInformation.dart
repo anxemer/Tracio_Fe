@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
@@ -27,14 +26,14 @@ class Userinformation extends StatelessWidget {
           HeaderInformation(
               widthImage: AppSize.imageLarge.w,
               subtitle: Text(
-                '${user.district} ${user.city!}',
+                '${user.district} ${user.city}',
                 style: TextStyle(
                     color: Colors.grey,
                     fontWeight: FontWeight.w400,
                     fontSize: AppSize.textLarge.sp),
               ),
               title: Text(
-                user.userName!,
+                user.userName ?? '',
                 style: TextStyle(
                     color: Colors.black,
                     fontWeight: FontWeight.bold,
@@ -65,7 +64,7 @@ class Userinformation extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  user.bio!,
+                  user.bio ?? '',
                   style: TextStyle(
                       color: Colors.grey.shade700,
                       fontWeight: FontWeight.w400,

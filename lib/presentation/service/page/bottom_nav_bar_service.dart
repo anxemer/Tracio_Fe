@@ -8,6 +8,7 @@ import 'package:tracio_fe/presentation/service/page/my_booking.dart';
 import 'package:tracio_fe/presentation/service/page/plan_service.dart';
 import 'package:tracio_fe/presentation/service/page/service.dart';
 import 'package:tracio_fe/presentation/service/widget/plan_service_icon.dart';
+import 'package:tracio_fe/presentation/shop_owner/page/dash_board.dart';
 
 class BottomNavBarService extends StatefulWidget {
   const BottomNavBarService({super.key});
@@ -22,7 +23,7 @@ class _BottomNavBarServiceState extends State<BottomNavBarService> {
     ServicePage(),
     PlanServicePage(),
     MyBookingPage(),
-    // ServicePage(),
+    DashboardScreen(),
     // MorePage(),
   ];
   void _onTabChanged(int index) {
@@ -99,6 +100,10 @@ class _BottomNavBarServiceState extends State<BottomNavBarService> {
                   GButton(
                     icon: Icons.directions_bike,
                     text: "My Booking",
+                  ),
+                  GButton(
+                    icon: Icons.storefront_outlined,
+                    text: "Shop Owner",
                   ),
                   // GButton(
                   //   icon: Icons.shop_outlined,

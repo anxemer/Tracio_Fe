@@ -53,7 +53,7 @@ class UserProfilePage extends StatelessWidget {
           ),
           BlocProvider(
             create: (context) => GetBlogCubit()
-              ..getBlog(GetBlogReq(userId: userId.toString(), pageSize: 10)),
+              ..getBlog(GetBlogReq(userId: userId.toString(), isSeen: false)),
           ),
         ],
         child: Padding(

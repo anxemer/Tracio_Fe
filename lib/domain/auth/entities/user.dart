@@ -3,13 +3,14 @@ class UserEntity {
   final int? userId;
   final String? userName;
   final String? email;
+  final String? role;
   
   final String? profilePicture;
   UserEntity({
     this.userId,
     this.userName,
     this.email,
-   
+    this.role,
     this.profilePicture,
   });
 }

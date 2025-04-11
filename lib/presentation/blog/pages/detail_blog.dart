@@ -23,6 +23,7 @@ class DetailBlocPage extends StatefulWidget {
 }
 
 class _DetailBlocPageState extends State<DetailBlocPage> {
+  
   @override
   Widget build(BuildContext context) {
     final commentCubit = context.read<GetCommentCubit>();

@@ -24,4 +24,14 @@ class GetBookingCubit extends Cubit<GetBookingState> {
       emit(GetBookingFailure([], [], PaginationBookingDataEntity(), e.message));
     }
   }
+  void markBookingAsResolved(String bookingId) {
+  if (state is GetBookingLoaded) {
+    final currentState = state as GetBookingLoaded;
+    final newResolvedMap = Map<String, bool>.from(currentState.resolvedMap);
+    newResolvedMap[bookingId] = true;
+
+    emit(currentState.copyWith(resolvedMap: newResolvedMap));
+  }
+}
+
 }

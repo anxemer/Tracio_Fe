@@ -1,14 +1,15 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
+import 'package:tracio_fe/data/shop/models/booking_detail_model.dart';
 
-import 'package:tracio_fe/data/shop/models/booking_model.dart';
 import 'package:tracio_fe/data/shop/models/booking_response_model.dart';
 import 'package:tracio_fe/data/shop/models/booking_service_req.dart';
 import 'package:tracio_fe/data/shop/models/cart_item_models.dart';
 import 'package:tracio_fe/data/shop/models/get_booking_req.dart';
 import 'package:tracio_fe/data/shop/models/get_service_req.dart';
+import 'package:tracio_fe/data/shop/models/reschedule_booking_model.dart';
 import 'package:tracio_fe/data/shop/models/service_response.dart';
-import 'package:tracio_fe/domain/shop/entities/response/booking_response_entity.dart';
+import 'package:tracio_fe/data/shop/models/waiting_booking.dart';
 
 import '../../../core/constants/api_url.dart';
 import '../../../core/erorr/failure.dart';
@@ -23,7 +24,12 @@ abstract class ShopApiService {
   Future<List<CategoryModel>> getCategoryService();
   Future<Either> bookingService(BookingServiceReq booking);
   Future<BookingResponseModel> getBooking(GetBookingReq getBooking);
+  Future<BookingDetailModel> getBookingDetail(int bookingId);
   Future<Either> deleteCartItem(int itemId);
+  Future<Either> submitBooking(int bookingDetailId);
+  Future<Either> cancelBooking(int bookingDetailId);
+  Future<Either> rescheduleBooking(RescheduleBookingModel reschedule);
+  Future<Either> waitingBooking(WaitingModel waiting);
 }
 
 class ShopApiServiceImpl extends ShopApiService {
@@ -121,6 +127,78 @@ class ShopApiServiceImpl extends ShopApiService {
       await sl<DioClient>().delete('${ApiUrl.deleteCartItem}/${itemId}');
 
       return Right(true);
+    } on DioException catch (e) {
+      return Left(e);
+    }
+  }
+
+  @override
+  Future<Either> submitBooking(int bookingDetailId) async {
+    try {
+      await sl<DioClient>()
+          .put('${ApiUrl.portShop}/$bookingDetailId/submitted-booking');
+
+      return Right(true);
+    } on DioException catch (e) {
+      return Left(e);
+    }
+  }
+
+  @override
+  Future<Either> cancelBooking(int bookingDetailId) async {
+    try {
+      await sl<DioClient>()
+          .put('${ApiUrl.portShop}/$bookingDetailId/cancelled-booking');
+
+      return Right(true);
+    } on DioException catch (e) {
+      return Left(e);
+    }
+  }
+
+  @override
+  Future<Either> rescheduleBooking(RescheduleBookingModel reschedule) async {
+    try {
+      var response = await sl<DioClient>()
+          .put(ApiUrl.rescheduleBooking, data: reschedule.toMap());
+      print("🔥 Sending reschedule: ${reschedule.toMap()}");
+      if (response.statusCode == 201) {
+        return Right(true);
+      }
+      return Right(false);
+    } on DioException catch (e) {
+      return Left(e);
+    }
+  }
+
+  @override
+  Future<BookingDetailModel> getBookingDetail(int bookingId) async {
+    var response = await sl<DioClient>()
+        .get('${ApiUrl.getDetailBooking}/$bookingId/booking-details');
+    if (response.statusCode == 200) {
+      return BookingDetailModel.fromJson(
+          response.data['result']['bookingDetail']);
+      // List.from(response.data['result']['bookings'])
+      //     .map((e) => BookingModel.fromMap(e))
+      //     .toList();
+    } else {
+      if (response.statusCode == 401) {
+        throw AuthenticationFailure(response.statusMessage.toString());
+      }
+      throw ServerFailure(response.statusMessage.toString());
+    }
+  }
+
+  @override
+  Future<Either> waitingBooking(WaitingModel waiting) async {
+    try {
+      var response = await sl<DioClient>().put(
+          '${ApiUrl.portShop}/${waiting.bookingId}/waiting-booking',
+          data: waiting.toJson());
+      if (response.statusCode == 200) {
+        return Right(true);
+      }
+      return Right(false);
     } on DioException catch (e) {
       return Left(e);
     }

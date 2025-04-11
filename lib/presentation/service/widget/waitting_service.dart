@@ -3,18 +3,22 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tracio_fe/common/helper/is_dark_mode.dart';
-import 'package:tracio_fe/common/widget/blog/custom_bottomsheet.dart';
-import 'package:tracio_fe/common/widget/button/basic_app_button.dart';
+import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
+import 'package:tracio_fe/presentation/service/bloc/bookingservice/booking_service_cubit.dart';
 import 'package:tracio_fe/presentation/service/bloc/get_booking/get_booking_cubit.dart';
+import 'package:tracio_fe/presentation/service/page/booking_detail.dart';
+import 'package:tracio_fe/presentation/service/widget/booking_status_tab.dart';
 import 'package:tracio_fe/presentation/service/widget/overlap_service.dart';
+import 'package:tracio_fe/presentation/service/widget/resolve_booking.dart';
 
-import '../../../common/widget/button/button.dart';
 import '../../../core/configs/theme/app_colors.dart';
 import '../../../core/constants/app_size.dart';
 import '../../../data/shop/models/get_booking_req.dart';
 import '../../../domain/shop/entities/response/booking_card_view.dart';
+import '../bloc/bookingservice/resolve_overlap_service/cubit/resolve_overlap_service_cubit.dart';
 import '../bloc/get_booking/get_booking_state.dart';
 import 'booking_card.dart';
+import 'show_schedule_bottom.dart';
 
 class WaittingService extends StatefulWidget {
   const WaittingService({super.key, required this.animationController});
@@ -26,6 +30,8 @@ class WaittingService extends StatefulWidget {
 class _WaittingServiceState extends State<WaittingService> {
   @override
   void initState() {
+    context.read<ResolveOverlapServiceCubit>().clearAll();
+    context.read<BookingServiceCubit>().clearBookingItem();
     context
         .read<GetBookingCubit>()
         .getBooking(GetBookingReq(status: 'Waiting'));
@@ -36,69 +42,69 @@ class _WaittingServiceState extends State<WaittingService> {
   @override
   Widget build(BuildContext context) {
     var isDark = context.isDarkMode;
+    return DefaultTabController(
+        length: 3,
+        initialIndex: 0,
+        child: Scaffold(
+          body: Column(
+            children: [
+              Container(
+                width: double.infinity,
+                color: isDark ? AppColors.darkGrey : Colors.white,
+                child: TabBar(
+                    labelStyle: TextStyle(
+                        fontSize: AppSize.textMedium,
+                        fontWeight: FontWeight.w600),
+                    unselectedLabelColor:
+                        isDark ? Colors.white70 : Colors.black87,
+                    labelColor: isDark ? AppColors.primary : Colors.black,
+                    indicatorColor: AppColors.primary,
+                    tabs: [
+                      Tab(
+                        text: 'Waiting',
+                      ),
+                      Tab(
+                        text: 'Overlap',
+                      ),
+                      Tab(
+                        text: 'Reschedule',
+                      )
+                    ]),
+              ),
+              Expanded(
+                child: TabBarView(children: [
+                  _waitingService(context),
+                  // BookingStatusTab(
+                  //   animationController: widget.animationController,
+                  //   status: 'waiting',
+                  //   hasSolve: true,
+                  // ),
+                  OverlapService(
+                      animationController: widget.animationController),
+                  BookingStatusTab(
+                    status: 'reschedule',
+                    animationController: widget.animationController,
+                    hasSolve: false,
+                  )
+                ]),
+              )
+            ],
+          ),
+        ));
+  }
+
+  Widget _waitingService(BuildContext context) {
     return BlocBuilder<GetBookingCubit, GetBookingState>(
       builder: (context, state) {
         if (state is GetBookingLoaded) {
-          print(state.overlapBookingList.length);
-          if (state.bookingList.isEmpty) {
-            return Center(
-              child: Text('Chưa có bookingn nào'),
-            );
-          }
+          var countReschedule =
+              context.watch<BookingServiceCubit>().reschedule.length;
           return Column(
             children: [
-              state.overlapBookingList.isNotEmpty
-                  ? Container(
-                      padding: const EdgeInsets.fromLTRB(16, 20, 10, 20),
-                      decoration: BoxDecoration(
-                        color: Colors.red.shade50,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      alignment: Alignment.centerLeft,
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.info_outline_rounded,
-                            color: Colors.red,
-                          ),
-                          Expanded(
-                            child: Text(
-                              'You have ${state.overlapBookingList.length} services with overlapping schedules.',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: AppSize.textLarge,
-                                color: Colors.red,
-                              ),
-                            ),
-                          ),
-                          ButtonDesign(
-                            width: 80.w,
-                            height: 30.h,
-                            textColor: Colors.white,
-                            ontap: () {
-                              CustomModalBottomSheet.show(
-                                  context: context,
-                                  child: OverlapService(
-                                    animationController:
-                                        widget.animationController,
-                                    overlapList: state.overlapBookingList,
-                                  ));
-                            },
-                            fillColor: AppColors.primary,
-                            borderColor: Colors.black,
-                            fontSize: AppSize.textMedium,
-                            text: 'View',
-                          )
-                          // CloseButton(
-                          //   onPressed: () {},
-                          //   color: Colors.red,
-                          // ),
-                        ],
-                      ),
-                    )
-                  : Container(),
               Expanded(
                 child: ListView.builder(
+                  shrinkWrap: true,
+                  physics: const BouncingScrollPhysics(),
                   scrollDirection: Axis.vertical,
                   itemCount: state.bookingList.length,
                   itemBuilder: (context, index) {
@@ -111,6 +117,12 @@ class _WaittingServiceState extends State<WaittingService> {
                     return Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: BookingCard(
+                        ontap: () => AppNavigator.push(
+                            context,
+                            BookingDetailScreen(
+                                animationController: widget.animationController,
+                                bookingId:
+                                    state.bookingList[index].bookingDetailId!)),
                         service: BookingCardViewModel(
                             shopName: state.bookingList[index].shopName,
                             duration: state.bookingList[index].duration,
@@ -135,7 +147,7 @@ class _WaittingServiceState extends State<WaittingService> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Text(
-                                    'Pending',
+                                    state.bookingList[index].status!,
                                     style: TextStyle(
                                       fontWeight: FontWeight.w600,
                                       fontSize: AppSize.textMedium,
@@ -148,55 +160,33 @@ class _WaittingServiceState extends State<WaittingService> {
                             SizedBox(
                               height: 10.h,
                             ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                ButtonDesign(
-                                  width: 160,
-                                  height: 40,
-                                  ontap: () {},
-                                  text: 'Reschedule',
-                                  fillColor: Colors.transparent,
-                                  textColor: isDark
-                                      ? Colors.grey.shade200
-                                      : Colors.black87,
-                                  borderColor: isDark
-                                      ? Colors.grey.shade200
-                                      : Colors.black87,
-                                  fontSize: AppSize.textMedium,
-                                ),
-                                SizedBox(
-                                  width: 20.w,
-                                ),
-                                ButtonDesign(
-                                  width: 160,
-                                  height: 40,
-                                  ontap: () async {
-                                    // var time = showTimePicker(
-                                    //   context: context,
-                                    //   initialTime: TimeOfDay.now(),
-
-                                    // );
-                                  },
-                                  text: 'Confirm',
-                                  fillColor: AppColors.secondBackground,
-                                  textColor: isDark
-                                      ? Colors.grey.shade200
-                                      : Colors.white,
-                                  borderColor: context.isDarkMode
-                                      ? Colors.grey.shade200
-                                      : Colors.black87,
-                                  fontSize: AppSize.textMedium,
-                                )
-                              ],
-                            ),
+                            ResolveBooking(
+                              // bookingId:
+                              //     state.bookingList[index].bookingDetailId!,
+                              animationController: widget.animationController,
+                              booking: BookingCardViewModel(
+                                bookingDetailId:
+                                    state.bookingList[index].bookingDetailId,
+                                bookedDate: state.bookingList[index].bookedDate,
+                                shopName: state.bookingList[index].shopName,
+                                nameService:
+                                    state.bookingList[index].serviceName,
+                              ),
+                            )
                           ],
                         ),
                       ),
                     );
                   },
                 ),
-              )
+              ),
+              countReschedule != 0
+                  ? Padding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: AppSize.apHorizontalPadding.w,
+                          vertical: AppSize.apVerticalPadding.h),
+                      child: ShowScheduleBottom())
+                  : Container()
             ],
           );
         } else if (state is GetBookingFailure || state is GetBookingLoading) {

@@ -131,7 +131,10 @@ class ApiUrl {
   static const getCateService = '${portShop}/api/categories';
   static const bookingService = '${portShop}/api/bookings';
   static const deleteCartItem = '${portShop}/api/carts';
-  // static const getBooking = '${portShop}/api/bookings';
+  static const getDetailBooking = '${portShop}/api/bookings';
+  // static const submitBooking = '${portShop}/api/carts';
+  static const rescheduleBooking =
+      '${portShop}/api/bookings/reschedule-booking';
 
   //Get City
   static const getCity =
