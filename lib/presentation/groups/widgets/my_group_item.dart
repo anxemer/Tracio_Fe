@@ -5,6 +5,7 @@ import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/domain/groups/entities/group.dart';
 import 'package:tracio_fe/presentation/groups/cubit/invitation_bloc.dart';
 import 'package:tracio_fe/presentation/groups/pages/group_detail.dart';
+import 'package:tracio_fe/presentation/map/bloc/tracking_location_bloc.dart';
 
 class MyGroupItem extends StatelessWidget {
   final Group group;
@@ -89,9 +90,12 @@ class MyGroupItem extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                   builder: (_) => BlocProvider.value(
-                    value: BlocProvider.of<InvitationBloc>(context),
-                    child: GroupDetailScreen(
-                      groupId: group.groupId,
+                    value: BlocProvider.of<LocationCubit>(context),
+                    child: BlocProvider.value(
+                      value: BlocProvider.of<InvitationBloc>(context),
+                      child: GroupDetailScreen(
+                        groupId: group.groupId,
+                      ),
                     ),
                   ),
                 ),

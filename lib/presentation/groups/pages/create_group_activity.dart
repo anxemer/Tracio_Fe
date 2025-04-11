@@ -5,6 +5,8 @@ import 'package:tracio_fe/core/configs/theme/app_colors.dart';
 import 'package:tracio_fe/core/configs/utils/validators/group_validator.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/data/map/models/request/get_route_req.dart';
+import 'package:tracio_fe/data/map/models/route.dart';
+import 'package:tracio_fe/domain/map/entities/route.dart';
 import 'package:tracio_fe/presentation/groups/cubit/form_group_activity_cubit.dart';
 import 'package:tracio_fe/presentation/groups/cubit/form_group_activity_state.dart';
 import 'package:tracio_fe/presentation/groups/cubit/group_cubit.dart';
@@ -240,11 +242,9 @@ class _CreateGroupActivityState extends State<CreateGroupActivity>
                         GestureDetector(
                           onTap: () async {
                             final GetRouteReq request = GetRouteReq(
-                                pageNumber: 1,
-                                rowsPerPage: 10,
-                                sortDesc: false);
+                                pageNumber: 1, rowsPerPage: 10, sortAsc: false);
                             context.read<RouteCubit>().getRoutes(request);
-                            final result = await Navigator.push<int>(
+                            final result = await Navigator.push<RouteEntity>(
                                 context,
                                 MaterialPageRoute(
                                     builder: (_) => BlocProvider<
@@ -254,10 +254,10 @@ class _CreateGroupActivityState extends State<CreateGroupActivity>
                                           child: ActivityRouteSelection(),
                                         )));
 
-                            if (context.mounted) {
+                            if (result != null) {
                               context
                                   .read<FormGroupActivityCubit>()
-                                  .updateRouteId(result ?? -1);
+                                  .updateRouteId(result);
                             }
                           },
                           child: Container(
@@ -274,8 +274,8 @@ class _CreateGroupActivityState extends State<CreateGroupActivity>
                               children: [
                                 Expanded(
                                   child: Text(
-                                    state.meetingAddress.isNotEmpty
-                                        ? state.meetingAddress
+                                    state.routeEntity != null
+                                        ? "${state.routeEntity!.routeName} - ${state.routeEntity!.city}"
                                         : 'Select a Route',
                                     style: TextStyle(
                                       color: state.routeId > -1

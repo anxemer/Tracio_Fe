@@ -1,7 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:tracio_fe/common/widget/navbar/bottom_nav_bar_manager.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
+import 'package:tracio_fe/core/services/signalR/implement/group_route_hub_service.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'package:tracio_fe/domain/groups/entities/group_route_location_update.dart';
+import 'package:tracio_fe/domain/map/usecase/start_tracking_usecase.dart';
+import 'package:tracio_fe/presentation/map/bloc/tracking_location_bloc.dart';
+import 'package:tracio_fe/service_locator.dart';
+import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
+    as bg;
 
 class GroupActivityLoaded extends StatelessWidget {
+  final int groupRouteId;
   final String title;
   final DateTime dateTime;
   final String tag;
@@ -10,12 +21,20 @@ class GroupActivityLoaded extends StatelessWidget {
 
   const GroupActivityLoaded({
     super.key,
+    required this.groupRouteId,
     required this.title,
     required this.dateTime,
     required this.tag,
     required this.participantAvatarUrl,
     required this.participantCount,
   });
+
+  Future<void> _joinAndInvokeHub() async {
+    final groupRouteHub = sl<GroupRouteHubService>();
+    groupRouteHub.connect().then((_) {
+      groupRouteHub.joinGroupRoute(groupRouteId.toString());
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -112,19 +131,26 @@ class GroupActivityLoaded extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 10,
-                          backgroundImage: NetworkImage(participantAvatarUrl),
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                            '$participantCount person${participantCount > 1 ? 's' : ''} is going',
-                            style: TextStyle(
-                                fontSize: 12, color: Colors.grey.shade600)),
-                      ],
-                    ),
+                    TextButton(
+                        onPressed: () async {
+                          await _joinAndInvokeHub();
+                          context
+                              .read<LocationCubit>()
+                              .updateGroupRouteId(groupRouteId);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => BlocProvider.value(
+                                value: context.read<LocationCubit>(),
+                                child: const BottomNavBarManager(
+                                  selectedIndex: 2,
+                                  isNavVisible: false,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                        child: Text("Start ride"))
                   ],
                 ),
               ),

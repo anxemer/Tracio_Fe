@@ -20,6 +20,8 @@ class Location extends $pb.GeneratedMessage {
     $core.double? longitude,
     $core.double? altitude,
     $fixnum.Int64? timestamp,
+    $core.double? speed,
+    $core.double? distance,
   }) {
     final $result = create();
     if (latitude != null) {
@@ -34,6 +36,12 @@ class Location extends $pb.GeneratedMessage {
     if (timestamp != null) {
       $result.timestamp = timestamp;
     }
+    if (speed != null) {
+      $result.speed = speed;
+    }
+    if (distance != null) {
+      $result.distance = distance;
+    }
     return $result;
   }
   Location._() : super();
@@ -45,6 +53,8 @@ class Location extends $pb.GeneratedMessage {
     ..a<$core.double>(2, _omitFieldNames ? '' : 'longitude', $pb.PbFieldType.OD)
     ..a<$core.double>(3, _omitFieldNames ? '' : 'altitude', $pb.PbFieldType.OD)
     ..aInt64(4, _omitFieldNames ? '' : 'timestamp')
+    ..a<$core.double>(5, _omitFieldNames ? '' : 'speed', $pb.PbFieldType.OD)
+    ..a<$core.double>(6, _omitFieldNames ? '' : 'distance', $pb.PbFieldType.OD)
     ..hasRequiredFields = false
   ;
 
@@ -104,6 +114,24 @@ class Location extends $pb.GeneratedMessage {
   $core.bool hasTimestamp() => $_has(3);
   @$pb.TagNumber(4)
   void clearTimestamp() => clearField(4);
+
+  @$pb.TagNumber(5)
+  $core.double get speed => $_getN(4);
+  @$pb.TagNumber(5)
+  set speed($core.double v) { $_setDouble(4, v); }
+  @$pb.TagNumber(5)
+  $core.bool hasSpeed() => $_has(4);
+  @$pb.TagNumber(5)
+  void clearSpeed() => clearField(5);
+
+  @$pb.TagNumber(6)
+  $core.double get distance => $_getN(5);
+  @$pb.TagNumber(6)
+  set distance($core.double v) { $_setDouble(5, v); }
+  @$pb.TagNumber(6)
+  $core.bool hasDistance() => $_has(5);
+  @$pb.TagNumber(6)
+  void clearDistance() => clearField(6);
 }
 
 class LocationRequest extends $pb.GeneratedMessage {

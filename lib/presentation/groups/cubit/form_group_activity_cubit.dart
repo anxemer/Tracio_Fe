@@ -1,7 +1,9 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:tracio_fe/data/groups/models/request/post_group_route_req.dart';
 import 'package:tracio_fe/domain/groups/usecases/post_group_route_usecase.dart';
+import 'package:tracio_fe/domain/map/entities/route.dart';
 import 'package:tracio_fe/presentation/groups/cubit/form_group_activity_state.dart';
 import 'package:tracio_fe/service_locator.dart';
 
@@ -15,6 +17,7 @@ class FormGroupActivityCubit extends Cubit<FormGroupActivityState> {
             meetingLocation: null,
             startDateTime: DateTime.now(),
             routeId: -1,
+            routeEntity: null,
           ),
         );
 
@@ -56,8 +59,9 @@ class FormGroupActivityCubit extends Cubit<FormGroupActivityState> {
     emit(state.copyWith(startDateTime: start));
   }
 
-  void updateRouteId(int routeId) {
-    emit(state.copyWith(routeId: routeId));
+  void updateRouteId(RouteEntity routeEntity) {
+    emit(
+        state.copyWith(routeId: routeEntity.routeId, routeEntity: routeEntity));
   }
 
   void reset() {
@@ -69,6 +73,7 @@ class FormGroupActivityCubit extends Cubit<FormGroupActivityState> {
         meetingLocation: null,
         startDateTime: DateTime.now(),
         routeId: -1,
+        routeEntity: null,
       ),
     );
   }

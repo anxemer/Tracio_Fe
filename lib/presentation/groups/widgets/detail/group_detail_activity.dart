@@ -68,6 +68,7 @@ class _GroupDetailActivityState extends State<GroupDetailActivity> {
                   itemBuilder: (context, index) {
                     final activity = state.groupRoutes[index];
                     return GroupActivityLoaded(
+                      groupRouteId: activity.groupRouteId,
                       title: activity.title,
                       dateTime: activity.startDateTime,
                       tag: "Beginner-Friendly",

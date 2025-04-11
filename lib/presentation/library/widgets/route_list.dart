@@ -18,7 +18,7 @@ class RouteList extends StatefulWidget {
 class _RouteListState extends State<RouteList> {
   Future<void> _fetchRoutes() async {
     final GetRouteReq request =
-        GetRouteReq(pageNumber: 1, rowsPerPage: 10, sortDesc: false);
+        GetRouteReq(pageNumber: 1, rowsPerPage: 5, sortAsc: false);
     await context.read<RouteCubit>().getRoutes(request);
   }
 
@@ -26,6 +26,7 @@ class _RouteListState extends State<RouteList> {
   Widget build(BuildContext context) {
     return BlocConsumer<RouteCubit, RouteState>(
       listener: (context, state) {
+        if (!mounted) return;
         if (state is GetRouteFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(

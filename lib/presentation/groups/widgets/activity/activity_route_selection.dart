@@ -18,7 +18,7 @@ class ActivityRouteSelection extends StatefulWidget {
 class _ActivityRouteSelectionState extends State<ActivityRouteSelection> {
   Future<void> _fetchRoutes() async {
     final GetRouteReq request =
-        GetRouteReq(pageNumber: 1, rowsPerPage: 10, sortDesc: false);
+        GetRouteReq(pageNumber: 1, rowsPerPage: 10, sortAsc: false);
     await context.read<RouteCubit>().getRoutes(request);
   }
 
@@ -47,7 +47,9 @@ class _ActivityRouteSelectionState extends State<ActivityRouteSelection> {
               physics: const NeverScrollableScrollPhysics(),
               children: [
                 if (state is GetRouteLoaded && state.routes.isNotEmpty)
-                  ...state.routes.map((route) => RouteItem(routeData: route)),
+                  ...state.routes.map((route) => GestureDetector(
+                      onTap: () => Navigator.pop(context, route),
+                      child: RouteItem(routeData: route))),
                 if ((state is GetRouteLoaded && state.routes.isEmpty) ||
                     state is GetRouteFailure)
                   Column(

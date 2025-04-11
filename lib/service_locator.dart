@@ -69,6 +69,7 @@ import 'package:tracio_fe/domain/map/repositories/elevation_repository.dart';
 import 'package:tracio_fe/domain/map/repositories/image_repository.dart';
 import 'package:tracio_fe/domain/map/repositories/location_repository.dart';
 import 'package:tracio_fe/domain/map/repositories/route_repository.dart';
+import 'package:tracio_fe/domain/map/usecase/finish_tracking_usecase.dart';
 import 'package:tracio_fe/domain/map/usecase/get_direction_using_mapbox.dart';
 import 'package:tracio_fe/domain/map/usecase/get_elevation.dart';
 import 'package:tracio_fe/domain/map/usecase/get_image_url_usecase.dart';
@@ -77,6 +78,7 @@ import 'package:tracio_fe/domain/map/usecase/get_locations.dart';
 import 'package:tracio_fe/domain/map/usecase/get_routes.dart';
 import 'package:tracio_fe/domain/map/usecase/post_route.dart';
 import 'package:tracio_fe/domain/blog/usecase/unBookmark.dart';
+import 'package:tracio_fe/domain/map/usecase/start_tracking_usecase.dart';
 import 'package:tracio_fe/domain/shop/repositories/shop_service_repository.dart';
 import 'package:tracio_fe/domain/shop/usecase/add_to_cart.dart';
 import 'package:tracio_fe/domain/shop/usecase/booking_service.dart';
@@ -208,4 +210,6 @@ Future<void> initializeDependencies() async {
       () => ResponseJoinGroupRequestUsecase());
   sl.registerFactory<InviteUserUsecase>(() => InviteUserUsecase());
   sl.registerFactory<LeaveGroupUsecase>(() => LeaveGroupUsecase());
+  sl.registerFactory<StartTrackingUsecase>(() => StartTrackingUsecase());
+  sl.registerFactory<FinishTrackingUsecase>(() => FinishTrackingUsecase());
 }

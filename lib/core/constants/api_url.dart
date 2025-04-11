@@ -6,16 +6,16 @@ import 'package:tracio_fe/data/map/models/request/mapbox_direction_req.dart';
 class ApiUrl {
   //base Url
   // static const baseURL = 'http://localhost:';
-  static const baseURL = 'https://user.tracio.space';
+  static const baseURL = 'http://103.28.33.123:';
   // static const baseURL = 'https://10.87.46.103:';
   static const hubUrl = 'http://103.28.33.123:5002/content-hub';
   static const groupRouteHubUrl = 'http://103.28.33.123:5009/locationHub';
   //port
   // static const portUser = '5003';
-  static const portUser = '';
+  static const portUser = '5003';
   static const portBlog = '5002';
   static const portRoute = '5009';
-  static const portGroup = '';
+  static const portGroup = '5003';
   static const portShop = '5004';
 
   //Api User
@@ -55,8 +55,8 @@ class ApiUrl {
   //Api route
 
   static Uri urlGetRoutes(GetRouteReq request) {
-    return Uri.parse('$portRoute/api/route')
-        .replace(queryParameters: request.toMap());
+    return Uri.parse('$portRoute/api/route/user-routes')
+        .replace(queryParameters: request.toQueryParams());
   }
 
   static Uri urlGetDirectionUsingMapbox(
@@ -175,6 +175,8 @@ class ApiUrl {
   }
 
   static const postGroup = '$portGroup/api/group';
+  static const startTracking = '$portRoute/api/route/start';
+  static const finishTracking = '$portRoute/api/route/finish';
   static Uri urlGetGroupList([Map<String, String>? params]) {
     return Uri.parse('$portGroup/api/group').replace(queryParameters: params);
   }

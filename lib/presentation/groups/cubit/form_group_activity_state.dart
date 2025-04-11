@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
+import 'package:tracio_fe/domain/map/entities/route.dart';
 
 @immutable
 abstract class FormGroupActivityState {
@@ -9,6 +10,7 @@ abstract class FormGroupActivityState {
   final Position? meetingLocation;
   final DateTime startDateTime;
   final int routeId;
+  final RouteEntity? routeEntity;
   final bool isSuccess;
   final bool isLoading;
   final bool isFailed;
@@ -21,6 +23,7 @@ abstract class FormGroupActivityState {
       required this.meetingLocation,
       required this.startDateTime,
       required this.routeId,
+      required this.routeEntity,
       this.isSuccess = false,
       this.isLoading = true,
       this.isFailed = false,
@@ -33,6 +36,7 @@ abstract class FormGroupActivityState {
       Position? meetingLocation,
       DateTime? startDateTime,
       int? routeId,
+      RouteEntity? routeEntity,
       bool? isSuccess,
       bool? isLoading,
       bool? isFailed,
@@ -47,6 +51,7 @@ class FormGroupActivityUpdate extends FormGroupActivityState {
       required super.meetingLocation,
       required super.startDateTime,
       required super.routeId,
+      required super.routeEntity,
       super.isSuccess = false,
       super.isLoading = false,
       super.isFailed = false,
@@ -60,6 +65,7 @@ class FormGroupActivityUpdate extends FormGroupActivityState {
       Position? meetingLocation,
       DateTime? startDateTime,
       int? routeId,
+      RouteEntity? routeEntity,
       bool? isSuccess,
       bool? isLoading,
       bool? isFailed,
@@ -71,6 +77,7 @@ class FormGroupActivityUpdate extends FormGroupActivityState {
       meetingLocation: meetingLocation ?? this.meetingLocation,
       startDateTime: startDateTime ?? this.startDateTime,
       routeId: routeId ?? this.routeId,
+      routeEntity: routeEntity ?? this.routeEntity,
       isSuccess: isSuccess ?? this.isSuccess,
       isLoading: isLoading ?? this.isLoading,
       isFailed: isFailed ?? this.isFailed,

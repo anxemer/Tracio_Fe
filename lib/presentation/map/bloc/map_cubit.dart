@@ -175,8 +175,7 @@ class MapCubit extends Cubit<MapCubitState> {
   Future<void> addPolylineRoute(LineString lineString) async {
     try {
       polylineAnnotationManager ??= await mapboxMap?.annotations
-          .createPolylineAnnotationManager(
-              id: 'polyline-route', below: "country-label");
+          .createPolylineAnnotationManager(id: 'polyline-route');
 
       final polylineOptions = PolylineAnnotationOptions(
         geometry: lineString,
@@ -348,8 +347,18 @@ class MapCubit extends Cubit<MapCubitState> {
   /// Public: Update existing marker location
   Future<void> updateUserMarker({
     required String id,
+    required String imageUrl,
     required Position newPosition,
   }) async {
+    var checkLayer = await mapboxMap?.style.styleLayerExists("user_$id");
+    if (checkLayer == null) {
+      debugPrint("Layer not found for id: $id");
+      addUserMarker(
+        id: id,
+        imageUrl: imageUrl, // Replace with actual URL
+        position: newPosition,
+      );
+    }
     if (!_userAnnotations.containsKey(id)) return;
     final marker = _userAnnotations[id]!;
     final updated = PointAnnotation(
@@ -387,7 +396,7 @@ class MapCubit extends Cubit<MapCubitState> {
         final image = Uint8List.fromList(data);
         final resized =
             await _resizeImageBytes(image, size, borderColor, borderSize);
-        _imageCache[url] = resized; 
+        _imageCache[url] = resized;
         return resized;
       },
     );
