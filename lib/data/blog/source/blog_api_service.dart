@@ -179,8 +179,8 @@ class BlogApiServiceImpl extends BlogApiService {
             .toList();
       }
 
-      if (result['blog'] != null && result['blog']['comments'] != null) {
-        return List.from(result['blog']['comments'])
+      if (result['blog'] != null && result['comments'] != null) {
+        return List.from(result['comments'])
             .map((e) => CommentBlogModel.fromMap(e))
             .toList();
       }
@@ -260,7 +260,7 @@ class BlogApiServiceImpl extends BlogApiService {
             .toList();
       }
 
-      if (result['comment'] != null && result['comment']['replies'] != null) {
+      if (result['comment'] != null && result['replies'] != null) {
         return List.from(result['blog']['comments'])
             .map((e) => ReplyCommentModel.fromJson(e))
             .toList();

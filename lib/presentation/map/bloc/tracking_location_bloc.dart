@@ -17,7 +17,7 @@ class LocationCubit extends Cubit<LocationState> {
     int tmpGroupRouteId = 0;
     if (state is LocationInitial) {
       var s = state as LocationInitial;
-      tmpGroupRouteId = s.groupRouteId!;
+      tmpGroupRouteId = s.groupRouteId ?? 0;
       tmpRouteId = s.routeId ?? 0;
     }
     final now = DateTime.parse(location.timestamp);

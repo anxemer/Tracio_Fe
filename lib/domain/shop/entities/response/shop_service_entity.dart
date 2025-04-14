@@ -72,6 +72,4 @@ class ShopServiceEntity {
     final formatter = NumberFormat('#,###', 'vi_VN');
     return formatter.format(priceAsInt);
   }
-
-
 }
