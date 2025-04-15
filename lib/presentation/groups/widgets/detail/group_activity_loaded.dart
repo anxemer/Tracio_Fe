@@ -3,13 +3,8 @@ import 'package:tracio_fe/common/widget/navbar/bottom_nav_bar_manager.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/core/services/signalR/implement/group_route_hub_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import 'package:tracio_fe/domain/groups/entities/group_route_location_update.dart';
-import 'package:tracio_fe/domain/map/usecase/start_tracking_usecase.dart';
 import 'package:tracio_fe/presentation/map/bloc/tracking_location_bloc.dart';
 import 'package:tracio_fe/service_locator.dart';
-import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
-    as bg;
 
 class GroupActivityLoaded extends StatelessWidget {
   final int groupRouteId;
