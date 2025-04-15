@@ -1,4 +1,3 @@
-import 'package:flutter/widgets.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 
 abstract class MapCubitState {}
@@ -28,7 +27,7 @@ class MapAnnotationsUpdated extends MapCubitState {
 class StaticImageLoading extends MapCubitState {}
 
 class StaticImageLoaded extends MapCubitState {
-  final Image? snapshot;
+  final Uri? snapshot;
 
   StaticImageLoaded({this.snapshot});
 }

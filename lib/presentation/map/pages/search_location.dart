@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tracio_fe/presentation/map/bloc/get_location_cubit.dart';
 import 'package:tracio_fe/presentation/map/bloc/map_cubit.dart';
 import 'package:tracio_fe/presentation/map/widgets/search_location_input.dart';
-import 'package:tracio_fe/presentation/map/widgets/search_options.dart';
-import 'package:tracio_fe/presentation/map/widgets/search_result.dart';
+import 'package:tracio_fe/presentation/map/widgets/search_location_options.dart';
+import 'package:tracio_fe/presentation/map/widgets/search_location_result.dart';
 
 class SearchLocationPage extends StatefulWidget {
   const SearchLocationPage({super.key});
@@ -28,7 +28,14 @@ class _SearchLocationPageState extends State<SearchLocationPage> {
       ],
       child: SafeArea(
         child: Column(
-          children: [SearchLocationInput(), SearchOptions(), SearchResult()],
+          children: [
+            SearchLocationInput(
+              backgroundColor: Colors.grey.shade700,
+              showPrefixIcon: true,
+            ),
+            SearchLocationOptions(),
+            SearchLocationResult()
+          ],
         ),
       ),
     ));

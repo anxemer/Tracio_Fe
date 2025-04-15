@@ -1,32 +1,6 @@
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
 
-abstract class LocationEvent {}
-
-class StartLocationTracking extends LocationEvent {}
-
-class UpdateLocation extends LocationEvent {
-  final bg.Location position;
-  final double heading;
-  UpdateLocation(this.position, this.heading);
-}
-
-class StopLocationTracking extends LocationEvent {}
-
-class PauseLocationTracking extends LocationEvent {}
-
-class PauseTrackingDueToStandstill extends LocationEvent {}
-
-class UserHeadingChanged extends LocationEvent {
-  final double heading;
-  UserHeadingChanged(this.heading);
-}
-
-class UserMovedSignificantly extends LocationEvent {
-  final bg.Location position;
-  UserMovedSignificantly(this.position);
-}
-
 abstract class LocationState {}
 
 class LocationInitial extends LocationState {}
@@ -35,8 +9,27 @@ class LocationTracking extends LocationState {}
 
 class LocationUpdated extends LocationState {
   final bg.Location position;
+  final double altitude;
   final double heading;
-  LocationUpdated(this.position, this.heading);
+  final double speed;
+  final double odometerKm;
+  final double elevationGain;
+  final Duration movingTime;
+  final Duration duration;
+  final double avgSpeed;
+  final DateTime timestamp;
+
+  LocationUpdated({
+    required this.position,
+    required this.heading,
+    required this.elevationGain,
+    required this.movingTime,
+    required this.duration,
+    required this.avgSpeed,
+  })  : speed = position.coords.speed * 3.6,
+        odometerKm = position.odometer / 1000,
+        altitude = position.coords.altitude,
+        timestamp = DateTime.parse(position.timestamp);
 }
 
 class LocationPaused extends LocationState {}

@@ -50,7 +50,6 @@ class AuthorizationInterceptor extends Interceptor {
     }
     // String token = await sl<AuthLocalSource>().getToken();
     String token = await sl<AuthLocalSource>().getToken();
-
     options.headers['Authorization'] = "Bearer $token";
     handler.next(options); // continue with the Request
   }

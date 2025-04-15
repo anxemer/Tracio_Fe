@@ -6,16 +6,15 @@ import 'package:map_elevation/map_elevation.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:tracio_fe/common/widget/drag_handle/drag_handle.dart';
 import 'package:tracio_fe/core/configs/theme/app_colors.dart';
-import 'package:tracio_fe/data/map/models/post_route_req.dart';
+import 'package:tracio_fe/data/map/models/request/post_route_req.dart';
 import 'package:tracio_fe/presentation/map/bloc/get_direction_cubit.dart';
 import 'package:tracio_fe/presentation/map/bloc/get_direction_state.dart';
 import 'package:tracio_fe/presentation/map/bloc/map_cubit.dart';
 import 'package:tracio_fe/presentation/map/bloc/map_state.dart';
 import 'package:tracio_fe/presentation/map/bloc/route_cubit.dart';
-import 'package:tracio_fe/presentation/map/widgets/snapshot_display_page.dart';
+import 'package:tracio_fe/presentation/map/pages/snapshot_display_page.dart';
 
 //TODO: Hover Build Metric session for more detai info
-//TODO: Add point into Static image
 class RouteDetailPanel extends StatefulWidget {
   final ScrollController scrollController;
 
@@ -127,12 +126,17 @@ class _RouteDetailPanelState extends State<RouteDetailPanel> {
                         final result = await Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (context) => SnapshotDisplayPage(
-                              snapshotImage: mapCubit.snapshotImage!,
+                              snapshotImage: mapCubit.snapshotImageUrl!,
                               metricsSection: _buildEmptyMetricsData(),
                             ),
                           ),
                         );
-                        if (result == 'save') {
+                        if (result is Map<String, dynamic>) {
+                          final routeName = result["routeName"] as String?;
+                          final routeDescription =
+                              result["routeDescription"] as String?;
+                          final routePrivacy = result["routePrivacy"] as int?;
+
                           if (mapCubit.pointAnnotations.isEmpty) return;
 
                           final origin =
@@ -143,6 +147,9 @@ class _RouteDetailPanelState extends State<RouteDetailPanel> {
                               _extractWaypoints(mapCubit.pointAnnotations);
 
                           final request = PostRouteReq(
+                            routeName: routeName ?? "New Route",
+                            routeDescription: routeDescription,
+                            privacy: routePrivacy!,
                             origin: origin,
                             destination: destination,
                             waypoints: waypoints,
@@ -151,14 +158,11 @@ class _RouteDetailPanelState extends State<RouteDetailPanel> {
                             avoidsRoads: ["ferry"],
                             optimize: false,
                             weighting: 2,
+                            staticImage: mapCubit.snapshotImageUrl!.toString(),
                           );
 
                           BlocProvider.of<RouteCubit>(context)
                               .postRoute(request);
-                        } else if (result == 'canceled') {
-                          mapCubit.cancelSnapshot();
-                        } else {
-                          mapCubit.cancelSnapshot();
                         }
                       }
                     } else if (state is StaticImageFailure) {
@@ -301,7 +305,7 @@ class _RouteDetailPanelState extends State<RouteDetailPanel> {
 
   String _encodePolyline(LineString lineString) {
     final listNum = lineString.coordinates
-        .map((position) => [position.lng, position.lat])
+        .map((position) => [position.lat, position.lng])
         .toList();
 
     return encodePolyline(listNum);

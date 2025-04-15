@@ -1,17 +1,19 @@
-import 'package:tracio_fe/data/map/models/get_place_req.dart';
-import 'package:tracio_fe/data/map/models/isochrone_req.dart';
-import 'package:tracio_fe/data/map/models/mapbox_direction_req.dart';
+import 'package:tracio_fe/data/map/models/request/get_place_req.dart';
+import 'package:tracio_fe/data/map/models/request/get_route_req.dart';
+import 'package:tracio_fe/data/map/models/request/isochrone_req.dart';
+import 'package:tracio_fe/data/map/models/request/mapbox_direction_req.dart';
 
 class ApiUrl {
   //base Url
   // static const baseURL = 'https://192.168.1.9:';
-  static const baseURL = 'http://103.28.33.123:';
+  static const baseURL = 'https://user.tracio.space';
   // static const baseURL = 'https://10.87.46.103:';
   static const hubUrl = 'http://103.28.33.123:5002/content-hub';
   //port
   static const portUser = '5003';
   static const portBlog = '5002';
   static const portRoute = '5009';
+  static const portGroup = '';
   static const portShop = '5004';
 
   //Api User
@@ -49,6 +51,12 @@ class ApiUrl {
   }
 
   //Api route
+
+  static Uri urlGetRoutes(GetRouteReq request) {
+    return Uri.parse('$portRoute/api/route')
+        .replace(queryParameters: request.toMap());
+  }
+
   static Uri urlGetDirectionUsingMapbox(
       MapboxDirectionsRequest mapboxDirectionReq) {
     final coordsString = mapboxDirectionReq.coordinates
@@ -81,6 +89,7 @@ class ApiUrl {
     final queryParams = {
       'api_key': apiKey,
       'input': request.searchText,
+      'limit': request.limit!.toInt().toString()
     };
 
     if (request.sessionToken != null && request.sessionToken!.isNotEmpty) {
@@ -125,18 +134,50 @@ class ApiUrl {
     return Uri.parse('$portShop/api/bookings').replace(queryParameters: params);
   }
 
-  static const getService = '${portShop}/api/services';
-  static const addToCart = '${portShop}/api/carts';
-  static const getCartItem = '${portShop}/api/carts/items';
-  static const getCateService = '${portShop}/api/categories';
-  static const bookingService = '${portShop}/api/bookings';
-  static const deleteCartItem = '${portShop}/api/carts';
-  static const getDetailBooking = '${portShop}/api/bookings';
-  // static const submitBooking = '${portShop}/api/carts';
-  static const rescheduleBooking =
-      '${portShop}/api/bookings/reschedule-booking';
+  static const getService = '$portShop/api/services';
+  static const addToCart = '$portShop/api/carts';
+  static const getCartItem = '$portShop/api/carts/items';
+  static const getCateService = '$portShop/api/categories';
+  static const bookingService = '$portShop/api/bookings';
+  static const deleteCartItem = '$portShop/api/carts';
 
-  //Get City
-  static const getCity =
-      'https://open.oapi.vn/location/provinces?page=0&size=63';
+  static Uri urlGetStaticImageMapbox(String accessToken, List<num> start,
+      List<num> end, String polylineEncoded) {
+    final startNum = '${start[0]},${start[1]}';
+    final endNum = '${end[0]},${end[1]}';
+
+    final strokeWidth = 5;
+    final strokeColor = 'f44';
+
+    final points = 'pin-s-a+9ed4bd($startNum),pin-s-b+000($endNum)';
+
+    final path = 'path-$strokeWidth+$strokeColor($polylineEncoded)';
+
+    final uri = Uri.https(
+      'api.mapbox.com',
+      '/styles/v1/mapbox/streets-v12/static/$points,$path/auto/400x700',
+      {
+        'access_token': accessToken,
+      },
+    );
+
+    return uri;
+  }
+
+  static const urlGetProvinces = 'https://provinces.open-api.vn/api/p/';
+
+  static Uri urlGetDistrictsByProvince(int provinceCode, {int depth = 2}) {
+    return Uri.https('provinces.open-api.vn', '/api/p/$provinceCode', {
+      'depth': depth.toString(),
+    });
+  }
+
+  static const postGroup = '$portGroup/api/group';
+  static Uri urlGetGroupList([Map<String, String>? params]) {
+    return Uri.parse('$portGroup/api/group').replace(queryParameters: params);
+  }
+
+  static Uri urlGetGroupDetail(int groupId) {
+    return Uri.parse('$portGroup/api/group/$groupId');
+  }
 }

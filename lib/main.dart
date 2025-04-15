@@ -9,11 +9,13 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:tracio_fe/common/bloc/filter_cubit.dart';
-import 'package:tracio_fe/common/helper/notification/noti_service.dart';
 import 'package:tracio_fe/common/bloc/generic_data_cubit.dart';
+import 'package:tracio_fe/core/services/notifications/notification_service.dart';
 import 'package:tracio_fe/core/configs/theme/app_theme.dart';
 import 'package:tracio_fe/core/signalr_service.dart';
 import 'package:tracio_fe/firebase_options.dart';
+import 'package:tracio_fe/presentation/groups/cubit/group_cubit.dart';
+import 'package:tracio_fe/presentation/map/bloc/route_cubit.dart';
 import 'package:tracio_fe/presentation/blog/bloc/category/get_category_cubit.dart';
 import 'package:tracio_fe/presentation/service/bloc/bookingservice/cubit/get_booking_detail_cubit.dart';
 import 'package:tracio_fe/presentation/service/bloc/bookingservice/reschedule_booking/cubit/reschedule_booking_cubit.dart';
@@ -40,6 +42,11 @@ Future<void> main() async {
     statusBarIconBrightness: Brightness.light,
     statusBarBrightness: Brightness.dark,
   ));
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    statusBarColor: Colors.grey.shade700,
+    statusBarIconBrightness: Brightness.light,
+    statusBarBrightness: Brightness.dark,
+  ));
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   try {
@@ -53,7 +60,7 @@ Future<void> main() async {
 
   await _requestPermissions();
 
-  await NotiService().initNotification();
+  await NotificationService.init();
 
   HydratedBloc.storage = await HydratedStorage.build(
     storageDirectory: kIsWeb
@@ -88,54 +95,44 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-      providers: [
-        BlocProvider(create: (context) => SplashCubit()..appStarted()),
-        BlocProvider(create: (context) => AuthCubit()),
-        BlocProvider(create: (context) => GetCommentCubit()),
-        BlocProvider(create: (context) => GenericDataCubit()),
-        BlocProvider(create: (context) => LocationBloc()),
-        BlocProvider(create: (context) => ThemeCubit()),
-        BlocProvider(create: (context) => CartItemCubit()..getCartitem()),
-        BlocProvider(create: (context) => GetServiceCubit()),
-        BlocProvider(create: (context) => GetBookingCubit()),
-        BlocProvider(create: (context) => GetBookingDetailCubit()),
-        BlocProvider(
-          create: (context) => ResolveBookingShopCubit(),
-        ),
-        BlocProvider(
-            create: (context) => GetCategoryCubit()..getCategoryService()),
-        BlocProvider(
-          create: (context) => BookingServiceCubit(),
-        ),
-        BlocProvider(
-          create: (context) => FilterCubit(),
-        ),
-        BlocProvider(
-          create: (context) => RescheduleBookingCubit(),
-        ),
-        // BlocProvider(create: (context) => AuthCubit()..checkUser())
-      ],
-      child: BlocBuilder<ThemeCubit, ThemeMode>(
-        builder: (context, state) {
-
-          return ScreenUtilInit(
-            designSize: Size(360, 690),
-            minTextAdapt: true,
-            splitScreenMode: true,
-            builder: (context, child) => MaterialApp(
-              theme: AppTheme.appLightTheme,
-              darkTheme: AppTheme.appDarkTheme,
-              themeMode: state,
-              debugShowCheckedModeBanner: false,
-              home: SplashPage(
-                
+        providers: [
+          BlocProvider(create: (context) => SplashCubit()..appStarted()),
+          BlocProvider(create: (context) => AuthCubit()),
+          BlocProvider(create: (context) => GetCommentCubit()),
+          BlocProvider(create: (context) => GenericDataCubit()),
+          BlocProvider(create: (context) => LocationCubit()),
+          BlocProvider(create: (context) => RouteCubit()),
+          BlocProvider(create: (context) => GroupCubit()),
+          BlocProvider(create: (context) => ThemeCubit()),
+          BlocProvider(create: (context) => CartItemCubit()..getCartitem()),
+          BlocProvider(create: (context) => GetServiceCubit()),
+          BlocProvider(
+              create: (context) => GetCategoryCubit()..getCategoryService()),
+          BlocProvider(
+            create: (context) => BookingServiceCubit(),
+          ),
+          BlocProvider(
+            create: (context) => FilterCubit(),
+          ),
+          // BlocProvider(create: (context) => AuthCubit()..checkUser())
+        ],
+        child: BlocBuilder<ThemeCubit, ThemeMode>(
+          builder: (context, state) {
+            return ScreenUtilInit(
+              designSize: Size(360, 690),
+              minTextAdapt: true,
+              splitScreenMode: true,
+              builder: (context, child) => MaterialApp(
+                theme: AppTheme.appLightTheme,
+                darkTheme: AppTheme.appDarkTheme,
+                themeMode: state,
+                debugShowCheckedModeBanner: false,
+                home: SplashPage(),
+                builder: EasyLoading.init(),
               ),
-              builder: EasyLoading.init(),
-            ),
-          );
-        },
-      ),
-    );
+            );
+          },
+        ));
   }
 }
 

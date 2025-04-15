@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:tracio_fe/core/constants/api_url.dart';
-import 'package:tracio_fe/data/map/models/isochrone_req.dart';
+import 'package:tracio_fe/data/map/models/request/isochrone_req.dart';
 import 'package:tracio_fe/domain/map/entities/place.dart';
 import 'package:tracio_fe/presentation/map/bloc/map_cubit.dart';
 import 'package:tracio_fe/presentation/map/bloc/map_state.dart';

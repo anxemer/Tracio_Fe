@@ -5,6 +5,8 @@ import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:tracio_fe/common/helper/is_dark_mode.dart';
 import 'package:tracio_fe/core/configs/theme/app_colors.dart';
 
+import '../../../core/configs/theme/app_colors.dart';
+
 class BasicNavbar extends StatefulWidget {
   const BasicNavbar({super.key});
 
