@@ -5,15 +5,15 @@ class GetBookingReq {
   final String? endDate;
   final String? status;
 
-  final int pageNumber;
-  final int pageSize;
+  final int? pageNumber;
+  final int? pageSize;
   GetBookingReq({
     this.specificDate,
     this.startDate,
     this.endDate,
     this.status,
     this.pageNumber = 1,
-    this.pageSize = 10,
+    this.pageSize = 50,
   });
 
   Map<String, dynamic> toJson() {

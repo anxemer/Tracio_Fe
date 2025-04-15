@@ -80,8 +80,8 @@ class _BookingCardState extends State<BookingCard> {
                         Text(
                           widget.service.nameService!,
                           style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: AppSize.textLarge.sp,
+                            fontWeight: FontWeight.w600,
+                            fontSize: AppSize.textMedium.sp,
                             color:
                                 isDark ? Colors.grey.shade300 : Colors.black87,
                           ),
@@ -167,7 +167,7 @@ class _BookingCardState extends State<BookingCard> {
                                 children: [
                                   Icon(
                                     Icons.location_on_outlined,
-                                    size: AppSize.iconMedium,
+                                    size: AppSize.iconSmall,
                                     color: isDark
                                         ? AppColors.secondBackground
                                         : AppColors.background,
@@ -178,7 +178,7 @@ class _BookingCardState extends State<BookingCard> {
                                   Text(
                                     '${widget.service.district} - ${widget.service.city}',
                                     style: TextStyle(
-                                        fontSize: AppSize.textMedium,
+                                        fontSize: AppSize.textSmall,
                                         color: isDark
                                             ? Colors.white
                                             : Colors.black),

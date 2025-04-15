@@ -4,7 +4,6 @@ import 'package:tracio_fe/common/helper/is_dark_mode.dart';
 import 'package:tracio_fe/core/configs/theme/app_colors.dart';
 import 'package:tracio_fe/core/configs/theme/assets/app_images.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/domain/shop/entities/response/shop_entity.dart';
 import 'package:tracio_fe/domain/shop/entities/response/shop_service_entity.dart';
 
 import '../../../common/helper/navigator/app_navigator.dart';
@@ -58,7 +57,7 @@ class ServiceCard extends StatelessWidget {
                         Text(
                           service.serviceName ?? 'No Service Name',
                           style: TextStyle(
-                              fontSize: AppSize.textLarge.sp,
+                              fontSize: AppSize.textMedium.sp,
                               fontWeight: FontWeight.w600),
                         ),
                       ],
@@ -74,7 +73,7 @@ class ServiceCard extends StatelessWidget {
                         ),
                         Text(
                           service.formattedDuration,
-                          style: TextStyle(fontSize: AppSize.textMedium),
+                          style: TextStyle(fontSize: AppSize.textSmall),
                         ),
                         const Spacer(),
                         // SizedBox(
@@ -116,22 +115,22 @@ class ServiceCard extends StatelessWidget {
                               color: isDark ? Colors.white : Colors.black),
                         ),
                         // const Spacer(),
-                        SizedBox(
-                          width: 20.w,
-                        ),
-                        Icon(
-                          Icons.location_on_outlined,
-                          size: AppSize.iconSmall,
-                          color: isDark
-                              ? AppColors.secondBackground
-                              : AppColors.background,
-                        ),
-                        Text(
-                          '2 KM',
-                          style: TextStyle(
-                              fontSize: AppSize.textSmall,
-                              color: isDark ? Colors.white : Colors.black),
-                        ),
+                        // SizedBox(
+                        //   width: 20.w,
+                        // ),
+                        // Icon(
+                        //   Icons.location_on_outlined,
+                        //   size: AppSize.iconSmall,
+                        //   color: isDark
+                        //       ? AppColors.secondBackground
+                        //       : AppColors.background,
+                        // ),
+                        // Text(
+                        //   '2 KM',
+                        //   style: TextStyle(
+                        //       fontSize: AppSize.textSmall,
+                        //       color: isDark ? Colors.white : Colors.black),
+                        // ),
                       ],
                     ),
                   ],

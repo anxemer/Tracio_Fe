@@ -10,6 +10,7 @@ class BookingModel extends BookingEntity {
     required super.receivedAt,
     required super.serviceMediaFile,
     required super.shopName,
+    required super.userName,
     required super.profilePicture,
     required super.bookedDate,
     required super.duration,
@@ -62,6 +63,8 @@ class BookingModel extends BookingEntity {
       userNote: map['userNote'] != null ? map['userNote'] as String : null,
       shopNote: map['shopNote'] != null ? map['shopNote'] as String : null,
       price: map['price'] != null ? map['price'] as double : null,
+      userName:
+          map['cyclistName'] != null ? map['cyclistName'] as String : null,
     );
   }
 }

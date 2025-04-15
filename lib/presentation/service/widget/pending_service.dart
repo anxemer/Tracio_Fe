@@ -36,9 +36,12 @@ class _PendingServiceState extends State<PendingService> {
   void initState() {
     context.read<ResolveOverlapServiceCubit>().clearAll();
     context.read<BookingServiceCubit>().clearBookingItem();
-    context
-        .read<GetBookingCubit>()
-        .getBooking(GetBookingReq(status: 'pending'));
+    if (mounted) {
+      context
+          .read<GetBookingCubit>()
+          .getBooking(GetBookingReq(status: 'pending'));
+    }
+
     widget.animationController.forward();
     super.initState();
   }

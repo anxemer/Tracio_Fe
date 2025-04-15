@@ -130,7 +130,7 @@ class _BookingCardState extends State<BookingCardShop> {
                             _buildInfoRow(
                               icon: Icons
                                   .person_outline, // Different icon if needed
-                              text:
+                              text: widget.service.userName ??
                                   'An Xểm', // Should get from service if available
                               isDark: isDark,
                               iconSpacing: 4.w,

@@ -41,7 +41,7 @@ class _ShowScheduleBottomState extends State<ShowScheduleBottom> {
   @override
   Widget build(BuildContext context) {
     final bookingCubit = context.read<BookingServiceCubit>();
-    
+
     return Column(
       children: [
         BasicTextButton(
@@ -506,43 +506,45 @@ class _ShowScheduleBottomState extends State<ShowScheduleBottom> {
           Divider(height: 1),
 
           Expanded(
-            child: ListView.builder(
-              itemCount: bookingCubit.schedules!.length,
-              // padding: EdgeInsets.symmetric(vertical: 8),
-              itemBuilder: (context, index) {
-                final schedule = bookingCubit.schedules![index];
-                final DateFormat dateFormat = DateFormat('dd-MM-yyyy');
+            child: bookingCubit.schedules != null
+                ? ListView.builder(
+                    itemCount: bookingCubit.schedules!.length,
+                    // padding: EdgeInsets.symmetric(vertical: 8),
+                    itemBuilder: (context, index) {
+                      final schedule = bookingCubit.schedules![index];
+                      final DateFormat dateFormat = DateFormat('dd-MM-yyyy');
 
-                return ListTile(
-                  title: Text(
-                    dateFormat.format(schedule.date!),
-                    style: TextStyle(fontWeight: FontWeight.w500),
-                  ),
-                  subtitle: Text(
-                    '${schedule.timeFrom!.format(context)} - ${schedule.timeTo!.format(context)}',
-                  ),
-                  trailing: IconButton(
-                    icon: Icon(Icons.delete_outline, color: Colors.red),
-                    onPressed: () {
-                      setState(() {
-                        bookingCubit.schedules!.removeAt(index);
-                      });
-                      // if (widget.onSchedulesChanged != null) {
-                      //   widget.onSchedulesChanged!(_schedules);
-                      // }
-                      // // Nếu xóa hết lịch thì đóng dialog
-                      if (bookingCubit.schedules!.isEmpty) {
-                        Navigator.pop(context);
-                      }
-                    }
+                      return ListTile(
+                        title: Text(
+                          dateFormat.format(schedule.date!),
+                          style: TextStyle(fontWeight: FontWeight.w500),
+                        ),
+                        subtitle: Text(
+                          '${schedule.timeFrom!.format(context)} - ${schedule.timeTo!.format(context)}',
+                        ),
+                        trailing: IconButton(
+                          icon: Icon(Icons.delete_outline, color: Colors.red),
+                          onPressed: () {
+                            setState(() {
+                              bookingCubit.schedules!.removeAt(index);
+                            });
+                            // if (widget.onSchedulesChanged != null) {
+                            //   widget.onSchedulesChanged!(_schedules);
+                            // }
+                            // // Nếu xóa hết lịch thì đóng dialog
+                            if (bookingCubit.schedules!.isEmpty) {
+                              Navigator.pop(context);
+                            }
+                          }
 
-                    // widget.deleteSchedule
+                          // widget.deleteSchedule
 
-                    ,
-                  ),
-                );
-              },
-            ),
+                          ,
+                        ),
+                      );
+                    },
+                  )
+                : Container(),
           ),
           // Center(
 

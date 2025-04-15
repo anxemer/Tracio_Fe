@@ -12,7 +12,6 @@ import 'package:tracio_fe/data/shop/models/get_booking_req.dart';
 import 'package:tracio_fe/domain/auth/usecases/logout.dart';
 import 'package:tracio_fe/presentation/auth/pages/login.dart';
 import 'package:tracio_fe/presentation/service/bloc/get_booking/get_booking_cubit.dart';
-import 'package:tracio_fe/presentation/shop_owner/bloc/cubit/resolve_booking_cubit.dart';
 import 'package:tracio_fe/presentation/shop_owner/page/booking_manager.dart';
 import 'package:tracio_fe/service_locator.dart';
 
@@ -87,7 +86,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       children: [
                         _buildStatisticCard(
                           title: 'Booking today',
-                          value: _totalBookingsToday.toString(),
+                          value: state.bookingList.length.toString(),
                           icon: Icons.event,
                           color: Colors.blue,
                         ),
@@ -135,7 +134,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               final booking = state.bookingList[index];
                               return ListTile(
                                 leading: Icon(Icons.event),
-                                title: Text('An Xem'),
+                                title: Text(booking.userName!),
                                 subtitle: Text(
                                     '${state.bookingList[index].serviceName}'),
                                 trailing: _buildStatusChip(booking.status!),

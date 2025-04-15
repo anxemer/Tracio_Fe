@@ -5,6 +5,7 @@ class BookingCardViewModel {
   final int? bookingId;
   final int? bookingDetailId;
   final String? nameService;
+  final String? userName;
   final String? imageUrl;
   final double? price;
   final DateTime? bookedDate;
@@ -17,6 +18,7 @@ class BookingCardViewModel {
     this.bookingId,
     this.bookingDetailId,
     this.nameService,
+    this.userName,
     this.imageUrl,
     this.price,
     this.bookedDate,

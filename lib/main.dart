@@ -27,6 +27,7 @@ import 'package:tracio_fe/presentation/splash/bloc/splash_cubit.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' as mp;
 import 'package:tracio_fe/presentation/theme/bloc/theme_cubit.dart';
+import 'data/auth/sources/auth_local_source/auth_local_source.dart';
 import 'presentation/service/bloc/bookingservice/booking_service_cubit.dart';
 import 'presentation/service/bloc/cart_item_bloc/cart_item_cubit.dart';
 import 'presentation/shop_owner/bloc/cubit/resolve_booking_cubit.dart';
@@ -116,6 +117,7 @@ class _MyAppState extends State<MyApp> {
       ],
       child: BlocBuilder<ThemeCubit, ThemeMode>(
         builder: (context, state) {
+
           return ScreenUtilInit(
             designSize: Size(360, 690),
             minTextAdapt: true,
@@ -125,7 +127,9 @@ class _MyAppState extends State<MyApp> {
               darkTheme: AppTheme.appDarkTheme,
               themeMode: state,
               debugShowCheckedModeBanner: false,
-              home: SplashPage(),
+              home: SplashPage(
+                
+              ),
               builder: EasyLoading.init(),
             ),
           );

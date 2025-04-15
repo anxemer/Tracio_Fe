@@ -49,6 +49,7 @@ class _BookingDetailShopScreenState extends State<BookingDetailShopScreen> {
           GetBookingDetailCubit()..getBookingDetail(widget.bookingId),
       child: Scaffold(
         appBar: BasicAppbar(
+          backgroundColor: Colors.transparent,
           title: Text(
             'Booking Detail',
             style: TextStyle(
@@ -120,7 +121,7 @@ class _BookingDetailShopScreenState extends State<BookingDetailShopScreen> {
                                               ),
                                               SizedBox(width: 4.w),
                                               Text(
-                                                'Thu Duc - Ho Chi Minh',
+                                                '${state.bookingdetail.district} - ${state.bookingdetail.city}',
                                                 style: TextStyle(
                                                     fontSize:
                                                         AppSize.textMedium,
@@ -222,6 +223,12 @@ class _BookingDetailShopScreenState extends State<BookingDetailShopScreen> {
             final state = context.watch<GetBookingDetailCubit>().state;
 
             if (state is GetBookingDetailLoaded) {
+              final booking = state.bookingdetail;
+
+              if (booking.status != 'pending') {
+                return const SizedBox
+                    .shrink(); // Không hiển thị nút nếu status không đúng
+              }
               return Padding(
                 padding: EdgeInsets.symmetric(
                     horizontal: AppSize.apHorizontalPadding,

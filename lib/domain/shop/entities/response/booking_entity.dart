@@ -6,6 +6,7 @@ class BookingEntity {
   final int? bookingId;
   final int? bookingDetailId;
   final String? serviceName;
+  final String? userName;
   final DateTime? receivedAt;
   final List<MediaFile>? serviceMediaFile;
   final String? shopName;
@@ -21,6 +22,7 @@ class BookingEntity {
     this.bookingId,
     this.bookingDetailId,
     this.serviceName,
+    this.userName,
     this.receivedAt,
     this.serviceMediaFile,
     this.shopName,
