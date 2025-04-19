@@ -3,6 +3,8 @@ import 'package:tracio_fe/core/constants/membership_enum.dart';
 class Group {
   final int groupId;
   final int creatorId;
+  final String creatorName;
+  final String creatorAvatarUrl;
   final String groupName;
   final String? description;
   final String groupThumbnail;
@@ -14,12 +16,13 @@ class Group {
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final int participantCount;
-  final Creator creator;
   final MembershipEnum membership;
   Group(
       {required this.groupId,
       required this.creatorId,
       required this.groupName,
+      required this.creatorName,
+      required this.creatorAvatarUrl,
       this.description,
       required this.groupThumbnail,
       required this.isPublic,
@@ -30,7 +33,6 @@ class Group {
       required this.createdAt,
       required this.updatedAt,
       required this.participantCount,
-      required this.creator,
       required this.membership});
 
   String get formattedDate {
@@ -44,31 +46,22 @@ class Group {
     MembershipEnum? membership,
   }) {
     return Group(
-        participantCount: participantCount ?? this.participantCount,
-        membership: membership ?? this.membership,
-        groupId: groupId,
-        creatorId: creatorId,
-        groupName: groupName,
-        description: description,
-        groupThumbnail: groupThumbnail,
-        isPublic: isPublic,
-        maxParticipants: maxParticipants,
-        totalGroupRoutes: totalGroupRoutes,
-        district: district,
-        city: city,
-        createdAt: createdAt,
-        updatedAt: updatedAt,
-        creator: creator);
+      participantCount: participantCount ?? this.participantCount,
+      membership: membership ?? this.membership,
+      groupId: groupId,
+      creatorId: creatorId,
+      creatorName: creatorName,
+      creatorAvatarUrl: creatorAvatarUrl,
+      groupName: groupName,
+      description: description,
+      groupThumbnail: groupThumbnail,
+      isPublic: isPublic,
+      maxParticipants: maxParticipants,
+      totalGroupRoutes: totalGroupRoutes,
+      district: district,
+      city: city,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+    );
   }
-}
-
-class Creator {
-  final int userId;
-  final String username;
-  final String profilePicture;
-  Creator({
-    required this.userId,
-    required this.username,
-    required this.profilePicture,
-  });
 }

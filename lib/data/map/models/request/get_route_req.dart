@@ -3,7 +3,7 @@ import 'dart:convert';
 
 class GetRouteReq {
   final int pageNumber;
-  final int rowsPerPage;
+  final int pageSize;
   final String? sortField;
   final bool? sortAsc;
   final String? searchName;
@@ -21,7 +21,7 @@ class GetRouteReq {
   int? userId;
   GetRouteReq({
     required this.pageNumber,
-    required this.rowsPerPage,
+    required this.pageSize,
     this.sortField,
     this.sortAsc,
     this.searchName,
@@ -41,7 +41,7 @@ class GetRouteReq {
 
   GetRouteReq copyWith({
     int? pageNumber,
-    int? rowsPerPage,
+    int? pageSize,
     String? sortField,
     bool? sortAsc,
     String? searchName,
@@ -60,7 +60,7 @@ class GetRouteReq {
   }) {
     return GetRouteReq(
       pageNumber: pageNumber ?? this.pageNumber,
-      rowsPerPage: rowsPerPage ?? this.rowsPerPage,
+      pageSize: pageSize ?? this.pageSize,
       sortField: sortField ?? this.sortField,
       sortAsc: sortAsc ?? this.sortAsc,
       searchName: searchName ?? this.searchName,
@@ -82,7 +82,7 @@ class GetRouteReq {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'pageNumber': pageNumber,
-      'rowsPerPage': rowsPerPage,
+      'pageSize': pageSize,
       'sortField': sortField,
       'sortAsc': sortAsc,
       'searchName': searchName,
@@ -104,7 +104,7 @@ class GetRouteReq {
   factory GetRouteReq.fromMap(Map<String, dynamic> map) {
     return GetRouteReq(
       pageNumber: map['pageNumber'] as int,
-      rowsPerPage: map['rowsPerPage'] as int,
+      pageSize: map['pageSize'] as int,
       sortField: map['sortField'] != null ? map['sortField'] as String : null,
       sortAsc: map['sortAsc'] != null ? map['sortAsc'] as bool : null,
       searchName: map['searchName'] as String,
@@ -130,7 +130,7 @@ class GetRouteReq {
   Map<String, String> toQueryParams() {
     final Map<String, String> queryParams = {
       'pageNumber': pageNumber.toString(),
-      'rowsPerPage': rowsPerPage.toString(),
+      'pageSize': pageSize.toString(),
     };
 
     void addIfNotNull(String key, dynamic value) {
@@ -160,7 +160,7 @@ class GetRouteReq {
 
   @override
   String toString() {
-    return 'GetRouteReq(pageNumber: $pageNumber, rowsPerPage: $rowsPerPage, sortField: $sortField, sortAsc: $sortAsc, searchName: $searchName, minDistance: $minDistance, maxDistance: $maxDistance, minElevation: $minElevation, maxElevation: $maxElevation, minMovingTime: $minMovingTime, maxMovingTime: $maxMovingTime, minAvgSpeed: $minAvgSpeed, maxAvgSpeed: $maxAvgSpeed, isPlanned: $isPlanned, startLat: $startLat, startLng: $startLng, userId: $userId)';
+    return 'GetRouteReq(pageNumber: $pageNumber, pageSize: $pageSize, sortField: $sortField, sortAsc: $sortAsc, searchName: $searchName, minDistance: $minDistance, maxDistance: $maxDistance, minElevation: $minElevation, maxElevation: $maxElevation, minMovingTime: $minMovingTime, maxMovingTime: $maxMovingTime, minAvgSpeed: $minAvgSpeed, maxAvgSpeed: $maxAvgSpeed, isPlanned: $isPlanned, startLat: $startLat, startLng: $startLng, userId: $userId)';
   }
 
   @override
@@ -168,7 +168,7 @@ class GetRouteReq {
     if (identical(this, other)) return true;
 
     return other.pageNumber == pageNumber &&
-        other.rowsPerPage == rowsPerPage &&
+        other.pageSize == pageSize &&
         other.sortField == sortField &&
         other.sortAsc == sortAsc &&
         other.searchName == searchName &&
@@ -189,7 +189,7 @@ class GetRouteReq {
   @override
   int get hashCode {
     return pageNumber.hashCode ^
-        rowsPerPage.hashCode ^
+        pageSize.hashCode ^
         sortField.hashCode ^
         sortAsc.hashCode ^
         searchName.hashCode ^

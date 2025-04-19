@@ -5,12 +5,9 @@ import 'package:tracio_fe/core/configs/theme/app_colors.dart';
 import 'package:tracio_fe/core/configs/utils/validators/group_validator.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/data/map/models/request/get_route_req.dart';
-import 'package:tracio_fe/data/map/models/route.dart';
 import 'package:tracio_fe/domain/map/entities/route.dart';
 import 'package:tracio_fe/presentation/groups/cubit/form_group_activity_cubit.dart';
 import 'package:tracio_fe/presentation/groups/cubit/form_group_activity_state.dart';
-import 'package:tracio_fe/presentation/groups/cubit/group_cubit.dart';
-import 'package:tracio_fe/presentation/groups/cubit/group_state.dart';
 import 'package:tracio_fe/presentation/groups/widgets/activity/activity_route_selection.dart';
 import 'package:tracio_fe/presentation/groups/widgets/activity/activity_search_location.dart';
 import 'package:tracio_fe/presentation/map/bloc/get_location_cubit.dart';
@@ -242,7 +239,7 @@ class _CreateGroupActivityState extends State<CreateGroupActivity>
                         GestureDetector(
                           onTap: () async {
                             final GetRouteReq request = GetRouteReq(
-                                pageNumber: 1, rowsPerPage: 10, sortAsc: false);
+                                pageNumber: 1, pageSize: 10, sortAsc: false);
                             context.read<RouteCubit>().getRoutes(request);
                             final result = await Navigator.push<RouteEntity>(
                                 context,

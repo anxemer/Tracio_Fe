@@ -51,6 +51,38 @@ class RouteEntity {
     required this.updatedAt,
   });
 
+  String formatDateTime(DateTime dateTime) {
+    List<String> months = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December'
+    ];
+
+    String month = months[dateTime.month - 1];
+    String day = dateTime.day.toString();
+    String year = dateTime.year.toString();
+
+    int hour = dateTime.hour;
+    String minute = dateTime.minute < 10
+        ? '0${dateTime.minute}'
+        : dateTime.minute.toString();
+
+    String amPm = hour >= 12 ? 'PM' : 'AM';
+    hour = hour % 12;
+    if (hour == 0) hour = 12;
+
+    return '$month $day, $year at $hour:$minute $amPm';
+  }
+
   RouteEntity copyWith({
     int? routeId,
     int? cyclistId,

@@ -9,6 +9,7 @@ import 'package:tracio_fe/data/groups/models/request/post_group_route_req.dart';
 import 'package:tracio_fe/data/groups/models/response/get_group_list_rep.dart';
 import 'package:tracio_fe/data/groups/models/response/get_group_route_list_rep.dart';
 import 'package:tracio_fe/data/groups/models/response/get_participant_list_rep.dart';
+import 'package:tracio_fe/data/map/models/response/get_route_detail_rep.dart';
 import 'package:tracio_fe/data/groups/models/response/group_rep.dart';
 import 'package:tracio_fe/data/groups/models/response/post_group_route_rep.dart';
 import 'package:tracio_fe/service_locator.dart';
@@ -36,6 +37,9 @@ abstract class GroupApiService {
   Future<Either<Failure, dynamic>> leaveGroup(int groupId);
   Future<Either<Failure, dynamic>> assignRole(
       int groupId, int targetUserId, bool isOrganizer);
+
+  Future<Either<Failure, dynamic>> getGroupRouteDetail(int groupRouteId,
+      [Map<String, String>? params]);
 }
 
 class GroupApiServiceImpl extends GroupApiService {
@@ -115,9 +119,9 @@ class GroupApiServiceImpl extends GroupApiService {
         GetGroupRouteListRep data =
             GetGroupRouteListRep.fromMap(response.data['result']);
         return Right(data);
-      } else if (response.statusCode == 403) {
+      } else if (response.statusCode == 400) {
         return Left(AuthorizationFailure(
-            'You do not have permission to access this resource.', 403));
+            'You do not have permission to access this resource.', 400));
       } else {
         return left(ExceptionFailure('Error: ${response.statusCode}'));
       }
@@ -141,9 +145,9 @@ class GroupApiServiceImpl extends GroupApiService {
         GetParticipantListRep data =
             GetParticipantListRep.fromMap(response.data['result']);
         return Right(data);
-      } else if (response.statusCode == 403) {
+      } else if (response.statusCode == 400) {
         return Left(AuthorizationFailure(
-            'You do not have permission to perform this action.', 403));
+            'You do not have permission to perform this action.', 400));
       } else {
         return left(ExceptionFailure('Error: ${response.statusCode}'));
       }
@@ -167,9 +171,9 @@ class GroupApiServiceImpl extends GroupApiService {
       if (response.statusCode == 201) {
         var groupResponse = PostGroupRouteRep.fromMap(response.data["result"]);
         return right(groupResponse);
-      } else if (response.statusCode == 403) {
+      } else if (response.statusCode == 400) {
         return Left(AuthorizationFailure(
-            'You do not have permission to perform this action.', 403));
+            'You do not have permission to perform this action.', 400));
       } else {
         return left(ExceptionFailure('Error: ${response.statusCode}'));
       }
@@ -192,9 +196,9 @@ class GroupApiServiceImpl extends GroupApiService {
       if (response.statusCode == 200) {
         dynamic data = response.data['result'];
         return Right(data);
-      } else if (response.statusCode == 403) {
+      } else if (response.statusCode == 400) {
         return Left(AuthorizationFailure(
-            'You do not have permission to perform this action.', 403));
+            'You do not have permission to perform this action.', 400));
       } else {
         return left(ExceptionFailure('Error: ${response.statusCode}'));
       }
@@ -216,9 +220,9 @@ class GroupApiServiceImpl extends GroupApiService {
       if (response.statusCode == 200) {
         dynamic data = response.data['result'];
         return Right(data);
-      } else if (response.statusCode == 403) {
+      } else if (response.statusCode == 400) {
         return Left(AuthorizationFailure(
-            'You do not have permission to perform this action.', 403));
+            'You do not have permission to perform this action.', 400));
       } else {
         return left(ExceptionFailure('Error: ${response.statusCode}'));
       }
@@ -242,9 +246,9 @@ class GroupApiServiceImpl extends GroupApiService {
       if (response.statusCode == 200) {
         dynamic data = response.data['result'];
         return Right(data);
-      } else if (response.statusCode == 403) {
+      } else if (response.statusCode == 400) {
         return Left(AuthorizationFailure(
-            'You do not have permission to perform this action.', 403));
+            'You do not have permission to perform this action.', 400));
       } else {
         return left(ExceptionFailure('Error: ${response.statusCode}'));
       }
@@ -267,9 +271,9 @@ class GroupApiServiceImpl extends GroupApiService {
       if (response.statusCode == 200) {
         dynamic data = response.data['result'];
         return Right(data);
-      } else if (response.statusCode == 403) {
+      } else if (response.statusCode == 400) {
         return Left(AuthorizationFailure(
-            'You do not have permission to perform this action.', 403));
+            'You do not have permission to perform this action.', 400));
       } else {
         return left(ExceptionFailure('Error: ${response.statusCode}'));
       }
@@ -320,9 +324,9 @@ class GroupApiServiceImpl extends GroupApiService {
       if (response.statusCode == 200) {
         var groupId = response.data["result"]["groupId"];
         return right(groupId);
-      } else if (response.statusCode == 403) {
+      } else if (response.statusCode == 400) {
         return Left(AuthorizationFailure(
-            'You do not have permission to perform this action.', 403));
+            'You do not have permission to perform this action.', 400));
       } else {
         return left(ExceptionFailure('Error: ${response.statusCode}'));
       }
@@ -345,9 +349,9 @@ class GroupApiServiceImpl extends GroupApiService {
       if (response.statusCode == 200) {
         var groupResponse = PostGroupRouteRep.fromMap(response.data["result"]);
         return right(groupResponse);
-      } else if (response.statusCode == 403) {
+      } else if (response.statusCode == 400) {
         return Left(AuthorizationFailure(
-            'You do not have permission to perform this action.', 403));
+            'You do not have permission to perform this action.', 400));
       } else {
         return left(ExceptionFailure('Error: ${response.statusCode}'));
       }
@@ -356,6 +360,33 @@ class GroupApiServiceImpl extends GroupApiService {
           e.response?.data ?? e.message ?? 'An error occurred'));
     } catch (e) {
       return left(ExceptionFailure('An unexpected error occurred: $e'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, GetRouteDetailRep>> getGroupRouteDetail(
+      int groupRouteId,
+      [Map<String, String>? params]) async {
+    try {
+      var uri = ApiUrl.urlGetGroupRouteDetail(groupRouteId, params);
+      var response = await sl<DioClient>().get(uri.toString());
+
+      if (response.statusCode == 200) {
+        return right(GetRouteDetailRep.fromMap(response.data['result']));
+      } else if (response.statusCode == 400) {
+        return Left(
+            ExceptionFailure(response.data['message'] ?? 'Something wrong!!'));
+      } else if (response.statusCode == 404) {
+        return Left(ExceptionFailure(response.data['message'] ?? 'Not Found'));
+      } else {
+        return left(ExceptionFailure('Error: ${response.statusCode}'));
+      }
+    } on DioException catch (e) {
+      return Left(ExceptionFailure(
+          e.response?.data ?? e.message ?? 'An error occurred'));
+    } catch (e) {
+      return left(
+          ExceptionFailure('An unexpected error occurred: ${e.toString()}'));
     }
   }
 }

@@ -3,7 +3,7 @@ import 'dart:convert';
 
 class GetGroupListReq {
   final int pageNumber;
-  final int rowsPerPage;
+  final int pageSize;
   final String? filterValue;
   final String? filterField;
   final String? sortField;
@@ -11,7 +11,7 @@ class GetGroupListReq {
   final bool? getMyGroups;
   GetGroupListReq({
     required this.pageNumber,
-    required this.rowsPerPage,
+    required this.pageSize,
     this.filterValue,
     this.filterField,
     this.sortField,
@@ -21,7 +21,7 @@ class GetGroupListReq {
 
   GetGroupListReq copyWith({
     int? pageNumber,
-    int? rowsPerPage,
+    int? pageSize,
     String? filterValue,
     String? filterField,
     String? sortField,
@@ -30,7 +30,7 @@ class GetGroupListReq {
   }) {
     return GetGroupListReq(
       pageNumber: pageNumber ?? this.pageNumber,
-      rowsPerPage: rowsPerPage ?? this.rowsPerPage,
+      pageSize: pageSize ?? this.pageSize,
       filterValue: filterValue ?? this.filterValue,
       filterField: filterField ?? this.filterField,
       sortField: sortField ?? this.sortField,
@@ -42,7 +42,7 @@ class GetGroupListReq {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'pageNumber': pageNumber,
-      'rowsPerPage': rowsPerPage,
+      'pageSize': pageSize,
       'filterValue': filterValue,
       'filterField': filterField,
       'sortField': sortField,
@@ -57,7 +57,7 @@ class GetGroupListReq {
       if (sortDesc != null) 'sortDesc': sortDesc.toString(),
       if (filterField != null) 'filterField': filterField!,
       if (filterValue != null) 'filterValue': filterValue!,
-      'rowsPerPage': rowsPerPage.toString(),
+      'pageSize': pageSize.toString(),
       'pageNumber': pageNumber.toString(),
       if (getMyGroups != null) 'getMyGroups': getMyGroups.toString(),
     };
@@ -66,7 +66,7 @@ class GetGroupListReq {
   factory GetGroupListReq.fromMap(Map<String, dynamic> map) {
     return GetGroupListReq(
       pageNumber: map['pageNumber'] as int,
-      rowsPerPage: map['rowsPerPage'] as int,
+      pageSize: map['pageSize'] as int,
       filterValue:
           map['filterValue'] != null ? map['filterValue'] as String : null,
       filterField:
@@ -85,7 +85,7 @@ class GetGroupListReq {
 
   @override
   String toString() {
-    return 'GetGroupListReq(pageNumber: $pageNumber, rowsPerPage: $rowsPerPage, filterValue: $filterValue, filterField: $filterField, sortField: $sortField, sortDesc: $sortDesc)';
+    return 'GetGroupListReq(pageNumber: $pageNumber, pageSize: $pageSize, filterValue: $filterValue, filterField: $filterField, sortField: $sortField, sortDesc: $sortDesc)';
   }
 
   @override
@@ -93,7 +93,7 @@ class GetGroupListReq {
     if (identical(this, other)) return true;
 
     return other.pageNumber == pageNumber &&
-        other.rowsPerPage == rowsPerPage &&
+        other.pageSize == pageSize &&
         other.filterValue == filterValue &&
         other.filterField == filterField &&
         other.sortField == sortField &&
@@ -104,7 +104,7 @@ class GetGroupListReq {
   @override
   int get hashCode {
     return pageNumber.hashCode ^
-        rowsPerPage.hashCode ^
+        pageSize.hashCode ^
         filterValue.hashCode ^
         filterField.hashCode ^
         sortField.hashCode ^

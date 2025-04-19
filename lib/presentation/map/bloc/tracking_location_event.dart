@@ -23,8 +23,6 @@ class LocationInitial extends LocationState {
   }
 }
 
-class LocationTracking extends LocationState {}
-
 class LocationUpdated extends LocationState {
   final bg.Location position;
   final double altitude;

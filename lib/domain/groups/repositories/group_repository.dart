@@ -6,6 +6,7 @@ import 'package:tracio_fe/data/groups/models/request/post_group_route_req.dart';
 import 'package:tracio_fe/data/groups/models/response/get_group_list_rep.dart';
 import 'package:tracio_fe/data/groups/models/response/get_group_route_list_rep.dart';
 import 'package:tracio_fe/data/groups/models/response/get_participant_list_rep.dart';
+import 'package:tracio_fe/data/map/models/response/get_route_detail_rep.dart';
 import 'package:tracio_fe/data/groups/models/response/group_rep.dart';
 import 'package:tracio_fe/data/groups/models/response/post_group_route_rep.dart';
 
@@ -20,4 +21,8 @@ abstract class GroupRepository {
   Future<Either<Failure, GetParticipantListRep>> getParticipantsByGroup(
       int groupId);
   Future<Either<Failure, dynamic>> leaveGroup(int groupId);
+  Future<Either<Failure, GetRouteDetailRep>> getGroupRouteDetail(
+      int groupRouteId,
+      {int pageNumber = 1,
+      int pageSize = 5});
 }

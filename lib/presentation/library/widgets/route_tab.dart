@@ -23,7 +23,7 @@ class _RouteTabState extends State<RouteTab>
   void initState() {
     super.initState();
     final GetRouteReq request =
-        GetRouteReq(pageNumber: 1, rowsPerPage: 5, sortAsc: false);
+        GetRouteReq(pageNumber: 1, pageSize: 5, sortAsc: false);
     Future.microtask(() {
       // ignore: use_build_context_synchronously
       context.read<RouteCubit>().getRoutes(request);

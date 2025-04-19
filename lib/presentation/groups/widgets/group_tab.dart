@@ -33,7 +33,7 @@ class _GroupTabState extends State<GroupTab>
 
   void _onRefresh() async {
     GetGroupListReq request =
-        GetGroupListReq(pageNumber: 1, rowsPerPage: 5, getMyGroups: true);
+        GetGroupListReq(pageNumber: 1, pageSize: 5, getMyGroups: true);
     context.read<GroupCubit>().getGroupList(request);
   }
 

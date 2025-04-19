@@ -158,7 +158,7 @@ class MapCubit extends Cubit<MapCubitState> {
   Future<void> addSearchAnnotation(Position position) async {
     pointAnnotationManager ??=
         await mapboxMap?.annotations.createPointAnnotationManager();
-    pointAnnotationManager?.setIconAllowOverlap(true);
+    // pointAnnotationManager?.setIconAllowOverlap(true);
     final Uint8List imageData =
         await _getMarkerBytes('assets/images/search_location_marker.png');
 

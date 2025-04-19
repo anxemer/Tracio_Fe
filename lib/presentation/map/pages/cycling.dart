@@ -133,8 +133,8 @@ class _CyclingPageState extends State<CyclingPage> {
 
   Future<void> _startTracking() async {
     // Start sending tracking notification
-    await _fetchStartTracking();
     rideStartTime = DateTime.now();
+    await _fetchStartTracking();
     NotificationService.sendRideTrackingNotification(
       'Starting...',
       'Preparing GPS...',

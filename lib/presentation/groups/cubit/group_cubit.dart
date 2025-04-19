@@ -5,6 +5,7 @@ import 'package:tracio_fe/data/groups/models/request/post_group_req.dart';
 import 'package:tracio_fe/data/groups/models/request/post_group_route_req.dart';
 import 'package:tracio_fe/domain/groups/usecases/get_group_detail_usecase.dart';
 import 'package:tracio_fe/domain/groups/usecases/get_group_list_usecase.dart';
+import 'package:tracio_fe/domain/groups/usecases/get_group_route_detail_usecase.dart';
 import 'package:tracio_fe/domain/groups/usecases/get_group_route_usecase.dart';
 import 'package:tracio_fe/domain/groups/usecases/get_participant_list_usecase.dart';
 import 'package:tracio_fe/domain/groups/usecases/leave_group_usecase.dart';
@@ -67,10 +68,10 @@ class GroupCubit extends Cubit<GroupState> {
           },
           (groupRoutes) async {
             final initialState = GetGroupDetailSuccess(
-              group: group,
-              groupRoutes: groupRoutes.groupList,
-              cyclists: [],
-            );
+                group: group,
+                groupRoutes: groupRoutes.groupList,
+                participants: [],
+                groupRouteDetails: []);
 
             emit(initialState);
 
@@ -79,15 +80,48 @@ class GroupCubit extends Cubit<GroupState> {
 
             participantResult.fold(
               (error) {
-                emit(initialState.copyWith(cyclistsError: true));
+                emit(initialState.copyWith(participantsError: true));
               },
               (cyclistListResponse) {
                 emit(initialState.copyWith(
-                    cyclists: cyclistListResponse.cyclists));
+                    participants: cyclistListResponse.participants));
               },
             );
           },
         );
+      },
+    );
+  }
+
+  Future<void> getGroupRouteDetail(int groupRouteId,
+      {int pageNumber = 1, int pageSize = 5}) async {
+    final result = await sl<GetGroupRouteDetailUsecase>().call(
+      GetGroupRouteDetailUsecaseParams(
+        groupRouteId: groupRouteId,
+        pageNumber: pageNumber,
+        pageSize: pageSize,
+      ),
+    );
+
+    result.fold(
+      (error) {
+        if (state is GetGroupDetailSuccess) {
+          var currentState = state as GetGroupDetailSuccess;
+          emit(currentState.copyWith(
+            groupRouteDetailsError: true,
+          ));
+        } else {
+          emit(GroupFailure(errorMessage: error.toString()));
+        }
+      },
+      (data) {
+        if (state is GetGroupDetailSuccess) {
+          var currentState = state as GetGroupDetailSuccess;
+          emit(currentState.copyWith(
+            groupRouteDetails: data.groupRouteDetails,
+            groupRouteDetailsError: false,
+          ));
+        }
       },
     );
   }
@@ -130,10 +164,10 @@ class GroupCubit extends Cubit<GroupState> {
       },
       (_) {
         emit(GetGroupDetailSuccess(
-          group: newGroup,
-          groupRoutes: stateData.groupRoutes,
-          cyclists: stateData.cyclists,
-        ));
+            group: newGroup,
+            groupRoutes: stateData.groupRoutes,
+            participants: stateData.participants,
+            groupRouteDetails: []));
       },
     );
   }

@@ -18,7 +18,7 @@ class RouteList extends StatefulWidget {
 class _RouteListState extends State<RouteList> {
   Future<void> _fetchRoutes() async {
     final GetRouteReq request =
-        GetRouteReq(pageNumber: 1, rowsPerPage: 5, sortAsc: false);
+        GetRouteReq(pageNumber: 1, pageSize: 5, sortAsc: false);
     await context.read<RouteCubit>().getRoutes(request);
   }
 

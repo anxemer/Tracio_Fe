@@ -5,6 +5,8 @@ class GroupResponseModel extends Group {
   GroupResponseModel(
       {required super.groupId,
       required super.creatorId,
+      required super.creatorName,
+      required super.creatorAvatarUrl,
       required super.groupName,
       super.description,
       required super.groupThumbnail,
@@ -15,7 +17,6 @@ class GroupResponseModel extends Group {
       required super.createdAt,
       required super.updatedAt,
       required super.participantCount,
-      required super.creator,
       required super.membership,
       required super.totalGroupRoutes});
 
@@ -23,6 +24,8 @@ class GroupResponseModel extends Group {
     return <String, dynamic>{
       'groupId': groupId.toString(),
       'creatorId': creatorId.toString(),
+      'creatorName': creatorName,
+      'creatorAvatarUrl': creatorAvatarUrl,
       'groupName': groupName,
       'description': description,
       'groupThumbnail': groupThumbnail,
@@ -41,6 +44,8 @@ class GroupResponseModel extends Group {
     return GroupResponseModel(
         groupId: map['groupId'] as int,
         creatorId: map['creatorId'] as int,
+        creatorName: map['creatorName'] as String,
+        creatorAvatarUrl: map['creatorAvatarUrl'] as String,
         groupName: map['groupName'] as String,
         description: map['description'] ?? '',
         groupThumbnail: map['groupThumbnail'] as String,
@@ -54,11 +59,6 @@ class GroupResponseModel extends Group {
             ? DateTime.tryParse(map["updatedAt"])
             : null,
         participantCount: map['totalParticipants'] as int,
-        creator: Creator(
-          userId: map['creator']['userId'] as int,
-          username: map['creator']['userName'] as String,
-          profilePicture: map['creator']['profilePicture'] as String,
-        ),
         membership: MembershipEnum.values.firstWhere(
           (e) => e.name.toLowerCase() == map['membership'].toLowerCase(),
           orElse: () => MembershipEnum.none,

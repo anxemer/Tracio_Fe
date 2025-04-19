@@ -4,8 +4,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tracio_fe/core/configs/theme/app_colors.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/core/constants/membership_enum.dart';
-import 'package:tracio_fe/data/groups/models/response/get_participant_list_rep.dart';
 import 'package:tracio_fe/domain/groups/entities/group.dart';
+import 'package:tracio_fe/domain/groups/entities/group_route.dart';
 import 'package:tracio_fe/presentation/groups/cubit/group_cubit.dart';
 import 'package:tracio_fe/presentation/groups/cubit/group_state.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -45,7 +45,7 @@ class _GroupOverviewState extends State<GroupOverview> {
                   if (index == 0) return _buildHeader(state.group);
                   if (index == 1) {
                     return _buildMembersSection(
-                        state.cyclists, state.group.participantCount);
+                        state.participants, state.group.participantCount);
                   }
                   return _buildActionsSection(
                       state.group.groupId, state.group.membership);
@@ -146,7 +146,7 @@ class _GroupOverviewState extends State<GroupOverview> {
     );
   }
 
-  Widget _buildMembersSection(List<Cyclist> adminList, int totalMembers) {
+  Widget _buildMembersSection(List<Participant> adminList, int totalMembers) {
     return Container(
       padding: const EdgeInsets.only(
           bottom: AppSize.apHorizontalPadding,
@@ -179,8 +179,8 @@ class _GroupOverviewState extends State<GroupOverview> {
           ),
           const SizedBox(height: 12),
 
-          // List of cyclists
-          ...adminList.map((cyclist) => _buildCyclistItem(cyclist)),
+          // List of participants
+          ...adminList.map((participant) => _buildCyclistItem(participant)),
 
           const SizedBox(height: 12),
           Material(
@@ -219,7 +219,7 @@ class _GroupOverviewState extends State<GroupOverview> {
     );
   }
 
-  Widget _buildCyclistItem(Cyclist cyclist) {
+  Widget _buildCyclistItem(Participant participant) {
     return Container(
         padding:
             EdgeInsets.symmetric(vertical: AppSize.apHorizontalPadding / 2.h),
@@ -231,7 +231,7 @@ class _GroupOverviewState extends State<GroupOverview> {
           children: [
             ClipOval(
               child: CachedNetworkImage(
-                imageUrl: cyclist.participant.profilePicture,
+                imageUrl: participant.cyclistAvatarUrl,
                 width: 40,
                 height: 40,
                 fit: BoxFit.cover,
@@ -246,7 +246,7 @@ class _GroupOverviewState extends State<GroupOverview> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    cyclist.participant.userName,
+                    participant.cyclistName,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(

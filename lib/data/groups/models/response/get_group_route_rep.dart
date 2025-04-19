@@ -14,30 +14,34 @@ class GetGroupRouteRep extends GroupRouteEntity {
       required super.groupStatus,
       required super.totalCheckIn,
       required super.participants,
-      required super.creator,
-      required super.ridingRouteId});
+      required super.ridingRouteId,
+      required super.creatorId,
+      required super.creatorAvatarUrl,
+      required super.creatorName,
+      required super.groupRouteDetails});
 
   factory GetGroupRouteRep.fromMap(Map<String, dynamic> map) {
     return GetGroupRouteRep(
-      groupRouteId: map['groupRouteId'],
-      routeId: map['routeId'],
-      groupId: map['groupId'],
-      title: map['title'],
-      description: map['description'],
-      startDateTime: DateTime.parse(map['startTime']),
-      addressMeeting: map['addressMeeting'],
-      address: Position.named(
-        lat: map['address']['latitude'],
-        lng: map['address']['longitude'],
-        alt: _tryParseAltitude(map['address']['altitude']),
-      ),
-      groupStatus: map['groupStatus'],
-      totalCheckIn: map['checkIn'] ?? 0,
-      participants: [], // You can fill this if participants are returned
-      creator: Participant(
-          userId: -1, userName: '', profilePicture: ''), // Placeholder
-      ridingRouteId: -1, // Placeholder
-    );
+        groupRouteId: map['groupRouteId'],
+        routeId: map['routeId'],
+        groupId: map['groupId'],
+        title: map['title'],
+        description: map['description'],
+        startDateTime: DateTime.parse(map['startTime']),
+        addressMeeting: map['addressMeeting'],
+        address: Position.named(
+          lat: map['address']['latitude'],
+          lng: map['address']['longitude'],
+          alt: _tryParseAltitude(map['address']['altitude']),
+        ),
+        groupStatus: map['groupCheckinStatus'],
+        totalCheckIn: map['totalCheckin'] ?? 0,
+        participants: [],
+        ridingRouteId: map['ridingRouteId'] ?? 0,
+        creatorId: map['createdBy'] as int,
+        creatorAvatarUrl: map['creatorAvatarUrl'],
+        creatorName: map['creatorName'],
+        groupRouteDetails: []);
   }
 
   static double? _tryParseAltitude(dynamic alt) {

@@ -18,7 +18,7 @@ class ActivityRouteSelection extends StatefulWidget {
 class _ActivityRouteSelectionState extends State<ActivityRouteSelection> {
   Future<void> _fetchRoutes() async {
     final GetRouteReq request =
-        GetRouteReq(pageNumber: 1, rowsPerPage: 10, sortAsc: false);
+        GetRouteReq(pageNumber: 1, pageSize: 10, sortAsc: false);
     await context.read<RouteCubit>().getRoutes(request);
   }
 

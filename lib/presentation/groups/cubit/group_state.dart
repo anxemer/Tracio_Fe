@@ -1,4 +1,3 @@
-import 'package:tracio_fe/data/groups/models/response/get_participant_list_rep.dart';
 import 'package:tracio_fe/domain/groups/entities/group.dart';
 import 'package:tracio_fe/domain/groups/entities/group_route.dart';
 
@@ -57,27 +56,40 @@ class GetGroupListSuccess extends GroupState {
 class GetGroupDetailSuccess extends GroupState {
   final Group group;
   final List<GroupRouteEntity> groupRoutes;
-  final List<Cyclist> cyclists;
-  final bool cyclistsError;
+  final List<Participant> participants;
+  final List<GroupRouteDetail> groupRouteDetails;
+  final bool groupError;
+  final bool participantsError;
+  final bool groupRouteDetailsError;
 
   GetGroupDetailSuccess({
     required this.group,
     required this.groupRoutes,
-    required this.cyclists,
-    this.cyclistsError = false,
+    required this.participants,
+    required this.groupRouteDetails,
+    this.groupError = false,
+    this.participantsError = false,
+    this.groupRouteDetailsError = false,
   });
 
   GetGroupDetailSuccess copyWith({
     Group? group,
     List<GroupRouteEntity>? groupRoutes,
-    List<Cyclist>? cyclists,
-    bool? cyclistsError,
+    List<Participant>? participants,
+    List<GroupRouteDetail>? groupRouteDetails,
+    bool? groupError,
+    bool? participantsError,
+    bool? groupRouteDetailsError,
   }) {
     return GetGroupDetailSuccess(
       group: group ?? this.group,
       groupRoutes: groupRoutes ?? this.groupRoutes,
-      cyclists: cyclists ?? this.cyclists,
-      cyclistsError: cyclistsError ?? this.cyclistsError,
+      participants: participants ?? this.participants,
+      groupRouteDetails: groupRouteDetails ?? this.groupRouteDetails,
+      groupError: groupError ?? this.groupError,
+      participantsError: participantsError ?? this.participantsError,
+      groupRouteDetailsError:
+          groupRouteDetailsError ?? this.groupRouteDetailsError,
     );
   }
 }

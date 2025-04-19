@@ -45,7 +45,7 @@ class _RecommendGroupItemState extends State<RecommendGroupItem> {
 
   void _handleRefresh() {
     GetGroupListReq request =
-        GetGroupListReq(pageNumber: 1, rowsPerPage: 10, getMyGroups: true);
+        GetGroupListReq(pageNumber: 1, pageSize: 10, getMyGroups: true);
     context.read<GroupCubit>().getGroupList(request);
     setState(() {});
   }
@@ -139,7 +139,7 @@ class _RecommendGroupItemState extends State<RecommendGroupItem> {
                 ),
                 children: <TextSpan>[
                   TextSpan(
-                    text: widget.group.creator.username,
+                    text: widget.group.creatorName,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: AppSize.textSmall.sp,

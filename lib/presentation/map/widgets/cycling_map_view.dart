@@ -26,27 +26,12 @@ class _CyclingMapViewState extends State<CyclingMapView> {
   List<mapbox.Position> routePoints = [];
   List<bg.Location> tempRouteList = [];
   bool isMapInitialized = false;
-
+  
   final groupRouteHub = sl<GroupRouteHubService>();
   GroupRouteLocationUpdateEntity? userLocationUpdate;
   @override
   void initState() {
     super.initState();
-    // groupRouteHub.connect().then((_) {
-    //   groupRouteHub.joinGroupRoute("24").then((value) {
-    //     context.read<MapCubit>().addUserMarker(
-    //         id: "23",
-    //         imageUrl:
-    //             "https://useravatartracio.s3.amazonaws.com/7fcd23fb-742a-46af-8240-5adfa54a452c_avatar%20final.jpg",
-    //         position: Position(106.6801295570291, 10.826393191096505));
-    //     context.read<MapCubit>().addUserMarker(
-    //         id: "24",
-    //         imageUrl:
-    //             "https://cellphones.com.vn/sforum/wp-content/uploads/2024/02/avatar-anh-meo-cute-5.jpg",
-    //         position: Position(106.69974, 10.79315));
-    //   });
-    // });
-
     groupRouteHub.onLocationUpdate.listen((data) {
       setState(() {
         userLocationUpdate = data;
