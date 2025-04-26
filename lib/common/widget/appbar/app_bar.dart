@@ -51,7 +51,6 @@ class BasicAppbar extends StatelessWidget implements PreferredSizeWidget {
                       padding != null ? AppSize.apHorizontalPadding.w : 0),
               child: IconButton(
                 onPressed: () {
-                  
                   Navigator.pop(context, data);
                 },
                 icon: Container(
@@ -61,7 +60,7 @@ class BasicAppbar extends StatelessWidget implements PreferredSizeWidget {
                       color: Colors.transparent, shape: BoxShape.circle),
                   child: Icon(Icons.arrow_back_ios_new,
                       size: AppSize.iconSmall,
-                      color: context.isDarkMode
+                      color: !context.isDarkMode
                           ? Colors.white
                           : Color.fromARGB(255, 0, 0, 0)),
                 ),
