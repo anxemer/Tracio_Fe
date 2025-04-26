@@ -3,6 +3,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tracio_fe/core/network/network_infor.dart';
+import 'package:tracio_fe/core/services/signalR/implement/chat_hub_service.dart';
 import 'package:tracio_fe/core/services/signalR/implement/group_route_hub_service.dart';
 import 'package:tracio_fe/core/services/signalR/signalr_core_service.dart';
 import 'package:tracio_fe/core/signalr_service.dart';
@@ -11,6 +12,8 @@ import 'package:tracio_fe/data/auth/sources/auth_remote_source/auth_api_service.
 import 'package:tracio_fe/data/auth/sources/auth_remote_source/auth_firebase_service.dart';
 import 'package:tracio_fe/data/blog/repositories/blog_repository_impl.dart';
 import 'package:tracio_fe/data/blog/source/blog_api_service.dart';
+import 'package:tracio_fe/data/chat/repositories/chat_repository_impl.dart';
+import 'package:tracio_fe/data/chat/source/chat_api_service.dart';
 import 'package:tracio_fe/data/groups/repositories/group_repository_impl.dart';
 import 'package:tracio_fe/data/groups/repositories/invitation_repository_impl.dart';
 import 'package:tracio_fe/data/groups/repositories/vietnam_city_district_repository_impl.dart';
@@ -49,6 +52,10 @@ import 'package:tracio_fe/domain/blog/usecase/get_comment_blog.dart';
 import 'package:tracio_fe/domain/blog/usecase/get_reaction_blog.dart';
 import 'package:tracio_fe/domain/blog/usecase/get_reply_comment.dart';
 import 'package:tracio_fe/domain/blog/usecase/react_blog.dart';
+import 'package:tracio_fe/domain/chat/repositories/chat_repository.dart';
+import 'package:tracio_fe/domain/chat/usecases/get_conversations_usecase.dart';
+import 'package:tracio_fe/domain/chat/usecases/get_messages_usecase.dart';
+import 'package:tracio_fe/domain/chat/usecases/post_message_usecase.dart';
 import 'package:tracio_fe/domain/groups/repositories/group_repository.dart';
 import 'package:tracio_fe/domain/groups/repositories/invitation_repository.dart';
 import 'package:tracio_fe/domain/groups/repositories/vietnam_city_district_repository.dart';
@@ -127,6 +134,7 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton<ImageUrlApiService>(() => ImageUrlApiServiceImpl());
   sl.registerLazySingleton<InvitationApiService>(
       () => InvitationApiServiceImpl());
+  sl.registerLazySingleton<ChatApiService>(() => ChatApiServiceImpl());
   // * REPOSITORIES
   sl.registerLazySingleton<AuthRepository>(() => AuthRepositotyImpl());
   sl.registerLazySingleton<UserProfileRepository>(
@@ -144,6 +152,7 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton<ImageRepository>(() => ImageRepositoryImpl());
   sl.registerLazySingleton<InvitationRepository>(
       () => InvitationRepositoryImpl());
+  sl.registerLazySingleton<ChatRepository>(() => ChatRepositoryImpl());
   // * gRPC & Hubs
   sl.registerLazySingleton(() => SignalRCoreService());
 
@@ -153,6 +162,7 @@ Future<void> initializeDependencies() async {
   //when hub services is depended on SignalRCoreService
   sl.registerLazySingleton(
       () => GroupRouteHubService(sl<SignalRCoreService>()));
+  sl.registerLazySingleton(() => ChatHubService(sl<SignalRCoreService>()));
   // * USECASES--use registerFactory
   sl.registerFactory<GetBlogsUseCase>(() => GetBlogsUseCase());
   sl.registerFactory<GetReactBlogUseCase>(() => GetReactBlogUseCase());
@@ -212,4 +222,7 @@ Future<void> initializeDependencies() async {
   sl.registerFactory<LeaveGroupUsecase>(() => LeaveGroupUsecase());
   sl.registerFactory<StartTrackingUsecase>(() => StartTrackingUsecase());
   sl.registerFactory<FinishTrackingUsecase>(() => FinishTrackingUsecase());
+  sl.registerFactory<GetMessagesUsecase>(() => GetMessagesUsecase());
+  sl.registerFactory<GetConversationsUsecase>(() => GetConversationsUsecase());
+  sl.registerFactory<PostMessageUsecase>(() => PostMessageUsecase());
 }

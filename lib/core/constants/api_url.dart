@@ -10,6 +10,7 @@ class ApiUrl {
   // static const baseURL = 'https://10.87.46.103:';
   static const hubUrl = 'http://103.28.33.123:5002/content-hub';
   static const groupRouteHubUrl = 'http://103.28.33.123:5009/locationHub';
+  static const chatHubUrl = 'http://103.28.33.123:5005/chat-hub';
   //port
   // static const portUser = '5003';
   static const portUser = '5003';
@@ -17,6 +18,7 @@ class ApiUrl {
   static const portRoute = '5009';
   static const portGroup = '5003';
   static const portShop = '5004';
+  static const portChat = '5005';
 
   //Api User
   static const registerWithEP = '$portUser/api/auth/register-user';
@@ -257,5 +259,19 @@ class ApiUrl {
 
   static Uri urlDeleteMyInvitationAndRequest(int invitationId) {
     return Uri.parse("$portGroup/api/invitation/$invitationId");
+  }
+  static Uri urlGetConversations([Map<String, String>? params]) {
+    return Uri.parse("$portChat/api/conversations")
+        .replace(queryParameters: params);
+  }
+
+  static Uri urlGetMessages(Map<String, String>? params) {
+    return Uri.parse("$portChat/api/messages").replace(queryParameters: params);
+  }
+
+  static Uri urlPostMessages = Uri.parse("$portChat/api/messages");
+  static Uri urlPostConversation = Uri.parse("$portChat/api/conversations");
+  static Uri urlGetConversationByGroupId(int groupId) {
+    return Uri.parse("$portChat/api/conversations/$groupId/conversation");
   }
 }

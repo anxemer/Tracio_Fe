@@ -39,6 +39,7 @@ dependencies:
   firebase_core: ^3.11.0
   firebase_auth: ^5.4.2
   jwt_decoder:
+  path: ^1.9.0
 
   cloud_firestore:
   cupertino_icons: ^1.0.8
@@ -47,10 +48,10 @@ dependencies:
   google_nav_bar: ^5.0.7
   sliding_up_panel: ^2.0.0+1
   slide_to_act: ^2.0.2
-
+  fl_chart: ^0.71.0
   grpc: ^4.0.1
   protobuf: ^3.1.0
-  signalr_netcore: ^1.4.1
+  signalr_netcore: ^1.4.3
 
   uuid: ^4.2.1
   # Maps
@@ -72,7 +73,7 @@ dependencies:
   gal: ^2.3.1
   #Handle debounce throttling
   easy_debounce: ^2.0.3
-  
+
   flutter_dotenv: ^5.2.1
   hydrated_bloc:
   dio: ^5.8.0+1
@@ -81,6 +82,7 @@ dependencies:
   carousel_slider:
   image_picker: ^1.1.2
   photo_manager: ^3.6.4
+  image: ^4.5.4
 
   internet_connection_checker:
   connectivity_plus:

@@ -14,6 +14,7 @@ import 'package:tracio_fe/core/services/notifications/notification_service.dart'
 import 'package:tracio_fe/core/configs/theme/app_theme.dart';
 import 'package:tracio_fe/core/signalr_service.dart';
 import 'package:tracio_fe/firebase_options.dart';
+import 'package:tracio_fe/presentation/chat/bloc/bloc/conversation_bloc.dart';
 import 'package:tracio_fe/presentation/groups/cubit/group_cubit.dart';
 import 'package:tracio_fe/presentation/map/bloc/route_cubit.dart';
 import 'package:tracio_fe/presentation/blog/bloc/category/get_category_cubit.dart';
@@ -29,6 +30,9 @@ import 'package:tracio_fe/presentation/theme/bloc/theme_cubit.dart';
 import 'presentation/service/bloc/bookingservice/booking_service_cubit.dart';
 import 'presentation/service/bloc/cart_item_bloc/cart_item_cubit.dart';
 import 'service_locator.dart' as di;
+
+final RouteObserver<ModalRoute<void>> routeObserver =
+    RouteObserver<ModalRoute<void>>();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -109,6 +113,9 @@ class _MyAppState extends State<MyApp> {
           BlocProvider(
             create: (context) => FilterCubit(),
           ),
+          BlocProvider(
+            create: (context) => ConversationBloc(),
+          ),
           // BlocProvider(create: (context) => AuthCubit()..checkUser())
         ],
         child: BlocBuilder<ThemeCubit, ThemeMode>(
@@ -124,6 +131,7 @@ class _MyAppState extends State<MyApp> {
                 debugShowCheckedModeBanner: false,
                 home: SplashPage(),
                 builder: EasyLoading.init(),
+                navigatorObservers: [routeObserver],
               ),
             );
           },
