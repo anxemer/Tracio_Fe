@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
+import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/domain/chat/entities/conversation.dart';
 import 'package:tracio_fe/presentation/chat/bloc/bloc/conversation_bloc.dart';
 import 'package:tracio_fe/presentation/chat/pages/chat.dart';
@@ -21,7 +22,7 @@ class ConversationListItem extends StatelessWidget {
     return ListTile(
       contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
       leading: CircleAvatar(
-        radius: 28.w, // Customize the size as needed
+        radius: 24.w, // Customize the size as needed
         backgroundImage: NetworkImage(
             conversation.userAvatar ?? conversation.groupPicture ?? ''),
       ),
@@ -36,6 +37,7 @@ class ConversationListItem extends StatelessWidget {
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: TextStyle(
+            fontSize: AppSize.textSmall.sp,
             color: conversation.isRead ? Colors.grey[600] : Colors.black87,
             fontWeight:
                 conversation.isRead ? FontWeight.w400 : FontWeight.w600),

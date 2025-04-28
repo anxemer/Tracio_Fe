@@ -15,7 +15,6 @@ class SharedMessageWidget extends StatelessWidget {
       child: Container(
         width: 240,
         padding: const EdgeInsets.all(12),
-        margin: const EdgeInsets.symmetric(vertical: 6),
         decoration: BoxDecoration(
           color: Colors.grey.shade100,
           borderRadius: BorderRadius.circular(12),

@@ -270,12 +270,12 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
       if (index != -1) {
         updatedConversations.removeAt(index);
       }
-      updatedConversations.insert(
-          0, event.conversation.copyWith(isRead: false));
+      updatedConversations.insert(0, event.conversation);
 
       emit(state.copyWith(
-          conversations: updatedConversations,
-          refreshKey: state.refreshKey + 1));
+        conversations: updatedConversations,
+        refreshKey: state.refreshKey + 1,
+      ));
     }
   }
 
@@ -285,8 +285,11 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
   ) async {
     final state = this.state;
     if (state is ChatLoaded) {
-      final updatedMessages = List<MessageEntity>.from(state.messages)
-        ..add(event.message);
+      final updatedMessages = List<MessageEntity>.from(state.messages);
+
+      if (!event.message.isSentByMe) {
+        updatedMessages.add(event.message);
+      }
 
       emit(state.copyWith(
         messages: updatedMessages,

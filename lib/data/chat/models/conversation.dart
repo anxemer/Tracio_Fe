@@ -9,22 +9,24 @@ class ConversationModel extends ConversationEntity {
       required super.userAvatar,
       required super.groupName,
       required super.groupPicture,
-      required super.latestMessage});
+      required super.latestMessage,
+      required super.isRead});
 
   factory ConversationModel.fromMap(Map<String, dynamic> map) {
     return ConversationModel(
-      conversationId: map['conversationId'] as String,
-      isGroup: map['isGroup'] as bool,
-      userName: map['userName'] != null ? map['userName'] as String : null,
-      userAvatar:
-          map['userAvatar'] != null ? map['userAvatar'] as String : null,
-      groupName: map['groupName'] != null ? map['groupName'] as String : null,
-      groupPicture:
-          map['groupPicture'] != null ? map['groupPicture'] as String : null,
-      latestMessage:
-          map['latestMessage'] != null ? map['latestMessage'] as String : null,
-      lastUpdated: DateTime.parse(map['lastUpdated']),
-    );
+        conversationId: map['conversationId'] as String,
+        isGroup: map['isGroup'] as bool,
+        userName: map['userName'] != null ? map['userName'] as String : null,
+        userAvatar:
+            map['userAvatar'] != null ? map['userAvatar'] as String : null,
+        groupName: map['groupName'] != null ? map['groupName'] as String : null,
+        groupPicture:
+            map['groupPicture'] != null ? map['groupPicture'] as String : null,
+        latestMessage: map['latestMessage'] != null
+            ? map['latestMessage'] as String
+            : null,
+        lastUpdated: DateTime.parse(map['lastUpdated']),
+        isRead: map['isRead'] ?? true);
   }
 }
 

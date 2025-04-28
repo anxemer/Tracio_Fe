@@ -41,6 +41,15 @@ final class ConversationLoaded extends ConversationState {
         pageNumber: pageNumber ?? this.pageNumber,
         refreshKey: refreshKey ?? this.refreshKey);
   }
+
+  @override
+  List<Object?> get props => [
+        conversations,
+        pagination,
+        pageSize,
+        pageNumber,
+        refreshKey,
+      ];
 }
 
 final class ConversationFailure extends ConversationState {

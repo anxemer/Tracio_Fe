@@ -25,7 +25,7 @@ class MessageModel extends MessageEntity {
       senderId: map['senderId'] as int,
       senderName: map['senderName'] as String,
       senderAvatar: map['senderAvatar'] as String,
-      content: map['content'] as String,
+      content: map['content'] ?? "",
       isDeleted: map['isDeleted'] as bool,
       isSentByMe: map['isSentByMe'] as bool,
       createdAt: DateTime.parse(map['createdAt']),

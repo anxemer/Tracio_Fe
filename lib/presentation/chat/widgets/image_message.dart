@@ -1,7 +1,7 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:tracio_fe/common/widget/picture/full_screen_image_view.dart';
 
 class ImageMessage extends StatelessWidget {
   final String? imageUrl;
@@ -25,33 +25,40 @@ class ImageMessage extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 6),
       width: width,
       height: height,
-      child: _buildImage(),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(borderRadius),
+        child: GestureDetector(
+          onTap: () {
+            Navigator.of(context).push(MaterialPageRoute(
+              builder: (_) => FullScreenImageView(
+                imageUrl: imageUrl,
+                file: file,
+              ),
+            ));
+          },
+          child: _buildThumbnail(),
+        ),
+      ),
     );
   }
 
-  Widget _buildImage() {
+  Widget _buildThumbnail() {
     if (file != null) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(borderRadius),
-        child: Image.file(
-          file!,
-          width: width,
-          height: height,
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) => _errorWidget(),
-        ),
+      return Image.file(
+        file!,
+        width: width,
+        height: height,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) => _errorWidget(),
       );
     } else if (imageUrl != null && imageUrl!.isNotEmpty) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(borderRadius),
-        child: CachedNetworkImage(
-          imageUrl: imageUrl!,
-          width: width,
-          height: height,
-          fit: BoxFit.cover,
-          placeholder: (context, url) => _placeholder(),
-          errorWidget: (context, url, error) => _errorWidget(),
-        ),
+      return CachedNetworkImage(
+        imageUrl: imageUrl!,
+        width: width,
+        height: height,
+        fit: BoxFit.cover,
+        placeholder: (context, url) => _placeholder(),
+        errorWidget: (context, url, error) => _errorWidget(),
       );
     } else {
       return _errorWidget();
