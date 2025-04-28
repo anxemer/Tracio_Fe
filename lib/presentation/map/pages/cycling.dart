@@ -1,4 +1,5 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:easy_debounce/easy_throttle.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
@@ -8,16 +9,20 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tracio_fe/core/configs/theme/app_colors.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/core/services/notifications/notification_service.dart';
+import 'package:tracio_fe/domain/map/usecase/finish_tracking_usecase.dart';
+import 'package:tracio_fe/domain/map/usecase/start_tracking_usecase.dart';
 import 'package:tracio_fe/presentation/map/bloc/get_direction_cubit.dart';
 import 'package:tracio_fe/presentation/map/bloc/get_location_cubit.dart';
 import 'package:tracio_fe/presentation/map/bloc/map_cubit.dart';
 import 'package:tracio_fe/presentation/map/bloc/tracking_location_bloc.dart';
+import 'package:tracio_fe/presentation/map/bloc/tracking_location_event.dart';
 import 'package:tracio_fe/presentation/map/widgets/cycling_lock_screen_button.dart';
 import 'package:tracio_fe/presentation/map/widgets/cycling_map_view.dart';
 import 'package:tracio_fe/presentation/map/widgets/cycling_metric_carousel.dart';
 import 'package:tracio_fe/presentation/map/widgets/cycling_take_picture_button.dart';
 import 'package:tracio_fe/presentation/map/widgets/cycling_top_action_bar.dart';
 import 'package:tracio_fe/presentation/map/widgets/slide_to_unlock.dart';
+import 'package:tracio_fe/service_locator.dart';
 
 class CyclingPage extends StatefulWidget {
   const CyclingPage({super.key});
@@ -41,7 +46,8 @@ class _CyclingPageState extends State<CyclingPage> {
   double altitude = 0.0;
   Duration duration = Duration.zero;
   bool isLocked = false;
-
+  int? routeId;
+  int? groupRouteId;
   CarouselSliderController carouselController = CarouselSliderController();
   @override
   void initState() {
@@ -63,9 +69,72 @@ class _CyclingPageState extends State<CyclingPage> {
     }
   }
 
+  Future<void> _fetchStartTracking() async {
+    final state = context.read<LocationCubit>().state;
+
+    if (state is LocationUpdated) {
+      routeId = state.routeId;
+      groupRouteId = state.groupRouteId;
+    } else if (state is LocationInitial) {
+      routeId = state.routeId;
+      groupRouteId = state.groupRouteId;
+    }
+
+    final origin = await bg.BackgroundGeolocation.getCurrentPosition(
+        desiredAccuracy: bg.Config.DESIRED_ACCURACY_HIGH,
+        samples: 1,
+        timeout: 30);
+    final params = {
+      'origin': {
+        "latitude": origin.coords.latitude,
+        "longitude": origin.coords.longitude,
+        "altitude": origin.coords.altitude
+      },
+      'groupRouteId': groupRouteId,
+    };
+
+    final result = await sl<StartTrackingUsecase>().call(params);
+    result.fold((error) {
+      // Handle error
+      debugPrint("Error starting tracking: $error");
+    }, (response) {
+      context
+          .read<LocationCubit>()
+          .updateRouteId(response["result"]["routeId"]);
+      setState(() {
+        routeId = response["result"]["routeId"];
+      });
+      debugPrint("Tracking started successfully: $response");
+    });
+  }
+
+  Future<void> _fetchFinishTracking() async {
+    final destination = await bg.BackgroundGeolocation.getCurrentPosition(
+        desiredAccuracy: bg.Config.DESIRED_ACCURACY_HIGH,
+        samples: 1,
+        timeout: 30);
+    final params = {
+      'destination': {
+        "latitude": destination.coords.latitude,
+        "longitude": destination.coords.longitude,
+        "altitude": destination.coords.altitude
+      },
+      "routeId": routeId,
+      "thumbnail": "string",
+    };
+    final result = await sl<FinishTrackingUsecase>().call(params);
+    result.fold((error) {
+      // Handle error
+      debugPrint("Error starting tracking: $error");
+    }, (response) {
+      debugPrint("Tracking finished successfully: $response");
+    });
+  }
+
   Future<void> _startTracking() async {
     // Start sending tracking notification
     rideStartTime = DateTime.now();
+    await _fetchStartTracking();
     NotificationService.sendRideTrackingNotification(
       'Starting...',
       'Preparing GPS...',
@@ -90,9 +159,16 @@ class _CyclingPageState extends State<CyclingPage> {
 
   void _streamLocationDataToBloc(bg.Location location) {
     if (!mounted || !shouldStreamLocation) return;
-    context
-        .read<LocationCubit>()
-        .updateLocation(location, location.coords.heading);
+
+    EasyThrottle.throttle(
+      'location-cubit-throttle', // ID của throttle
+      const Duration(milliseconds: 300),
+      () {
+        context
+            .read<LocationCubit>()
+            .updateLocation(location, location.coords.heading);
+      },
+    );
     setState(() {
       odometerKm = location.odometer / 1000;
       speed = location.coords.speed * 18 / 5;
@@ -133,9 +209,10 @@ class _CyclingPageState extends State<CyclingPage> {
 
   @override
   void dispose() {
+    super.dispose();
     timer?.cancel();
     bg.BackgroundGeolocation.stop();
-    super.dispose();
+    EasyThrottle.cancelAll();
   }
 
   // Build Start button (when not riding)
@@ -172,15 +249,7 @@ class _CyclingPageState extends State<CyclingPage> {
                   borderRadius: BorderRadius.circular(AppSize.buttonRadius),
                   side:
                       BorderSide(width: 1, color: AppColors.secondBackground))),
-          onPressed: () async {
-            await bg.BackgroundGeolocation.changePace(true);
-            setState(() {
-              isPaused = false;
-              isRiding = true;
-              shouldStreamLocation = true;
-              showHoldOptions = false;
-            });
-          },
+          onPressed: () async {},
           child:
               const Text("Resume", style: TextStyle(color: AppColors.primary)),
         ),
@@ -194,6 +263,7 @@ class _CyclingPageState extends State<CyclingPage> {
                   borderRadius: BorderRadius.circular(AppSize.buttonRadius))),
           onPressed: () async {
             // Finish tracking
+            await _fetchFinishTracking();
             await bg.BackgroundGeolocation.stop();
             setState(() {
               isRiding = false;
@@ -272,7 +342,9 @@ class _CyclingPageState extends State<CyclingPage> {
           child: Stack(
             children: [
               /// Map View
-              const CyclingMapView(),
+              CyclingMapView(
+                routeId: routeId,
+              ),
 
               /// Cycling Top Bar
               Positioned(

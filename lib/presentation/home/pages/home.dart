@@ -9,7 +9,8 @@ import 'package:tracio_fe/core/configs/theme/app_colors.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/presentation/blog/bloc/comment/get_comment_cubit.dart';
 import 'package:tracio_fe/presentation/blog/pages/blog.dart';
-import 'package:tracio_fe/presentation/chat/page/chat.dart';
+import 'package:tracio_fe/presentation/chat/bloc/bloc/conversation_bloc.dart';
+import 'package:tracio_fe/presentation/chat/pages/conversation.dart';
 import 'package:tracio_fe/presentation/groups/cubit/challenge_cubit.dart';
 import 'package:tracio_fe/presentation/notifications/page/notifications.dart';
 
@@ -105,7 +106,13 @@ class _HomePageState extends State<HomePage> {
           splashColor: Colors.white.withAlpha(30),
           hoverColor: Colors.white.withAlpha(10),
           onPressed: () {
-            AppNavigator.push(context, ChatPage());
+            AppNavigator.push(
+                context,
+                BlocProvider.value(
+                  value: context.read<ConversationBloc>()
+                    ..add(GetConversations()),
+                  child: ConversationScreen(),
+                ));
           },
           icon: Icon(
             Icons.mail,

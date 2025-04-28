@@ -1,9 +1,13 @@
 import 'dart:async';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' as mapbox;
 import 'package:geolocator/geolocator.dart' as geolocator;
+import 'package:tracio_fe/common/helper/custom_paint/numbered_circle_painter.dart';
+import 'dart:ui' as ui;
 import 'package:tracio_fe/core/configs/utils/location_tracking.dart';
 import 'package:tracio_fe/data/map/models/request/mapbox_direction_req.dart';
 import 'package:tracio_fe/presentation/map/bloc/get_direction_cubit.dart';
@@ -21,6 +25,7 @@ class RoutePlannerMap extends StatefulWidget {
 class _RoutePlannerMapState extends State<RoutePlannerMap> {
   LocationTracking locationTracking = LocationTracking();
   StreamSubscription? userPositionStream;
+  List<mapbox.Position> waypoints = [];
 
   @override
   void initState() {
@@ -34,6 +39,42 @@ class _RoutePlannerMapState extends State<RoutePlannerMap> {
     super.dispose();
   }
 
+  Future<ui.Image> _createNumberedImage(int number) async {
+    final recorder = ui.PictureRecorder();
+    final canvas = Canvas(recorder);
+
+    final size = ui.Size(80, 80);
+    final painter = NumberedCirclePainter(number);
+    painter.paint(canvas, size);
+
+    final picture = recorder.endRecording();
+    final image =
+        await picture.toImage(size.width.toInt(), size.height.toInt());
+
+    return image;
+  }
+
+  Future<Uint8List> _getMarkerBytes(String assetPath) async {
+    final ByteData bytes = await rootBundle.load(assetPath);
+    return bytes.buffer.asUint8List();
+  }
+
+  Future<Uint8List> _getImageDataForOrderedPoint(
+      int index, List<dynamic> pointAnnotations) async {
+    if (index == 0) {
+      // Start point
+      return await _getMarkerBytes('assets/images/start-flag.png');
+    } else if (index == pointAnnotations.length - 1) {
+      // End point
+      return await _getMarkerBytes('assets/images/end-flag.png');
+    } else {
+      // Middle points
+      final image = await _createNumberedImage(index + 1);
+      final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
+      return bytes!.buffer.asUint8List();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final mapCubit = BlocProvider.of<MapCubit>(context);
@@ -42,15 +83,25 @@ class _RoutePlannerMapState extends State<RoutePlannerMap> {
       listener: (context, state) async {
         if (state is GetDirectionLoaded) {
           if (context.mounted) {
-            //Set order of waypoints
-            await mapCubit.addMultiplePointAnnotations(state.direction.waypoints);
+            // Set order of waypoints
+            for (var waypoint in state.direction.waypoints) {
+              var imageData = await _getImageDataForOrderedPoint(
+                state.direction.waypoints.indexOf(waypoint),
+                state.direction.waypoints,
+              );
+              await mapCubit.addPointAnnotation(waypoint, imageData);
+            }
+
+            // After adding all points, add polyline
             await mapCubit.addPolylineRoute(state.direction.geometry!);
           }
         } else if (state is GetDirectionFailure) {
           // Show error message
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.errorMessage)),
-          );
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(state.errorMessage)),
+            );
+          }
         }
       },
       builder: (context, directionState) {
@@ -73,8 +124,14 @@ class _RoutePlannerMapState extends State<RoutePlannerMap> {
                   },
                   onTapListener: (tapListenerEvent) async {
                     final tappedPosition = tapListenerEvent.point.coordinates;
-                    await mapCubit.addPointAnnotation(tappedPosition);
-
+                    setState(() {
+                      waypoints.add(tappedPosition);
+                    });
+                    for (var waypoint in waypoints) {
+                      var imageData = await _getImageDataForOrderedPoint(
+                          waypoints.indexOf(waypoint), waypoints);
+                      await mapCubit.addPointAnnotation(waypoint, imageData);
+                    }
                     if (mapCubit.pointAnnotations.length >= 2) {
                       List<Coordinate> coordinates = mapCubit.pointAnnotations
                           .map((annotation) => Coordinate(
@@ -121,7 +178,6 @@ class _RoutePlannerMapState extends State<RoutePlannerMap> {
       locationSettings: locationSettings,
     ).listen((geolocator.Position? position) {
       if (position != null) {
-        // Update camera position using MapCubit
         if (context.mounted) {
           BlocProvider.of<MapCubit>(context).animateCamera(
             mapbox.Position(position.longitude, position.latitude),

@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tracio_fe/common/helper/is_dark_mode.dart';
 import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
 import 'package:tracio_fe/common/widget/appbar/app_bar.dart';
 import 'package:tracio_fe/core/configs/theme/app_colors.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/presentation/chat/page/chat.dart';
+import 'package:tracio_fe/core/services/signalR/implement/group_route_hub_service.dart';
+import 'package:tracio_fe/presentation/chat/pages/conversation.dart';
+import 'package:tracio_fe/presentation/groups/cubit/invitation_bloc.dart';
 import 'package:tracio_fe/presentation/groups/widgets/active_challenge_tab.dart';
 import 'package:tracio_fe/presentation/groups/widgets/challenge_tab.dart';
 import 'package:tracio_fe/presentation/groups/widgets/group_tab.dart';
 import 'package:tracio_fe/presentation/notifications/page/notifications.dart';
+import 'package:tracio_fe/service_locator.dart';
 
 class GroupPage extends StatefulWidget {
   const GroupPage({super.key, this.initialIndex = 2});
@@ -19,36 +23,50 @@ class GroupPage extends StatefulWidget {
 }
 
 class _GroupPageState extends State<GroupPage> {
+  final groupRouteHub = sl<GroupRouteHubService>();
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 3,
-      initialIndex: widget.initialIndex,
-      child: Scaffold(
-        backgroundColor: Colors.grey.shade200,
-        appBar: _buildAppBar(),
-        body: Column(
-          children: [
-            Container(
-              width: double.infinity,
-              color: Colors.white,
-              child: const TabBar(
-                labelColor: Colors.black,
-                indicatorColor: AppColors.primary,
-                tabs: [
-                  Tab(text: "Active"),
-                  Tab(text: "Challenges"),
-                  Tab(text: "Groups"),
-                ],
+    return BlocProvider(
+      create: (context) => InvitationBloc(),
+      child: DefaultTabController(
+        length: 3,
+        initialIndex: 2,
+        child: Scaffold(
+          backgroundColor: Colors.grey.shade200,
+          appBar: _buildAppBar(),
+          body: Column(
+            children: [
+              Container(
+                width: double.infinity,
+                color: Colors.white,
+                child: const TabBar(
+                  labelColor: Colors.black,
+                  indicatorColor: AppColors.primary,
+                  tabs: [
+                    Tab(text: "Active"),
+                    Tab(text: "Challenges"),
+                    Tab(text: "Groups"),
+                  ],
+                ),
               ),
-            ),
-            Expanded(
-              child: TabBarView(
-                physics: NeverScrollableScrollPhysics(),
-                children: [ActiveChallengeTab(), ChallengeTab(), GroupTab()],
+              Expanded(
+                child: TabBarView(
+                  physics: NeverScrollableScrollPhysics(),
+                  children: [ActiveChallengeTab(), ChallengeTab(), GroupTab()],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -79,7 +97,7 @@ class _GroupPageState extends State<GroupPage> {
           splashColor: Colors.white.withAlpha(30),
           hoverColor: Colors.white.withAlpha(10),
           onPressed: () {
-            AppNavigator.push(context, ChatPage());
+            AppNavigator.push(context, ConversationScreen());
           },
           icon: Icon(
             Icons.mail,
@@ -93,9 +111,7 @@ class _GroupPageState extends State<GroupPage> {
           highlightColor: Colors.grey.shade600,
           splashColor: Colors.white.withAlpha(30),
           hoverColor: Colors.white.withAlpha(10),
-          onPressed: () {
-            AppNavigator.push(context, ChatPage());
-          },
+          onPressed: () {},
           icon: Icon(
             Icons.search,
             color: AppColors.primary,

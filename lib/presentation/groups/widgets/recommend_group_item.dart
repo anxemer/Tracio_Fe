@@ -1,18 +1,54 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
 import 'package:tracio_fe/core/configs/theme/app_colors.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
+import 'package:tracio_fe/core/constants/membership_enum.dart';
+import 'package:tracio_fe/data/groups/models/request/get_group_list_req.dart';
 import 'package:tracio_fe/domain/groups/entities/group.dart';
+import 'package:tracio_fe/presentation/groups/cubit/group_cubit.dart';
+import 'package:tracio_fe/presentation/groups/cubit/invitation_bloc.dart';
 import 'package:tracio_fe/presentation/groups/pages/group_detail.dart';
 
-class RecommendGroupItem extends StatelessWidget {
+class RecommendGroupItem extends StatefulWidget {
   final Group group;
+  final MembershipEnum membership;
 
   const RecommendGroupItem({
     super.key,
     required this.group,
+    required this.membership,
   });
+
+  @override
+  State<RecommendGroupItem> createState() => _RecommendGroupItemState();
+}
+
+class _RecommendGroupItemState extends State<RecommendGroupItem> {
+  late MembershipEnum _membership;
+
+  @override
+  void initState() {
+    super.initState();
+    _membership = widget.membership;
+  }
+
+  void _handleJoinRequest(BuildContext context) {
+    setState(() {
+      _membership = MembershipEnum.requested;
+    });
+
+    final bloc = context.read<InvitationBloc>();
+    bloc.add(RequestJoin(widget.group.groupId));
+  }
+
+  void _handleRefresh() {
+    GetGroupListReq request =
+        GetGroupListReq(pageNumber: 1, pageSize: 10, getMyGroups: true);
+    context.read<GroupCubit>().getGroupList(request);
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,8 +57,11 @@ class RecommendGroupItem extends StatelessWidget {
       onTap: () async {
         AppNavigator.push(
             context,
-            GroupDetailScreen(
-              groupId: group.groupId,
+            BlocProvider.value(
+              value: BlocProvider.of<InvitationBloc>(context),
+              child: GroupDetailScreen(
+                groupId: widget.group.groupId,
+              ),
             ));
       },
       child: Ink(
@@ -38,7 +77,7 @@ class RecommendGroupItem extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(8),
               child: Image.network(
-                group.groupThumbnail,
+                widget.group.groupThumbnail,
                 width: AppSize.imageSmall.w,
                 height: AppSize.imageSmall.w,
                 fit: BoxFit.cover,
@@ -67,7 +106,7 @@ class RecommendGroupItem extends StatelessWidget {
             const SizedBox(height: 8),
             // Group Info
             Text(
-              group.groupName,
+              widget.group.groupName,
               maxLines: 2,
               style: TextStyle(
                   fontSize: AppSize.textTitle * 0.5.sp,
@@ -75,7 +114,7 @@ class RecommendGroupItem extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              "${group.district}, ${group.city}",
+              "${widget.group.district}, ${widget.group.city}",
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
@@ -83,7 +122,7 @@ class RecommendGroupItem extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              '${group.participantCount} members',
+              '${widget.group.participantCount} members',
               style: TextStyle(
                   fontSize: AppSize.textSmall.sp, color: Colors.grey.shade700),
             ),
@@ -100,7 +139,7 @@ class RecommendGroupItem extends StatelessWidget {
                 ),
                 children: <TextSpan>[
                   TextSpan(
-                    text: group.creator.username,
+                    text: widget.group.creatorName,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: AppSize.textSmall.sp,
@@ -110,34 +149,100 @@ class RecommendGroupItem extends StatelessWidget {
                 ],
               ),
             ),
-            SizedBox(height: 12),
             Spacer(),
             // Join Button
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: AppSize.apVerticalPadding / 2),
-                  backgroundColor: AppColors.secondBackground,
-                  shape: RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.circular(AppSize.borderRadiusMedium),
-                  ),
-                ),
-                child: Text(
-                  'Join',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: AppSize.textSmall.sp,
-                      fontWeight: FontWeight.w600),
-                ),
-              ),
+            BlocListener<InvitationBloc, InvitationState>(
+              listenWhen: (prev, curr) {
+                return curr.status != prev.status &&
+                    curr.lastAction == InvitationActionType.requestJoin &&
+                    curr.groupId == widget.group.groupId;
+              },
+              listener: (context, state) {
+                if (state.status == InvitationStatus.success) {
+                  _handleRefresh();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Join request sent!'),
+                      backgroundColor: Colors.green,
+                    ),
+                  );
+                } else if (state.status == InvitationStatus.failure) {
+                  setState(() {
+                    _membership = MembershipEnum.none;
+                  });
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(state.failure?.message ?? 'Request failed'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              },
+              child: buildJoinButton(),
             ),
           ],
         ),
       ),
     );
+  }
+
+  Widget buildJoinButton() {
+    switch (_membership) {
+      case MembershipEnum.none:
+      case MembershipEnum.left:
+      case MembershipEnum.kicked:
+        return SizedBox(
+          width: double.infinity,
+          child: ElevatedButton(
+            onPressed: () {
+              _handleJoinRequest(context);
+            },
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(
+                vertical: AppSize.apVerticalPadding / 2,
+              ),
+              backgroundColor: AppColors.secondBackground,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppSize.borderRadiusMedium),
+              ),
+            ),
+            child: Text(
+              'Join',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: AppSize.textSmall.sp,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        );
+
+      case MembershipEnum.pending:
+        return const Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text(
+            'You have been invited to this group. Please confirm.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: AppColors.primary,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        );
+
+      case MembershipEnum.requested:
+        return const Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text(
+            'Your join request is pending admin approval.',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.grey),
+          ),
+        );
+
+      case MembershipEnum.member:
+      case MembershipEnum.admin:
+        return const SizedBox.shrink();
+    }
   }
 }

@@ -1,55 +1,137 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:tracio_fe/data/map/models/route.dart';
 
 class RouteEntity {
-  int? routeId;
+  int routeId;
   int cyclistId;
   String cyclistName;
   String cyclistAvatar;
   String routeName;
   String routeThumbnail;
-  GeoPoint startLocation;
-  GeoPoint endLocation;
-  List<GeoPoint> routePath;
-  List<GeoPoint>? waypoints;
-  int weighting;
-  List<String>? avoidsRoads;
-  bool optimizeRoute;
+  String? description;
+  String? city;
+  GeoPoint origin;
+  GeoPoint destination;
+  List<GeoPoint> waypoints;
   double totalDistance;
-  double elevationGain;
-  double movingTime;
+  double totalElevationGain;
+  int totalDuration;
   double avgSpeed;
   int? mood;
   int reactionCounts;
-  int difficulty;
-  bool isPublic;
-  bool isGroup;
-  bool isDeleted;
+  int reviewCounts;
+  int mediaFileCounts;
+  String privacyLevel;
+  bool isPlanned;
   DateTime createdAt;
-
+  DateTime updatedAt;
   RouteEntity({
-    this.routeId,
+    required this.routeId,
     required this.cyclistId,
     required this.cyclistName,
     required this.cyclistAvatar,
     required this.routeName,
     required this.routeThumbnail,
-    required this.startLocation,
-    required this.endLocation,
-    required this.routePath,
-    this.waypoints,
-    required this.weighting,
-    this.avoidsRoads,
-    required this.optimizeRoute,
+    required this.description,
+    required this.city,
+    required this.origin,
+    required this.destination,
+    required this.waypoints,
     required this.totalDistance,
-    required this.elevationGain,
-    required this.movingTime,
+    required this.totalElevationGain,
+    required this.totalDuration,
     required this.avgSpeed,
-    this.mood,
-    this.reactionCounts = 0,
-    required this.difficulty,
-    this.isPublic = true,
-    this.isGroup = false,
-    this.isDeleted = false,
+    required this.mood,
+    required this.reactionCounts,
+    required this.reviewCounts,
+    required this.mediaFileCounts,
+    required this.privacyLevel,
+    required this.isPlanned,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  String formatDateTime(DateTime dateTime) {
+    List<String> months = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December'
+    ];
+
+    String month = months[dateTime.month - 1];
+    String day = dateTime.day.toString();
+    String year = dateTime.year.toString();
+
+    int hour = dateTime.hour;
+    String minute = dateTime.minute < 10
+        ? '0${dateTime.minute}'
+        : dateTime.minute.toString();
+
+    String amPm = hour >= 12 ? 'PM' : 'AM';
+    hour = hour % 12;
+    if (hour == 0) hour = 12;
+
+    return '$month $day, $year at $hour:$minute $amPm';
+  }
+
+  RouteEntity copyWith({
+    int? routeId,
+    int? cyclistId,
+    String? cyclistName,
+    String? cyclistAvatar,
+    String? routeName,
+    String? routeThumbnail,
+    String? description,
+    String? city,
+    GeoPoint? origin,
+    GeoPoint? destination,
+    List<GeoPoint>? waypoints,
+    double? totalDistance,
+    double? totalElevationGain,
+    int? totalDuration,
+    double? avgSpeed,
+    int? mood,
+    int? reactionCounts,
+    int? reviewCounts,
+    int? mediaFileCounts,
+    String? privacyLevel,
+    bool? isPlanned,
     DateTime? createdAt,
-  }) : createdAt = createdAt ?? DateTime.now();
+    DateTime? updatedAt,
+  }) {
+    return RouteEntity(
+      routeId: routeId ?? this.routeId,
+      cyclistId: cyclistId ?? this.cyclistId,
+      cyclistName: cyclistName ?? this.cyclistName,
+      cyclistAvatar: cyclistAvatar ?? this.cyclistAvatar,
+      routeName: routeName ?? this.routeName,
+      routeThumbnail: routeThumbnail ?? this.routeThumbnail,
+      description: description ?? this.description,
+      city: city ?? this.city,
+      origin: origin ?? this.origin,
+      destination: destination ?? this.destination,
+      waypoints: waypoints ?? this.waypoints,
+      totalDistance: totalDistance ?? this.totalDistance,
+      totalElevationGain: totalElevationGain ?? this.totalElevationGain,
+      totalDuration: totalDuration ?? this.totalDuration,
+      avgSpeed: avgSpeed ?? this.avgSpeed,
+      mood: mood ?? this.mood,
+      reactionCounts: reactionCounts ?? this.reactionCounts,
+      reviewCounts: reviewCounts ?? this.reviewCounts,
+      mediaFileCounts: mediaFileCounts ?? this.mediaFileCounts,
+      privacyLevel: privacyLevel ?? this.privacyLevel,
+      isPlanned: isPlanned ?? this.isPlanned,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
 }

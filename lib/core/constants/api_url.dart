@@ -9,12 +9,16 @@ class ApiUrl {
   // static const baseURL = 'https://user.tracio.space';
   // static const baseURL = 'https://10.87.46.103:';
   static const hubUrl = 'http://103.28.33.123:5002/content-hub';
+  static const groupRouteHubUrl = 'http://103.28.33.123:5009/locationHub';
+  static const chatHubUrl = 'http://103.28.33.123:5005/chat-hub';
   //port
+  // static const portUser = '5003';
   static const portUser = 'https://user.tracio.space';
   static const portBlog = 'https://content.tracio.space';
   static const portRoute = '5009';
-  static const portGroup = '';
+  static const portGroup = '5003';
   static const portShop = 'https://shop.tracio.space';
+  static const portChat = '5005';
 
   //Api User
   static const registerWithEP = '$portUser/api/auth/register-user';
@@ -58,8 +62,11 @@ class ApiUrl {
 
   static Uri urlGetRoutes(GetRouteReq request) {
     return Uri.parse('$portRoute/api/route')
-        .replace(queryParameters: request.toMap());
+        .replace(queryParameters: request.toQueryParams());
   }
+
+  static String urlCustomMapTile =
+      "mapbox://styles/trminloc/cm7brl3yq006m01qyhqlx2kze";
 
   static Uri urlGetDirectionUsingMapbox(
       MapboxDirectionsRequest mapboxDirectionReq) {
@@ -186,6 +193,8 @@ class ApiUrl {
   }
 
   static const postGroup = '$portGroup/api/group';
+  static const startTracking = '$portRoute/api/route/start';
+  static const finishTracking = '$portRoute/api/route/finish';
   static Uri urlGetGroupList([Map<String, String>? params]) {
     return Uri.parse('$portGroup/api/group').replace(queryParameters: params);
   }
@@ -197,4 +206,142 @@ class ApiUrl {
   //Challenge Api
   static const getChallengeOverview = '$portUser/api/challenge/overview';
   static const apiChallenge = '$portUser/api/challenge';
+
+  static Uri urlPostGroupRoute(int groupId) {
+    return Uri.parse('$portGroup/api/group/$groupId/route');
+  }
+
+  static Uri urlGetGroupRoute(int groupId, [Map<String, String>? params]) {
+    return Uri.parse('$portGroup/api/group/$groupId/route')
+        .replace(queryParameters: params);
+  }
+
+  static Uri urlGetParticipants(int groupId, [Map<String, String>? params]) {
+    return Uri.parse('$portGroup/api/group/$groupId/participant')
+        .replace(queryParameters: params);
+  }
+
+  static String urlUpdateGroup = "$portGroup/api/group";
+  static String urlDeleteGroup = "$portGroup/api/group";
+  static Uri urlAssignRoleGroupOwner(int groupId, int targetUserId) {
+    return Uri.parse(
+        "$portGroup/api/group/$groupId/participant/$targetUserId/role");
+  }
+
+  static Uri urlRemoveParticipant(int groupId, int targetUserId) {
+    return Uri.parse("$portGroup/api/group/$groupId/participant/$targetUserId");
+  }
+
+  static Uri urlLeaveGroup(int groupId) {
+    return Uri.parse("$portGroup/api/group/$groupId/participant/leave");
+  }
+
+  static Uri urlDeleteGroupRoute(int groupId, int groupRouteId) {
+    return Uri.parse("$portGroup/api/group/$groupId/route/$groupRouteId");
+  }
+
+  static Uri urlUpdateGroupRoute(int groupId, int groupRouteId) {
+    return Uri.parse("$portGroup/api/group/$groupId/route/$groupRouteId");
+  }
+
+  static Uri urlGetGroupRouteDetail(int groupRouteId,
+      [Map<String, String>? params]) {
+    return Uri.parse("$portGroup/api/group/route/$groupRouteId")
+        .replace(queryParameters: params);
+  }
+
+  static Uri urlSendInvitation(int groupId) {
+    return Uri.parse("$portGroup/api/group/$groupId/invitation/send");
+  }
+
+  static Uri urlRequestToJoinGroup(int groupId) {
+    return Uri.parse("$portGroup/api/group/$groupId/invitation/request");
+  }
+
+  static Uri urlAcceptInvitation(int invitationId) {
+    return Uri.parse("$portGroup/api/invitation/$invitationId/response");
+  }
+
+  static Uri urlAcceptRequestToJoinGroup(int invitationId) {
+    return Uri.parse(
+        "$portGroup/api/invitation/$invitationId/response-to-request");
+  }
+
+  static Uri urlGetGroupInvitation(int groupId, [Map<String, String>? params]) {
+    return Uri.parse("$portGroup/api/group/$groupId/invitation")
+        .replace(queryParameters: params);
+  }
+
+  static Uri urlGetMyInvitationAndRequest([Map<String, String>? params]) {
+    return Uri.parse("$portGroup/api/me/invitation/sent/group")
+        .replace(queryParameters: params);
+  }
+
+  static Uri urlDeleteMyInvitationAndRequest(int invitationId) {
+    return Uri.parse("$portGroup/api/invitation/$invitationId");
+  }
+
+  static Uri urlGetRouteDetail(int routeId) {
+    return Uri.parse("$portRoute/api/route/$routeId");
+  }
+
+  static Uri urlGetRouteBlogList([Map<String, String>? params]) {
+    return Uri.parse("$portRoute/api/route/blog")
+        .replace(queryParameters: params);
+  }
+
+  static Uri urlGetRouteBlogReviews(int routeId,
+      [Map<String, String>? params]) {
+    return Uri.parse("$portRoute/api/reviews/route/$routeId")
+        .replace(queryParameters: params);
+  }
+
+  static Uri urlGetRouteReviewReplies = Uri.parse("$portRoute/api/replies");
+  static Uri urlPostRouteReview = Uri.parse("$portRoute/api/reviews");
+  static Uri urlPostRouteReply = Uri.parse("$portRoute/api/replies");
+
+  static Uri urlDeleteRouteReview(
+    int reviewId,
+  ) {
+    return Uri.parse("$portRoute/api/reviews/$reviewId");
+  }
+
+  static Uri urlDeleteRouteReply(
+    int replyId,
+  ) {
+    return Uri.parse("$portRoute/api/replies/$replyId");
+  }
+
+  static Uri urlRouteReaction(
+    int routeId,
+  ) {
+    return Uri.parse("$portRoute/api/reactions/route/$routeId");
+  }
+
+  static Uri urlReviewReaction(
+    int reviewId,
+  ) {
+    return Uri.parse("$portRoute/api/reactions/review/$reviewId");
+  }
+
+  static Uri urlReplyReaction(
+    int replyId,
+  ) {
+    return Uri.parse("$portRoute/api/reactions/reply/$replyId");
+  }
+
+  static Uri urlGetConversations([Map<String, String>? params]) {
+    return Uri.parse("$portChat/api/conversations")
+        .replace(queryParameters: params);
+  }
+
+  static Uri urlGetMessages(Map<String, String>? params) {
+    return Uri.parse("$portChat/api/messages").replace(queryParameters: params);
+  }
+
+  static Uri urlPostMessages = Uri.parse("$portChat/api/messages");
+  static Uri urlPostConversation = Uri.parse("$portChat/api/conversations");
+  static Uri urlGetConversationByGroupId(int groupId) {
+    return Uri.parse("$portChat/api/conversations/$groupId/conversation");
+  }
 }

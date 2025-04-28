@@ -1,13 +1,14 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
 import 'package:tracio_fe/core/configs/theme/app_colors.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
+import 'package:tracio_fe/presentation/auth/bloc/authCubit/auth_cubit.dart';
 import 'package:tracio_fe/presentation/groups/cubit/group_cubit.dart';
 import 'package:tracio_fe/presentation/groups/cubit/group_state.dart';
-import 'package:tracio_fe/presentation/groups/pages/create_group_activity.dart';
-import 'package:tracio_fe/presentation/groups/widgets/detail/empty_group_activity.dart';
+import 'package:tracio_fe/presentation/groups/widgets/detail/group_detail_activity.dart';
+import 'package:tracio_fe/presentation/groups/widgets/detail/group_detail_buttons.dart';
 
 class GroupDetailLoaded extends StatefulWidget {
   const GroupDetailLoaded({
@@ -20,10 +21,16 @@ class GroupDetailLoaded extends StatefulWidget {
 
 class _GroupDetailLoadedState extends State<GroupDetailLoaded> {
   @override
+  void initState() {
+    super.initState();
+    context.read<AuthCubit>().checkUser();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BlocBuilder<GroupCubit, GroupState>(
-      builder: (context, state) {
-        if (state is GetGroupDetailSuccess) {
+      builder: (context, groupState) {
+        if (groupState is GetGroupDetailSuccess) {
           return SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             child: Container(
@@ -32,7 +39,6 @@ class _GroupDetailLoadedState extends State<GroupDetailLoaded> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  //Avatar
                   Container(
                     width: 100.w,
                     height: 100,
@@ -42,12 +48,15 @@ class _GroupDetailLoadedState extends State<GroupDetailLoaded> {
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(12),
-                      child: Image.network(
-                        state.group.groupThumbnail,
+                      child: CachedNetworkImage(
+                        imageUrl: groupState.group.groupThumbnail,
                         fit: BoxFit.cover,
                         width: double.infinity,
                         height: double.infinity,
-                        errorBuilder: (context, url, error) => Container(
+                        placeholder: (context, url) => const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                        errorWidget: (context, url, error) => Container(
                           width: AppSize.imageSmall.w,
                           height: AppSize.imageSmall.w,
                           decoration: BoxDecoration(
@@ -61,12 +70,6 @@ class _GroupDetailLoadedState extends State<GroupDetailLoaded> {
                             ),
                           ),
                         ),
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        },
                       ),
                     ),
                   ),
@@ -76,7 +79,7 @@ class _GroupDetailLoadedState extends State<GroupDetailLoaded> {
                   //Group name
 
                   Text(
-                    state.group.groupName,
+                    groupState.group.groupName,
                     style: TextStyle(
                         fontSize: AppSize.textHeading.sp,
                         fontWeight: FontWeight.w700),
@@ -86,7 +89,7 @@ class _GroupDetailLoadedState extends State<GroupDetailLoaded> {
                   ),
                   //Address
                   Text(
-                    "Group location: ${state.group.district}, ${state.group.city}",
+                    "Group location: ${groupState.group.district}, ${groupState.group.city}",
                     style: TextStyle(
                         fontSize: AppSize.textMedium.sp, color: Colors.black54),
                   ),
@@ -106,7 +109,9 @@ class _GroupDetailLoadedState extends State<GroupDetailLoaded> {
                               color: Colors.black87,
                             ),
                             const SizedBox(width: 8.0),
-                            Text("data"),
+                            Text(
+                              "${groupState.group.participantCount} members",
+                            ),
                           ],
                         ),
                       ),
@@ -114,12 +119,16 @@ class _GroupDetailLoadedState extends State<GroupDetailLoaded> {
                         width: 120.w,
                         child: Row(
                           children: [
-                            const Icon(
-                              Icons.lock_outline,
+                            Icon(
+                              groupState.group.isPublic
+                                  ? Icons.lock_open_outlined
+                                  : Icons.lock_outline,
                               color: Colors.black87,
                             ),
                             const SizedBox(width: 8.0),
-                            Text("data"),
+                            Text(groupState.group.isPublic
+                                ? "Public"
+                                : "Private"),
                           ],
                         ),
                       ),
@@ -133,7 +142,9 @@ class _GroupDetailLoadedState extends State<GroupDetailLoaded> {
                               color: Colors.black87,
                             ),
                             const SizedBox(width: 8.0),
-                            Text("data"),
+                            Text(groupState.group.totalGroupRoutes > 0
+                                ? "${groupState.group.totalGroupRoutes} activities"
+                                : "No activities"),
                           ],
                         ),
                       ),
@@ -142,116 +153,31 @@ class _GroupDetailLoadedState extends State<GroupDetailLoaded> {
 
                   const SizedBox(height: AppSize.apHorizontalPadding),
                   //Description
-                  if (state.group.description != null &&
-                      state.group.description!.isNotEmpty)
+                  if (groupState.group.description != null &&
+                      groupState.group.description!.isNotEmpty)
                     Text(
-                      state.group.description!,
+                      groupState.group.description!,
                       style: TextStyle(
                           fontSize: AppSize.textMedium.sp,
                           color: Colors.black87),
                     ),
                   SizedBox(
-                      height: state.group.description != null &&
-                              state.group.description!.isNotEmpty
+                      height: groupState.group.description != null &&
+                              groupState.group.description!.isNotEmpty
                           ? AppSize.apSectionMargin
                           : 0),
                   const Divider(),
                   const SizedBox(height: AppSize.apHorizontalPadding),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Column(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.all(5),
-                            decoration: BoxDecoration(
-                              color: Colors.grey.shade300,
-                              borderRadius: BorderRadius.circular(50),
-                            ),
-                            child: ClipOval(
-                              child: IconButton(
-                                icon: Icon(Icons.edit),
-                                onPressed: () {},
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                          Text('Edit')
-                        ],
-                      ),
-                      Column(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.all(5),
-                            decoration: BoxDecoration(
-                              color: Colors.grey.shade300,
-                              borderRadius: BorderRadius.circular(50),
-                            ),
-                            child: ClipOval(
-                              child: IconButton(
-                                icon: Icon(Icons.visibility),
-                                onPressed: () {},
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                          Text('Overview')
-                        ],
-                      ),
-                      Column(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.all(5),
-                            decoration: BoxDecoration(
-                              color: Colors.grey.shade300,
-                              borderRadius: BorderRadius.circular(50),
-                            ),
-                            child: ClipOval(
-                              child: IconButton(
-                                icon: Icon(Icons.access_time),
-                                onPressed: () {},
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                          Text('Activities')
-                        ],
-                      ),
-                    ],
+
+                  GroupDetailButtons(
+                    membership: groupState.group.membership,
                   ),
 
                   const SizedBox(height: AppSize.apHorizontalPadding),
                   const Divider(),
 
                   const SizedBox(height: AppSize.apSectionMargin),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "No upcoming activities",
-                        style: TextStyle(
-                          color: Colors.black54,
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          AppNavigator.push(context, CreateGroupActivity());
-                        },
-                        child: Text(
-                          "Create an event",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: AppColors.primary,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: AppSize.apHorizontalPadding / 2),
-
-                  EmptyGroupActivity()
+                  GroupDetailActivity(),
                 ],
               ),
             ),

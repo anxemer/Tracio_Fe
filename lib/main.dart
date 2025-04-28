@@ -14,7 +14,9 @@ import 'package:tracio_fe/core/services/notifications/notification_service.dart'
 import 'package:tracio_fe/core/configs/theme/app_theme.dart';
 import 'package:tracio_fe/core/signalr_service.dart';
 import 'package:tracio_fe/firebase_options.dart';
+import 'package:tracio_fe/presentation/chat/bloc/bloc/conversation_bloc.dart';
 import 'package:tracio_fe/presentation/groups/cubit/group_cubit.dart';
+import 'package:tracio_fe/presentation/library/bloc/reaction/bloc/reaction_bloc.dart';
 import 'package:tracio_fe/presentation/map/bloc/route_cubit.dart';
 import 'package:tracio_fe/presentation/blog/bloc/category/get_category_cubit.dart';
 import 'package:tracio_fe/presentation/service/bloc/bookingservice/reschedule_booking/cubit/reschedule_booking_cubit.dart';
@@ -37,6 +39,9 @@ import 'presentation/service/bloc/service_bloc/review_service_cubit/get_reviewcu
 import 'presentation/shop_owner/bloc/resolve_booking/resolve_booking_cubit.dart';
 import 'presentation/shop_owner/bloc/service_management/service_management_cubit.dart';
 import 'service_locator.dart' as di;
+
+final RouteObserver<ModalRoute<void>> routeObserver =
+    RouteObserver<ModalRoute<void>>();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -130,6 +135,12 @@ BlocProvider(
           BlocProvider(
             create: (context) => FilterCubit(),
           ),
+          BlocProvider(
+            create: (context) => ReactionBloc(),
+          ),
+          BlocProvider(
+            create: (context) => ConversationBloc(),
+          ),
 BlocProvider(
             create: (context) => ServiceManagementCubit(),
           ),
@@ -148,6 +159,7 @@ BlocProvider(
                 debugShowCheckedModeBanner: false,
                 home: SplashPage(),
                 builder: EasyLoading.init(),
+                navigatorObservers: [routeObserver],
               ),
             );
           },

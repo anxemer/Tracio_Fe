@@ -1,4 +1,5 @@
 import 'package:tracio_fe/domain/groups/entities/group.dart';
+import 'package:tracio_fe/domain/groups/entities/group_route.dart';
 
 abstract class GroupState {}
 
@@ -22,6 +23,15 @@ class PostGroupSuccess extends GroupState {
   });
 }
 
+class PostGroupRouteSuccess extends GroupState {
+  GroupRouteEntity groupRoute;
+  bool isSuccess;
+  PostGroupRouteSuccess({
+    required this.groupRoute,
+    required this.isSuccess,
+  });
+}
+
 class GetGroupListSuccess extends GroupState {
   int totalCount;
   int pageNumber;
@@ -29,6 +39,7 @@ class GetGroupListSuccess extends GroupState {
   int totalPages;
   bool hasPreviousPage;
   bool hasNextPage;
+  bool hasMyGroups;
   List<Group> groupList;
   GetGroupListSuccess({
     required this.totalCount,
@@ -38,12 +49,47 @@ class GetGroupListSuccess extends GroupState {
     required this.hasPreviousPage,
     required this.hasNextPage,
     required this.groupList,
+    required this.hasMyGroups,
   });
 }
 
 class GetGroupDetailSuccess extends GroupState {
-  Group group;
+  final Group group;
+  final List<GroupRouteEntity> groupRoutes;
+  final List<Participant> participants;
+  final List<GroupRouteDetail> groupRouteDetails;
+  final bool groupError;
+  final bool participantsError;
+  final bool groupRouteDetailsError;
+
   GetGroupDetailSuccess({
     required this.group,
+    required this.groupRoutes,
+    required this.participants,
+    required this.groupRouteDetails,
+    this.groupError = false,
+    this.participantsError = false,
+    this.groupRouteDetailsError = false,
   });
+
+  GetGroupDetailSuccess copyWith({
+    Group? group,
+    List<GroupRouteEntity>? groupRoutes,
+    List<Participant>? participants,
+    List<GroupRouteDetail>? groupRouteDetails,
+    bool? groupError,
+    bool? participantsError,
+    bool? groupRouteDetailsError,
+  }) {
+    return GetGroupDetailSuccess(
+      group: group ?? this.group,
+      groupRoutes: groupRoutes ?? this.groupRoutes,
+      participants: participants ?? this.participants,
+      groupRouteDetails: groupRouteDetails ?? this.groupRouteDetails,
+      groupError: groupError ?? this.groupError,
+      participantsError: participantsError ?? this.participantsError,
+      groupRouteDetailsError:
+          groupRouteDetailsError ?? this.groupRouteDetailsError,
+    );
+  }
 }

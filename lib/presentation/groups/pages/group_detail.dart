@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
 import 'package:tracio_fe/common/widget/appbar/app_bar.dart';
 import 'package:tracio_fe/core/configs/theme/app_colors.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/data/groups/models/request/get_group_list_req.dart';
+import 'package:tracio_fe/domain/auth/entities/user.dart';
 import 'package:tracio_fe/presentation/groups/cubit/group_cubit.dart';
 import 'package:tracio_fe/presentation/groups/cubit/group_state.dart';
+import 'package:tracio_fe/presentation/groups/pages/group.dart';
 import 'package:tracio_fe/presentation/groups/widgets/detail/group_detail_loaded.dart';
 import 'package:tracio_fe/presentation/groups/widgets/detail/group_detail_skeleton.dart';
 
@@ -19,14 +22,20 @@ class GroupDetailScreen extends StatefulWidget {
 }
 
 class _GroupDetailScreenState extends State<GroupDetailScreen> {
+  UserEntity? loginUser;
+  bool isJoined = false;
+  bool isOrganizer = false;
   Future<void> _onRefresh() async {
     context.read<GroupCubit>().getGroupDetail(widget.groupId);
   }
 
   @override
   void initState() {
-    Future.microtask(() => _onRefresh());
     super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _onRefresh();
+    });
   }
 
   @override
@@ -36,11 +45,9 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
       onPopInvokedWithResult: (didPop, result) {
         if (!didPop && Navigator.canPop(context)) {
           GetGroupListReq request = GetGroupListReq(
-            pageNumber: 1,
-            rowsPerPage: 10,
-          );
+              pageNumber: 1, pageSize: 10, getMyGroups: true);
           context.read<GroupCubit>().getGroupList(request);
-          Navigator.pop(context);
+          AppNavigator.pushAndRemove(context, GroupPage());
         }
       },
       child: Scaffold(
@@ -86,7 +93,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
             onPressed: () {
               GetGroupListReq request = GetGroupListReq(
                 pageNumber: 1,
-                rowsPerPage: 10,
+                pageSize: 10,
               );
               context.read<GroupCubit>().getGroupList(request);
               Navigator.pop(context);
@@ -118,11 +125,14 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
   }
 
   void _showFailureSnackBar(String errorMessage) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Something went wrong, please try later!\n$errorMessage'),
-      ),
-    );
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content:
+              Text('Something went wrong, please try later!\n$errorMessage'),
+        ),
+      );
+    }
   }
 
   Widget _buildBody(GroupState state) {

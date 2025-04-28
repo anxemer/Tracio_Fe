@@ -13,8 +13,8 @@ class DioClient {
               // baseUrl: ApiUrl.baseURL,
               headers: {'Content-Type': 'application/json; charset=UTF-8'},
               responseType: ResponseType.json,
-              sendTimeout: const Duration(seconds: 10),
-              receiveTimeout: const Duration(seconds: 10),
+              sendTimeout: const Duration(seconds: 120),
+              receiveTimeout: const Duration(seconds: 120),
               validateStatus: (status) {
                 return status != null && status < 500;
               }),

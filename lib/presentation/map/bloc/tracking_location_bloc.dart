@@ -12,11 +12,16 @@ class LocationCubit extends Cubit<LocationState> {
 
   LocationCubit() : super(LocationInitial());
 
-  void updateLocation(bg.Location location, double heading) async {
+  void updateLocation(bg.Location location, double heading) {
+    int tmpRouteId = 0;
+    int tmpGroupRouteId = 0;
+    if (state is LocationInitial) {
+      var s = state as LocationInitial;
+      tmpGroupRouteId = s.groupRouteId ?? 0;
+      tmpRouteId = s.routeId ?? 0;
+    }
     final now = DateTime.parse(location.timestamp);
-
     _startTime ??= now;
-
     final duration = now.difference(_startTime!);
 
     if (_lastUpdateTime != null && location.isMoving) {
@@ -40,12 +45,32 @@ class LocationCubit extends Cubit<LocationState> {
 
     emit(LocationUpdated(
       position: location,
+      altitude: currentAltitude,
+      speed: location.coords.speed,
+      odometerKm: odometerKm,
+      timestamp: now,
       heading: heading,
       elevationGain: _totalElevationGain,
       movingTime: _movingTime,
       duration: duration,
       avgSpeed: avgSpeed,
+      routeId: tmpRouteId,
+      groupRouteId: tmpGroupRouteId,
     ));
+  }
+
+  void updateRouteId(int routeId) {
+    if (state is LocationInitial) {
+      final currentState = state as LocationInitial;
+      emit(currentState.copyWith(routeId: routeId));
+    }
+  }
+
+  void updateGroupRouteId(int groupRouteId) {
+    if (state is LocationInitial) {
+      final currentState = state as LocationInitial;
+      emit(currentState.copyWith(groupRouteId: groupRouteId));
+    }
   }
 
   void pauseTracking() {

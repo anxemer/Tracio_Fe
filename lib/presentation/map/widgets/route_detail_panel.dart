@@ -148,17 +148,14 @@ class _RouteDetailPanelState extends State<RouteDetailPanel> {
 
                           final request = PostRouteReq(
                             routeName: routeName ?? "New Route",
-                            routeDescription: routeDescription,
-                            privacy: routePrivacy!,
+                            description: routeDescription,
+                            privacyLevel: routePrivacy.toString(),
                             origin: origin,
                             destination: destination,
                             waypoints: waypoints,
-                            polylineOverview:
-                                _encodePolyline(direction.geometry!),
-                            avoidsRoads: ["ferry"],
-                            optimize: false,
-                            weighting: 2,
-                            staticImage: mapCubit.snapshotImageUrl!.toString(),
+                            polyline: _encodePolyline(direction.geometry!),
+                            routeThumbnail:
+                                mapCubit.snapshotImageUrl!.toString(),
                           );
 
                           BlocProvider.of<RouteCubit>(context)

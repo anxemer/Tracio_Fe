@@ -77,7 +77,7 @@ class _CommentItemState extends State<CommentItem> {
                               // width: AppSize.imageSmall.w,
                               // height: AppSize.imageSmall.h,
                               child: CachedNetworkImage(
-                            imageUrl: widget.comment.avatar!,
+                            imageUrl: widget.comment.avatar??'',
                             fit: BoxFit.cover,
                             imageBuilder: (context, imageProvider) =>
                                 CircleAvatar(

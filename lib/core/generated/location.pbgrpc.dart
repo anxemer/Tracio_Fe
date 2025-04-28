@@ -21,8 +21,8 @@ export 'location.pb.dart';
 
 @$pb.GrpcServiceName('LocationService')
 class LocationServiceClient extends $grpc.Client {
-  static final _$sendLocation = $grpc.ClientMethod<$0.LocationRequest, $0.LocationResponse>(
-      '/LocationService/SendLocation',
+  static final _$sendLocations = $grpc.ClientMethod<$0.LocationRequest, $0.LocationResponse>(
+      '/LocationService/SendLocations',
       ($0.LocationRequest value) => value.writeToBuffer(),
       ($core.List<$core.int> value) => $0.LocationResponse.fromBuffer(value));
 
@@ -32,8 +32,8 @@ class LocationServiceClient extends $grpc.Client {
       : super(channel, options: options,
         interceptors: interceptors);
 
-  $grpc.ResponseFuture<$0.LocationResponse> sendLocation($0.LocationRequest request, {$grpc.CallOptions? options}) {
-    return $createUnaryCall(_$sendLocation, request, options: options);
+  $grpc.ResponseFuture<$0.LocationResponse> sendLocations($0.LocationRequest request, {$grpc.CallOptions? options}) {
+    return $createUnaryCall(_$sendLocations, request, options: options);
   }
 }
 
@@ -43,17 +43,17 @@ abstract class LocationServiceBase extends $grpc.Service {
 
   LocationServiceBase() {
     $addMethod($grpc.ServiceMethod<$0.LocationRequest, $0.LocationResponse>(
-        'SendLocation',
-        sendLocation_Pre,
+        'SendLocations',
+        sendLocations_Pre,
         false,
         false,
         ($core.List<$core.int> value) => $0.LocationRequest.fromBuffer(value),
         ($0.LocationResponse value) => value.writeToBuffer()));
   }
 
-  $async.Future<$0.LocationResponse> sendLocation_Pre($grpc.ServiceCall call, $async.Future<$0.LocationRequest> request) async {
-    return sendLocation(call, await request);
+  $async.Future<$0.LocationResponse> sendLocations_Pre($grpc.ServiceCall call, $async.Future<$0.LocationRequest> request) async {
+    return sendLocations(call, await request);
   }
 
-  $async.Future<$0.LocationResponse> sendLocation($grpc.ServiceCall call, $0.LocationRequest request);
+  $async.Future<$0.LocationResponse> sendLocations($grpc.ServiceCall call, $0.LocationRequest request);
 }

@@ -5,7 +5,8 @@ import 'package:tracio_fe/presentation/map/bloc/get_location_cubit.dart';
 import 'package:tracio_fe/presentation/map/bloc/get_location_state.dart';
 
 class SearchLocationResult extends StatelessWidget {
-  const SearchLocationResult({super.key});
+  final BuildContext? parentContext;
+  const SearchLocationResult({super.key, this.parentContext});
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +52,7 @@ class SearchLocationResult extends StatelessWidget {
         if (state is GetLocationDetailLoaded) {
           Future.microtask(() {
             if (context.mounted) {
-              Navigator.pop(context, state.placeDetail);
+              Navigator.pop(parentContext ?? context, state.placeDetail);
             }
           });
         }
