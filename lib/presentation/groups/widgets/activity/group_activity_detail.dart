@@ -33,7 +33,7 @@ class _GroupActivityDetailState extends State<GroupActivityDetail> {
   Future<void> _onRefresh() async {
     if (!mounted) return;
     context.read<GroupCubit>().getGroupRouteDetail(widget.groupRouteId);
-    // context.read<RouteCubit>().getRouteBlogList();
+    context.read<RouteCubit>().getRouteBlogList();
   }
 
   @override
@@ -67,52 +67,50 @@ class _GroupActivityDetailState extends State<GroupActivityDetail> {
                         const SizedBox(height: AppSize.apSectionMargin),
                         _buildRouteOverview(groupRoute),
                         const SizedBox(height: AppSize.apSectionMargin),
-                        _buildMemberActivities(state),
+                        // _buildMemberActivities(state),
                         const SizedBox(height: AppSize.apSectionMargin),
-                        // Container(
-                        //   color: Colors.grey.shade200,
-                        //   child: BlocBuilder<RouteCubit, RouteState>(
-                        //     builder: (context, routeState) {
-                        //       if (routeState is GetRouteBlogLoaded &&
-                        //           state.groupRouteDetails.isNotEmpty) {
-                        //         return ListView.builder(
-                        //           shrinkWrap: true,
-                        //           physics: const NeverScrollableScrollPhysics(),
-                        //           itemCount: state.groupRouteDetails.length,
-                        //           itemBuilder: (_, index) {
-                        //             return Padding(
-                        //               padding: const EdgeInsets.only(
-                        //                   bottom:
-                        //                       AppSize.apVerticalPadding / 2),
-                        //               child: Material(
-                        //                 color: Colors.transparent,
-                        //                 child: RouteBlogItem(
-                        //                   routeId: state
-                        //                       .groupRouteDetails[index]
-                        //                       .ridingRouteId,
-                        //                   route: state.groupRouteDetails[index]
-                        //                       .ridingRoute,
-                        //                 ),
-                        //               ),
-                        //             );
-                        //           },
-                        //         );
-                        //       } else if (routeState is GetRouteBlogLoaded &&
-                        //           routeState.routeBlogs.isEmpty) {
-                        //         return Center(child: Text("Nothing here"));
-                        //       }
-                        //       if (routeState is GetRouteBlogLoading) {
-                        //         return Center(
-                        //           child: CircularProgressIndicator(
-                        //             color: AppColors.secondBackground,
-                        //           ),
-                        //         );
-                        //       }
+                        Container(
+                          color: Colors.grey.shade200,
+                          child: BlocBuilder<RouteCubit, RouteState>(
+                            builder: (context, routeState) {
+                              if (routeState is GetRouteBlogLoaded &&
+                                  routeState.routeBlogs.isNotEmpty) {
+                                return ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: routeState.routeBlogs.length,
+                                  itemBuilder: (_, index) {
+                                    return Padding(
+                                      padding: const EdgeInsets.only(
+                                          bottom:
+                                              AppSize.apVerticalPadding / 2),
+                                      child: Material(
+                                        color: Colors.transparent,
+                                        child: RouteBlogItem(
+                                          routeId: routeState
+                                              .routeBlogs[index].routeId,
+                                          route: routeState.routeBlogs[index],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                );
+                              } else if (routeState is GetRouteBlogLoaded &&
+                                  routeState.routeBlogs.isEmpty) {
+                                return Center(child: Text("Nothing here"));
+                              }
+                              if (routeState is GetRouteBlogLoading) {
+                                return Center(
+                                  child: CircularProgressIndicator(
+                                    color: AppColors.secondBackground,
+                                  ),
+                                );
+                              }
 
-                        //       return Text("Error");
-                        //     },
-                        //   ),
-                        // ),
+                              return Text("Error");
+                            },
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -318,20 +316,25 @@ class _GroupActivityDetailState extends State<GroupActivityDetail> {
             ),
           )
         else
-          ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: state.groupRouteDetails.length,
-            itemBuilder: (_, index) {
-              return Padding(
-                padding: const EdgeInsets.only(
-                    bottom: AppSize.apVerticalPadding / 2),
-                child: RouteBlogItem(
-                  routeId: state.groupRouteDetails[index].ridingRoute.routeId,
-                  route: state.groupRouteDetails[index].ridingRoute,
-                ),
-              );
-            },
+          MediaQuery.removePadding(
+            context: context,
+            removeTop: true,
+            child: ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: state.groupRouteDetails.length,
+              itemBuilder: (_, index) {
+                return Ink(
+                  color: Colors.grey.shade300,
+                  padding: const EdgeInsets.only(
+                      bottom: AppSize.apVerticalPadding / 2),
+                  child: RouteBlogItem(
+                    routeId: state.groupRouteDetails[index].ridingRoute.routeId,
+                    route: state.groupRouteDetails[index].ridingRoute,
+                  ),
+                );
+              },
+            ),
           ),
       ],
     );

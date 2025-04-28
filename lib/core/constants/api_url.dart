@@ -57,7 +57,7 @@ class ApiUrl {
   //Api route
 
   static Uri urlGetRoutes(GetRouteReq request) {
-    return Uri.parse('$portRoute/api/route/user-routes')
+    return Uri.parse('$portRoute/api/route')
         .replace(queryParameters: request.toQueryParams());
   }
 
@@ -263,6 +263,56 @@ class ApiUrl {
   static Uri urlDeleteMyInvitationAndRequest(int invitationId) {
     return Uri.parse("$portGroup/api/invitation/$invitationId");
   }
+
+  static Uri urlGetRouteDetail(int routeId) {
+    return Uri.parse("$portRoute/api/route/$routeId");
+  }
+
+  static Uri urlGetRouteBlogList([Map<String, String>? params]) {
+    return Uri.parse("$portRoute/api/route/blog")
+        .replace(queryParameters: params);
+  }
+
+  static Uri urlGetRouteBlogReviews(int routeId,
+      [Map<String, String>? params]) {
+    return Uri.parse("$portRoute/api/reviews/route/$routeId")
+        .replace(queryParameters: params);
+  }
+
+  static Uri urlGetRouteReviewReplies = Uri.parse("$portRoute/api/replies");
+  static Uri urlPostRouteReview = Uri.parse("$portRoute/api/reviews");
+  static Uri urlPostRouteReply = Uri.parse("$portRoute/api/replies");
+
+  static Uri urlDeleteRouteReview(
+    int reviewId,
+  ) {
+    return Uri.parse("$portRoute/api/reviews/$reviewId");
+  }
+
+  static Uri urlDeleteRouteReply(
+    int replyId,
+  ) {
+    return Uri.parse("$portRoute/api/replies/$replyId");
+  }
+
+  static Uri urlRouteReaction(
+    int routeId,
+  ) {
+    return Uri.parse("$portRoute/api/reactions/route/$routeId");
+  }
+
+  static Uri urlReviewReaction(
+    int reviewId,
+  ) {
+    return Uri.parse("$portRoute/api/reactions/review/$reviewId");
+  }
+
+  static Uri urlReplyReaction(
+    int replyId,
+  ) {
+    return Uri.parse("$portRoute/api/reactions/reply/$replyId");
+  }
+
   static Uri urlGetConversations([Map<String, String>? params]) {
     return Uri.parse("$portChat/api/conversations")
         .replace(queryParameters: params);

@@ -3,10 +3,16 @@ import 'package:dio/dio.dart';
 import 'package:tracio_fe/core/constants/api_url.dart';
 import 'package:tracio_fe/core/erorr/failure.dart';
 import 'package:tracio_fe/core/network/dio_client.dart';
+import 'package:tracio_fe/data/map/models/request/post_reply_req.dart';
+import 'package:tracio_fe/data/map/models/request/post_review_req.dart';
+import 'package:tracio_fe/data/map/models/response/get_route_blog_rep.dart';
+import 'package:tracio_fe/data/map/models/response/get_route_blog_review_rep.dart';
 import 'package:tracio_fe/data/map/models/response/get_route_rep.dart';
 import 'package:tracio_fe/data/map/models/request/get_route_req.dart';
 import 'package:tracio_fe/data/map/models/request/mapbox_direction_req.dart';
 import 'package:tracio_fe/data/map/models/request/post_route_req.dart';
+import 'package:tracio_fe/data/map/models/response/get_route_reply_rep.dart';
+import 'package:tracio_fe/data/map/models/route_detail.dart';
 import 'package:tracio_fe/service_locator.dart';
 
 abstract class RouteApiService {
@@ -15,6 +21,16 @@ abstract class RouteApiService {
   Future<Either> getRouteUsingMapBox(MapboxDirectionsRequest request);
   Future<Either<Failure, dynamic>> startTracking(Map<String, dynamic> request);
   Future<Either<Failure, dynamic>> finishTracking(Map<String, dynamic> request);
+  Future<Either<Failure, RouteDetailModel>> getRouteDetail(int routeId);
+  Future<Either<Failure, dynamic>> getRouteBlogList(Map<String, String> params);
+  Future<Either<Failure, dynamic>> getRouteBlogReviews(int routeId,
+      {Map<String, String> params});
+  Future<Either<Failure, dynamic>> getRouteBlogReviewReplies(
+      Map<String, dynamic> params);
+  Future<Either<Failure, dynamic>> postReview(PostReviewReq request);
+  Future<Either<Failure, dynamic>> postReply(PostReplyReq request);
+  Future<Either<Failure, dynamic>> deleteReview(int reviewId);
+  Future<Either<Failure, dynamic>> deleteReply(int replyId);
 }
 
 class RouteApiServiceImpl extends RouteApiService {
@@ -113,6 +129,177 @@ class RouteApiServiceImpl extends RouteApiService {
       } else if (response.statusCode == 403) {
         return Left(AuthorizationFailure(
             'You do not have permission to perform this action.', 403));
+      } else {
+        return left(ExceptionFailure('Error: ${response.statusCode}'));
+      }
+    } on DioException catch (e) {
+      return left(
+          ExceptionFailure(e.response?.data['message'] ?? 'An error occurred'));
+    } catch (e) {
+      return left(ExceptionFailure('An unexpected error occurred: $e'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, GetRouteBlogRep>> getRouteBlogList(
+      Map<String, String> params) async {
+    try {
+      Uri apiUrl = ApiUrl.urlGetRouteBlogList(params);
+      var response = await sl<DioClient>().get(apiUrl.toString());
+
+      if (response.statusCode == 200) {
+        final responseData = GetRouteBlogRep.fromMap(response.data["result"]);
+        return right(responseData);
+      } else {
+        return left(ExceptionFailure('Error: ${response.statusCode}'));
+      }
+    } on DioException catch (e) {
+      return left(
+          ExceptionFailure(e.response?.data['message'] ?? 'An error occurred'));
+    } catch (e) {
+      return left(ExceptionFailure('An unexpected error occurred: $e'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, GetRouteBlogReviewRep>> getRouteBlogReviews(
+      int routeId,
+      {Map<String, String>? params}) async {
+    try {
+      Uri apiUrl = ApiUrl.urlGetRouteBlogReviews(routeId, params);
+      var response = await sl<DioClient>().get(apiUrl.toString());
+
+      if (response.statusCode == 200) {
+        final responseData =
+            GetRouteBlogReviewRep.fromMap(response.data["result"]);
+        return right(responseData);
+      } else {
+        return left(ExceptionFailure('Error: ${response.statusCode}'));
+      }
+    } on DioException catch (e) {
+      return left(
+          ExceptionFailure(e.response?.data['message'] ?? 'An error occurred'));
+    } catch (e) {
+      return left(ExceptionFailure('An unexpected error occurred: $e'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, GetRouteReplyRep>> getRouteBlogReviewReplies(
+      Map<String, dynamic> params) async {
+    try {
+      Uri apiUrl =
+          ApiUrl.urlGetRouteReviewReplies.replace(queryParameters: params);
+      var response = await sl<DioClient>().get(apiUrl.toString());
+
+      if (response.statusCode == 200) {
+        final responseData = GetRouteReplyRep.fromMap(response.data["result"]);
+        return right(responseData);
+      } else {
+        return left(ExceptionFailure('Error: ${response.statusCode}'));
+      }
+    } on DioException catch (e) {
+      return left(
+          ExceptionFailure(e.response?.data['message'] ?? 'An error occurred'));
+    } catch (e) {
+      return left(ExceptionFailure('An unexpected error occurred: $e'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, dynamic>> deleteReply(int replyId) async {
+    try {
+      Uri apiUrl = ApiUrl.urlDeleteRouteReply(replyId);
+
+      var response = await sl<DioClient>().delete(apiUrl.toString());
+
+      if (response.statusCode == 204) {
+        return right(response["result"]);
+      } else {
+        return left(ExceptionFailure('Error: ${response.statusCode}'));
+      }
+    } on DioException catch (e) {
+      return left(
+          ExceptionFailure(e.response?.data['message'] ?? 'An error occurred'));
+    } catch (e) {
+      return left(ExceptionFailure('An unexpected error occurred: $e'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, dynamic>> deleteReview(int reviewId) async {
+    try {
+      Uri apiUrl = ApiUrl.urlDeleteRouteReview(reviewId);
+
+      var response = await sl<DioClient>().delete(apiUrl.toString());
+
+      if (response.statusCode == 204) {
+        return right(response["result"]);
+      } else {
+        return left(ExceptionFailure('Error: ${response.statusCode}'));
+      }
+    } on DioException catch (e) {
+      return left(
+          ExceptionFailure(e.response?.data['message'] ?? 'An error occurred'));
+    } catch (e) {
+      return left(ExceptionFailure('An unexpected error occurred: $e'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, dynamic>> postReply(PostReplyReq request) async {
+    try {
+      var formData = request.toFormData();
+      var response = await sl<DioClient>().post(
+        ApiUrl.urlPostRouteReply.toString(),
+        data: formData,
+        options: Options(contentType: "multipart/form-data"),
+      );
+
+      if (response.statusCode == 201) {
+        return right(response.data);
+      } else {
+        return left(ExceptionFailure('Error: ${response.statusCode}'));
+      }
+    } on DioException catch (e) {
+      return left(
+          ExceptionFailure(e.response?.data['message'] ?? 'An error occurred'));
+    } catch (e) {
+      return left(ExceptionFailure('An unexpected error occurred: $e'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, dynamic>> postReview(PostReviewReq request) async {
+    try {
+      var formData = request.toFormData();
+      var response = await sl<DioClient>().post(
+        ApiUrl.urlPostRouteReview.toString(),
+        data: formData,
+        options: Options(contentType: "multipart/form-data"),
+      );
+
+      if (response.statusCode == 201) {
+        return right(response.data);
+      } else {
+        return left(ExceptionFailure('Error: ${response.statusCode}'));
+      }
+    } on DioException catch (e) {
+      return left(
+          ExceptionFailure(e.response?.data['message'] ?? 'An error occurred'));
+    } catch (e) {
+      return left(ExceptionFailure('An unexpected error occurred: $e'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, RouteDetailModel>> getRouteDetail(int routeId) async {
+    try {
+      var response = await sl<DioClient>()
+          .get(ApiUrl.urlGetRouteDetail(routeId).toString());
+
+      if (response.statusCode == 200) {
+        return right(RouteDetailModel.fromMap(response.data["result"]));
       } else {
         return left(ExceptionFailure('Error: ${response.statusCode}'));
       }

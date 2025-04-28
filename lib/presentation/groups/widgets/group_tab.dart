@@ -81,7 +81,7 @@ class _GroupTabState extends State<GroupTab>
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => BlocProvider.value(
+                              builder: (_) => BlocProvider.value(
                                     value: BlocProvider.of<InvitationBloc>(
                                         context),
                                     child: CreateGroupScreen(),

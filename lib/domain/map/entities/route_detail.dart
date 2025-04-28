@@ -2,17 +2,17 @@ import 'package:tracio_fe/data/map/models/route.dart';
 import 'package:tracio_fe/domain/map/entities/route.dart';
 
 class RouteDetailEntity extends RouteEntity {
-  final List<int> speeds;
-  final List<int> distances;
-  final List<int> altitudes;
+  final List<double> speeds;
+  final List<double> distances;
+  final List<double> altitudes;
   final List<int> timeStamps;
   final String polyline;
   final String polylineSummary;
   final int movingTime;
   final int stoppedTime;
   double maxSpeed;
-  int highestElevation;
-  int lowestElevation;
+  double highestElevation;
+  double lowestElevation;
 
   RouteDetailEntity({
     required this.speeds,
@@ -53,9 +53,9 @@ class RouteDetailEntity extends RouteEntity {
 
   @override
   RouteDetailEntity copyWith({
-    List<int>? speeds,
-    List<int>? distances,
-    List<int>? altitudes,
+    List<double>? speeds,
+    List<double>? distances,
+    List<double>? altitudes,
     List<int>? timeStamps,
     String? polyline,
     String? polylineSummary,
@@ -77,8 +77,8 @@ class RouteDetailEntity extends RouteEntity {
     int? totalDuration,
     double? avgSpeed,
     double? maxSpeed,
-    int? highestElevation,
-    int? lowestElevation,
+    double? highestElevation,
+    double? lowestElevation,
     int? mood,
     int? reactionCounts,
     int? reviewCounts,

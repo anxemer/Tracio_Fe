@@ -16,6 +16,7 @@ import 'package:tracio_fe/core/signalr_service.dart';
 import 'package:tracio_fe/firebase_options.dart';
 import 'package:tracio_fe/presentation/chat/bloc/bloc/conversation_bloc.dart';
 import 'package:tracio_fe/presentation/groups/cubit/group_cubit.dart';
+import 'package:tracio_fe/presentation/library/bloc/reaction/bloc/reaction_bloc.dart';
 import 'package:tracio_fe/presentation/map/bloc/route_cubit.dart';
 import 'package:tracio_fe/presentation/blog/bloc/category/get_category_cubit.dart';
 import 'package:tracio_fe/presentation/service/bloc/service_bloc/get_service_cubit.dart';
@@ -112,6 +113,9 @@ class _MyAppState extends State<MyApp> {
           ),
           BlocProvider(
             create: (context) => FilterCubit(),
+          ),
+          BlocProvider(
+            create: (context) => ReactionBloc(),
           ),
           BlocProvider(
             create: (context) => ConversationBloc(),

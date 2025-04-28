@@ -7,11 +7,16 @@ import 'package:tracio_fe/presentation/groups/cubit/invitation_bloc.dart';
 import 'package:tracio_fe/presentation/groups/pages/group_detail.dart';
 import 'package:tracio_fe/presentation/map/bloc/tracking_location_bloc.dart';
 
-class MyGroupItem extends StatelessWidget {
+class MyGroupItem extends StatefulWidget {
   final Group group;
 
   const MyGroupItem({super.key, required this.group});
 
+  @override
+  State<MyGroupItem> createState() => _MyGroupItemState();
+}
+
+class _MyGroupItemState extends State<MyGroupItem> {
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -22,7 +27,7 @@ class MyGroupItem extends StatelessWidget {
             leading: ClipRRect(
               borderRadius: BorderRadius.circular(8),
               child: CachedNetworkImage(
-                imageUrl: group.groupThumbnail,
+                imageUrl: widget.group.groupThumbnail,
                 width: 60,
                 height: 60,
                 fit: BoxFit.cover,
@@ -56,7 +61,7 @@ class MyGroupItem extends StatelessWidget {
               ),
             ),
             title: Text(
-              group.groupName,
+              widget.group.groupName,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
@@ -66,14 +71,14 @@ class MyGroupItem extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '${group.participantCount}/${group.maxParticipants} members',
+                  '${widget.group.participantCount}/${widget.group.maxParticipants} members',
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.grey.shade600,
                   ),
                 ),
                 Text(
-                  '${group.city}, ${group.district}',
+                  '${widget.group.city}, ${widget.group.district}',
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.grey.shade600,
@@ -94,7 +99,7 @@ class MyGroupItem extends StatelessWidget {
                     child: BlocProvider.value(
                       value: BlocProvider.of<InvitationBloc>(context),
                       child: GroupDetailScreen(
-                        groupId: group.groupId,
+                        groupId: widget.group.groupId,
                       ),
                     ),
                   ),
