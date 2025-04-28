@@ -51,7 +51,7 @@ class ServiceCard extends StatelessWidget {
                 aspectRatio: 1.2,
                 child: PictureCustom(
                   width: AppSize.imageMedium.w,
-                  imageUrl: service.profilePicture ?? '',
+                  imageUrl: service.mediaUrl!,
                   height: AppSize.imageMedium.h,
                 ),
               ),

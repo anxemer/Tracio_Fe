@@ -18,6 +18,7 @@ import 'package:tracio_fe/presentation/service/widget/review_service.dart';
 import '../../../common/widget/blog/custom_bottomsheet.dart';
 import '../../../common/widget/button/button.dart';
 import '../../../common/widget/input_text_form_field.dart';
+import '../../../common/widget/picture/circle_picture.dart';
 import '../../../common/widget/picture/picture.dart';
 import '../../../core/configs/theme/assets/app_images.dart';
 import '../../../core/constants/app_size.dart';
@@ -84,8 +85,7 @@ class _DetailServicePageState extends State<DetailServicePage> {
                                 bottom:
                                     70), // Add padding to prevent content from being hidden behind the button
                             children: [
-                              buildImage(state.detailService.service
-                                  .mediaFiles![0].mediaUrl!),
+                              buildImage(state.detailService.service.mediaUrl!),
                               SizedBox(
                                 height: 10.h,
                               ),
@@ -114,7 +114,8 @@ class _DetailServicePageState extends State<DetailServicePage> {
                                   state.detailService.service.closeTime!,
                                   state.detailService.service.shopId!,
                                   state.detailService.service.district!,
-                                  state.detailService.service.city!),
+                                  state.detailService.service.city!,
+                                  state.detailService.service.profilePicture!),
                               SizedBox(
                                 height: 10.h,
                               ),
@@ -466,7 +467,7 @@ class _DetailServicePageState extends State<DetailServicePage> {
   }
 
   Widget shopInformation(String shopName, String openTime, String closeTime,
-      int shopId, String district, String city) {
+      int shopId, String district, String city, String shopImage) {
     var isDark = context.isDarkMode;
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16),
@@ -475,13 +476,10 @@ class _DetailServicePageState extends State<DetailServicePage> {
         children: [
           Row(
             children: [
-              // CirclePicture(
-              //     imageUrl:
-              //         'https://bizweb.dktcdn.net/100/481/209/products/img-5958-jpeg.jpg?v=1717069788060',
-              //     imageSize: AppSize.iconLarge),
-              // SizedBox(
-              //   width: 10.w,
-              // ),
+              CirclePicture(imageUrl: shopImage, imageSize: AppSize.iconLarge),
+              SizedBox(
+                width: 10.w,
+              ),
               Column(
                 children: [
                   Text(

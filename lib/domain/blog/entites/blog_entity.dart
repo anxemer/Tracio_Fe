@@ -10,6 +10,7 @@ class BlogEntity {
     required this.isPublic,
     required this.isReacted,
     required this.isBookmarked,
+    required this.isFollowed,
     required this.content,
     required this.mediaFiles,
     required this.createdAt,
@@ -25,6 +26,7 @@ class BlogEntity {
   bool isPublic;
   bool isReacted;
   bool isBookmarked;
+  bool isFollowed;
   final String content;
   final List<MediaFile> mediaFiles;
   DateTime? createdAt;
@@ -61,6 +63,7 @@ class BlogEntity {
       updatedAt: updatedAt ?? this.updatedAt,
       likesCount: likesCount ?? this.likesCount,
       commentsCount: commentsCount ?? this.commentsCount,
+      isFollowed: isFollowed ,
     );
   }
 }

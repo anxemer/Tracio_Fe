@@ -12,8 +12,8 @@ import 'package:tracio_fe/presentation/groups/widgets/group_tab.dart';
 import 'package:tracio_fe/presentation/notifications/page/notifications.dart';
 
 class GroupPage extends StatefulWidget {
-  const GroupPage({super.key});
-
+  const GroupPage({super.key, this.initialIndex = 2});
+  final int initialIndex;
   @override
   State<GroupPage> createState() => _GroupPageState();
 }
@@ -23,7 +23,7 @@ class _GroupPageState extends State<GroupPage> {
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 3,
-      initialIndex: 2,
+      initialIndex: widget.initialIndex,
       child: Scaffold(
         backgroundColor: Colors.grey.shade200,
         appBar: _buildAppBar(),

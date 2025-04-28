@@ -10,6 +10,8 @@ class ReplyCommentModel extends ReplyCommentEntity {
     required super.cyclistId,
     required super.commentId,
     required super.cyclistName,
+    super.reReplyCyclistId,
+    super.reReplyCyclistName,
     required super.content,
     required super.isReacted,
     required super.mediaFiles,
@@ -20,6 +22,12 @@ class ReplyCommentModel extends ReplyCommentEntity {
   });
   factory ReplyCommentModel.fromJson(Map<String, dynamic> json) {
     return ReplyCommentModel(
+      reReplyCyclistId: json['reReplyCyclistId'] != null
+          ? json['reReplyCyclistId'] as int
+          : null,
+      reReplyCyclistName: json['reReplyCyclistName'] != null
+          ? json['reReplyCyclistName'] as String
+          : null,
       replyId: json["replyId"],
       cyclistId: json["cyclistId"],
       commentId: json["commentId"],

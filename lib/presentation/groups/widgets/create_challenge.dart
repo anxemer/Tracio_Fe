@@ -189,6 +189,11 @@ class _CreateChallengeScreenState extends State<CreateChallengeScreen> {
                                 AppSize.borderRadiusMedium),
                             borderSide: BorderSide(color: Colors.black),
                           ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(
+                                AppSize.borderRadiusMedium),
+                            borderSide: BorderSide(color: Colors.black),
+                          ),
                           contentPadding: const EdgeInsets.symmetric(
                               horizontal: 16, vertical: 12),
                         ),
@@ -204,6 +209,7 @@ class _CreateChallengeScreenState extends State<CreateChallengeScreen> {
                     Expanded(
                       flex: 1,
                       child: InputTextFormField(
+                        hint: 'Value',
                         labelText: 'Value',
                         controller: _goalValueController,
 

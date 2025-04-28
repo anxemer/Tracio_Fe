@@ -1,4 +1,6 @@
 import 'package:tracio_fe/common/helper/media_file.dart';
+import 'package:tracio_fe/domain/blog/entites/reply_comment.dart';
+import 'package:tracio_fe/domain/shop/entities/response/reply_review_entity.dart';
 
 class ReviewServiceEntity {
     ReviewServiceEntity({
@@ -25,7 +27,7 @@ class ReviewServiceEntity {
     final DateTime? createdAt;
     final DateTime? updatedAt;
     final List<MediaFile> mediaFiles;
-    final String? reply;
+    final ReplyReviewEntity? reply;
 
     
 }

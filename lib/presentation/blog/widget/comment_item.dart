@@ -100,7 +100,7 @@ class _CommentItemState extends State<CommentItem> {
                               _showReplies && widget.comment.repliesCount != 0
                                   ? (120 + widget.comment.repliesCount * 120).h
                                   : 40.h, // Điều chỉnh chiều cao của thanh dọc
-                          color: Colors.grey.withOpacity(0.5),
+                          color: Colors.grey.shade300,
                         ),
                       ],
                     ),
@@ -226,7 +226,7 @@ class _CommentItemState extends State<CommentItem> {
                                             : context.isDarkMode
                                                 ? Colors.white
                                                 : Colors.black,
-                                        size: AppSize.iconMedium.sp,
+                                        size: AppSize.iconSmall.sp,
                                       ),
                                       BasicTextButton(
                                           text: widget.comment.likesCount
@@ -261,7 +261,7 @@ class _CommentItemState extends State<CommentItem> {
                                     },
                                     child: Image.asset(
                                       AppImages.reply,
-                                      width: AppSize.iconMedium.w,
+                                      width: AppSize.iconSmall.w,
                                       color: context.isDarkMode
                                           ? Colors.white
                                           : Colors.black,
@@ -332,32 +332,27 @@ class _CommentItemState extends State<CommentItem> {
                                       MediaQuery.of(context).size.height;
                                   final double dynamicHeight =
                                       totalHeight.clamp(minHeight, maxHeight);
-                                  return Column(
-                                    children: [
-                                      SizedBox(
-                                        width: double.infinity,
-                                        height: dynamicHeight,
-                                        child: ListView.builder(
-                                          itemCount: state.data.length,
-                                          itemBuilder: (context, index) {
-                                            return Padding(
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: 6.h,
-                                                  vertical: 2.h),
-                                              child: ReplyCommentItem(
-                                                  reply: state.data[index]),
-                                            );
-                                          },
-                                        ),
-                                      ),
-                                    ],
+                                  return SizedBox(
+                                    width: double.infinity,
+                                    height: dynamicHeight,
+                                    child: Column(
+                                      children: List.generate(state.data.length,
+                                          (index) {
+                                        return Padding(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 6.h, vertical: 2.h),
+                                          child: ReplyCommentItem(
+                                              reply: state.data[index]),
+                                        );
+                                      }),
+                                    ),
                                   );
                                 } else if (state is FailureLoadData) {
                                   return Padding(
                                     padding:
                                         EdgeInsets.symmetric(vertical: 16.h),
                                     child: Text(
-                                      "Không thể tải replies: ${state.errorMessage}",
+                                      "Can't load Reply! Try Again",
                                       style: TextStyle(color: Colors.red),
                                     ),
                                   );

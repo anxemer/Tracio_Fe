@@ -49,8 +49,7 @@ class ReviewServiceCard extends StatelessWidget {
         Text(
           review.content!,
           style: TextStyle(
-              color:
-                  context.isDarkMode ? Colors.grey.shade300 : Colors.black87,
+              color: context.isDarkMode ? Colors.grey.shade300 : Colors.black87,
               fontSize: AppSize.textMedium.sp,
               fontWeight: FontWeight.w400),
         ),
@@ -77,22 +76,76 @@ class ReviewServiceCard extends StatelessWidget {
                 //   ),
                 // ),
                 )),
+        SizedBox(
+          height: 4.h,
+        ),
         review.reply == null
             ? SizedBox.shrink()
-            : Container(
-                padding: EdgeInsets.symmetric(
-                    horizontal: AppSize.apHorizontalPadding * .8.h,
-                    vertical: AppSize.apVerticalPadding * .8.w),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade300,
-                  borderRadius:
-                      BorderRadius.circular(AppSize.borderRadiusLarge),
-                ),
-                child: Text(
-                  review.reply!,
-                  style: TextStyle(fontSize: AppSize.textMedium),
-                ),
-              )
+            : Padding(
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                child: Container(
+                    padding: EdgeInsets.symmetric(
+                        horizontal: AppSize.apHorizontalPadding * .2.h,
+                        vertical: AppSize.apVerticalPadding * .2.w),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade200,
+                      borderRadius:
+                          BorderRadius.circular(AppSize.borderRadiusLarge),
+                    ),
+                    child: Row(
+                      children: [
+                        CirclePicture(
+                            imageUrl: review.reply!.shopPictureProfile!,
+                            imageSize: AppSize.iconSmall * .8.sp),
+                        SizedBox(
+                          width: 10.w,
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          spacing: 2,
+                          children: [
+                            Text(
+                              review.reply!.shopName!,
+                              style: TextStyle(
+                                  color:
+                                      isDark ? Colors.white70 : Colors.black87,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: AppSize.textMedium),
+                            ),
+                            Text(
+                              review.reply!.content!,
+                              style: TextStyle(
+                                  color:
+                                      isDark ? Colors.white70 : Colors.black87,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: AppSize.textSmall),
+                            ),
+                          ],
+                        )
+                      ],
+                    )
+                    //   ListTile(
+                    //     leading: CirclePicture(
+                    //         imageUrl: review.reply!.shopPictureProfile!,
+                    //         imageSize: AppSize.iconSmall * .8.sp),
+                    //     title: Text(
+                    //       review.reply!.shopName!,
+                    //       style: TextStyle(
+                    //           color: isDark ? Colors.white70 : Colors.black87,
+                    //           fontWeight: FontWeight.bold,
+                    //           fontSize: AppSize.textMedium),
+                    //     ),
+                    //     subtitle: Text(
+                    //       review.reply!.content!,
+                    //       style: TextStyle(
+                    //           color: isDark ? Colors.white70 : Colors.black87,
+                    //           fontWeight: FontWeight.w600,
+                    //           fontSize: AppSize.textSmall),
+                    //     ),
+                    //   ),
+                    // ),
+                    ))
       ],
     );
   }

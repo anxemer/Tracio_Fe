@@ -168,7 +168,7 @@ class BlogApiServiceImpl extends BlogApiService {
 
       var result = response.data['result'];
 
-      int totalComments = result['totalComments'] ?? 0;
+      int totalComments = result['totalComment'] ?? 0;
       if (totalComments <= 0) {
         return []; // Không có comment nào
       }
@@ -223,14 +223,14 @@ class BlogApiServiceImpl extends BlogApiService {
               data: formData);
 
       if (response.statusCode == 400) {
-        print('bị lỗiiiiiii');
+        print('Error');
       }
       return Right(response.data);
     } catch (e) {
       if (e is DioException) {
-        return Left(ServerFailure(e.message ?? "Lỗi kết nối đến server"));
+        return Left(ServerFailure(e.message ?? "Serve Error"));
       }
-      return Left(ServerFailure("Đã xảy ra lỗi: ${e.toString()}"));
+      return Left(ServerFailure("Have some problem"));
     }
   }
 
@@ -249,7 +249,7 @@ class BlogApiServiceImpl extends BlogApiService {
 
       var result = response.data['result'];
 
-      int totalReplies = result['totalReplies'] ?? 0;
+      int totalReplies = result['totalReply'] ?? 0;
       if (totalReplies <= 0) {
         return []; // Không có comment nào
       }
@@ -260,7 +260,7 @@ class BlogApiServiceImpl extends BlogApiService {
             .toList();
       }
 
-      if (result['comment'] != null && ['replies'] != null) {
+      if (result['comment'] != null) {
         return List.from(result['comments'])
             .map((e) => ReplyCommentModel.fromJson(e))
             .toList();

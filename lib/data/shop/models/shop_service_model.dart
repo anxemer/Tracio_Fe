@@ -75,12 +75,12 @@ class ShopServiceModel extends ShopServiceEntity {
       duration: map['duration'] != null ? map['duration'] as int : null,
       totalReviews:
           map['totalReview'] != null ? map['totalReview'] as int : null,
-      distance: map['distance'] != null ? map['distance'] as double : null,
       mediaFiles: map["mediaFiles"] == null
-          ? []
-          : List<MediaFile>.from(
-              map["mediaFiles"].map((x) => MediaFile.fromJson(x)),
-            ),
+          ? (map["mediaFile"] == null
+              ? []
+              : [MediaFile.fromJson(map["mediaFile"])])
+          : List<MediaFile>.from(map["mediaFiles"]
+              .map((x) => MediaFile.fromJson(x))), // Nếu là đối tượng duy nhất
     );
   }
 }

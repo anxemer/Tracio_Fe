@@ -11,8 +11,9 @@ import 'package:tracio_fe/presentation/map/pages/cycling.dart';
 import 'package:tracio_fe/presentation/more/page/more.dart';
 
 class BottomNavBarManager extends StatefulWidget {
-  const BottomNavBarManager({super.key});
-
+  const BottomNavBarManager({
+    super.key,
+  });
   @override
   State<BottomNavBarManager> createState() => BottomNavBarManagerState();
 }

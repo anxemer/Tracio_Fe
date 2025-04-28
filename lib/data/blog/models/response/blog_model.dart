@@ -16,6 +16,7 @@ class BlogModels extends BlogEntity {
     required super.updatedAt,
     required super.likesCount,
     required super.commentsCount,
+    required super.isFollowed,
   });
 
   factory BlogModels.fromJson(Map<String, dynamic> json) {
@@ -36,6 +37,7 @@ class BlogModels extends BlogEntity {
       updatedAt: DateTime.tryParse(json["updatedAt"] ?? ""),
       likesCount: json["likeCount"],
       commentsCount: json["commentCount"],
+      isFollowed: json["isFollowed"],
     );
   }
 

@@ -23,6 +23,7 @@ class ApiUrl {
   static const sendVerifyEmail = '$portUser/api/auth/send-verify-email';
   static const loginWithEP = '$portUser/api/auth/login';
   static const userProfile = '$portUser/api/users';
+  static const follow = '$portUser/api/follow';
   static const changeRole = '$portUser/api/auth/refresh-token';
 
   //Api Blog

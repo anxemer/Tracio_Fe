@@ -121,7 +121,7 @@ class _ReactBlogState extends State<ReactBlog> {
               Spacer(),
               GestureDetector(
                 onTap: () async {
-                  print('đã bấm');
+                 
                   if (widget.blogEntity.isBookmarked == true) {
                     await sl<UnBookmarkUseCase>()
                         .call(widget.blogEntity.blogId);

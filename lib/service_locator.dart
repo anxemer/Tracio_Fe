@@ -35,7 +35,6 @@ import 'package:tracio_fe/domain/auth/usecases/get_cacher_user.dart';
 import 'package:tracio_fe/domain/auth/usecases/is_logged_in.dart';
 import 'package:tracio_fe/domain/auth/usecases/login.dart';
 import 'package:tracio_fe/domain/auth/usecases/login_google.dart';
-import 'package:tracio_fe/domain/auth/usecases/login.dart';
 import 'package:tracio_fe/domain/auth/usecases/logout.dart';
 import 'package:tracio_fe/domain/auth/usecases/register_with_ep.dart';
 import 'package:tracio_fe/domain/auth/usecases/verify_email.dart';
@@ -91,6 +90,7 @@ import 'package:tracio_fe/domain/shop/usecase/process_booking.dart';
 import 'package:tracio_fe/domain/shop/usecase/confirm_booking.dart';
 import 'package:tracio_fe/domain/shop/usecase/review_booking.dart';
 import 'package:tracio_fe/domain/user/repositories/user_profile_repository.dart';
+import 'package:tracio_fe/domain/user/usecase/follow_user.dart';
 import 'package:tracio_fe/domain/user/usecase/get_user_profile.dart';
 
 import 'core/network/dio_client.dart';
@@ -217,4 +217,5 @@ Future<void> initializeDependencies() async {
   sl.registerFactory<JoinChallengeUseCase>(() => JoinChallengeUseCase());
   sl.registerFactory<GetParticipantsUseCase>(() => GetParticipantsUseCase());
   sl.registerFactory<LoginGoogleUseCase>(() => LoginGoogleUseCase());
+  sl.registerFactory<FollowUserUseCase>(() => FollowUserUseCase());
 }

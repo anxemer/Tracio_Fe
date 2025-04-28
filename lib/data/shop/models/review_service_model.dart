@@ -1,6 +1,8 @@
+import 'package:tracio_fe/data/shop/models/reply_review_model.dart';
 import 'package:tracio_fe/domain/shop/entities/response/review_service_entity.dart';
 
 import '../../../common/helper/media_file.dart';
+import '../../../domain/shop/entities/response/reply_review_entity.dart';
 
 class ReviewServiceModel extends ReviewServiceEntity {
   ReviewServiceModel(
@@ -26,21 +28,20 @@ class ReviewServiceModel extends ReviewServiceEntity {
     DateTime? createdAt,
     DateTime? updatedAt,
     List<MediaFile>? mediaFiles,
-    String? reply,
+    ReplyReviewEntity? reply,
   }) {
     return ReviewServiceEntity(
-      reviewId: reviewId ?? this.reviewId,
-      cyclistId: cyclistId ?? this.cyclistId,
-      cyclistName: cyclistName ?? this.cyclistName,
-      cyclistAvatar: cyclistAvatar ?? this.cyclistAvatar,
-      content: content ?? this.content,
-      rating: rating ?? this.rating,
-      isUpdated: isUpdated ?? this.isUpdated,
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
-      mediaFiles: mediaFiles ?? this.mediaFiles,
-      reply: reply ?? this.reply,
-    );
+        reviewId: reviewId ?? this.reviewId,
+        cyclistId: cyclistId ?? this.cyclistId,
+        cyclistName: cyclistName ?? this.cyclistName,
+        cyclistAvatar: cyclistAvatar ?? this.cyclistAvatar,
+        content: content ?? this.content,
+        rating: rating ?? this.rating,
+        isUpdated: isUpdated ?? this.isUpdated,
+        createdAt: createdAt ?? this.createdAt,
+        updatedAt: updatedAt ?? this.updatedAt,
+        mediaFiles: mediaFiles ?? this.mediaFiles,
+        reply: reply);
   }
 
   factory ReviewServiceModel.fromJson(Map<String, dynamic> json) {
@@ -63,7 +64,9 @@ class ReviewServiceModel extends ReviewServiceEntity {
           : List<MediaFile>.from(
               json["mediaFiles"].map((x) => MediaFile.fromJson(x)),
             ),
-      reply: json["reply"],
+      reply: json["reply"] != null
+          ? ReplyReviewModel.fromJson(json["reply"])
+          : null,
     );
   }
 

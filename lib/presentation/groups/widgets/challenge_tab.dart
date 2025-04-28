@@ -84,7 +84,7 @@ class _ChallengeTabState extends State<ChallengeTab>
                       fillColor: Colors.transparent,
                       borderColor: isDark ? Colors.white : Colors.black,
                       fontSize: AppSize.textMedium,
-                      text: 'Create Chaleenge',
+                      text: 'Create Challenge',
                     ),
                   ),
                   SizedBox(

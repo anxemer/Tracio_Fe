@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
+import 'package:tracio_fe/common/widget/navbar/bottom_nav_bar_manager.dart';
 import 'package:tracio_fe/core/configs/theme/app_colors.dart';
-import 'package:tracio_fe/core/configs/theme/assets/app_images.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/presentation/challenge/page/challenge.dart';
+import 'package:tracio_fe/domain/groups/entities/group.dart';
 import 'package:tracio_fe/presentation/service/page/bottom_nav_bar_service.dart';
-import 'package:tracio_fe/presentation/service/page/service.dart';
+
+import '../../groups/pages/group.dart';
 
 class ShortcutKey extends StatelessWidget {
   const ShortcutKey({super.key});
@@ -60,7 +61,7 @@ class ShortcutKey extends StatelessWidget {
                           BorderRadius.circular(AppSize.borderRadiusMedium)),
                   child: InkWell(
                     onTap: () =>
-                        AppNavigator.push(context, BottomNavBarService()),
+                        AppNavigator.push(context, BottomNavBarManager()),
                     child: Icon(
                       Icons.radar_rounded,
                       size: AppSize.iconLarge,

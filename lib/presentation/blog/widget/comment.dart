@@ -23,10 +23,12 @@ import 'comment_input.dart';
 class Comment extends StatefulWidget {
   final int blogId;
   final GetCommentCubit cubit;
+  final bool isDetail;
   const Comment({
     super.key,
     required this.blogId,
     required this.cubit,
+    this.isDetail = false,
   });
 
   @override
@@ -73,7 +75,7 @@ class _CommentState extends State<Comment> {
         result.fold(
           (error) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Gửi bình luận thất bại')),
+              SnackBar(content: Text('Comment Fail')),
             );
           },
           (success) {
@@ -192,23 +194,27 @@ class _CommentState extends State<Comment> {
                   Expanded(
                     child: _buildContent(state),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                        bottom: AppSize.apHorizontalPadding,
-                        left: 10,
-                        right: 10),
-                    child: BlocBuilder<CommentInputCubit, CommentInputState>(
-                      builder: (context, inputState) {
-                        return CommentInputWidget(
-                          inputData: inputState.inputData,
-                          onSubmit: _handleCommentSubmit,
-                          onReset: () {
-                            _commentInputCubit.updateToDefault(widget.blogId);
-                          },
-                        );
-                      },
-                    ),
-                  ),
+                  widget.isDetail
+                      ? SizedBox.shrink()
+                      : Padding(
+                          padding: const EdgeInsets.only(
+                              bottom: AppSize.apHorizontalPadding,
+                              left: 10,
+                              right: 10),
+                          child:
+                              BlocBuilder<CommentInputCubit, CommentInputState>(
+                            builder: (context, inputState) {
+                              return CommentInputWidget(
+                                inputData: inputState.inputData,
+                                onSubmit: _handleCommentSubmit,
+                                onReset: () {
+                                  _commentInputCubit
+                                      .updateToDefault(widget.blogId);
+                                },
+                              );
+                            },
+                          ),
+                        ),
                 ],
               ),
             ),
@@ -223,13 +229,17 @@ class _CommentState extends State<Comment> {
       return const Center(child: CircularProgressIndicator());
     }
     if (state is GetCommentFailure) {
-      return const Center(child: Text("Chưa có bình luận"));
+      return const Center(child: Text("Haven't Comment yet"));
     }
     if (state is GetCommentLoaded) {
       final comments = state.listComment;
       return comments.isEmpty
-          ? const Center(child: Text("Chưa có bình luận"))
+          ? const Center(child: Text("Haven't Comment yet"))
           : ListView.builder(
+              shrinkWrap: !widget.isDetail,
+              physics: widget.isDetail
+                  ? NeverScrollableScrollPhysics()
+                  : AlwaysScrollableScrollPhysics(),
               itemCount: comments.length,
               itemBuilder: (context, index) {
                 return Padding(
@@ -246,6 +256,6 @@ class _CommentState extends State<Comment> {
               },
             );
     }
-    return const Center(child: Text("Chưa có bình luận"));
+    return const Center(child: Text("Haven't Comment yet"));
   }
 }

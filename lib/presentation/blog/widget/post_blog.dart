@@ -1,24 +1,28 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tracio_fe/common/helper/is_dark_mode.dart';
 import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
 import 'package:tracio_fe/common/widget/blog/animation_react.dart';
 import 'package:tracio_fe/common/widget/blog/header_information.dart';
 import 'package:tracio_fe/common/widget/blog/picture_card.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
+import 'package:tracio_fe/common/widget/button/button.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/data/blog/models/request/react_blog_req.dart';
 import 'package:tracio_fe/domain/blog/entites/blog_entity.dart';
 import 'package:tracio_fe/domain/blog/usecase/react_blog.dart';
+import 'package:tracio_fe/domain/user/usecase/follow_user.dart';
 import 'package:tracio_fe/presentation/blog/pages/detail_blog.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import 'package:tracio_fe/presentation/blog/widget/animated_button_follow.dart';
 
 import '../../../service_locator.dart';
+import '../bloc/comment/get_comment_cubit.dart';
 
 class PostBlog extends StatefulWidget {
-const PostBlog({super.key, required this.blogEntity, this.onLikeUpdated});
+  const PostBlog({super.key, required this.blogEntity, this.onLikeUpdated});
   final BlogEntity blogEntity;
   final Function()? onLikeUpdated;
   @override
@@ -27,9 +31,27 @@ const PostBlog({super.key, required this.blogEntity, this.onLikeUpdated});
 
 class _PostBlogState extends State<PostBlog> {
   bool isAnimating = false;
+  bool _showFollowButton = true;
+  bool isAlreadyFollowed = false; // Lấy từ state/dữ liệu thực tế
+
+  void _handleFollowLogic() async {
+    print("Đã nhấn Follow! Thực hiện gọi API hoặc cập nhật state...");
+    await sl<FollowUserUseCase>().call(widget.blogEntity.userId);
+    setState(() {
+      isAlreadyFollowed = true;
+    });
+    // setState(() { isAlreadyFollowed = true; }); // Ví dụ cập nhật UI ngay lập tức (tùy logic)
+  }
+
+  @override
+  void initState() {
+    isAlreadyFollowed = widget.blogEntity.isFollowed;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final commentCubit = context.read<GetCommentCubit>();
     List<String> mediaUrls = widget.blogEntity.mediaFiles
         .map((file) => file.mediaUrl ?? "")
         .toList();
@@ -63,13 +85,33 @@ class _PostBlogState extends State<PostBlog> {
                 ),
               ),
             ),
-            trailling: GestureDetector(
-                onTap: () => AppNavigator.push(
-                    context,
-                    DetailBlocPage(
-                      blog: widget.blogEntity,
-                    )),
-                child: Icon(Icons.arrow_forward_ios_rounded))),
+            trailling: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (!isAlreadyFollowed && _showFollowButton)
+                  AnimatedFollowButton(
+                    onFollow: _handleFollowLogic,
+                    // initialFillColor: Colors.blue,
+                    // initialBorderColor: Colors.blue,
+                    // initialTextColor: Colors.white,
+                    width: 80.w,
+                    height: 30.h,
+                  )
+                // else if (isAlreadyFollowed)
+                //   const Text(
+                //       "Followed") // Hoặc ButtonDesign với trạng thái "Unfollow"
+                else
+                  const SizedBox.shrink(),
+                GestureDetector(
+                    onTap: () => AppNavigator.push(
+                        context,
+                        DetailBlocPage(
+                          cubit: commentCubit,
+                          blog: widget.blogEntity,
+                        )),
+                    child: Icon(Icons.arrow_forward_ios_rounded)),
+              ],
+            )),
         SizedBox(
           height: 10.h,
         ),
@@ -87,6 +129,12 @@ class _PostBlogState extends State<PostBlog> {
           height: 10.h,
         ),
         GestureDetector(
+            onTap: () => AppNavigator.push(
+                context,
+                DetailBlocPage(
+                  cubit: commentCubit,
+                  blog: widget.blogEntity,
+                )),
             onDoubleTap: () async {
               await sl<ReactBlogUseCase>().call(ReactBlogReq(
                   entityId: widget.blogEntity.blogId, entityType: "blog"));
