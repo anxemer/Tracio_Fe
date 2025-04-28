@@ -23,7 +23,7 @@ class ReplyCommentModel extends ReplyCommentEntity {
       replyId: json["replyId"],
       cyclistId: json["cyclistId"],
       commentId: json["commentId"],
-      cyclistName: json["cyclistName"], 
+      cyclistName: json["cyclistName"],
       content: json["content"],
       isReacted: json["isReacted"],
       mediaFiles: json["mediaFiles"] == null
@@ -32,7 +32,7 @@ class ReplyCommentModel extends ReplyCommentEntity {
               json["mediaFiles"]!.map((x) => MediaFile.fromJson(x))),
       createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
       updatedAt: json["updatedAt"],
-      likesCount: json["likesCount"],
+      likesCount: json["likeCount"],
       isEdited: json["isEdited"],
     );
   }

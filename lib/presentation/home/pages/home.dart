@@ -5,15 +5,16 @@ import 'package:tracio_fe/common/bloc/generic_data_cubit.dart';
 import 'package:tracio_fe/common/helper/is_dark_mode.dart';
 import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
 import 'package:tracio_fe/common/widget/appbar/app_bar.dart';
+import 'package:tracio_fe/core/configs/theme/app_colors.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/presentation/blog/bloc/comment/get_comment_cubit.dart';
 import 'package:tracio_fe/presentation/blog/pages/blog.dart';
 import 'package:tracio_fe/presentation/chat/page/chat.dart';
+import 'package:tracio_fe/presentation/groups/cubit/challenge_cubit.dart';
 import 'package:tracio_fe/presentation/notifications/page/notifications.dart';
 
 import '../../../data/blog/models/request/get_blog_req.dart';
 import '../../auth/bloc/authCubit/auth_cubit.dart';
-import '../../auth/pages/login.dart';
 import '../../blog/bloc/create_blog_cubit.dart';
 import '../../blog/bloc/get_blog_cubit.dart';
 
@@ -42,11 +43,11 @@ class _HomePageState extends State<HomePage> {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => GenericDataCubit()),
+        BlocProvider(create: (context) => AuthCubit()..checkUser()),
         BlocProvider(
             create: (context) => GetBlogCubit()..getBlog(GetBlogReq())),
         BlocProvider(create: (context) => CreateBlogCubit()),
         BlocProvider(create: (context) => GetCommentCubit()),
-        BlocProvider(create: (context) => AuthCubit()..checkUser())
       ],
       child: SafeArea(
         bottom: true,
@@ -61,13 +62,15 @@ class _HomePageState extends State<HomePage> {
   }
 
   PreferredSizeWidget _buildAppBar() {
+    var isDark = context.isDarkMode;
+
     return BasicAppbar(
       height: AppSize.appBarHeight.h,
       hideBack: true,
       title: Text(
         'Home',
         style: TextStyle(
-          color: Colors.white,
+          color: isDark ? Colors.white70 : Colors.black87,
           fontWeight: FontWeight.w400,
           fontSize: AppSize.textHeading * 0.9.sp,
         ),
@@ -77,6 +80,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildActionIcons() {
+    var isDark = context.isDarkMode;
+
     return Row(
       children: [
         IconButton(
@@ -89,7 +94,7 @@ class _HomePageState extends State<HomePage> {
           },
           icon: Icon(
             Icons.notifications,
-            color: Colors.white,
+            color: AppColors.primary,
             size: AppSize.iconMedium.w,
           ),
           tooltip: "Notifications",
@@ -104,7 +109,7 @@ class _HomePageState extends State<HomePage> {
           },
           icon: Icon(
             Icons.mail,
-            color: Colors.white,
+            color: AppColors.primary,
             size: AppSize.iconMedium.w,
           ),
           tooltip: "Message",

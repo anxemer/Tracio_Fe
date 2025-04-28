@@ -1,38 +1,32 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 
-import 'package:tracio_fe/common/helper/media_file.dart';
+
 
 class BookingEntity {
-  final int? bookingId;
-  final int? bookingDetailId;
-  final String? serviceName;
-  final String? userName;
-  final DateTime? receivedAt;
-  final List<MediaFile>? serviceMediaFile;
-  final String? shopName;
-  final String? profilePicture;
-  final DateTime? bookedDate;
-  final int? duration;
-  final DateTime? estimatedEndDate;
-  final String? status;
-  final String? userNote;
-  final String? shopNote;
-  final double? price;
-  BookingEntity({
-    this.bookingId,
-    this.bookingDetailId,
-    this.serviceName,
-    this.userName,
-    this.receivedAt,
-    this.serviceMediaFile,
-    this.shopName,
-    this.profilePicture,
-    this.bookedDate,
-    this.duration,
-    this.estimatedEndDate,
-    this.status,
-    this.userNote,
-    this.shopNote,
-    this.price,
-  });
+ BookingEntity({
+        required this.bookingId,
+        required this.bookingDetailId,
+        required this.serviceName,
+        required this.serviceMediaFile,
+        required this.shopName,
+        required this.cyclistName,
+        required this.cyclistAvatar,
+        required this.bookedDate,
+        required this.duration,
+        required this.estimatedEndDate,
+        required this.status,
+        required this.price,
+    });
+
+    final int? bookingId;
+    final int? bookingDetailId;
+    final String? serviceName;
+    final String? serviceMediaFile;
+    final String? shopName;
+    final String? cyclistName;
+    final String? cyclistAvatar;
+    final DateTime? bookedDate;
+    final int? duration;
+    final DateTime? estimatedEndDate;
+    final String? status;
+    final double? price;
 }

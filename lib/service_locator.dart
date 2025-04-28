@@ -9,6 +9,8 @@ import 'package:tracio_fe/data/auth/sources/auth_remote_source/auth_api_service.
 import 'package:tracio_fe/data/auth/sources/auth_remote_source/auth_firebase_service.dart';
 import 'package:tracio_fe/data/blog/repositories/blog_repository_impl.dart';
 import 'package:tracio_fe/data/blog/source/blog_api_service.dart';
+import 'package:tracio_fe/data/challenge/repository/challenge_repository_impl.dart';
+import 'package:tracio_fe/data/challenge/source/challenge_api_service.dart';
 import 'package:tracio_fe/data/groups/repositories/group_repository_impl.dart';
 import 'package:tracio_fe/data/groups/repositories/vietnam_city_district_repository_impl.dart';
 import 'package:tracio_fe/data/groups/source/group_api_service.dart';
@@ -26,9 +28,13 @@ import 'package:tracio_fe/data/shop/source/shop_api_service.dart';
 import 'package:tracio_fe/data/user/repositories/user_profile_repository_impl.dart';
 import 'package:tracio_fe/data/user/source/user_api_source.dart';
 import 'package:tracio_fe/domain/auth/repositories/auth_repository.dart';
+import 'package:tracio_fe/domain/auth/usecases/change_role.dart';
 import 'package:tracio_fe/domain/auth/usecases/check_email_verified.dart';
+import 'package:tracio_fe/domain/shop/usecase/get_shop_profile.dart';
 import 'package:tracio_fe/domain/auth/usecases/get_cacher_user.dart';
 import 'package:tracio_fe/domain/auth/usecases/is_logged_in.dart';
+import 'package:tracio_fe/domain/auth/usecases/login.dart';
+import 'package:tracio_fe/domain/auth/usecases/login_google.dart';
 import 'package:tracio_fe/domain/auth/usecases/login.dart';
 import 'package:tracio_fe/domain/auth/usecases/logout.dart';
 import 'package:tracio_fe/domain/auth/usecases/register_with_ep.dart';
@@ -43,6 +49,11 @@ import 'package:tracio_fe/domain/blog/usecase/get_comment_blog.dart';
 import 'package:tracio_fe/domain/blog/usecase/get_reaction_blog.dart';
 import 'package:tracio_fe/domain/blog/usecase/get_reply_comment.dart';
 import 'package:tracio_fe/domain/blog/usecase/react_blog.dart';
+import 'package:tracio_fe/domain/challenge/repository/challenge_repositories.dart';
+import 'package:tracio_fe/domain/challenge/usecase/get_challenge_detail.dart';
+import 'package:tracio_fe/domain/challenge/usecase/get_challenge_overview.dart';
+import 'package:tracio_fe/domain/challenge/usecase/get_participants.dart';
+import 'package:tracio_fe/domain/challenge/usecase/join_challenge.dart';
 import 'package:tracio_fe/domain/groups/repositories/group_repository.dart';
 import 'package:tracio_fe/domain/groups/repositories/vietnam_city_district_repository.dart';
 import 'package:tracio_fe/domain/groups/usecases/get_city_usecase.dart';
@@ -64,19 +75,23 @@ import 'package:tracio_fe/domain/shop/repositories/shop_service_repository.dart'
 import 'package:tracio_fe/domain/shop/usecase/add_to_cart.dart';
 import 'package:tracio_fe/domain/shop/usecase/booking_service.dart';
 import 'package:tracio_fe/domain/shop/usecase/cancel_booking.dart';
+import 'package:tracio_fe/domain/shop/usecase/complete_booking.dart';
+import 'package:tracio_fe/domain/shop/usecase/create_service.dart';
 import 'package:tracio_fe/domain/shop/usecase/delete_cart_item.dart';
+import 'package:tracio_fe/domain/shop/usecase/delete_service.dart';
 import 'package:tracio_fe/domain/shop/usecase/get_booking.dart';
 import 'package:tracio_fe/domain/shop/usecase/get_booking_detail.dart';
 import 'package:tracio_fe/domain/shop/usecase/get_cart_item.dart';
 import 'package:tracio_fe/domain/shop/usecase/get_cate_service.dart';
+import 'package:tracio_fe/domain/shop/usecase/get_review_service.dart';
 import 'package:tracio_fe/domain/shop/usecase/get_service.dart';
+import 'package:tracio_fe/domain/shop/usecase/get_service_detail.dart';
 import 'package:tracio_fe/domain/shop/usecase/reschedule_booking.dart';
-import 'package:tracio_fe/domain/shop/usecase/submit_booking.dart';
-import 'package:tracio_fe/domain/shop/usecase/waiting_booking.dart';
+import 'package:tracio_fe/domain/shop/usecase/process_booking.dart';
+import 'package:tracio_fe/domain/shop/usecase/confirm_booking.dart';
+import 'package:tracio_fe/domain/shop/usecase/review_booking.dart';
 import 'package:tracio_fe/domain/user/repositories/user_profile_repository.dart';
 import 'package:tracio_fe/domain/user/usecase/get_user_profile.dart';
-import 'package:tracio_fe/presentation/service/bloc/bookingservice/reschedule_booking/cubit/reschedule_booking_cubit.dart';
-import 'package:tracio_fe/presentation/service/widget/waitting_service.dart';
 
 import 'core/network/dio_client.dart';
 import 'data/auth/sources/auth_local_source/auth_local_source.dart';
@@ -112,6 +127,8 @@ Future<void> initializeDependencies() async {
       () => VietnamCityDistrictServiceImpl());
   sl.registerLazySingleton<GroupApiService>(() => GroupApiServiceImpl());
   sl.registerLazySingleton<ShopApiService>(() => ShopApiServiceImpl());
+  sl.registerLazySingleton<ChallengeApiService>(
+      () => ChallengeApiServiceImpl());
   //Services
   sl.registerLazySingleton<AuthRepository>(() => AuthRepositotyImpl());
   sl.registerLazySingleton<UserProfileRepository>(
@@ -129,6 +146,8 @@ Future<void> initializeDependencies() async {
 
   sl.registerLazySingleton<ShopServiceRepository>(
       () => ShopServiceRepositoryImpl(remoteDataSource: sl()));
+  sl.registerLazySingleton<ChallengeRepositories>(
+      () => ChallengeRepositoryImpl(remoteDataSource: sl()));
   //gRPC & Hubs
   sl.registerLazySingleton<ITrackingGrpcService>(() => TrackingGrpcService());
   sl.registerLazySingleton<ITrackingHubService>(() => TrackingHubService());
@@ -148,6 +167,7 @@ Future<void> initializeDependencies() async {
   sl.registerFactory<RegisterWithEmailAndPassUseCase>(
       () => RegisterWithEmailAndPassUseCase());
   sl.registerFactory<LoginUseCase>(() => LoginUseCase());
+  sl.registerFactory<ChangeRoleUseCase>(() => ChangeRoleUseCase());
   sl.registerFactory<IsLoggedInUseCase>(() => IsLoggedInUseCase());
   sl.registerFactory<LogoutUseCase>(() => LogoutUseCase());
   sl.registerFactory<BookmarkBlogUseCase>(() => BookmarkBlogUseCase());
@@ -177,10 +197,24 @@ Future<void> initializeDependencies() async {
   sl.registerFactory<BookingServiceUseCase>(() => BookingServiceUseCase());
   sl.registerFactory<GetBookingUseCase>(() => GetBookingUseCase());
   sl.registerFactory<DeleteCartItemUseCase>(() => DeleteCartItemUseCase());
-  sl.registerFactory<SubmitBookingUseCase>(() => SubmitBookingUseCase());
+  sl.registerFactory<ProcessBookingUseCase>(() => ProcessBookingUseCase());
   sl.registerFactory<RescheduleBookingUseCase>(
       () => RescheduleBookingUseCase());
   sl.registerFactory<CancelBookingUseCase>(() => CancelBookingUseCase());
   sl.registerFactory<GetBookingDetailUseCase>(() => GetBookingDetailUseCase());
-  sl.registerFactory<WaitingBookingUseCase>(() => WaitingBookingUseCase());
+  sl.registerFactory<ConfirmBookingUseCase>(() => ConfirmBookingUseCase());
+  sl.registerFactory<CompleteBookingUseCase>(() => CompleteBookingUseCase());
+  sl.registerFactory<GetReviewServiceUseCase>(() => GetReviewServiceUseCase());
+  sl.registerFactory<GetShopProfileUseCase>(() => GetShopProfileUseCase());
+  sl.registerFactory<ReviewBookingUseCase>(() => ReviewBookingUseCase());
+  sl.registerFactory<CreateServiceUseCase>(() => CreateServiceUseCase());
+  sl.registerFactory<GetServiceDetailUseCase>(() => GetServiceDetailUseCase());
+  sl.registerFactory<DeleteServiceUseCase>(() => DeleteServiceUseCase());
+  sl.registerFactory<GetChallengeOverviewUseCase>(
+      () => GetChallengeOverviewUseCase());
+  sl.registerFactory<GetChallengeDetailUseCase>(
+      () => GetChallengeDetailUseCase());
+  sl.registerFactory<JoinChallengeUseCase>(() => JoinChallengeUseCase());
+  sl.registerFactory<GetParticipantsUseCase>(() => GetParticipantsUseCase());
+  sl.registerFactory<LoginGoogleUseCase>(() => LoginGoogleUseCase());
 }

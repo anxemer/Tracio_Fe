@@ -1,3 +1,5 @@
+import 'package:tracio_fe/core/erorr/failure.dart';
+
 abstract class GenericDataState {}
 
 class DataLoading extends GenericDataState {}
@@ -9,5 +11,6 @@ class DataLoaded<T> extends GenericDataState {
 
 class FailureLoadData extends GenericDataState {
   final String errorMessage;
-  FailureLoadData({required this.errorMessage});
+  final Failure failure;
+  FailureLoadData(this.failure, {required this.errorMessage});
 }

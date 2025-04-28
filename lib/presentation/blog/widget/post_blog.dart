@@ -18,7 +18,7 @@ import 'package:timeago/timeago.dart' as timeago;
 import '../../../service_locator.dart';
 
 class PostBlog extends StatefulWidget {
-  const PostBlog({super.key, required this.blogEntity, this.onLikeUpdated});
+const PostBlog({super.key, required this.blogEntity, this.onLikeUpdated});
   final BlogEntity blogEntity;
   final Function()? onLikeUpdated;
   @override

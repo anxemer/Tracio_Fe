@@ -7,23 +7,18 @@ import 'package:tracio_fe/data/shop/models/reschedule_booking_model.dart';
 import 'package:tracio_fe/domain/shop/entities/response/booking_card_view.dart';
 import 'package:tracio_fe/presentation/service/bloc/bookingservice/booking_service_cubit.dart';
 import 'package:tracio_fe/presentation/service/bloc/bookingservice/reschedule_booking/cubit/reschedule_booking_cubit.dart';
-import 'package:tracio_fe/presentation/service/widget/show_schedule_bottom.dart';
-
-import '../../../common/widget/button/text_button.dart';
 import '../../../core/configs/theme/app_colors.dart';
-import '../../../core/configs/theme/assets/app_images.dart';
 import '../../../core/constants/app_size.dart';
 import '../../../data/shop/models/booking_service_req.dart';
-import '../../../domain/shop/entities/response/shop_service_entity.dart';
 
 class ConfirmInformationBooking extends StatefulWidget {
   const ConfirmInformationBooking({
     super.key,
-    this.service,
+    this.serviceId,
     this.booking,
   });
   // final VoidCallback clearAll;
-  final ShopServiceEntity? service;
+  final int? serviceId;
   final List<BookingCardViewModel>? booking;
   // final VoidCallback deleteSchedule;
 
@@ -306,11 +301,11 @@ class _ConfirmInformationBookingState extends State<ConfirmInformationBooking> {
                                   bookingCreateDto: null,
                                   bookingCartCreateDtos: bookingCartDtos,
                                   userScheduleCreateDtos: scheduleDtos));
-                        } else if (widget.service != null) {
+                        } else if (widget.serviceId != null) {
                           BookingCreateDto bookingCreateDto = BookingCreateDto(
-                              serviceId: widget.service!.serviceId,
-                              note: bookingCubit.serviceNotes[
-                                  widget.service!.serviceId.toString()]);
+                              serviceId: widget.serviceId,
+                              note: bookingCubit
+                                  .serviceNotes[widget.serviceId.toString()]);
                           context.read<BookingServiceCubit>().bookingServie(
                               BookingServiceReq(
                                   bookingCreateDto: bookingCreateDto,

@@ -8,22 +8,21 @@ import 'package:tracio_fe/core/configs/theme/app_colors.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/data/shop/models/get_service_req.dart';
 import 'package:tracio_fe/presentation/service/bloc/service_bloc/get_service_cubit.dart';
-import 'package:tracio_fe/presentation/service/widget/filter_view.dart';
 import 'package:tracio_fe/presentation/service/widget/plan_service_icon.dart';
 import 'package:tracio_fe/presentation/service/widget/search_text_field.dart';
 
 import '../bloc/service_bloc/get_service_state.dart';
 import '../widget/service_card.dart';
 
-class ShopServicepage extends StatefulWidget {
-  const ShopServicepage({super.key, required this.shopId});
+class ShopServicePage extends StatefulWidget {
+  const ShopServicePage({super.key, required this.shopId});
   final int shopId;
 
   @override
-  State<ShopServicepage> createState() => _ShopServicepageState();
+  State<ShopServicePage> createState() => _ShopServicePageState();
 }
 
-class _ShopServicepageState extends State<ShopServicepage> {
+class _ShopServicePageState extends State<ShopServicePage> {
   // bool isFilter = false;
   @override
   void initState() {
@@ -178,7 +177,9 @@ class _ShopServicepageState extends State<ShopServicepage> {
         SizedBox(
           width: 10,
         ),
-        PlanServiceIcon(),
+        PlanServiceIcon(
+          isActive: true,
+        ),
         SizedBox(
           width: 4.w,
         ),

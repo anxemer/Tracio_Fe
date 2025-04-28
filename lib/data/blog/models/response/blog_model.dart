@@ -34,8 +34,8 @@ class BlogModels extends BlogEntity {
               json["mediaFiles"]!.map((x) => MediaFile.fromJson(x))),
       createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
       updatedAt: DateTime.tryParse(json["updatedAt"] ?? ""),
-      likesCount: json["reactionsCount"],
-      commentsCount: json["commentsCount"],
+      likesCount: json["likeCount"],
+      commentsCount: json["commentCount"],
     );
   }
 

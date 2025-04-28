@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -65,19 +64,18 @@ class _BlogPageState extends State<BlogPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: BlocBuilder<GetBlogCubit, GetBlogState>(
-        builder: (context, state) {
-          return RefreshIndicator(
-            color: AppColors.background,
-            onRefresh: () async {
-              await context
-                  .read<GetBlogCubit>()
-                  .getBlog(GetBlogReq(isSeen: true));
-            },
-            child: CustomScrollView(
+    return RefreshIndicator(
+      displacement: 20,
+      color: AppColors.background,
+      onRefresh: () async {
+        await context.read<GetBlogCubit>().getBlog(GetBlogReq(isSeen: true));
+      },
+      child: Scaffold(
+        body: BlocBuilder<GetBlogCubit, GetBlogState>(
+          builder: (context, state) {
+            return CustomScrollView(
               controller: widget.scrollController,
-              physics: const BouncingScrollPhysics(),
+              physics: const AlwaysScrollableScrollPhysics(),
               slivers: [
                 // Create blog header - always shown
                 SliverToBoxAdapter(
@@ -96,9 +94,9 @@ class _BlogPageState extends State<BlogPage> {
                 // Main content based on state
                 _buildMainContent(state),
               ],
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
@@ -109,6 +107,9 @@ class _BlogPageState extends State<BlogPage> {
     return BlocBuilder<AuthCubit, AuthState>(
       builder: (context, state) {
         if (state is AuthLoaded) {
+          if (state.user == null) {
+            return Container();
+          }
           return Padding(
             padding: EdgeInsets.symmetric(
                 vertical: 8.h, horizontal: AppSize.apHorizontalPadding.w),
@@ -154,7 +155,9 @@ class _BlogPageState extends State<BlogPage> {
                 )),
           );
         }
-        return Container();
+        return Container(
+          child: Text('data'),
+        );
       },
     );
   }
@@ -200,7 +203,7 @@ class _BlogPageState extends State<BlogPage> {
       if (state.blogs!.isEmpty) {
         return SliverToBoxAdapter(
           child: SizedBox(
-            height: MediaQuery.of(context).size.height - kToolbarHeight,
+            // height: MediaQuery.of(context).size.height,
             child: Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -311,7 +314,7 @@ class _BlogPageState extends State<BlogPage> {
       });
       return SliverToBoxAdapter(
         child: SizedBox(
-          height: MediaQuery.of(context).size.height - kToolbarHeight,
+          // height: MediaQuery.of(context).size.height - kToolbarHeight,
           child: Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -330,7 +333,7 @@ class _BlogPageState extends State<BlogPage> {
     }
     return SliverToBoxAdapter(
       child: SizedBox(
-        height: MediaQuery.of(context).size.height - kToolbarHeight,
+        // height: MediaQuery.of(context).size.height - kToolbarHeight,
         child: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,

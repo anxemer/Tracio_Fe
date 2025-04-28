@@ -1,11 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'dart:convert';
-
 import 'package:intl/intl.dart';
 
 import 'package:tracio_fe/common/helper/schedule_model.dart';
-
-import '../../../../data/shop/models/booking_detail_model.dart';
 
 class BookingDetailEntity {
   BookingDetailEntity({
@@ -21,6 +17,7 @@ class BookingDetailEntity {
     this.openTime,
     this.closeTime,
     this.isOverlap,
+    this.isReviewed,
     this.serviceId,
     this.serviceName,
     this.bookedDate,
@@ -29,10 +26,10 @@ class BookingDetailEntity {
     this.duration,
     this.status,
     this.userNote,
+    this.adjustPriceReason,
     this.shopNote,
     this.price,
     this.serviceMediaFile,
-    this.incidentalCharges,
     this.userDayFrees,
   });
 
@@ -48,6 +45,7 @@ class BookingDetailEntity {
   final String? openTime;
   final String? closeTime;
   final bool? isOverlap;
+  final bool? isReviewed;
   final int? serviceId;
   final String? serviceName;
   final DateTime? bookedDate;
@@ -56,10 +54,10 @@ class BookingDetailEntity {
   final int? duration;
   final String? status;
   final String? userNote;
+  final String? adjustPriceReason;
   final String? shopNote;
   final double? price;
   final String? serviceMediaFile;
-  final List<IncidentalCharge>? incidentalCharges;
   final List<ScheduleModel>? userDayFrees;
 
   String get formattedDuration {
@@ -84,7 +82,7 @@ class BookingDetailEntity {
   String get formattedPrice {
     double priceAsInt = price!.toDouble();
 
-    final formatter = NumberFormat('#,###', 'vi_VN');
+    final formatter = NumberFormat('#,###');
     return formatter.format(priceAsInt);
   }
 }

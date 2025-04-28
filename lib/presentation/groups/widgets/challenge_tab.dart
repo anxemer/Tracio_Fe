@@ -1,8 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:tracio_fe/common/helper/is_dark_mode.dart';
+import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
+import 'package:tracio_fe/domain/challenge/entities/challenge_entity.dart';
+import 'package:tracio_fe/presentation/groups/cubit/challenge_cubit.dart';
 import 'package:tracio_fe/presentation/groups/widgets/active_challenge_item.dart';
-import 'package:tracio_fe/presentation/groups/widgets/recommend_challenge_item.dart'; // For CircularProgressIndicator
+import 'package:tracio_fe/presentation/groups/widgets/challenge_progress.dart';
+import 'package:tracio_fe/presentation/groups/widgets/create_challenge.dart';
+import 'package:tracio_fe/presentation/groups/widgets/recommend_challenge_item.dart';
+
+import '../../../common/widget/button/button.dart';
+import '../../../core/configs/theme/app_colors.dart'; // For CircularProgressIndicator
 
 class ChallengeTab extends StatefulWidget {
   const ChallengeTab({super.key});
@@ -18,160 +29,218 @@ class _ChallengeTabState extends State<ChallengeTab>
 
   @override
   Widget build(BuildContext context) {
+    var isDark = context.isDarkMode;
     super.build(context);
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          // Horizontal Scrollable Filter Buttons
-          Container(
-            padding: const EdgeInsets.fromLTRB(AppSize.apHorizontalPadding,
-                AppSize.apVerticalPadding, 0, AppSize.apVerticalPadding),
-            height: 50.h,
-            decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border(
-                    bottom: BorderSide(width: 1, color: Colors.grey.shade300))),
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              children: [
-                _buildFilterButton("Distance"),
-                _buildFilterButton("Moving Time"),
-                _buildFilterButton("Duration"),
-              ],
-            ),
-          ),
-
-          Container(
-            padding: const EdgeInsets.symmetric(
-                horizontal: AppSize.apHorizontalPadding,
-                vertical: AppSize.apVerticalPadding),
-            color: Colors.white,
-            child: Column(
-              spacing: AppSize.apSectionPadding,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Active Challenges",
-                  style: TextStyle(
-                    fontSize: AppSize.textMedium.sp,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(
-                  height: 80.h,
-                  width: double.infinity,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    children: [
-                      _buildActiveChallengeItem(),
-                      _buildActiveChallengeItem(),
-                      _buildActiveChallengeItem(),
-                      _buildActiveChallengeItem(),
-                      _buildActiveChallengeItem(),
-                      _buildActiveChallengeItem(),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(
-            height: AppSize.apVerticalPadding,
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(
-                horizontal: AppSize.apHorizontalPadding),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  spacing: AppSize.apHorizontalPadding / 2,
-                  children: [
-                    Icon(
-                      Icons.local_attraction_rounded,
-                      size: AppSize.iconMedium,
+    return BlocBuilder<ChallengeCubit, ChallengeState>(
+      builder: (context, state) {
+        if (state is ChallengeLoaded) {
+          List<ChallengeEntity> activeChallenge =
+              state.challengeOverview.activeChallenges;
+          List<ChallengeEntity> recommendChallenge =
+              state.challengeOverview.suggestedChallenges;
+          return RefreshIndicator(
+            onRefresh: () async {
+              context.read<ChallengeCubit>().getChallengeOverview();
+            },
+            child: SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              physics: AlwaysScrollableScrollPhysics(),
+              child: Column(
+                children: [
+                  // Horizontal Scrollable Filter Buttons
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(
+                        AppSize.apHorizontalPadding,
+                        AppSize.apVerticalPadding,
+                        0,
+                        AppSize.apVerticalPadding),
+                    height: 50.h,
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border(
+                            bottom: BorderSide(
+                                width: 1, color: Colors.grey.shade300))),
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      children: [
+                        _buildFilterButton("Distance"),
+                        _buildFilterButton("Moving Time"),
+                        _buildFilterButton("Duration"),
+                      ],
                     ),
-                    Text("Recommended For You",
-                        style: TextStyle(
-                            fontSize: AppSize.textSmall.sp,
-                            fontWeight: FontWeight.w600)),
-                  ],
-                ),
-
-                // List of recommended groups
-                SizedBox(height: 16),
-              ],
-            ),
-          ),
-          Wrap(
-            spacing: AppSize.apHorizontalPadding / 4,
-            runSpacing: AppSize.apHorizontalPadding / 4,
-            children: List.generate(
-              12,
-              (index) {
-                return RecommendChallengeItem(
-                  groupImageUrl: 'https://www.eurobasket.com/logos/torr.png',
-                  groupName: 'Group tên dài quá dài',
-                  address: 'Hà nội, Hồ Chí Minh, Bình Định, Bình Dương',
-                  memberCount: 12126,
-                );
-              },
-            ),
-          ),
-
-          const SizedBox(
-            height: AppSize.apVerticalPadding,
-          ),
-
-          const SizedBox(
-            height: AppSize.apVerticalPadding,
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(
-                horizontal: AppSize.apHorizontalPadding),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  spacing: AppSize.apHorizontalPadding / 2,
-                  children: [
-                    Icon(
-                      Icons.local_attraction_rounded,
-                      size: AppSize.iconMedium,
+                  ),
+                  SizedBox(
+                    height: 10.h,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                        horizontal: AppSize.apHorizontalPadding),
+                    child: ButtonDesign(
+                      width: double.infinity,
+                      height: 30.h,
+                      ontap: () {
+                        AppNavigator.push(context, CreateChallengeScreen());
+                      },
+                      fillColor: Colors.transparent,
+                      borderColor: isDark ? Colors.white : Colors.black,
+                      fontSize: AppSize.textMedium,
+                      text: 'Create Chaleenge',
                     ),
-                    Text("Joined Challenges",
-                        style: TextStyle(
-                            fontSize: AppSize.textSmall.sp,
-                            fontWeight: FontWeight.w600)),
-                  ],
-                ),
+                  ),
+                  SizedBox(
+                    height: 10.h,
+                  ),
+                  activeChallenge.isEmpty
+                      ? SizedBox.shrink()
+                      : Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: AppSize.apHorizontalPadding,
+                              vertical: AppSize.apVerticalPadding),
+                          color: Colors.white,
+                          child: Column(
+                            spacing: AppSize.apSectionPadding,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Active Challenges",
+                                style: TextStyle(
+                                  fontSize: AppSize.textMedium.sp,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              SizedBox(
+                                  height: 80.h,
+                                  width: double.infinity,
+                                  child: ListView.builder(
+                                    scrollDirection: Axis.horizontal,
+                                    physics: AlwaysScrollableScrollPhysics(),
+                                    itemCount: activeChallenge.length,
+                                    itemBuilder: (context, index) {
+                                      return InkWell(
+                                        onTap: () => AppNavigator.push(
+                                            context,
+                                            ChallengeProgressScreen(
+                                                challenge:
+                                                    activeChallenge[index])),
+                                        child: _buildActiveChallengeItem(
+                                            activeChallenge[index].title!,
+                                            activeChallenge[index]
+                                                .challengeThumbnail,
+                                            activeChallenge[index].progress!),
+                                      );
+                                    },
+                                  )),
+                            ],
+                          ),
+                        ),
+                  const SizedBox(
+                    height: AppSize.apVerticalPadding,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: AppSize.apHorizontalPadding),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          spacing: AppSize.apHorizontalPadding / 2,
+                          children: [
+                            Icon(
+                              Icons.local_attraction_rounded,
+                              size: AppSize.iconMedium,
+                            ),
+                            Text("Recommended For You",
+                                style: TextStyle(
+                                    fontSize: AppSize.textSmall.sp,
+                                    fontWeight: FontWeight.w600)),
+                          ],
+                        ),
 
-                // List of recommended groups
-                SizedBox(height: 16),
-              ],
-            ),
-          ),
-          Wrap(
-            spacing: AppSize.apHorizontalPadding / 4,
-            runSpacing: AppSize.apHorizontalPadding / 4,
-            children: List.generate(
-              3,
-              (index) {
-                return RecommendChallengeItem(
-                  groupImageUrl: 'https://www.eurobasket.com/logos/torr.png',
-                  groupName: 'Group tên dài quá dài',
-                  address: 'Hà nội, Hồ Chí Minh, Bình Định, Bình Dương',
-                  memberCount: 12126,
-                );
-              },
-            ),
-          ),
+                        // List of recommended groups
+                        SizedBox(height: 16),
+                      ],
+                    ),
+                  ),
+                  Wrap(
+                    spacing: AppSize.apHorizontalPadding / 4,
+                    runSpacing: AppSize.apHorizontalPadding / 4,
+                    children: recommendChallenge.map((challenge) {
+                      return RecommendChallengeItem(
+                        challenge: challenge,
+                      );
+                    }).toList(),
+                  ),
 
-          const SizedBox(
-            height: AppSize.apVerticalPadding,
-          ),
-        ],
-      ),
+                  const SizedBox(
+                    height: AppSize.apVerticalPadding,
+                  ),
+
+                  const SizedBox(
+                    height: AppSize.apVerticalPadding,
+                  ),
+                  // Padding(
+                  //   padding: const EdgeInsets.symmetric(
+                  //       horizontal: AppSize.apHorizontalPadding),
+                  //   child: Column(
+                  //     children: [
+                  //       Row(
+                  //         mainAxisAlignment: MainAxisAlignment.start,
+                  //         spacing: AppSize.apHorizontalPadding / 2,
+                  //         children: [
+                  //           Icon(
+                  //             Icons.local_attraction_rounded,
+                  //             size: AppSize.iconMedium,
+                  //           ),
+                  //           Text("Joined Challenges",
+                  //               style: TextStyle(
+                  //                   fontSize: AppSize.textSmall.sp,
+                  //                   fontWeight: FontWeight.w600)),
+                  //         ],
+                  //       ),
+
+                  //       // List of recommended groups
+                  //       SizedBox(height: 16),
+                  //     ],
+                  //   ),
+                  // ),
+                  // Wrap(
+                  //   spacing: AppSize.apHorizontalPadding / 4,
+                  //   runSpacing: AppSize.apHorizontalPadding / 4,
+                  //   children: List.generate(
+                  //     3,
+                  //     (index) {
+                  //       return RecommendChallengeItem(
+                  //         challengeImageUrl:
+                  //             'https://www.eurobasket.com/logos/torr.png',
+                  //         challengeName: 'Group tên dài quá dài',
+                  //         goalValue: 'Hà nội, Hồ Chí Minh, Bình Định, Bình Dương',
+                  //         memberCount: 12126,
+                  //       );
+                  //     },
+                  //   ),
+                  // ),
+
+                  const SizedBox(
+                    height: AppSize.apVerticalPadding,
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+        if (state is ChallengeLoading) {
+          return Center(
+            child: LoadingAnimationWidget.fourRotatingDots(
+              color: AppColors.secondBackground,
+              size: AppSize.iconExtraLarge,
+            ),
+          );
+        }
+        if (state is ChallengeFailure) {
+          return Container();
+        }
+        return Container();
+      },
     );
   }
 
@@ -199,14 +268,15 @@ class _ChallengeTabState extends State<ChallengeTab>
   }
 
   // Helper method to build each active challenge item
-  Widget _buildActiveChallengeItem() {
+  Widget _buildActiveChallengeItem(
+      String title, String imageUrl, double progress) {
     return Container(
       width: 60.w,
       margin: const EdgeInsets.only(right: 16),
       child: ActiveChallengeItem(
-        title: "Run 10k in a week",
-        imageUrl: 'https://www.eurobasket.com/logos/torr.png',
-        progression: 0.75,
+        title: title,
+        imageUrl: imageUrl,
+        progression: progress,
       ),
     );
   }

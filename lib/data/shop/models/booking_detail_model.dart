@@ -16,6 +16,7 @@ class BookingDetailModel extends BookingDetailEntity {
       super.openTime,
       super.closeTime,
       super.isOverlap,
+      super.isReviewed,
       super.serviceId,
       super.serviceName,
       super.bookedDate,
@@ -24,10 +25,10 @@ class BookingDetailModel extends BookingDetailEntity {
       super.duration,
       super.status,
       super.userNote,
+      super.adjustPriceReason,
       super.shopNote,
       super.price,
       super.serviceMediaFile,
-      super.incidentalCharges,
       super.userDayFrees});
 
   Map<String, dynamic> toMap() {
@@ -45,10 +46,10 @@ class BookingDetailModel extends BookingDetailEntity {
       'duration': duration,
       'status': status,
       'userNote': userNote,
+      'adjustPriceReason': adjustPriceReason,
       'shopNote': shopNote,
       'price': price,
       'serviceMediaFile': serviceMediaFile,
-      'incidentalCharges': incidentalCharges?.map((x) => x?.toJson()).toList(),
       'userDayFrees': userDayFrees?.map((x) => x?.toMap()).toList(),
     };
   }
@@ -73,9 +74,13 @@ class BookingDetailModel extends BookingDetailEntity {
       duration: json['duration'] != null ? json['duration'] as int : null,
       status: json['status'] != null ? json['status'] as String : null,
       userNote: json['userNote'] != null ? json['userNote'] as String : null,
+      adjustPriceReason: json['adjustPriceReason'] != null
+          ? json['adjustPriceReason'] as String
+          : null,
       shopNote: json['shopNote'] != null ? json['shopNote'] as String : "",
       isOverlap: json["isOverlap"],
-      price: json['price'] != null ? json['price'] as double : null,
+      isReviewed: json["isReviewed"],
+      price: json['price'] != null ? (json['price'] as num).toDouble() : null,
       serviceMediaFile: json['serviceMediaFile'] != null
           ? json['serviceMediaFile'] as String
           : null,
@@ -85,13 +90,6 @@ class BookingDetailModel extends BookingDetailEntity {
       address: json["address"],
       openTime: json["openTime"],
       closeTime: json["closeTime"],
-      incidentalCharges: json['incidentalCharges'] != null
-          ? List<IncidentalCharge>.from(
-              (json['incidentalCharges'] as List<dynamic>).map(
-                (x) => IncidentalCharge.fromJson(x as Map<String, dynamic>),
-              ),
-            )
-          : null,
       userDayFrees: json['userDayFrees'] != null
           ? List<ScheduleModel>.from(
               (json['userDayFrees'] as List<dynamic>).map(
@@ -101,60 +99,4 @@ class BookingDetailModel extends BookingDetailEntity {
           : null,
     );
   }
-}
-
-class IncidentalCharge {
-  IncidentalCharge({
-    required this.chargeId,
-    required this.title,
-    required this.description,
-    required this.price,
-    required this.createdAt,
-    required this.status,
-  });
-
-  final int? chargeId;
-  final String? title;
-  final String? description;
-  final int? price;
-  final DateTime? createdAt;
-  final dynamic status;
-
-  IncidentalCharge copyWith({
-    int? chargeId,
-    String? title,
-    String? description,
-    int? price,
-    DateTime? createdAt,
-    String? status,
-  }) {
-    return IncidentalCharge(
-      chargeId: chargeId ?? this.chargeId,
-      title: title ?? this.title,
-      description: description ?? this.description,
-      price: price ?? this.price,
-      createdAt: createdAt ?? this.createdAt,
-      status: status ?? this.status,
-    );
-  }
-
-  factory IncidentalCharge.fromJson(Map<String, dynamic> json) {
-    return IncidentalCharge(
-      chargeId: json["chargeId"],
-      title: json["title"],
-      description: json["description"],
-      price: json["price"],
-      createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
-      status: json["status"],
-    );
-  }
-
-  Map<String, dynamic> toJson() => {
-        "chargeId": chargeId,
-        "title": title,
-        "description": description,
-        "price": price,
-        "createdAt": createdAt?.toIso8601String(),
-        "status": status,
-      };
 }

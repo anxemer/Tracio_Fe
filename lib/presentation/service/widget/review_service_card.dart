@@ -4,78 +4,96 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tracio_fe/common/helper/is_dark_mode.dart';
 import 'package:tracio_fe/common/helper/rating_start.dart';
 import 'package:tracio_fe/common/widget/blog/header_information.dart';
+import 'package:tracio_fe/common/widget/blog/picture_card.dart';
 import 'package:tracio_fe/common/widget/picture/circle_picture.dart';
-import 'package:tracio_fe/core/configs/theme/assets/app_images.dart';
+import 'package:tracio_fe/domain/shop/entities/response/review_service_entity.dart';
 
-import '../../../core/configs/theme/app_colors.dart';
 import '../../../core/constants/app_size.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class ReviewServiceCard extends StatelessWidget {
-  const ReviewServiceCard({super.key});
+  const ReviewServiceCard({super.key, required this.review, this.moreWidget});
+  final ReviewServiceEntity review;
+  final Widget? moreWidget;
 
   @override
   Widget build(BuildContext context) {
+    List<String> mediaUrls =
+        review.mediaFiles.map((file) => file.mediaUrl ?? "").toList();
     var isDark = context.isDarkMode;
-    return Container(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Divider(
-            thickness: .5,
-            indent: 16,
-            endIndent: 16,
-            color: isDark ? Colors.black26 : Colors.grey.shade300,
-            height: 1,
-          ),
-          HeaderInformation(
-              title: Text(
-                'An Xểm',
-                style: TextStyle(
-                  color: isDark ? Colors.grey.shade300 : Colors.black87,
-                  fontWeight: FontWeight.w600,
-                  fontSize: AppSize.textLarge,
-                ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Divider(
+          thickness: .5,
+          indent: 16,
+          endIndent: 16,
+          color: isDark ? Colors.black26 : Colors.grey.shade300,
+          height: 1,
+        ),
+        HeaderInformation(
+            title: Text(
+              review.cyclistName!,
+              style: TextStyle(
+                color: isDark ? Colors.grey.shade300 : Colors.black87,
+                fontWeight: FontWeight.w600,
+                fontSize: AppSize.textLarge,
               ),
-              subtitle: Text('2 day ago'),
-              imageUrl: CirclePicture(
-                  imageUrl:
-                      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQoarw0HSRfLGUHep5w1Vg0cKesVkKIsQsjjg&s',
-                  imageSize: AppSize.iconMedium)),
-          RatingStart.ratingStart(rating: 4.5),
-          Text(
-            'Service tốt jksfkjfskjhgsk skjfhsksf kjfhaskfh akfhaj hah h fafh asfh askfh alfha jalkf half hs',
-            style: TextStyle(
-                color:
-                    context.isDarkMode ? Colors.grey.shade300 : Colors.black87,
-                fontSize: AppSize.textMedium.sp,
-                fontWeight: FontWeight.w400),
-          ),
-          SizedBox(
-            height: AppSize.imageMedium.h,
-            width: AppSize.imageMedium.w,
-            child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.transparent,
-                ),
-                width: MediaQuery.of(context).size.width,
-                margin: EdgeInsets.symmetric(horizontal: 4.0),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: Image.asset(
-                    AppImages.picture,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, url, error) => Icon(
-                      Icons.error,
-                      color: context.isDarkMode
-                          ? AppColors.primary
-                          : AppColors.background,
-                    ),
-                  ),
+            ),
+            subtitle: Text(timeago.format(review.createdAt!)),
+            imageUrl: CirclePicture(
+                imageUrl: review.cyclistAvatar!,
+                imageSize: AppSize.iconMedium)),
+        RatingStart.ratingStart(rating: review.rating!),
+        Text(
+          review.content!,
+          style: TextStyle(
+              color:
+                  context.isDarkMode ? Colors.grey.shade300 : Colors.black87,
+              fontSize: AppSize.textMedium.sp,
+              fontWeight: FontWeight.w400),
+        ),
+        Container(
+            decoration: BoxDecoration(
+              color: Colors.transparent,
+            ),
+            width: MediaQuery.of(context).size.width * .6,
+            margin: EdgeInsets.symmetric(horizontal: 4.0),
+            child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: PictureCard(
+                    imageWidth: AppSize.imageExtraLarge.w,
+                    imageheight: AppSize.imageExtraLarge * .8.h,
+                    listImageUrl: mediaUrls)
+                //  Image.asset(
+                //   AppImages.picture,
+                //   fit: BoxFit.cover,
+                //   errorBuilder: (context, url, error) => Icon(
+                //     Icons.error,
+                //     color: context.isDarkMode
+                //         ? AppColors.primary
+                //         : AppColors.background,
+                //   ),
+                // ),
                 )),
-          ),
-        ],
-      ),
+        review.reply == null
+            ? SizedBox.shrink()
+            : Container(
+                padding: EdgeInsets.symmetric(
+                    horizontal: AppSize.apHorizontalPadding * .8.h,
+                    vertical: AppSize.apVerticalPadding * .8.w),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade300,
+                  borderRadius:
+                      BorderRadius.circular(AppSize.borderRadiusLarge),
+                ),
+                child: Text(
+                  review.reply!,
+                  style: TextStyle(fontSize: AppSize.textMedium),
+                ),
+              )
+      ],
     );
   }
 }

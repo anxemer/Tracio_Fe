@@ -28,18 +28,18 @@ class  BookingServiceCubit extends Cubit<BookingServiceState> {
     }
   }
 
-  void rescheduleBooking(params) async {
-    try {
-      var response = await sl<RescheduleBookingUseCase>().call(params);
-      response.fold((error) {
-        emit(BookingServiceFailure(message: error.message));
-      }, (data) {
-        emit(BookingServiceSuccess(isSuccess: data));
-      });
-    } on ExceptionFailure catch (e) {
-      emit(BookingServiceFailure(message: e.message));
-    }
-  }
+  // void rescheduleBooking(params) async {
+  //   try {
+  //     var response = await sl<RescheduleBookingUseCase>().call(params);
+  //     response.fold((error) {
+  //       emit(BookingServiceFailure(message: error.message));
+  //     }, (data) {
+  //       emit(BookingServiceSuccess(isSuccess: data));
+  //     });
+  //   } on ExceptionFailure catch (e) {
+  //     emit(BookingServiceFailure(message: e.message));
+  //   }
+  // }
 
   void addService(CartItemEntity service) {
     selectedServices.add(service);

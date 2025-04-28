@@ -43,9 +43,9 @@ class CommentBlogModel extends CommentBlogEntity {
             : null,
         content: map['content'] != null ? map['content'] as String : null,
         createdAt: DateTime.tryParse(map["createdAt"] ?? ""),
-        likesCount: map['likesCount'] as int,
+        likesCount: map['likeCount'] as int,
         isReacted: map['isReacted'],
-        repliesCount: map['repliesCount'] as int,
+        repliesCount: map['replyCount'] as int,
         mediaFiles: map["mediaFiles"] == null
             ? []
             : List<MediaFile>.from(

@@ -4,17 +4,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tracio_fe/common/helper/is_dark_mode.dart';
 import 'package:tracio_fe/common/widget/appbar/app_bar.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/data/shop/models/get_booking_req.dart';
-import 'package:tracio_fe/presentation/service/bloc/bookingservice/cubit/get_booking_detail_cubit.dart';
+import 'package:tracio_fe/presentation/service/bloc/bookingservice/get_booking_detail_cubit/get_booking_detail_cubit.dart';
 import 'package:tracio_fe/presentation/service/bloc/bookingservice/resolve_overlap_service/cubit/resolve_overlap_service_cubit.dart';
 import 'package:tracio_fe/presentation/service/bloc/get_booking/get_booking_cubit.dart';
+import 'package:tracio_fe/presentation/service/bloc/review_booking/cubit/review_booking_cubit.dart';
 import 'package:tracio_fe/presentation/service/widget/booking_status_tab.dart';
-import 'package:tracio_fe/presentation/service/widget/plan_service_icon.dart';
-import 'package:tracio_fe/presentation/service/widget/waitting_service.dart';
 
-import '../../../common/widget/bottom_top_move_animation.dart';
 import '../../../core/configs/theme/app_colors.dart';
-import '../widget/pending_service.dart';
 
 class MyBookingPage extends StatefulWidget {
   const MyBookingPage({super.key});
@@ -29,18 +25,15 @@ class _MyBookingPageState extends State<MyBookingPage>
   late AnimationController tabAnimationController;
   late AnimationController screenAnimationController;
 
-  TopBarType topBarType = TopBarType.Pending;
-
   @override
   void initState() {
-    
     screenAnimationController =
         AnimationController(duration: Duration(milliseconds: 400), vsync: this);
     tabAnimationController =
         AnimationController(duration: Duration(milliseconds: 400), vsync: this);
-    indexView = PendingService(
-      // servicePending: widget.serviceBooking,
-      animationController: screenAnimationController,
+    indexView = BookingStatusTab(
+      status: 'Pending',
+      animationController: tabAnimationController,
     );
     tabAnimationController.forward();
     screenAnimationController.forward();
@@ -60,8 +53,10 @@ class _MyBookingPageState extends State<MyBookingPage>
   Widget indexView = Container();
   @override
   Widget build(BuildContext context) {
+    var isDark = context.isDarkMode;
     return MultiBlocProvider(
       providers: [
+     
         BlocProvider(
           create: (context) => GetBookingCubit(),
         ),
@@ -73,10 +68,14 @@ class _MyBookingPageState extends State<MyBookingPage>
         ),
       ],
       child: Scaffold(
-        appBar: BasicAppbar(
+          appBar: BasicAppbar(
             backgroundColor: Colors.transparent,
-            title: Text('My Booking'),
-            action: PlanServiceIcon()
+            title: Text('My Booking',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: AppSize.textHeading,
+                )),
+            // action: PlanServiceIcon(isActive: true,)
             //  Padding(
             //   padding: EdgeInsets.symmetric(
             //     horizontal: AppSize.apHorizontalPadding.w,
@@ -107,163 +106,85 @@ class _MyBookingPageState extends State<MyBookingPage>
             //         size: AppSize.iconMedium,
             //       )),
             // ),
-            ),
-        body: BottomTopMoveAnimationView(
-          animationController: screenAnimationController,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              //upcoming finished favorites selected
-              _topViewUI(topBarType),
-              //hotel list view
-              Expanded(
-                child: indexView,
-              ),
-            ],
           ),
-        ),
-      ),
+          body: DefaultTabController(
+              length: 7,
+              initialIndex: 0,
+              child: Scaffold(
+                body: Column(
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      color: isDark ? AppColors.darkGrey : Colors.white,
+                      child: TabBar(
+                          padding: EdgeInsets.only(left: 0),
+                          isScrollable: true,
+                          labelStyle: TextStyle(
+                              fontSize: AppSize.textMedium,
+                              fontWeight: FontWeight.w600),
+                          unselectedLabelColor:
+                              isDark ? Colors.white70 : Colors.grey.shade500,
+                          labelColor: isDark ? AppColors.primary : Colors.black,
+                          indicatorColor: AppColors.primary,
+                          tabs: [
+                            Tab(
+                              text: 'Pending',
+                            ),
+                            Tab(
+                              text: 'Reschedule',
+                            ),
+                            Tab(
+                              text: 'Confirmed',
+                            ),
+                            Tab(
+                              text: 'Processing',
+                            ),
+                            Tab(
+                              text: 'Completed',
+                            ),
+                            Tab(
+                              text: 'Canceled',
+                            ),
+                            Tab(
+                              text: 'Not Arive',
+                            )
+                          ]),
+                    ),
+                    Expanded(
+                      child: TabBarView(children: [
+                        BookingStatusTab(
+                          status: 'Pending',
+                          animationController: tabAnimationController,
+                        ),
+                        BookingStatusTab(
+                          status: 'Reschedule',
+                          animationController: tabAnimationController,
+                        ),
+                        BookingStatusTab(
+                          status: 'Confirmed',
+                          animationController: tabAnimationController,
+                        ),
+                        BookingStatusTab(
+                          status: 'processing',
+                          animationController: tabAnimationController,
+                        ),
+                        BookingStatusTab(
+                          status: 'Completed',
+                          animationController: tabAnimationController,
+                        ),
+                        BookingStatusTab(
+                          status: 'Cancelled',
+                          animationController: tabAnimationController,
+                        ),
+                        BookingStatusTab(
+                          status: 'NotArrive',
+                          animationController: tabAnimationController,
+                        ),
+                      ]),
+                    )
+                  ],
+                ),
+              ))),
     );
-  }
-
-  Widget _topViewUI(TopBarType tabtype) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Container(
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            color: context.isDarkMode ? Colors.black38 : Colors.grey.shade200),
-        child: Column(
-          children: <Widget>[
-            Row(
-              children: <Widget>[
-                _getTopBarUi(() {
-                  tabClick(TopBarType.Pending);
-                },
-                    topBarType == TopBarType.Pending
-                        ? context.isDarkMode
-                            ? AppColors.secondBackground
-                            : AppColors.background
-                        : context.isDarkMode
-                            ? Colors.grey.shade300
-                            : AppColors.darkGrey,
-                    "Pending"),
-                _getTopBarUi(() {
-                  tabClick(TopBarType.Waitting);
-                },
-                    topBarType == TopBarType.Waitting
-                        ? context.isDarkMode
-                            ? AppColors.secondBackground
-                            : AppColors.background
-                        : context.isDarkMode
-                            ? Colors.grey.shade300
-                            : AppColors.darkGrey,
-                    "Waitting"),
-                _getTopBarUi(() {
-                  tabClick(TopBarType.Processing);
-                },
-                    topBarType == TopBarType.Processing
-                        ? context.isDarkMode
-                            ? AppColors.secondBackground
-                            : AppColors.background
-                        : context.isDarkMode
-                            ? Colors.grey.shade300
-                            : AppColors.darkGrey,
-                    "Processing"),
-                _getTopBarUi(() {
-                  tabClick(TopBarType.Completed);
-                },
-                    topBarType == TopBarType.Completed
-                        ? context.isDarkMode
-                            ? AppColors.secondBackground
-                            : AppColors.background
-                        : context.isDarkMode
-                            ? Colors.grey.shade300
-                            : AppColors.darkGrey,
-                    "Completed"),
-              ],
-            ),
-            SizedBox(
-              height: MediaQuery.of(context).padding.bottom,
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _getTopBarUi(VoidCallback onTap, Color color, String text) {
-    return Expanded(
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.all(Radius.circular(32.0)),
-          highlightColor: color,
-          splashColor: Theme.of(context).primaryColor.withValues(alpha: .2),
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.only(bottom: 16, top: 16),
-            child: Center(
-              child: Text(
-                text,
-                style: TextStyle(
-                    color: color,
-                    fontSize: AppSize.textMedium,
-                    fontWeight: FontWeight.w500),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  void tabClick(TopBarType tabType) {
-    if (tabType != topBarType) {
-      topBarType = tabType;
-      tabAnimationController.reverse().then((f) {
-        if (tabType == TopBarType.Pending) {
-          setState(() {
-            indexView = PendingService(
-              // servicePending: widget.serviceBooking,
-              animationController: tabAnimationController,
-            );
-          });
-        } else if (tabType == TopBarType.Waitting) {
-          setState(() {
-            indexView = WaittingService(
-              animationController: tabAnimationController,
-            );
-          });
-        } else if (tabType == TopBarType.Processing) {
-          // setState(() {
-          //   indexView = PendingListView();
-          // });
-          setState(() {
-            indexView = BookingStatusTab(
-              status: 'Processing',
-              animationController: tabAnimationController,
-              hasSolve: false,
-            );
-          });
-        } else if (tabType == TopBarType.Completed) {
-          // setState(() {
-          //   indexView = PendingListView();
-          // });
-          setState(() {
-            indexView = BookingStatusTab(
-              status: 'Complete',
-              animationController: tabAnimationController,
-              hasSolve: false,
-            );
-          });
-        }
-
-        tabAnimationController.forward();
-      });
-    }
   }
 }
-
-enum TopBarType { Pending, Waitting, Processing, Completed }

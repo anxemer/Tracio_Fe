@@ -8,7 +8,7 @@ import '../../../common/helper/schedule_model.dart';
 import '../../../core/configs/theme/app_colors.dart' show AppColors;
 import '../../../core/constants/app_size.dart';
 import '../../service/widget/custom_time_picker.dart';
-import '../bloc/cubit/resolve_booking_cubit.dart';
+import '../bloc/resolve_booking/resolve_booking_cubit.dart';
 
 class EndTimeTab extends StatefulWidget {
   final ScheduleModel schedule;

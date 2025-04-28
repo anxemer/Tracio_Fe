@@ -167,7 +167,7 @@ class _PlanServicePageState extends State<PlanServicePage>
                                           children: [
                                             !isSelected
                                                 ? Text(
-                                                    'Select this service',
+                                                    'Select',
                                                     style: TextStyle(
                                                       fontWeight:
                                                           FontWeight.w600,
@@ -178,7 +178,7 @@ class _PlanServicePageState extends State<PlanServicePage>
                                                     ),
                                                   )
                                                 : Text(
-                                                    'remove this service',
+                                                    'Remove',
                                                     style: TextStyle(
                                                       fontWeight:
                                                           FontWeight.w600,
@@ -244,24 +244,26 @@ class _PlanServicePageState extends State<PlanServicePage>
                         },
                       ),
                     ),
-                    Positioned(
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 8),
-                        decoration: BoxDecoration(
-                          color: context.isDarkMode
-                              ? AppColors.darkGrey
-                              : Colors.grey.shade200,
-                        ),
-                        child: AddSchedule(
-                            // cartItem: bookingCubit.selectedServices,
-                            // bookingModel: bookingModel,
+                    state.cart.isEmpty
+                        ? SizedBox.shrink()
+                        : Positioned(
+                            bottom: 0,
+                            left: 0,
+                            right: 0,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 8),
+                              decoration: BoxDecoration(
+                                color: context.isDarkMode
+                                    ? AppColors.darkGrey
+                                    : Colors.grey.shade200,
+                              ),
+                              child: AddSchedule(
+                                  // cartItem: bookingCubit.selectedServices,
+                                  // bookingModel: bookingModel,
+                                  ),
                             ),
-                      ),
-                    ),
+                          ),
                   ]),
                 ),
               ],

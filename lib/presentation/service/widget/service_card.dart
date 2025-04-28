@@ -1,138 +1,201 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tracio_fe/common/helper/is_dark_mode.dart';
+import 'package:tracio_fe/common/widget/picture/picture.dart';
 import 'package:tracio_fe/core/configs/theme/app_colors.dart';
-import 'package:tracio_fe/core/configs/theme/assets/app_images.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/domain/shop/entities/response/shop_service_entity.dart';
+import 'package:tracio_fe/presentation/shop_owner/bloc/service_management/service_management_cubit.dart';
 
 import '../../../common/helper/navigator/app_navigator.dart';
+import '../../shop_owner/page/create_service.dart';
 import '../page/detail_service.dart';
 
 class ServiceCard extends StatelessWidget {
-  const ServiceCard({super.key, required this.service});
+  const ServiceCard(
+      {super.key, required this.service, this.isShopOwner = false});
   final ShopServiceEntity service;
+  final bool isShopOwner;
+
   @override
   Widget build(BuildContext context) {
     final isDark = context.isDarkMode;
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return InkWell(
-      onTap: () =>
-          AppNavigator.push(context, DetailServicePage(service: service)),
+      onTap: isShopOwner
+          ? null
+          : () {
+              if (service.serviceId != null) {
+                AppNavigator.push(
+                    context, DetailServicePage(serviceId: service.serviceId!));
+              }
+            },
       child: Container(
-        // constraints: BoxConstraints(maxWidth: screenWidth),
         decoration: BoxDecoration(
             color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                  color: isDark
-                      ? Colors.black.withOpacity(0.3)
-                      : Colors.grey.withOpacity(0.3),
+                  color: isDark ? Colors.black87 : Colors.grey.shade300,
                   blurRadius: 5,
                   offset: const Offset(0, 2))
             ]),
-
         child: ClipRRect(
           borderRadius: BorderRadius.circular(20),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               AspectRatio(
                 aspectRatio: 1.2,
-                child: Image.asset(
-                  AppImages.picture,
-                  // width: double.infinity,
-                  fit: BoxFit.cover,
+                child: PictureCustom(
+                  width: AppSize.imageMedium.w,
+                  imageUrl: service.profilePicture ?? '',
+                  height: AppSize.imageMedium.h,
                 ),
               ),
               Expanded(
                   child: Container(
-                padding: EdgeInsets.all(
-                    MediaQuery.of(context).size.width > 360 ? 12 : 8),
+                padding: EdgeInsets.symmetric(
+                    vertical: 8.h, horizontal: screenWidth > 360 ? 12.w : 8.w),
                 child: Column(
-                  // mainAxisAlignment: MainAxisAlignment.spaceAround,
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           service.serviceName ?? 'No Service Name',
                           style: TextStyle(
                               fontSize: AppSize.textMedium.sp,
                               fontWeight: FontWeight.w600),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 2,
                         ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.access_time_rounded,
-                          size: AppSize.iconSmall,
-                          color: isDark
-                              ? AppColors.secondBackground
-                              : AppColors.background,
-                        ),
-                        Text(
-                          service.formattedDuration,
-                          style: TextStyle(fontSize: AppSize.textSmall),
-                        ),
-                        const Spacer(),
-                        // SizedBox(
-                        //   width: 20.w,
-                        // ),
+                        SizedBox(height: 4.h),
                         Row(
                           children: [
                             Icon(
-                              Icons.attach_money_rounded,
-                              size: AppSize.iconMedium,
+                              Icons.access_time_rounded,
+                              size: AppSize.iconSmall,
                               color: isDark
                                   ? AppColors.secondBackground
                                   : AppColors.background,
                             ),
+                            SizedBox(width: 4.w),
                             Text(
-                              service.price.toString(),
-                              style: TextStyle(fontSize: AppSize.textLarge),
+                              service.formattedDuration,
+                              style: TextStyle(fontSize: AppSize.textSmall),
+                            ),
+                            const Spacer(),
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.attach_money_rounded,
+                                  size: AppSize.iconMedium,
+                                  color: isDark
+                                      ? AppColors.secondBackground
+                                      : AppColors.background,
+                                ),
+                                Text(
+                                  service.price.toString(),
+                                  style: TextStyle(
+                                      fontSize: AppSize.textLarge,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ],
                             ),
                           ],
                         ),
+                        SizedBox(height: 4.h),
+                        !isShopOwner
+                            ? Row(
+                                children: [
+                                  Icon(
+                                    Icons.storefront_outlined,
+                                    size: AppSize.iconSmall,
+                                    color: isDark
+                                        ? AppColors.secondBackground
+                                        : AppColors.background,
+                                  ),
+                                  SizedBox(width: 4.w),
+                                  Expanded(
+                                    child: Text(
+                                      service.shopName ?? 'No Shop Name',
+                                      style: TextStyle(
+                                          fontSize: AppSize.textSmall,
+                                          color: isDark
+                                              ? Colors.white70
+                                              : Colors.black54),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : SizedBox.shrink(),
                       ],
                     ),
-                    SizedBox(
-                      height: 4.h,
-                    ),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.storefront_outlined,
-                          size: AppSize.iconSmall,
-                          color: isDark
-                              ? AppColors.secondBackground
-                              : AppColors.background,
-                        ),
-                        Text(
-                          service.shopName ?? 'No Shop Name',
-                          style: TextStyle(
-                              fontSize: AppSize.textSmall,
-                              color: isDark ? Colors.white : Colors.black),
-                        ),
-                        // const Spacer(),
-                        // SizedBox(
-                        //   width: 20.w,
-                        // ),
-                        // Icon(
-                        //   Icons.location_on_outlined,
-                        //   size: AppSize.iconSmall,
-                        //   color: isDark
-                        //       ? AppColors.secondBackground
-                        //       : AppColors.background,
-                        // ),
-                        // Text(
-                        //   '2 KM',
-                        //   style: TextStyle(
-                        //       fontSize: AppSize.textSmall,
-                        //       color: isDark ? Colors.white : Colors.black),
-                        // ),
-                      ],
-                    ),
+                    if (isShopOwner) ...[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton(
+                            onPressed: () {
+                              AppNavigator.push(
+                                  context,
+                                  CreateEditServiceScreen(
+                                    isEditing: true,
+                                    shopId: service.shopId!,
+                                    initialData: service,
+                                  ));
+                            },
+                            style: TextButton.styleFrom(
+                              foregroundColor: Theme.of(context).primaryColor,
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 10.w, vertical: 4.h),
+                              minimumSize: Size(0, 30.h),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.edit, size: AppSize.iconSmall * 0.9),
+                                SizedBox(width: 3.w),
+                                Text('Edit',
+                                    style: TextStyle(
+                                        fontSize: AppSize.textSmall * 0.95)),
+                              ],
+                            ),
+                          ),
+                          SizedBox(width: 5.w),
+                          TextButton(
+                            onPressed: () {
+                              _showDeleteConfirmationDialog(context, service);
+                            },
+                            style: TextButton.styleFrom(
+                              foregroundColor: Colors.redAccent,
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 10.w, vertical: 4.h),
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              minimumSize: Size(0, 30.h),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.delete_outline,
+                                    size: AppSize.iconSmall * 0.9),
+                                SizedBox(width: 3.w),
+                                Text('Delete',
+                                    style: TextStyle(
+                                        fontSize: AppSize.textSmall * 0.95)),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ]
                   ],
                 ),
               ))
@@ -140,6 +203,47 @@ class ServiceCard extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Future<void> _showDeleteConfirmationDialog(
+      BuildContext context, ShopServiceEntity service) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: Text('Confirm Delete'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(
+                    'Are you sure you want to delete the service "${service.serviceName ?? 'this'}"?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+              },
+            ),
+            TextButton(
+              style: TextButton.styleFrom(foregroundColor: Colors.red),
+              child: Text('Delete'),
+              onPressed: () {
+                context
+                    .read<ServiceManagementCubit>()
+                    .deleteService(service.serviceId);
+                // Gọi API hoặc phương thức xóa
+                print('Confirmed delete for service: ${service.serviceId}');
+                Navigator.of(dialogContext).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }

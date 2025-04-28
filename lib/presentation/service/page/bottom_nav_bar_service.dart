@@ -1,12 +1,13 @@
+import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:tracio_fe/common/helper/is_dark_mode.dart';
 import 'package:tracio_fe/core/configs/theme/app_colors.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/presentation/service/page/my_booking.dart';
 import 'package:tracio_fe/presentation/service/page/plan_service.dart';
 import 'package:tracio_fe/presentation/service/page/service.dart';
+import 'package:tracio_fe/presentation/service/page/tab_more.dart';
 import 'package:tracio_fe/presentation/service/widget/plan_service_icon.dart';
 import 'package:tracio_fe/presentation/shop_owner/page/dash_board.dart';
 
@@ -17,107 +18,110 @@ class BottomNavBarService extends StatefulWidget {
   State<BottomNavBarService> createState() => _BottomNavBarServiceState();
 }
 
-class _BottomNavBarServiceState extends State<BottomNavBarService> {
+class _BottomNavBarServiceState extends State<BottomNavBarService>
+    with SingleTickerProviderStateMixin {
+  final iconList = [
+    Icons.home_outlined,
+    Icons.explore_outlined,
+    Icons.directions_bike,
+    Icons.more_vert_outlined,
+  ];
+
+  final labels = ['Service', 'Plan', 'My Booking', 'More'];
+
   int _selectedIndex = 0;
+
   final List<Widget> _screens = [
     ServicePage(),
     PlanServicePage(),
     MyBookingPage(),
-    DashboardScreen(),
-    // MorePage(),
+    TabMorePage(),
   ];
+
+  late AnimationController _animationController;
+
   void _onTabChanged(int index) {
     setState(() {
       _selectedIndex = index;
+      if (_animationController.isDismissed) {
+        return;
+      }
+      _animationController.forward(from: 0);
     });
   }
 
   @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
+    );
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final isDark = context.isDarkMode;
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: Column(
-        children: [
-          Expanded(
-            child: IndexedStack(
-              index: _selectedIndex,
-              children: _screens.map((screen) {
-                return Visibility(
-                  visible: _screens.indexOf(screen) == _selectedIndex,
-                  child: screen,
-                );
-              }).toList(),
-            ),
-          ),
-          AnimatedContainer(
-            duration: Duration(milliseconds: 500),
-            curve: Curves.easeInOut,
-            height: 60,
-            child: Container(
-              decoration: BoxDecoration(
-                color: context.isDarkMode ? Color(0xFF1E1E1E) : Colors.white,
-                border: Border(
-                  top: BorderSide(
-                      width: .8,
-                      color: context.isDarkMode
-                          ? Colors.white
-                          : Colors.grey.shade200),
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: _screens,
+      ),
+      bottomNavigationBar: AnimatedBottomNavigationBar.builder(
+        itemCount: iconList.length,
+        tabBuilder: (int index, bool isActive) {
+          final color = isActive
+              ? AppColors.primary
+              : (isDark ? Colors.white : Colors.grey.shade600);
+
+          Widget iconWidget;
+
+          if (index == 1) {
+            iconWidget = PlanServiceIcon(
+              isActive: isActive,
+            );
+          } else {
+            iconWidget = Icon(
+              iconList[index],
+              size: AppSize.iconSmall.w,
+              color: color,
+            );
+          }
+
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              iconWidget,
+              // SizedBox(height: 2),
+              Text(
+                labels[index],
+                style: TextStyle(
+                  color: color,
+                  fontSize: AppSize.textSmall.sp,
+                  fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
                 ),
-              ),
-              width: MediaQuery.of(context).size.width,
-              padding: EdgeInsets.symmetric(
-                  horizontal: AppSize.apHorizontalPadding / 3.h,
-                  vertical: AppSize.apVerticalPadding / 3.w),
-              child: GNav(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                duration: Duration(milliseconds: 300),
-                tabMargin: EdgeInsets.symmetric(horizontal: 5),
-                haptic: true,
-                padding: EdgeInsets.symmetric(
-                    horizontal: AppSize.apHorizontalPadding / 2.w,
-                    vertical: AppSize.apVerticalPadding / 2.h),
-                iconSize: AppSize.iconSmall.w,
-                curve: Curves.easeIn,
-                color: context.isDarkMode ? Colors.white : Colors.grey.shade600,
-                hoverColor: AppColors.background.withAlpha(80),
-                rippleColor: Colors.transparent,
-                activeColor: AppColors.primary,
-                gap: 8,
-                tabActiveBorder:
-                    Border.all(color: AppColors.background, width: 1),
-                tabBorderRadius: 20,
-                tabBorder: Border.all(color: Colors.grey.shade300, width: 1),
-                onTabChange: _onTabChanged, // Update selected tab index
-                tabs: [
-                  GButton(
-                    icon: Icons.home_outlined,
-                    text: 'Service',
-                  ),
-                  GButton(
-                    icon: Icons.explore_outlined,
-                    text: 'Plan',
-                  ),
-                  GButton(
-                    icon: Icons.directions_bike,
-                    text: "My Booking",
-                  ),
-                  GButton(
-                    icon: Icons.storefront_outlined,
-                    text: "Shop Owner",
-                  ),
-                  // GButton(
-                  //   icon: Icons.shop_outlined,
-                  //   text: 'Services',
-                  // ),
-                  // GButton(
-                  //   icon: Icons.more_vert_outlined,
-                  //   text: 'More',
-                  // ),
-                ],
-              ),
-            ),
-          ),
-        ],
+              )
+            ],
+          );
+        },
+        backgroundColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+        activeIndex: _selectedIndex,
+        splashColor: AppColors.primary.withOpacity(0.2),
+        notchSmoothness: NotchSmoothness.verySmoothEdge,
+        gapLocation: GapLocation.none,
+        leftCornerRadius: 24,
+        rightCornerRadius: 24,
+        elevation: 4,
+        onTap: _onTabChanged,
       ),
     );
   }

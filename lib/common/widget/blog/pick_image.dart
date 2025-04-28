@@ -8,19 +8,14 @@ import 'package:tracio_fe/core/constants/app_size.dart';
 
 /// Widget hiển thị lưới ảnh từ thư viện và cho phép chụp ảnh
 class ImagePickerGrid extends StatefulWidget {
-  /// Danh sách ảnh đã chọn
   final List<File> selectedFiles;
 
-  /// Callback được gọi khi chọn/bỏ chọn ảnh
   final Function(File file, bool isSelected) onImageToggle;
 
-  /// Callback được gọi khi chụp ảnh mới
   final Function(File file) onImageCaptured;
 
-  /// Số cột trong lưới
   final int crossAxisCount;
 
-  /// Số lượng ảnh tải mỗi lần
   final int pageSize;
 
   const ImagePickerGrid({
@@ -294,7 +289,7 @@ class _SelectedImagesViewerState extends State<SelectedImagesViewer> {
   @override
   Widget build(BuildContext context) {
     return widget.selectedFiles.isEmpty
-        ? Center(child: Text('Chọn ảnh để hiển thị'))
+        ? Center(child: Text('Choose Photo'))
         : PageView.builder(
             onPageChanged: (value) {
               setState(() {

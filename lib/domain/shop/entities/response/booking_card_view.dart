@@ -10,6 +10,8 @@ class BookingCardViewModel {
   final double? price;
   final DateTime? bookedDate;
   final String? shopName;
+  final String? userNote;
+  final String? reason;
   final String? city;
   final String? district;
   final int? duration;
@@ -23,6 +25,8 @@ class BookingCardViewModel {
     this.price,
     this.bookedDate,
     this.shopName,
+    this.userNote,
+    this.reason,
     this.city,
     this.district,
     this.duration,

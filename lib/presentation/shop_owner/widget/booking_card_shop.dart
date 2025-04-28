@@ -88,7 +88,7 @@ class _BookingCardState extends State<BookingCardShop> {
                                   'N/A', // Handle null
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                fontSize: AppSize.textLarge.sp,
+                                fontSize: AppSize.textMedium.sp,
                                 color: isDark
                                     ? Colors.grey.shade300
                                     : Colors.black87,
@@ -168,14 +168,14 @@ class _BookingCardState extends State<BookingCardShop> {
             ),
           ),
 
-          // --- Layer containing Status Badge ---
-          if (status != null &&
-              status.isNotEmpty) // Only display if status exists
-            Positioned(
-              top: 10.0, // Distance from the top edge of the Card
-              right: 10.0, // Distance from the right edge of the Card
-              child: _buildStatusBadge(status, isDark),
-            ),
+          // // --- Layer containing Status Badge ---
+          // if (status != null &&
+          //     status.isNotEmpty) // Only display if status exists
+          //   Positioned(
+          //     top: 10.0, // Distance from the top edge of the Card
+          //     right: 10.0, // Distance from the right edge of the Card
+          //     child: _buildStatusBadge(status, isDark),
+          //   ),
         ],
       ),
     );
@@ -218,24 +218,24 @@ class _BookingCardState extends State<BookingCardShop> {
     Color badgeColor;
     Color textColor;
 
-    switch (status.toLowerCase()) {
+    switch (status) {
       case 'Pending': // Add variations if needed
         badgeColor = Colors.green.shade100;
         textColor = Colors.green.shade800;
         break;
-      case 'cancelled': // Add variations if needed
+      case 'Cancelled': // Add variations if needed
         badgeColor = Colors.red.shade100;
         textColor = Colors.red.shade800;
         break;
-      case 'completed':
+      case 'Completed':
         badgeColor = Colors.green.shade100;
         textColor = Colors.green.shade800;
         break;
-      case 'Waiting':
-        badgeColor = Colors.yellow.shade100;
-        textColor = Colors.yellow.shade800;
-        break;
-      case 'Submitted':
+      // case 'Waiting':
+      //   badgeColor = Colors.yellow.shade100;
+      //   textColor = Colors.yellow.shade800;
+      //   break;
+      case 'Confirmed':
         badgeColor = Colors.blue.shade100;
         textColor = Colors.blue.shade800;
         break;

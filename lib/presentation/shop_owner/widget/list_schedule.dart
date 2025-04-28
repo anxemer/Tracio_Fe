@@ -3,23 +3,33 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:tracio_fe/common/helper/is_dark_mode.dart';
-import 'package:tracio_fe/presentation/shop_owner/bloc/cubit/resolve_booking_cubit.dart';
+import 'package:tracio_fe/presentation/shop_owner/bloc/resolve_booking/resolve_booking_cubit.dart';
 import '../../../common/helper/schedule_model.dart';
 import '../../../core/configs/theme/app_colors.dart';
 import '../../../core/constants/app_size.dart';
 import '../../service/widget/custom_time_picker.dart';
-import 'start_time_tab.dart';
 
-class ListSchedule extends StatelessWidget {
+class ListSchedule extends StatefulWidget {
   const ListSchedule({super.key, required this.schedules, this.duration});
   final List<ScheduleModel> schedules;
   final int? duration;
 
   @override
+  State<ListSchedule> createState() => _ListScheduleState();
+}
+
+class _ListScheduleState extends State<ListSchedule> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     var isDark = context.isDarkMode;
 
-    Future<void> _showScheduleDialog(ScheduleModel schedule) async {
+    Future<void> showScheduleDialog(ScheduleModel schedule) async {
       if (schedule.date == null ||
           schedule.timeFrom == null ||
           schedule.timeTo == null ||
@@ -30,88 +40,27 @@ class ListSchedule extends StatelessWidget {
         );
         return;
       }
-
-      DateTime? selectedStartDateTime;
-      DateTime? selectedEndDateTime;
-
-      await showDialog(
+      final TimeOfDay? pickedTime = await showCustomHourMinutePicker(
         context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text('Select Schedule'),
-            content: SizedBox(
-              width: double.maxFinite,
-              height: 300.h, // Chiều cao dialog
-              child: DefaultTabController(
-                length: 2,
-                child: Column(
-                  children: [
-                    const TabBar(
-                      tabs: [
-                        Tab(text: 'Start Time'),
-                        Tab(text: 'End Time'),
-                      ],
-                    ),
-                    Expanded(
-                      child: TabBarView(
-                        children: [
-                          StartTimeTab(
-                            duration: duration!,
-                            schedule: schedule,
-                            onTimeSelected: (pickedDateTime) {
-                              context
-                                  .read<ResolveBookingShopCubit>()
-                                  .updatebookedDate(pickedDateTime, duration!
-                                      // estimatedEndDate: endTime,
-                                      );
-                              selectedStartDateTime = pickedDateTime;
-                            },
-                          ),
-                          _buildEndTimePicker(
-                            context,
-                            schedule,
-                            (pickedDateTime) {
-                              selectedEndDateTime = pickedDateTime;
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context), // Hủy
-                child: const Text('Cancel'),
-              ),
-              TextButton(
-                onPressed: () {
-                  if (selectedStartDateTime != null) {
-                    // Nếu không chọn end time, dùng duration để tính
-                    selectedEndDateTime ??= selectedStartDateTime!
-                        .add(Duration(minutes: duration ?? 0));
-                    context.read<ResolveBookingShopCubit>().updatebookedDate(
-                          selectedStartDateTime!,
-                          duration ?? 0, // Dùng duration mặc định nếu cần
-                        );
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          'Selected: ${DateFormat('HH:mm').format(selectedStartDateTime!)} on ${DateFormat('dd/MM').format(selectedStartDateTime!)} - End: ${DateFormat('HH:mm').format(selectedEndDateTime!)}',
-                        ),
-                      ),
-                    );
-                  }
-                  Navigator.pop(context);
-                },
-                child: const Text('OK'),
-              ),
-            ],
-          );
-        },
+        initialTime: schedule.timeFrom!,
+        startHour: schedule.timeFrom!.hour,
+        endHour: schedule.timeTo!.hour,
+        minuteInterval: 60,
       );
+
+      if (pickedTime != null) {
+        final DateTime combinedDateTime = DateTime(
+          schedule.date!.year,
+          schedule.date!.month,
+          schedule.date!.day,
+          pickedTime.hour,
+          pickedTime.minute,
+        );
+
+        context
+            .read<ResolveBookingShopCubit>()
+            .updatebookedDate(combinedDateTime);
+      }
     }
 
     return Padding(
@@ -124,7 +73,7 @@ class ListSchedule extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
-              'User free time',
+              'Customer  free time',
               style: TextStyle(
                   fontSize: AppSize.textHeading,
                   fontWeight: FontWeight.bold,
@@ -132,9 +81,9 @@ class ListSchedule extends StatelessWidget {
             ),
             ListView.builder(
               shrinkWrap: true,
-              itemCount: schedules.length,
+              itemCount: widget.schedules.length,
               itemBuilder: (context, index) {
-                final schedule = schedules[index];
+                final schedule = widget.schedules[index];
                 final DateFormat dateFormat = DateFormat('dd-MM-yyyy');
 
                 return ListTile(
@@ -168,7 +117,7 @@ class ListSchedule extends StatelessWidget {
                   ),
                   trailing: Icon(Icons.touch_app, color: AppColors.background),
                   onTap: () {
-                    _showScheduleDialog(schedule);
+                    showScheduleDialog(schedule);
                   },
                 );
               },
@@ -176,45 +125,6 @@ class ListSchedule extends StatelessWidget {
             SizedBox(height: 8.h),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildEndTimePicker(
-    BuildContext context,
-    ScheduleModel schedule,
-    Function(DateTime) onTimeSelected,
-  ) {
-    return Center(
-      child: ElevatedButton(
-        onPressed: () async {
-          // Chọn ngày trước
-          final DateTime? pickedDate = await showDatePicker(
-            context: context,
-            initialDate: schedule.date!,
-            firstDate: schedule.date!,
-            lastDate: schedule.date!.add(const Duration(days: 30)), // Giới hạn
-          );
-
-          if (pickedDate != null) {
-            final TimeOfDay? pickedTime = await showTimePicker(
-              context: context,
-              initialTime: TimeOfDay.fromDateTime(schedule.timeToAsDateTime!),
-            );
-
-            if (pickedTime != null) {
-              final DateTime selectedEndDateTime = DateTime(
-                pickedDate.year,
-                pickedDate.month,
-                pickedDate.day,
-                pickedTime.hour,
-                pickedTime.minute,
-              );
-              onTimeSelected(selectedEndDateTime);
-            }
-          }
-        },
-        child: const Text('Pick End Time'),
       ),
     );
   }

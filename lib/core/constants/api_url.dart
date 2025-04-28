@@ -6,21 +6,24 @@ import 'package:tracio_fe/data/map/models/request/mapbox_direction_req.dart';
 class ApiUrl {
   //base Url
   // static const baseURL = 'https://192.168.1.9:';
-  static const baseURL = 'https://user.tracio.space';
+  // static const baseURL = 'https://user.tracio.space';
   // static const baseURL = 'https://10.87.46.103:';
   static const hubUrl = 'http://103.28.33.123:5002/content-hub';
   //port
-  static const portUser = '5003';
-  static const portBlog = '5002';
+  static const portUser = 'https://user.tracio.space';
+  static const portBlog = 'https://content.tracio.space';
   static const portRoute = '5009';
   static const portGroup = '';
-  static const portShop = '5004';
+  static const portShop = 'https://shop.tracio.space';
 
   //Api User
   static const registerWithEP = '$portUser/api/auth/register-user';
+  static const loginGoogle = '$portUser/api/auth/login-google';
+  static const callbackGoogle = '$portUser/api/auth/auth/google-callback';
   static const sendVerifyEmail = '$portUser/api/auth/send-verify-email';
   static const loginWithEP = '$portUser/api/auth/login';
   static const userProfile = '$portUser/api/users';
+  static const changeRole = '$portUser/api/auth/refresh-token';
 
   //Api Blog
   static const reactBlog = '$portBlog/api/reactions';
@@ -130,16 +133,25 @@ class ApiUrl {
     return Uri.parse('$portShop/api/services').replace(queryParameters: params);
   }
 
+  static Uri urlGetReviewService(int serviceId, [Map<String, String>? params]) {
+    return Uri.parse('$portShop/api/services/$serviceId/reviews')
+        .replace(queryParameters: params);
+  }
+
   static Uri urlGetBooking([Map<String, String>? params]) {
     return Uri.parse('$portShop/api/bookings').replace(queryParameters: params);
   }
 
-  static const getService = '$portShop/api/services';
+  static const apiService = '$portShop/api/services';
   static const addToCart = '$portShop/api/carts';
   static const getCartItem = '$portShop/api/carts/items';
   static const getCateService = '$portShop/api/categories';
   static const bookingService = '$portShop/api/bookings';
   static const deleteCartItem = '$portShop/api/carts';
+  static const getShopProfile = '$portShop/api/shops/profile';
+  static const reviewBooking = '$portShop/api/reviews';
+  // static const submitBooking = '${portShop}/api/carts';
+  static const rescheduleBooking = '$portShop/api/bookings/reschedule-booking';
 
   static Uri urlGetStaticImageMapbox(String accessToken, List<num> start,
       List<num> end, String polylineEncoded) {
@@ -180,4 +192,8 @@ class ApiUrl {
   static Uri urlGetGroupDetail(int groupId) {
     return Uri.parse('$portGroup/api/group/$groupId');
   }
+
+  //Challenge Api
+  static const getChallengeOverview = '$portUser/api/challenge/overview';
+  static const apiChallenge = '$portUser/api/challenge';
 }

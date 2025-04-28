@@ -8,7 +8,7 @@ import '../../../common/helper/navigator/app_navigator.dart';
 import '../../../core/constants/app_size.dart';
 import '../../../data/shop/models/get_booking_req.dart';
 import '../../../domain/shop/entities/response/booking_card_view.dart';
-import '../../service/bloc/bookingservice/cubit/get_booking_detail_cubit.dart';
+import '../../service/bloc/bookingservice/get_booking_detail_cubit/get_booking_detail_cubit.dart';
 import '../../service/bloc/bookingservice/resolve_overlap_service/cubit/resolve_overlap_service_cubit.dart';
 import '../../service/bloc/get_booking/get_booking_state.dart';
 import '../../service/page/booking_detail.dart';

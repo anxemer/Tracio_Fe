@@ -1,67 +1,94 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/common/helper/is_dark_mode.dart';
-import 'package:tracio_fe/common/helper/rating_start.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tracio_fe/domain/shop/entities/response/review_service_entity.dart';
 import 'package:tracio_fe/presentation/service/widget/review_service_card.dart';
-
 import '../../../core/constants/app_size.dart';
+import '../../../data/shop/models/get_review_req.dart';
+import '../bloc/service_bloc/review_service_cubit/get_reviewcubit/get_review_cubit.dart';
 
-class ReviewService extends StatelessWidget {
-  const ReviewService({super.key});
+class ReviewService extends StatefulWidget {
+  const ReviewService({
+    super.key,
+    this.review,
+    this.avgRating,
+    this.bookingDetailId,
+  });
+  final int? bookingDetailId;
+  final List<ReviewServiceEntity>? review;
+  final double? avgRating;
+
+  @override
+  State<ReviewService> createState() => _ReviewServiceState();
+}
+
+class _ReviewServiceState extends State<ReviewService> {
+  late final List<ReviewServiceEntity>? passedReview;
+
+  @override
+  void initState() {
+    super.initState();
+
+    passedReview = widget.review;
+
+    if (passedReview == null || passedReview!.isEmpty) {
+      context.read<GetReviewCubit>().getReviewBooking(
+            GetReviewReq(
+              seriveId: widget.bookingDetailId!,
+              pageSize: 10,
+              pageNumber: 1,
+            ),
+          );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    var isDark = context.isDarkMode;
+    if (passedReview != null && passedReview!.isNotEmpty) {
+      return _buildReviewList(passedReview!);
+    }
+
+    return BlocBuilder<GetReviewCubit, GetReviewState>(
+      builder: (context, state) {
+        if (state is GetReviewLoading) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (state is GetReviewLoading) {
+          final reviews = state.review;
+
+          if (reviews.isEmpty) {
+            return const Center(
+              child: Text(
+                'No reviews yet',
+                style: TextStyle(
+                    fontSize: AppSize.textLarge, fontWeight: FontWeight.bold),
+              ),
+            );
+          }
+
+          return _buildReviewList(reviews);
+        } else if (state is GetReviewFailure) {
+          return Center(child: Text("Error loading reviews: ${state.message}"));
+        }
+
+        return const SizedBox();
+      },
+    );
+  }
+
+  Widget _buildReviewList(List<ReviewServiceEntity> reviews) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: ListTile(
-              title: Text(
-                'Review (50)',
-                style: TextStyle(
-                  color: isDark ? Colors.white : Colors.black,
-                  fontWeight: FontWeight.w600,
-                  fontSize: AppSize.textLarge,
-                ),
-              ),
-              subtitle: Row(
-                children: [Text('4.7/5'), RatingStart.ratingStart(rating: 4.7)],
-              ),
-              trailing: SizedBox(
-                width: 100.w,
-                child: Row(
-                  children: [
-                    Text(
-                      'View more',
-                      style: TextStyle(
-                        color: isDark ? Colors.white : Colors.black,
-                        fontWeight: FontWeight.w400,
-                        fontSize: AppSize.textMedium,
-                      ),
-                    ),
-                    Icon(
-                      Icons.arrow_forward_ios_rounded,
-                      size: AppSize.iconSmall,
-                      color: isDark ? Colors.white : Colors.black,
-                    )
-                  ],
-                ),
-              ),
-            )),
         ListView.builder(
-          itemCount: 3,
+          itemCount: reviews.length,
           shrinkWrap: true,
           padding: const EdgeInsets.symmetric(horizontal: 16),
           physics: const NeverScrollableScrollPhysics(),
           itemBuilder: (context, index) {
             return Container(
-              decoration: BoxDecoration(),
               margin: EdgeInsets.only(top: index == 0 ? 12 : 16),
-              // height: 120,
-              child: ReviewServiceCard(),
+              child: ReviewServiceCard(
+                review: reviews[index],
+              ),
             );
           },
         ),

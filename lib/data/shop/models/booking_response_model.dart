@@ -20,13 +20,13 @@ class BookingResponseModel extends BookingResponseEntity {
     return BookingResponseModel(
       booking: map['bookings'] != null
           ? List<BookingModel>.from(map['bookings']
-              .map((x) => BookingModel.fromMap(x as Map<String, dynamic>)))
+              .map((x) => BookingModel.fromJson(x as Map<String, dynamic>)))
           : [],
       bookingOverlap: map['overlappingBookings'] != null
           ? List<BookingModel>.from(
               (map['overlappingBookings'] as List<dynamic>)
                   .expand((e) => e as List<dynamic>)
-                  .map((x) => BookingModel.fromMap(x as Map<String, dynamic>)))
+                  .map((x) => BookingModel.fromJson(x as Map<String, dynamic>)))
           : [],
       pagination: PaginationBookingDataModel.fromMap(map),
     );

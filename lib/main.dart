@@ -17,7 +17,6 @@ import 'package:tracio_fe/firebase_options.dart';
 import 'package:tracio_fe/presentation/groups/cubit/group_cubit.dart';
 import 'package:tracio_fe/presentation/map/bloc/route_cubit.dart';
 import 'package:tracio_fe/presentation/blog/bloc/category/get_category_cubit.dart';
-import 'package:tracio_fe/presentation/service/bloc/bookingservice/cubit/get_booking_detail_cubit.dart';
 import 'package:tracio_fe/presentation/service/bloc/bookingservice/reschedule_booking/cubit/reschedule_booking_cubit.dart';
 import 'package:tracio_fe/presentation/service/bloc/get_booking/get_booking_cubit.dart';
 import 'package:tracio_fe/presentation/service/bloc/service_bloc/get_service_cubit.dart';
@@ -30,9 +29,13 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' as mp;
 import 'package:tracio_fe/presentation/theme/bloc/theme_cubit.dart';
 import 'data/auth/sources/auth_local_source/auth_local_source.dart';
+import 'presentation/groups/cubit/challenge_cubit.dart';
 import 'presentation/service/bloc/bookingservice/booking_service_cubit.dart';
 import 'presentation/service/bloc/cart_item_bloc/cart_item_cubit.dart';
-import 'presentation/shop_owner/bloc/cubit/resolve_booking_cubit.dart';
+import 'presentation/service/bloc/review_booking/cubit/review_booking_cubit.dart';
+import 'presentation/service/bloc/service_bloc/review_service_cubit/get_reviewcubit/get_review_cubit.dart';
+import 'presentation/shop_owner/bloc/resolve_booking/resolve_booking_cubit.dart';
+import 'presentation/shop_owner/bloc/service_management/service_management_cubit.dart';
 import 'service_locator.dart' as di;
 
 Future<void> main() async {
@@ -97,6 +100,11 @@ class _MyAppState extends State<MyApp> {
     return MultiBlocProvider(
         providers: [
           BlocProvider(create: (context) => SplashCubit()..appStarted()),
+BlocProvider(
+            create: (context) => ReviewBookingCubit(),
+          ),
+          BlocProvider(create: (context) => GetReviewCubit()),
+
           BlocProvider(create: (context) => AuthCubit()),
           BlocProvider(create: (context) => GetCommentCubit()),
           BlocProvider(create: (context) => GenericDataCubit()),
@@ -106,13 +114,24 @@ class _MyAppState extends State<MyApp> {
           BlocProvider(create: (context) => ThemeCubit()),
           BlocProvider(create: (context) => CartItemCubit()..getCartitem()),
           BlocProvider(create: (context) => GetServiceCubit()),
+BlocProvider(create: (context) => GetBookingCubit()),
+          BlocProvider(create: (context) => ResolveBookingShopCubit()),
+          BlocProvider(
+              create: (context) => ChallengeCubit()..getChallengeOverview()),
+
           BlocProvider(
               create: (context) => GetCategoryCubit()..getCategoryService()),
           BlocProvider(
             create: (context) => BookingServiceCubit(),
           ),
+BlocProvider(
+            create: (context) => RescheduleBookingCubit(),
+          ),
           BlocProvider(
             create: (context) => FilterCubit(),
+          ),
+BlocProvider(
+            create: (context) => ServiceManagementCubit(),
           ),
           // BlocProvider(create: (context) => AuthCubit()..checkUser())
         ],

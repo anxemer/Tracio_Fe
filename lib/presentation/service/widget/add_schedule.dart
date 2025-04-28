@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
-import 'package:tracio_fe/domain/shop/entities/response/cart_item_entity.dart';
-import 'package:tracio_fe/domain/shop/entities/response/shop_service_entity.dart';
 import 'package:tracio_fe/presentation/service/bloc/bookingservice/booking_service_cubit.dart';
 import 'package:tracio_fe/presentation/service/page/my_booking.dart';
 
@@ -18,10 +16,10 @@ class AddSchedule extends StatefulWidget {
   const AddSchedule({
     super.key,
     this.onSchedulesChanged,
-    this.service,
+    this.serviceId,
   });
   // final List<BookingCardViewModel> bookingModel;
-  final ShopServiceEntity? service;
+  final int? serviceId;
   final Function(List<ScheduleModel>)? onSchedulesChanged;
 
   @override
@@ -50,7 +48,7 @@ class _AddScheduleState extends State<AddSchedule> {
         // mainAxisSize: MainAxisSize.min, // Đảm bảo chỉ chiếm không gian cần thiết
         children: [
           ShowScheduleBottom(
-            service: widget.service,
+            serviceId: widget.serviceId,
           ),
         ],
       );

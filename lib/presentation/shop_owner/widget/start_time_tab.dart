@@ -8,7 +8,7 @@ import '../../../common/helper/schedule_model.dart';
 import '../../../core/configs/theme/app_colors.dart' show AppColors;
 import '../../../core/constants/app_size.dart';
 import '../../service/widget/custom_time_picker.dart';
-import '../bloc/cubit/resolve_booking_cubit.dart';
+import '../bloc/resolve_booking/resolve_booking_cubit.dart';
 
 class StartTimeTab extends StatefulWidget {
   final ScheduleModel schedule;
@@ -26,12 +26,14 @@ class StartTimeTab extends StatefulWidget {
 }
 
 class _StartTimeTabState extends State<StartTimeTab> {
-  DateTime? selectedDateTime;
-
   @override
   void initState() {
     super.initState();
-    // _showTimePicker();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _showTimePicker();
+      }
+    });
   }
 
   Future<void> _showTimePicker() async {
@@ -58,21 +60,10 @@ class _StartTimeTabState extends State<StartTimeTab> {
       );
 
       final DateTime startTime = widget.schedule.timeFromAsDateTime!;
-      final DateTime endTime = widget.schedule.timeToAsDateTime!;
 
       if ((newSelectedDateTime.isAfter(startTime) ||
-              newSelectedDateTime.isAtSameMomentAs(startTime)) &&
-          (newSelectedDateTime.isBefore(endTime) ||
-              newSelectedDateTime.isAtSameMomentAs(endTime))) {
+          newSelectedDateTime.isAtSameMomentAs(startTime))) {
         widget.onTimeSelected(newSelectedDateTime);
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Selected time is outside the allowed range (${timeFormat.format(startTime)} - ${timeFormat.format(endTime)}).',
-            ),
-          ),
-        );
       }
     }
   }
@@ -108,7 +99,6 @@ class _StartTimeTabState extends State<StartTimeTab> {
           ),
         ),
         SizedBox(height: 16.h),
-        // Giữ lại text của bạn
       ],
     );
   }

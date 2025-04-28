@@ -9,7 +9,7 @@ class GenericDataCubit extends Cubit<GenericDataState> {
   void getData<T>(Usecase usecase, {dynamic params}) async {
     var returnedData = await usecase.call(params);
     returnedData.fold((error) {
-      emit(FailureLoadData(errorMessage: error.message));
+      emit(FailureLoadData(errorMessage: error.message, error));
     }, (data) {
       emit(DataLoaded<T>(data: data));
     });

@@ -28,7 +28,7 @@ class BasicAppbar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: backgroundColor ?? const Color.fromARGB(255, 75, 75, 75),
+      backgroundColor: backgroundColor ??  Colors.transparent,
       elevation: 0,
       centerTitle: centralTitle ?? false,
       automaticallyImplyLeading: false, // Don't automatically show back button

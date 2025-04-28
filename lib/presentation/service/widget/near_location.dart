@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tracio_fe/common/helper/is_dark_mode.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/presentation/service/bloc/service_bloc/cubit/get_near_service_cubit.dart';
+import 'package:tracio_fe/presentation/service/bloc/service_bloc/near_service_cubit/get_near_service_cubit.dart';
 
 import '../../../core/configs/theme/app_colors.dart';
 import '../../../core/configs/theme/assets/app_images.dart';

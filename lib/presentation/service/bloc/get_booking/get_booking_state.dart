@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:equatable/equatable.dart';
 
+import 'package:tracio_fe/core/erorr/failure.dart';
 import 'package:tracio_fe/domain/shop/entities/response/booking_entity.dart';
 import 'package:tracio_fe/domain/shop/entities/response/pagination_booking_data_entity.dart';
 
@@ -33,7 +34,7 @@ class GetBookingLoading extends GetBookingState {
 }
 
 class GetBookingLoaded extends GetBookingState {
-  final Map<String, bool> resolvedMap; 
+  final Map<String, bool> resolvedMap;
 
   const GetBookingLoaded(
     super.bookingList,
@@ -66,10 +67,13 @@ class GetBookingFailure extends GetBookingState {
     super.bookingList,
     super.overlapBookingList,
     super.pagination,
-    this.message,
+    this.message, this.failure,
   );
+  final Failure failure;
   final String message;
   @override
   // TODO: implement props
   List<Object?> get props => [];
+
+
 }

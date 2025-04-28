@@ -37,11 +37,11 @@ class _ChooseAudienceBlogState extends State<ChooseAudienceBlog> {
                   checkColor: Colors.black,
                   activeColor: Colors.white,
                   shape: const CircleBorder(),
-                  value: widget.selectedIndex == 0,
+                  value: widget.selectedIndex == 1,
                   onChanged: (bool? newValue) {
                     setState(() {
-                      widget.selectedIndex = newValue == true ? 0 : null;
-                      widget.selectedIndex == 0;
+                      widget.selectedIndex = newValue == true ? 1 : null;
+                      widget.selectedIndex == 1;
                     });
                   }),
             ),
@@ -55,13 +55,13 @@ class _ChooseAudienceBlogState extends State<ChooseAudienceBlog> {
                 checkColor: Colors.black,
                 activeColor: Colors.white,
                 shape: const CircleBorder(), // Làm checkbox hình tròn
-                value: widget.selectedIndex == 1,
+                value: widget.selectedIndex == 0,
                 onChanged: (bool? newValue) {
                   print(widget.selectedIndex);
 
                   setState(() {
-                    widget.selectedIndex = newValue == true ? 1 : null;
-                    widget.selectedIndex == 1;
+                    widget.selectedIndex = newValue == true ? 0 : null;
+                    widget.selectedIndex == 0;
                   });
                 },
               ),

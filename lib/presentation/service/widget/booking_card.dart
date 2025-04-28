@@ -1,7 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:tracio_fe/common/helper/is_dark_mode.dart';
 import 'package:tracio_fe/common/widget/list_cell_animation_view.dart';
 import 'package:tracio_fe/core/configs/theme/assets/app_images.dart';
@@ -61,12 +63,27 @@ class _BookingCardState extends State<BookingCard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.asset(
-                      AppImages.picture,
-                      width: widget.imageSize ?? AppSize.imageMedium.w,
-                      height: widget.imageSize ?? AppSize.imageMedium.h * .8,
-                      fit: BoxFit.cover,
+                    borderRadius: BorderRadius.circular(12.0),
+                    child: CachedNetworkImage(
+                      imageUrl: widget.service.imageUrl ??
+                          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMd16UwbgCKZvGEtelCk44Dx3nJCQ9ba3x7eTisJNuUenuBAP3zFtQ_2GDSzkVotZN8TU&usqp=CAU',
+                      imageBuilder: (context, imageProvider) {
+                        return Container(
+                            width: AppSize.imageMedium.w,
+                            height: AppSize.imageMedium.h,
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: imageProvider,
+                                fit: BoxFit.cover,
+                              ),
+                            ));
+                      },
+                      placeholder: (context, url) =>
+                          LoadingAnimationWidget.fourRotatingDots(
+                        color: AppColors.secondBackground,
+                        size: AppSize.iconExtraLarge,
+                      ),
+                      errorWidget: (context, url, error) => Icon(Icons.error),
                     ),
                   ),
                   SizedBox(
@@ -135,7 +152,9 @@ class _BookingCardState extends State<BookingCard> {
                                 : Container(),
                           ],
                         ),
-
+                        SizedBox(
+                          height: 10.h,
+                        ),
                         Row(
                           children: [
                             Icon(

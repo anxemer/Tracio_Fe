@@ -1,7 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
-import 'dart:convert';
-
 import 'package:intl/intl.dart';
 
 import 'package:tracio_fe/common/helper/media_file.dart';
@@ -21,7 +19,7 @@ class ShopServiceEntity {
   final double? price;
   final String? status;
   final int? totalBookings;
-  final int? avgRating;
+  final double? avgRating;
   final int? duration;
   final int? totalReviews;
   final double? distance;
@@ -69,9 +67,7 @@ class ShopServiceEntity {
   String get formattedPrice {
     double priceAsInt = price!.toDouble();
 
-    final formatter = NumberFormat('#,###', 'vi_VN');
+    final formatter = NumberFormat('#,###');
     return formatter.format(priceAsInt);
   }
-
-
 }

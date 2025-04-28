@@ -18,17 +18,14 @@ class GetServiceCubit extends Cubit<GetServiceState> {
           state.service, state.shop, state.metaData, state.params));
       var resultData = await sl<GetServiceUseCase>().call(params);
       resultData.fold((error) {
-        print(error.message);
         emit(GetServiceFailure(
             state.service, state.shop, state.metaData, params, error.message));
       }, (data) {
-        print('load service success');
 
         emit(GetServiceLoaded(
             data.service, data.shop, data.paginationMetaData, params));
       });
     } catch (e) {
-      print(e.toString());
       emit(GetServiceFailure(
           state.service, state.shop, state.metaData, params, e.toString()));
     }
@@ -36,7 +33,7 @@ class GetServiceCubit extends Cubit<GetServiceState> {
 
   void getMoreService(GetServiceReq params) async {}
 
-  
+
   void resetState() {
     emit(GetServiceInitial(
         [],

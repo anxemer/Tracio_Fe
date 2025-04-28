@@ -2,28 +2,30 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:tracio_fe/common/helper/is_dark_mode.dart';
+import 'package:tracio_fe/common/helper/placeholder/booking_detail.dart';
 import 'package:tracio_fe/common/helper/schedule_model.dart';
 import 'package:tracio_fe/common/widget/appbar/app_bar.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/domain/shop/usecase/cancel_booking.dart';
 import 'package:tracio_fe/presentation/service/bloc/bookingservice/booking_service_cubit.dart';
-import 'package:tracio_fe/presentation/service/bloc/bookingservice/cubit/get_booking_detail_cubit.dart';
-import 'package:tracio_fe/presentation/service/bloc/bookingservice/resolve_overlap_service/cubit/resolve_overlap_service_cubit.dart';
-import 'package:tracio_fe/presentation/service/widget/booking_card.dart';
-import 'package:tracio_fe/presentation/service/widget/confirm_information_booking.dart';
+import 'package:tracio_fe/presentation/service/bloc/bookingservice/get_booking_detail_cubit/get_booking_detail_cubit.dart';
 import 'package:tracio_fe/presentation/service/widget/dialog_confirm_booking.dart';
-import 'package:tracio_fe/presentation/service/widget/resolve_booking.dart';
-import 'package:tracio_fe/presentation/service/widget/show_schedule_bottom.dart';
 
+import '../../../common/helper/navigator/app_navigator.dart';
+import '../../../common/widget/blog/custom_bottomsheet.dart';
 import '../../../common/widget/button/button.dart';
+import '../../../common/widget/input_text_form_field.dart';
 import '../../../common/widget/picture/circle_picture.dart';
 import '../../../core/configs/theme/app_colors.dart';
 import '../../../core/configs/theme/assets/app_images.dart';
-import '../../../domain/shop/entities/response/booking_card_view.dart';
-import '../../../domain/shop/usecase/submit_booking.dart';
+import '../../../domain/shop/entities/response/booking_detail_entity.dart';
 import '../../../service_locator.dart';
+import '../widget/add_schedule.dart';
+import '../widget/booking_status_tab.dart';
+import '../widget/choose_free_time.dart';
+import '../widget/review_service.dart';
+import 'review_booking.dart';
 
 class BookingDetailScreen extends StatefulWidget {
   // final Map<String, dynamic> bookingDetail;
@@ -46,12 +48,12 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
   @override
   Widget build(BuildContext context) {
     var isDark = context.isDarkMode;
-    var bookingCubit = context.read<BookingServiceCubit>();
     return BlocProvider(
       create: (context) =>
           GetBookingDetailCubit()..getBookingDetail(widget.bookingId),
       child: Scaffold(
         appBar: BasicAppbar(
+          backgroundColor: Colors.transparent,
           title: Text(
             'Booking Detail',
             style: TextStyle(
@@ -61,252 +63,176 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
         body: BlocBuilder<GetBookingDetailCubit, GetBookingDetailState>(
           builder: (context, state) {
             if (state is GetBookingDetailLoaded) {
-              return SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: Column(
-                  children: [
-                    Padding(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: AppSize.apHorizontalPadding * .4,
-                            vertical: AppSize.apVerticalPadding * .2),
-                        child: Card(
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: AppSize.apHorizontalPadding * .4,
-                                vertical: AppSize.apVerticalPadding * .4),
-                            child: Column(
-                              children: [
-                                Row(
-                                  children: [
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(8),
-                                      child: Image.asset(
-                                        AppImages.picture,
-                                        width: AppSize.imageMedium.w,
-                                        height: AppSize.imageMedium.h,
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      width: 10.w,
-                                    ),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          state.bookingdetail.serviceName!,
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: AppSize.textLarge,
-                                              color: isDark
-                                                  ? Colors.grey.shade300
-                                                  : Colors.black87),
-                                        ),
-                                        SizedBox(
-                                          height: 10.h,
-                                        ),
-                                        Row(
-                                          // crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Icon(
-                                              Icons.location_on_outlined,
-                                              size: AppSize.iconMedium,
-                                              color: isDark
-                                                  ? AppColors.secondBackground
-                                                  : AppColors.background,
-                                            ),
-                                            SizedBox(
-                                              width: 4.w,
-                                            ),
-                                            Text(
-                                              'Thu Duc - Ho Chi Minh',
-                                              style: TextStyle(
-                                                  fontSize: AppSize.textMedium,
-                                                  color: isDark
-                                                      ? Colors.white
-                                                      : Colors.black),
-                                            ),
-                                          ],
-                                        ),
-                                        SizedBox(
-                                          height: 10.w,
-                                        ),
-                                        // Row(
-                                        //   crossAxisAlignment:
-                                        //       CrossAxisAlignment.center,
-                                        //   children: [
-                                        //     Icon(
-                                        //       Icons.star_rate_rounded,
-                                        //       size: AppSize.iconMedium,
-                                        //       color: isDark
-                                        //           ? AppColors.secondBackground
-                                        //           : AppColors.background,
-                                        //     ),
-                                        //     SizedBox(
-                                        //       width: 4.w,
-                                        //     ),
-                                        //     Text(
-                                        //       '4.9',
-                                        //       style: TextStyle(
-                                        //           fontSize: AppSize.textMedium,
-                                        //           color: AppColors
-                                        //               .secondBackground),
-                                        //     ),
-                                        //     SizedBox(
-                                        //       width: 4,
-                                        //     ),
-                                        //     Text(
-                                        //       '1000 review',
-                                        //       style: TextStyle(
-                                        //           fontSize: AppSize.textMedium,
-                                        //           color: isDark
-                                        //               ? Colors.grey.shade200
-                                        //               : Colors.grey.shade400),
-                                        //     ),
-                                        //   ],
-                                        // )
-                                      ],
-                                    )
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: 10.h,
-                                ),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: Colors.green.shade50,
-                                    borderRadius: BorderRadius.circular(
-                                        AppSize.borderRadiusSmall),
-                                    border: Border.all(
-                                      color: Colors.green.shade100,
-                                    ),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
+              return Stack(children: [
+                SingleChildScrollView(
+                  padding: EdgeInsets.only(
+                      bottom: 40 + (AppSize.apVerticalPadding * 2)),
+                  physics: BouncingScrollPhysics(),
+                  scrollDirection: Axis.vertical,
+                  child: Column(
+                    children: [
+                      Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: AppSize.apHorizontalPadding * .4,
+                              vertical: AppSize.apVerticalPadding * .2),
+                          child: Card(
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: AppSize.apHorizontalPadding * .4,
+                                  vertical: AppSize.apVerticalPadding * .4),
+                              child: Column(
+                                children: [
+                                  Row(
                                     children: [
-                                      Text(
-                                        state.bookingdetail.status!,
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: AppSize.textMedium,
-                                          color: Colors.black87,
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(8),
+                                        child: Image.asset(
+                                          AppImages.picture,
+                                          width: AppSize.imageMedium.w,
+                                          height: AppSize.imageMedium.h,
+                                          fit: BoxFit.cover,
                                         ),
+                                      ),
+                                      SizedBox(
+                                        width: 10.w,
+                                      ),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            state.bookingdetail.serviceName!,
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: AppSize.textLarge,
+                                                color: isDark
+                                                    ? Colors.grey.shade300
+                                                    : Colors.black87),
+                                          ),
+                                          SizedBox(
+                                            height: 10.h,
+                                          ),
+                                          Row(
+                                            // crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Icon(
+                                                Icons.location_on_outlined,
+                                                size: AppSize.iconMedium,
+                                                color: isDark
+                                                    ? AppColors.secondBackground
+                                                    : AppColors.background,
+                                              ),
+                                              SizedBox(
+                                                width: 4.w,
+                                              ),
+                                              Text(
+                                                'Thu Duc - Ho Chi Minh',
+                                                style: TextStyle(
+                                                    fontSize:
+                                                        AppSize.textMedium,
+                                                    color: isDark
+                                                        ? Colors.white
+                                                        : Colors.black),
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(
+                                            height: 10.w,
+                                          ),
+                                        ],
                                       )
                                     ],
                                   ),
-                                ),
-                                SizedBox(
-                                  height: 10.h,
-                                ),
-                                Divider(
-                                  thickness: 1,
-                                  height: 4,
-                                  color: Colors.black,
-                                ),
-                                SizedBox(
-                                  height: 10.h,
-                                ),
-                                shopInformation(context),
-                                SizedBox(
-                                  height: 10.h,
-                                ),
-                                bookingSumary(
-                                    state.bookingdetail.bookedDate,
-                                    state.bookingdetail.estimatedEndDate,
-                                    state.bookingdetail.formattedDuration,
-                                    state.bookingdetail.formattedPrice)
-                              ],
-                            ),
-                          ),
-                        )),
-                    // SizedBox(
-                    //   height: 10.h,
-                    // ),
-                    scheduleList(context, state.bookingdetail.userDayFrees!),
-                  ],
-                ),
-              );
-            } else if (state is GetBookingDetailLoading) {
-              return Shimmer.fromColors(
-                baseColor: Colors.black26,
-                highlightColor: Colors.black54,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    AspectRatio(
-                      aspectRatio: 16 / 9,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(4),
-                          color: Colors.black38,
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 10.h,
-                    ),
-                    Container(
-                      width: 160,
-                      height: 16,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(4),
-                        color: Colors.black26,
-                      ),
-                    ),
-                    SizedBox(
-                      height: 10.h,
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: List.generate(3, (index) {
-                        return Container(
-                          width: double.infinity,
-                          height: 12,
-                          margin: EdgeInsets.only(top: index == 0 ? 0 : 8),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(4),
-                            color: Colors.black26,
-                          ),
-                        );
-                      }),
-                    ),
-                    SizedBox(
-                      height: 10.h,
-                    ),
-                    Row(
-                      children: [
-                        const CircleAvatar(
-                          backgroundColor: Colors.black54,
-                          child: Icon(
-                            Icons.person,
-                            color: Colors.white,
-                          ),
-                        ),
-                        SizedBox(
-                          width: 10.w,
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [120, 180].asMap().entries.map((e) {
-                            return Container(
-                              width: e.value.toDouble(),
-                              height: 12,
-                              margin: EdgeInsets.only(top: e.key == 0 ? 0 : 8),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(4),
-                                color: Colors.black26,
+                                  SizedBox(
+                                    height: 10.h,
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      color: getStatusColor(
+                                          state.bookingdetail.status!),
+                                      borderRadius: BorderRadius.circular(
+                                          AppSize.borderRadiusSmall),
+                                      border: Border.all(
+                                        color: getStatusBorderColor(
+                                            state.bookingdetail.status!),
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          state.bookingdetail.status!,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: AppSize.textMedium,
+                                            color: Colors.black87,
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 10.h,
+                                  ),
+                                  Divider(
+                                    thickness: 1,
+                                    height: 4,
+                                    color: Colors.black,
+                                  ),
+                                  SizedBox(
+                                    height: 10.h,
+                                  ),
+                                  shopInformation(context),
+                                  SizedBox(
+                                    height: 10.h,
+                                  ),
+                                  bookingSumary(
+                                      state.bookingdetail.bookedDate,
+                                      state.bookingdetail.estimatedEndDate,
+                                      state.bookingdetail.formattedDuration,
+                                      state.bookingdetail.formattedPrice,
+                                      state.bookingdetail.adjustPriceReason)
+                                ],
                               ),
-                            );
-                          }).toList(),
-                        ),
-                      ],
-                    ),
-                  ],
+                            ),
+                          )),
+                      // SizedBox(
+                      //   height: 10.h,
+                      // ),
+                      scheduleList(context, state.bookingdetail.userDayFrees!),
+                    ],
+                  ),
                 ),
-              );
+                Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.only(
+                                topLeft:
+                                    Radius.circular(AppSize.borderRadiusLarge),
+                                topRight: Radius.circular(
+                                    AppSize.borderRadiusLarge))),
+                        child: Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: AppSize.apHorizontalPadding,
+                                vertical: AppSize.apVerticalPadding),
+                            child: Center(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children:
+                                    _buildActionButtons(state.bookingdetail),
+                              ),
+                            ))))
+              ]);
+            } else if (state is GetBookingDetailLoading) {
+              return BookingDetailPlaceholder();
             }
             return Center(
                 child: Column(
@@ -328,36 +254,6 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
                     ))
               ],
             ));
-          },
-        ),
-        bottomNavigationBar: Builder(
-          builder: (context) {
-            final state = context.watch<GetBookingDetailCubit>().state;
-            var countReschedule =
-                context.watch<BookingServiceCubit>().reschedule;
-            if (state is GetBookingDetailLoaded) {
-              // buttonResolve(context, state.bookingdetail.status!);
-
-              // var animation = Tween(begin: 0.0, end: 1.0).animate(
-              //     CurvedAnimation(
-              //         parent: widget.animationController,
-              //         curve: Interval(0.0, 1.0, curve: Curves.fastOutSlowIn)));
-              return Padding(
-                  padding: EdgeInsets.symmetric(
-                      horizontal: AppSize.apHorizontalPadding,
-                      vertical: AppSize.apVerticalPadding),
-                  child: buttonResolve(
-                      context,
-                      BookingCardViewModel(
-                          shopName: state.bookingdetail.shopName,
-                          duration: state.bookingdetail.duration,
-                          nameService: state.bookingdetail.serviceName,
-                          price: state.bookingdetail.price,
-                          status: state.bookingdetail.status,
-                          bookingDetailId:
-                              state.bookingdetail.bookingDetailId)));
-            }
-            return const SizedBox.shrink();
           },
         ),
       ),
@@ -531,8 +427,8 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
     );
   }
 
-  Widget bookingSumary(
-      DateTime? start, DateTime? end, String duration, String price) {
+  Widget bookingSumary(DateTime? start, DateTime? end, String duration,
+      String price, String? adjustPriceReason) {
     final DateFormat dateFormat = DateFormat('dd-MM-yyyy');
     final DateFormat timeFormat = DateFormat('HH:mm');
     return Container(
@@ -707,24 +603,67 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
                 color: Colors.blue.shade50,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Total Price :',
-                    style: TextStyle(
-                      fontSize: 15,
-                      color: Colors.grey,
+                  if (adjustPriceReason != null) ...[
+                    SizedBox(height: 4),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('Total Price:',
+                            style: TextStyle(
+                                fontSize: AppSize.textMedium,
+                                color: Colors.grey)),
+                        Text(
+                          '$price \$',
+                          style: TextStyle(
+                            fontSize: AppSize.textLarge,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue.shade700,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  Text(
-                    '\$ $price',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blue.shade700,
+                    SizedBox(height: 4),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Reason: ',
+                          style: TextStyle(
+                            fontSize: AppSize.textLarge,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        Text(
+                          ' $adjustPriceReason',
+                          style: TextStyle(
+                            fontSize: AppSize.textLarge,
+                            color: Colors.black87,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
+                  ] else ...[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('Total Price:',
+                            style: TextStyle(
+                                fontSize: AppSize.textMedium,
+                                color: Colors.grey)),
+                        Text(
+                          price,
+                          style: TextStyle(
+                            fontSize: AppSize.textLarge,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue.shade700,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -732,160 +671,139 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
         ));
   }
 
-  Widget buttonResolve(BuildContext context, BookingCardViewModel booking) {
-    // var status = context.watch<GetBookingDetailCubit>().bookingdetail.status;
-    var isDark = context.isDarkMode;
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        ButtonDesign(
-          width: 120.w,
-          height: 32.h,
-          ontap: () {
-            booking.status == 'Pending'
-                ? sl<CancelBookingUseCase>().call(booking.bookingDetailId!)
-                : DialogConfirmBooking().showDialogConfirmation(context, () {});
-            // setState(() {});
-            // context
-            //     .read<ResolveOverlapServiceCubit>()
-            //     .markAction(widget.bookingId, OverlapActionStatus.rescheduled);
-            // bookingCubit.removeRescheduleBooking(widget.bookingId);
-          },
-          text: booking.status == 'Pending' ? 'cancel' : ' Reschedule',
-          fillColor: Colors.green.shade200,
-          textColor: isDark ? Colors.white70 : Colors.black,
-          borderColor: isDark ? Colors.grey.shade200 : Colors.black87,
-          fontSize: AppSize.textSmall,
-        ),
-        SizedBox(
-          width: 20.w,
-        ),
-        ButtonDesign(
-          width: 120.w,
-          height: 32.h,
-          ontap: () async {
-            booking.status != 'Pending'
-                ? showDialogConfirmation(booking)
-                : ConfirmInformationBooking();
-          },
-          text: booking.status != 'Pending' ? 'Confirm' : 'Reschedule',
-          fillColor: AppColors.secondBackground,
-          textColor: isDark ? Colors.grey.shade200 : Colors.white,
-          borderColor:
-              context.isDarkMode ? Colors.grey.shade200 : Colors.black87,
-          fontSize: AppSize.textSmall,
-        )
-      ],
-    );
-  }
+  List<Widget> _buildActionButtons(BookingDetailEntity booking) {
+    TextEditingController noteCon = TextEditingController();
+    var bookingCubit = context.read<BookingServiceCubit>();
+    final isDark = context.isDarkMode;
 
-  void showDialogConfirmation(BookingCardViewModel service) async {
-    final result = await showDialog(
-      context: context,
-      builder: (context) {
-        var animation = Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(
-            parent: widget.animationController,
-            curve: Interval(0.0, 1.0, curve: Curves.fastOutSlowIn)));
-        return SimpleDialog(
-          contentPadding: const EdgeInsets.all(20),
-          children: [
-            Icon(Icons.info_outline_rounded,
-                size: AppSize.iconSmall, color: Colors.black38),
-            SizedBox(
-              width: 10,
-            ),
-            Text(
-              'If you confirm the schedule of this service, you will have to  reschedule\n or cancel for other services.',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontWeight: FontWeight.w400,
-                fontSize: AppSize.textMedium,
-              ),
-            ),
-            BookingCard(
-                imageSize: AppSize.imageSmall,
-                animationController: widget.animationController,
-                animation: animation,
-                service: service),
-            SizedBox(
-              width: 10,
-            ),
-            Row(
-              children: [
-                Expanded(
-                  child: FilledButton(
-                    onPressed: () {
-                      sl<SubmitBookingUseCase>().call(service.bookingDetailId!);
-                      // showDialogConfirmation(service
-                      // BookingCardViewModel(
-                      //   bookingDetailId: service.bookingDetailId,
-                      //   bookedDate: service.bookedDate,
-                      //   shopName: se.shopName,
-                      //   nameService: booking.serviceName,
-                      // ),
-                      // );
+    switch (booking.status) {
+      case 'Pending':
+      case 'Reschedule':
+      case 'Confirmed':
+        return [
+          ButtonDesign(
+            width: 140.w,
+            height: 40.h,
+            ontap: () {
+              sl<CancelBookingUseCase>().call(booking.bookingDetailId!);
+            },
+            text: 'Cancel',
+            fillColor: Colors.green.shade200,
+            textColor: isDark ? Colors.white70 : Colors.black,
+            borderColor: isDark ? Colors.grey.shade200 : Colors.black87,
+            fontSize: AppSize.textMedium,
+          ),
+          SizedBox(width: 20.w),
+          ButtonDesign(
+            width: 140.w,
+            height: 40.h,
+            ontap: () {
+              DialogConfirmBooking().showDialogConfirmation(context, () {
+                ChooseFreeTime()
+                    .showScheduleBottomSheet(context, booking.serviceId);
+              });
+            },
+            text: 'Reschedule',
+            fillColor: AppColors.secondBackground,
+            textColor: isDark ? Colors.grey.shade200 : Colors.white,
+            borderColor: isDark ? Colors.grey.shade200 : Colors.black87,
+            fontSize: AppSize.textMedium,
+          ),
+        ];
 
-                      Navigator.pop(context, 'yes');
-                    },
-                    style: ButtonStyle(
-                      backgroundColor: const WidgetStatePropertyAll(Colors.red),
-                      foregroundColor:
-                          const WidgetStatePropertyAll(Colors.white),
-                      shape: WidgetStatePropertyAll(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+      case 'Completed':
+        return [
+          ButtonDesign(
+            width: 140.w,
+            height: 40.h,
+            ontap: () {
+              booking.isReviewed!
+                  ? ReviewService(
+                      bookingDetailId: booking.bookingDetailId!,
+                    )
+                  : AppNavigator.push(
+                      context,
+                      ReviewBookingScreen(
+                        bookingId: booking.bookingDetailId!,
+                        imageUrl: booking.profilePicture!,
+                        serviceName: booking.serviceName!,
+                      ));
+            },
+            text: booking.isReviewed! ? 'View Review' : 'Review',
+            fillColor: Colors.transparent,
+            textColor: isDark ? Colors.white70 : Colors.black,
+            borderColor: isDark ? Colors.grey.shade200 : Colors.black87,
+            fontSize: AppSize.textMedium,
+          ),
+          SizedBox(width: 20.w),
+          ButtonDesign(
+            width: 140.w,
+            height: 40.h,
+            ontap: () {},
+            text: 'Rebook',
+            fillColor: AppColors.primary,
+            textColor: Colors.white70,
+            borderColor: isDark ? Colors.grey.shade200 : Colors.black87,
+            fontSize: AppSize.textMedium,
+          ),
+        ];
+
+      case 'Cancelled':
+        return [
+          ButtonDesign(
+            width: 140.w,
+            height: 40.h,
+            ontap: () {
+              CustomModalBottomSheet.show(
+                  initialSize: .3,
+                  maxSize: .4,
+                  minSize: .1,
+                  context: context,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(20),
+                          topRight: Radius.circular(20)),
+                      color: context.isDarkMode
+                          ? AppColors.darkGrey
+                          : Colors.grey.shade200,
+                    ),
+                    padding: EdgeInsets.symmetric(
+                        horizontal: AppSize.apHorizontalPadding,
+                        vertical: AppSize.apVerticalPadding),
+                    // height: 100,
+                    // width: double.infinity,
+                    child: Column(
+                      children: [
+                        AddSchedule(
+                          serviceId: booking.serviceId,
                         ),
-                      ),
-                    ),
-                    child: Text(
-                      'Confirm',
-                      style: TextStyle(
-                          fontSize: AppSize.textMedium,
-                          fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  width: 10,
-                ),
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () {
-                      Navigator.pop(context, 'no');
-                    },
-                    style: ButtonStyle(
-                      foregroundColor:
-                          const WidgetStatePropertyAll(Colors.black54),
-                      shape: WidgetStatePropertyAll(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                        SizedBox(
+                          height: 16.h,
                         ),
-                      ),
+                        InputTextFormField(
+                            controller: noteCon,
+                            labelText: 'Note',
+                            hint: 'Note',
+                            onFieldSubmitted: (value) {
+                              bookingCubit.updateNote(
+                                  booking.serviceId.toString(), value);
+                            }),
+                      ],
                     ),
-                    child: Text('Reschedule',
-                        style: TextStyle(
-                            fontSize: AppSize.textMedium,
-                            fontWeight: FontWeight.w600)),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        );
-      },
-    );
+                  ));
+            },
+            text: 'Rebooking',
+            fillColor: AppColors.primary,
+            textColor: Colors.white70,
+            borderColor: isDark ? Colors.grey.shade200 : Colors.black87,
+            fontSize: AppSize.textMedium,
+          ),
+        ];
 
-    if (result == null) return;
-    if (result is! String) return;
-    if (result == 'no') {
-      return;
-    }
-    if (result == 'yes') {
-      context
-          .read<ResolveOverlapServiceCubit>()
-          .markAction(service.bookingDetailId!, OverlapActionStatus.confirmed);
-
-      return;
+      case 'Processing':
+      default:
+        return []; // Không hiển thị nút nào
     }
   }
 }

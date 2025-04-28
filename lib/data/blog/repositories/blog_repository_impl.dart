@@ -12,7 +12,6 @@ import 'package:tracio_fe/data/blog/models/request/reply_comment_req.dart';
 import 'package:tracio_fe/data/blog/models/response/blog_response.dart';
 import 'package:tracio_fe/data/blog/models/response/get_reaction_blog.dart';
 import 'package:tracio_fe/data/blog/source/blog_api_service.dart';
-import 'package:tracio_fe/data/shop/models/booking_service_req.dart';
 import 'package:tracio_fe/domain/blog/entites/category.dart';
 import 'package:tracio_fe/domain/blog/entites/reaction_response_entity.dart';
 import 'package:tracio_fe/domain/blog/entites/reply_comment.dart';

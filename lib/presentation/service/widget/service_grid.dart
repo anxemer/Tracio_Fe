@@ -10,8 +10,10 @@ import 'package:tracio_fe/presentation/service/widget/service_card.dart';
 import '../../../core/constants/app_size.dart';
 
 class ServiceGrid extends StatelessWidget {
-  const ServiceGrid({super.key, required this.services});
+  const ServiceGrid(
+      {super.key, required this.services, this.isShopOwner = false});
   final List<ShopServiceEntity> services;
+  final bool isShopOwner;
   // final List<ShopEntity> shop;
 
   @override
@@ -20,51 +22,54 @@ class ServiceGrid extends StatelessWidget {
       child: CustomScrollView(
         slivers: [
           // Near Location section
+
           SliverToBoxAdapter(
-            child: NearLocation(),
+            child: isShopOwner ? SizedBox.shrink() : NearLocation(),
           ),
 
           // Padding between sections
           SliverToBoxAdapter(
-            child: SizedBox(height: 10.h),
+            child: isShopOwner ? SizedBox.shrink() : SizedBox(height: 10.h),
           ),
           SliverToBoxAdapter(
             child: Padding(
               padding: EdgeInsets.symmetric(
                   horizontal: AppSize.apHorizontalPadding.w),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Service',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: AppSize.textMedium.sp,
-                      color: context.isDarkMode
-                          ? Colors.grey.shade300
-                          : Colors.black87,
-                    ),
-                  ),
-                  InkWell(
-                    onTap: () => AppNavigator.push(
-                        context,
-                        FilterServicePage(
-                          shouldAutoFocus: false,
-                          shouldFetchAllServices: true,
-                        )),
-                    child: Text(
-                      'See All',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: AppSize.textMedium.sp,
-                        color: context.isDarkMode
-                            ? Colors.grey.shade300
-                            : Colors.black87,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              child: !isShopOwner
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Service',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: AppSize.textMedium.sp,
+                            color: context.isDarkMode
+                                ? Colors.grey.shade300
+                                : Colors.black87,
+                          ),
+                        ),
+                        InkWell(
+                          onTap: () => AppNavigator.push(
+                              context,
+                              FilterServicePage(
+                                shouldAutoFocus: false,
+                                shouldFetchAllServices: true,
+                              )),
+                          child: Text(
+                            'See All',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: AppSize.textMedium.sp,
+                              color: context.isDarkMode
+                                  ? Colors.grey.shade300
+                                  : Colors.black87,
+                            ),
+                          ),
+                        )
+                      ],
+                    )
+                  : SizedBox.shrink(),
             ),
           ),
           SliverToBoxAdapter(
@@ -81,11 +86,16 @@ class ServiceGrid extends StatelessWidget {
               ),
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
-                  return ServiceCard(
-                    service: services[index],
-                  );
+                  return isShopOwner
+                      ? ServiceCard(
+                          isShopOwner: isShopOwner,
+                          service: services[index],
+                        )
+                      : ServiceCard(
+                          service: services[index],
+                        );
                 },
-                childCount: 4,
+                childCount: isShopOwner ? services.length : 4,
               ),
             ),
           ),

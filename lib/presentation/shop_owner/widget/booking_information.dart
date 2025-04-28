@@ -2,27 +2,40 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
-import 'package:tracio_fe/presentation/shop_owner/bloc/cubit/resolve_booking_cubit.dart';
-import 'package:tracio_fe/presentation/shop_owner/bloc/cubit/resolve_booking_state.dart';
+import 'package:tracio_fe/common/widget/input_text_form_field.dart';
+import 'package:tracio_fe/core/configs/theme/app_colors.dart';
+import 'package:tracio_fe/presentation/shop_owner/bloc/resolve_booking/resolve_booking_cubit.dart';
+import 'package:tracio_fe/presentation/shop_owner/bloc/resolve_booking/resolve_booking_state.dart';
 
 import '../../../core/constants/app_size.dart';
 
 class BookingInformation extends StatefulWidget {
   const BookingInformation(
-      {super.key, this.start, this.end, this.duration, this.price});
+      {super.key,
+      this.start,
+      this.duration,
+      this.price,
+      this.userNote,
+      this.bookedDate,
+      required this.status,
+      this.shopNote});
   final DateTime? start;
-  final DateTime? end;
   final String? duration;
   final String? price;
+  final String? userNote;
+  final DateTime? bookedDate;
+  final String status;
+  final String? shopNote;
   @override
   State<BookingInformation> createState() => _BookingInformationState();
 }
 
 class _BookingInformationState extends State<BookingInformation> {
+  final TextEditingController shopNote = TextEditingController();
+  final TextEditingController priceAdjust = TextEditingController();
+  final TextEditingController reason = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    final DateFormat dateFormat = DateFormat('dd-MM-yyyy');
-    final DateFormat timeFormat = DateFormat('HH:mm');
     return Container(
         width: double.infinity,
         padding: EdgeInsets.symmetric(
@@ -42,204 +55,348 @@ class _BookingInformationState extends State<BookingInformation> {
         ),
         child: BlocBuilder<ResolveBookingShopCubit, ResolveBookingShopState>(
           builder: (context, state) {
-            // Dữ liệu mặc định từ widget hoặc state
-            final DateTime? displayStartDate =
-                state is UpdateParamsWaitingBooking
-                    ? state.bookedDate
-                    : widget.start;
-            final DateTime? displayEndDate = state is UpdateParamsWaitingBooking
-                ? state.estimatedEndDate
-                : widget.end;
+            if (state is UpdateParamsWaitingBooking) {
+              return buildBookingInformation(
+                isEditable: ['Pending', 'Reschedule'].contains(widget.status),
+                newPrice: state.price,
+                start: state.bookedDate,
+                duration: widget.duration,
+                price: widget.price,
+                note: state.shopNote,
+                reason: state.reason,
+                isUpdated: true,
+              );
+            } else {
+              return buildBookingInformation(
+                shopNote: widget.shopNote,
+                isEditable: ['Pending', 'Reschedule'].contains(widget.status),
+                start: widget.start,
+                duration: widget.duration,
+                price: widget.price,
+                note: widget.userNote,
+                
+                isUpdated: false,
+              );
+            }
+          },
+        ));
+  }
 
-            final String startDateString = displayStartDate != null
-                ? dateFormat.format(displayStartDate)
-                : 'Not Set';
-            final String startTimeString = displayStartDate != null
-                ? timeFormat.format(displayStartDate)
-                : '--:--';
-
-            final String endDateString = displayEndDate != null
-                ? dateFormat.format(displayEndDate)
-                : 'Waiting';
-            final String endTimeString = displayEndDate != null
-                ? timeFormat.format(displayEndDate)
-                : '--:--';
-
-            return Column(
+  void showDialogConfirmation() async {
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return SimpleDialog(
+          contentPadding: const EdgeInsets.all(20),
+          children: [
+            Icon(Icons.price_change_outlined,
+                size: AppSize.iconLarge, color: AppColors.secondBackground),
+            SizedBox(
+              height: 10.h,
+            ),
+            Text(
+              'price adjustment',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontWeight: FontWeight.w400,
+                fontSize: AppSize.textLarge,
+              ),
+            ),
+            SizedBox(
+              height: 10.h,
+            ),
+            InputTextFormField(
+              hint: 'New Price',
+              controller: priceAdjust,
+              labelText: 'New Price',
+              keyBoardType:
+                  const TextInputType.numberWithOptions(decimal: true),
+            ),
+            SizedBox(
+              height: 10.h,
+            ),
+            InputTextFormField(
+              controller: reason,
+              labelText: 'reason',
+              hint: 'Reason for price adjustment',
+            ),
+            SizedBox(
+              height: 10.h,
+            ),
+            Row(
               children: [
-                Stack(
-                  children: [
-                    Positioned(
-                      top: 0,
-                      right: 0,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          const Text(
-                            'Service Type',
-                            style: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 14,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          const Text(
-                            'Service',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      height: 10.h,
-                    ),
-                    Positioned(
-                      top: 0,
-                      left: 0,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Repair Start',
-                            style: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 14,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            startDateString,
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Align(
-                      alignment: Alignment.center,
-                      child: Column(
-                        children: [
-                          Text(startTimeString),
-                          Container(
-                            width: 18,
-                            height: 18,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border:
-                                  Border.all(color: Colors.orange, width: 2),
-                              color: Colors.white,
-                            ),
-                          ),
-                          SizedBox(
-                            height: 4.h,
-                          ),
-                          Container(
-                            width: 2,
-                            height: 100,
-                            color: Colors.orange,
-                          ),
-                          SizedBox(
-                            height: 4.h,
-                          ),
-                          Container(
-                            width: 18,
-                            height: 18,
-                            decoration: const BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.orange,
-                            ),
-                          ),
-                          Text(endTimeString),
-                        ],
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      left: 0,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Service Complete',
-                            style: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 14,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            endDateString,
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          const Text(
-                            'Duration',
-                            style: TextStyle(
-                              color: Colors.grey,
-                              fontSize: AppSize.textMedium,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            widget.duration!,
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: AppSize.textSmall,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 24),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                  decoration: BoxDecoration(
-                    color: Colors.blue.shade50,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'Total Price :',
-                        style: TextStyle(
-                          fontSize: 15,
-                          color: Colors.grey,
+                Expanded(
+                  child: FilledButton(
+                    onPressed: () {
+                      context
+                          .read<ResolveBookingShopCubit>()
+                          .updatePrice(priceAdjust.text, reason.text);
+                      Navigator.pop(context);
+                    },
+                    style: ButtonStyle(
+                      backgroundColor: const WidgetStatePropertyAll(Colors.red),
+                      foregroundColor:
+                          const WidgetStatePropertyAll(Colors.white),
+                      shape: WidgetStatePropertyAll(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
                         ),
                       ),
+                    ),
+                    child: const Text('Change Price'),
+                  ),
+                ),
+                SizedBox(
+                  width: 10.w,
+                ),
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    style: ButtonStyle(
+                      foregroundColor:
+                          const WidgetStatePropertyAll(Colors.black54),
+                      shape: WidgetStatePropertyAll(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                    child: const Text('Cancel'),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget buildBookingInformation({
+    required DateTime? start,
+    required String? duration,
+    required String? price,
+    String? newPrice,
+    String? shopNote,
+    String? note,
+    String? reason,
+    required bool isUpdated,
+    required bool isEditable, // ✅ Truyền status ở đây
+  }) {
+    final DateFormat dateFormat = DateFormat('dd-MM-yyyy');
+    final DateFormat timeFormat = DateFormat('HH:mm');
+    final String startDateString =
+        start != null ? dateFormat.format(start) : 'Choose In User Free Time';
+    final String startTimeString =
+        start != null ? timeFormat.format(start) : '--:--';
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Repair Start
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Repair Start:',
+              style:
+                  TextStyle(color: Colors.grey, fontSize: AppSize.textMedium),
+            ),
+            SizedBox(width: 10.w),
+            Text(
+              startDateString,
+              style: TextStyle(
+                  fontWeight: FontWeight.w600, fontSize: AppSize.textMedium),
+            ),
+            SizedBox(width: 10.w),
+            Text(
+              startTimeString,
+              style: TextStyle(
+                  fontWeight: FontWeight.w600, fontSize: AppSize.textMedium),
+            ),
+          ],
+        ),
+        SizedBox(height: 10.h),
+
+        // Duration
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            const Text(
+              'Duration:',
+              style:
+                  TextStyle(color: Colors.grey, fontSize: AppSize.textMedium),
+            ),
+            SizedBox(width: 10.w),
+            Text(
+              duration ?? '--',
+              style: const TextStyle(
+                  fontWeight: FontWeight.w600, fontSize: AppSize.textMedium),
+            ),
+          ],
+        ),
+        SizedBox(height: 10.h),
+
+        // Customer Note
+        if (note != null)
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              const Text(
+                'Customer Note:',
+                style:
+                    TextStyle(color: Colors.grey, fontSize: AppSize.textMedium),
+              ),
+              SizedBox(width: 10.w),
+              Text(
+                note,
+                style: const TextStyle(
+                    fontWeight: FontWeight.w600, fontSize: AppSize.textMedium),
+              ),
+            ],
+          ),
+        SizedBox(height: 10.h),
+
+        // ✅ Shop Note (Editable hoặc chỉ hiển thị)
+        isEditable
+            ? SizedBox(
+                height: 40,
+                child: InputTextFormField(
+                  controller: TextEditingController(text: shopNote ?? ''),
+                  labelText: 'Shop Note',
+                  hint: 'Note for Customer',
+                  onFieldSubmitted: (value) {
+                    // handle logic update here
+                  },
+                ),
+              )
+            : Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Shop Note:',
+                    style: TextStyle(
+                        color: Colors.grey, fontSize: AppSize.textMedium),
+                  ),
+                  SizedBox(width: 10.w),
+                  Flexible(
+                    child: Text(
+                      shopNote ?? '--',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: AppSize.textMedium,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
+        SizedBox(height: 10.h),
+
+        // Price section
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+          decoration: BoxDecoration(
+            color: Colors.blue.shade50,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: InkWell(
+            onTap: isEditable
+                ? () {
+                    showDialogConfirmation();
+                  }
+                : null,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (isUpdated && newPrice != null && newPrice != price) ...[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Initial Price:',
+                          style: TextStyle(
+                              fontSize: AppSize.textMedium,
+                              color: Colors.grey)),
                       Text(
-                        '\$ ${widget.price}',
+                        '$price \$',
+                        style: const TextStyle(
+                          fontSize: AppSize.textMedium,
+                          decoration: TextDecoration.lineThrough,
+                          color: Colors.red,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 4),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('New Price:',
+                          style: TextStyle(
+                              fontSize: AppSize.textMedium,
+                              color: Colors.grey)),
+                      Text(
+                        '$newPrice \$',
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: AppSize.textLarge,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.green.shade700,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 4),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Total Price:',
+                          style: TextStyle(
+                              fontSize: AppSize.textMedium,
+                              color: Colors.grey)),
+                      Text(
+                        '$newPrice \$',
+                        style: TextStyle(
+                          fontSize: AppSize.textLarge,
                           fontWeight: FontWeight.bold,
                           color: Colors.blue.shade700,
                         ),
                       ),
                     ],
                   ),
-                ),
+                  SizedBox(height: 4),
+                  Text(
+                    'Reason: $reason',
+                    style: TextStyle(
+                      fontSize: AppSize.textLarge,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ] else ...[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Total Price:',
+                          style: TextStyle(
+                              fontSize: AppSize.textMedium,
+                              color: Colors.grey)),
+                      Text(
+                        price!,
+                        style: TextStyle(
+                          fontSize: AppSize.textLarge,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue.shade700,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ],
-            );
-          },
-        ));
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }

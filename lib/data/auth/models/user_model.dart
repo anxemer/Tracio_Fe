@@ -9,38 +9,34 @@ class UserModel extends UserEntity {
     super.userName,
     super.email,
     super.role,
+    super.countRole,
     // super.firebaseId,
     // super.phoneNumber,
     super.profilePicture,
   });
-
-  // Chuyển đối tượng thành Map để convert sang JSON
-  Map<String, dynamic> toMap() {
-    return {
+Map<String, dynamic> toMap() {
+    return <String, dynamic>{
       'userId': userId,
       'userName': userName,
       'email': email,
       'role': role,
+      'countRole': countRole,
       'profilePicture': profilePicture,
     };
   }
 
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
-      userId: map['userId'] as int,
-      userName: map['userName'] as String,
-      email: map['email'] as String,
-      role: map['role'] as String,
-      // firebaseId: map['firebaseId'] as String ,
-      // phoneNumber: map['phoneNumber'] as String ,
-      profilePicture: map['profilePicture'] as String? ?? "", // Tránh null
+      userId: map['userId'] != null ? map['userId'] as int : null,
+      userName: map['userName'] != null ? map['userName'] as String : null,
+      email: map['email'] != null ? map['email'] as String : null,
+      role: map['role'] != null ? map['role'] as String : null,
+      countRole: map['countRole'] != null ? map['countRole'] as String : null,
+      profilePicture: map['profilePicture'] != null ? map['profilePicture'] as String : null,
     );
   }
 
-  // Chuyển JSON string thành object
-  factory UserModel.fromJson(String source) =>
-      UserModel.fromMap(json.decode(source));
-
-  // Convert object sang JSON string
   String toJson() => json.encode(toMap());
+
+  factory UserModel.fromJson(String source) => UserModel.fromMap(json.decode(source) as Map<String, dynamic>);
 }
