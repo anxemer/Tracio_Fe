@@ -1,4 +1,7 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -24,6 +27,11 @@ class CyclingTopActionBar extends StatefulWidget {
 }
 
 class _CyclingTopActionBarState extends State<CyclingTopActionBar> {
+  Future<Uint8List> _getMarkerBytes(String assetPath) async {
+    final ByteData bytes = await rootBundle.load(assetPath);
+    return bytes.buffer.asUint8List();
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<MapCubit, MapCubitState>(builder: (context, state) {
@@ -98,9 +106,14 @@ class _CyclingTopActionBarState extends State<CyclingTopActionBar> {
                               searchedCoordinate.longitude,
                               searchedCoordinate.latitude));
                           //Search annotation
-                          context.read<MapCubit>().addSearchAnnotation(Position(
-                              searchedCoordinate.longitude,
-                              searchedCoordinate.latitude));
+                          final imageData = await _getMarkerBytes(
+                              'assets/images/search_location_marker.png');
+                          context.read<MapCubit>().addPointAnnotation(
+                              Position(searchedCoordinate.longitude,
+                                  searchedCoordinate.latitude),
+                              imageData,
+                              iconOffset: [-10.0, 20.0],
+                              iconSize: 0.5);
                           _showLocationOptions(context, searchedCoordinate);
                         }
                       }
@@ -226,9 +239,10 @@ class _CyclingTopActionBarState extends State<CyclingTopActionBar> {
   }
 
   void _navigateToRoute(BuildContext context, PlaceDetailEntity place) async {
-    context
-        .read<MapCubit>()
-        .addPointAnnotation(Position(place.longitude, place.latitude));
+    final imageData =
+        await _getMarkerBytes('assets/images/search_location_marker.png');
+    context.read<MapCubit>().addPointAnnotation(
+        Position(place.longitude, place.latitude), imageData);
     bg.Location location = await bg.BackgroundGeolocation.getCurrentPosition();
 
     List<Coordinate> coordinates = [

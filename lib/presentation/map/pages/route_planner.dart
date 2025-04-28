@@ -101,7 +101,7 @@ class _RoutePlannerState extends State<RoutePlanner> {
                       children: [
                         IconButton(
                           icon: const Icon(
-                            Icons.undo,
+                            Icons.add,
                             size: 20,
                             color: Colors.black,
                           ),
@@ -112,7 +112,7 @@ class _RoutePlannerState extends State<RoutePlanner> {
                         ),
                         IconButton(
                           icon: const Icon(
-                            Icons.redo,
+                            Icons.minimize_outlined,
                             size: 20,
                             color: Colors.black,
                           ),
@@ -176,29 +176,12 @@ class _RoutePlannerState extends State<RoutePlanner> {
                         },
                       );
                     }),
-
-                    // Change Cycling button
-                    IconButton(
-                      style: IconButton.styleFrom(
-                        elevation: 2,
-                        backgroundColor: Colors.white,
-                        alignment: Alignment.center,
-                        padding: EdgeInsets.zero,
-                      ),
-                      icon: const Icon(
-                        Icons.directions_bike_sharp,
-                        color: Colors.black87,
-                      ),
-                      onPressed: () {
-                        // Implement cycling functionality
-                      },
-                    ),
                   ],
                 ),
               ),
 
               // Top action bar
-              Positioned(
+              Positioned( 
                 top: _initTopBarTopPosition,
                 left: 20,
                 right: 20,

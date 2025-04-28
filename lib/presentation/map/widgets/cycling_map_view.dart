@@ -1,9 +1,13 @@
 import 'dart:async';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' as mapbox;
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
+import 'package:tracio_fe/common/helper/custom_paint/numbered_circle_painter.dart';
+import 'dart:ui' as ui;
 import 'package:tracio_fe/core/services/signalR/implement/group_route_hub_service.dart';
 import 'package:tracio_fe/data/map/source/tracking_grpc_service.dart';
 import 'package:tracio_fe/domain/groups/entities/group_route_location_update.dart';
@@ -26,7 +30,7 @@ class _CyclingMapViewState extends State<CyclingMapView> {
   List<mapbox.Position> routePoints = [];
   List<bg.Location> tempRouteList = [];
   bool isMapInitialized = false;
-  
+
   final groupRouteHub = sl<GroupRouteHubService>();
   GroupRouteLocationUpdateEntity? userLocationUpdate;
   @override
@@ -45,6 +49,42 @@ class _CyclingMapViewState extends State<CyclingMapView> {
     });
   }
 
+  Future<ui.Image> _createNumberedImage(int number) async {
+    final recorder = ui.PictureRecorder();
+    final canvas = Canvas(recorder);
+
+    final size = ui.Size(80, 80);
+    final painter = NumberedCirclePainter(number);
+    painter.paint(canvas, size);
+
+    final picture = recorder.endRecording();
+    final image =
+        await picture.toImage(size.width.toInt(), size.height.toInt());
+
+    return image;
+  }
+
+  Future<Uint8List> _getMarkerBytes(String assetPath) async {
+    final ByteData bytes = await rootBundle.load(assetPath);
+    return bytes.buffer.asUint8List();
+  }
+
+  Future<Uint8List> _getImageDataForOrderedPoint(
+      int index, List<dynamic> pointAnnotations) async {
+    if (index == 0) {
+      // Start point
+      return await _getMarkerBytes('assets/images/start-flag.png');
+    } else if (index == pointAnnotations.length - 1) {
+      // End point
+      return await _getMarkerBytes('assets/images/end-flag.png');
+    } else {
+      // Middle points
+      final image = await _createNumberedImage(index + 1);
+      final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
+      return bytes!.buffer.asUint8List();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final mapCubit = context.read<MapCubit>();
@@ -54,16 +94,25 @@ class _CyclingMapViewState extends State<CyclingMapView> {
             listener: (context, state) async {
           if (state is GetDirectionLoaded) {
             if (context.mounted) {
-              //Set order of waypoints
-              await mapCubit
-                  .addMultiplePointAnnotations(state.direction.waypoints);
+              // Set order of waypoints
+              for (var waypoint in state.direction.waypoints) {
+                var imageData = await _getImageDataForOrderedPoint(
+                  state.direction.waypoints.indexOf(waypoint),
+                  state.direction.waypoints,
+                );
+                await mapCubit.addPointAnnotation(waypoint, imageData);
+              }
+
+              // After adding all points, add polyline
               await mapCubit.addPolylineRoute(state.direction.geometry!);
             }
           } else if (state is GetDirectionFailure) {
             // Show error message
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.errorMessage)),
-            );
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(state.errorMessage)),
+              );
+            }
           }
         }, builder: (context, directionState) {
           return Stack(
@@ -78,7 +127,7 @@ class _CyclingMapViewState extends State<CyclingMapView> {
                   key: const ValueKey("mapWidget"),
                   cameraOptions: mapCubit.camera,
                   onMapCreated: (map) {
-                    mapCubit.initializeMap(map, forRiding: true);
+                    mapCubit.initializeMap(map);
                     isMapInitialized = true;
                   },
                 ),
@@ -111,12 +160,12 @@ class _CyclingMapViewState extends State<CyclingMapView> {
 
     if (routePoints.length > 100) {
       setState(() {
-        routePoints.removeAt(0);
+        routePoints.clear();
       });
     }
 
     if (widget.routeId != null) {
-      if (tempRouteList.length >= 100) {
+      if (tempRouteList.length >= 20) {
         final List<Map<String, dynamic>> grpcLocations =
             tempRouteList.asMap().entries.map((entry) {
           final pos = entry.value;

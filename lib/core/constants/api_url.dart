@@ -61,6 +61,9 @@ class ApiUrl {
         .replace(queryParameters: request.toQueryParams());
   }
 
+  static String urlCustomMapTile =
+      "mapbox://styles/trminloc/cm7brl3yq006m01qyhqlx2kze";
+
   static Uri urlGetDirectionUsingMapbox(
       MapboxDirectionsRequest mapboxDirectionReq) {
     final coordsString = mapboxDirectionReq.coordinates

@@ -1,4 +1,7 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
@@ -58,9 +61,12 @@ class TopActionBar extends StatelessWidget {
                         searchedCoordinate.longitude,
                         searchedCoordinate.latitude));
                     //Search annotation
-                    context.read<MapCubit>().addSearchAnnotation(Position(
-                        searchedCoordinate.longitude,
-                        searchedCoordinate.latitude));
+                    final imageData = await _getMarkerBytes(
+                        'assets/images/search_location_marker.png');
+                    await context.read<MapCubit>().addPointAnnotation(
+                        Position(searchedCoordinate.longitude,
+                            searchedCoordinate.latitude),
+                        imageData);
                     _showLocationOptions(context, searchedCoordinate);
                   }
                 } else if (searchedCoordinate != null &&
@@ -161,10 +167,18 @@ class TopActionBar extends StatelessWidget {
     });
   }
 
-  void _navigateToRoute(BuildContext context, PlaceDetailEntity place) {
-    context
-        .read<MapCubit>()
-        .addPointAnnotation(Position(place.longitude, place.latitude));
+  void _navigateToRoute(BuildContext context, PlaceDetailEntity place) async {
+    final imageData =
+        await _getMarkerBytes('assets/images/search_location_marker.png');
+    await context.read<MapCubit>().addPointAnnotation(
+          Position(place.longitude, place.latitude),
+          imageData,
+        );
+  }
+
+  Future<Uint8List> _getMarkerBytes(String assetPath) async {
+    final ByteData bytes = await rootBundle.load(assetPath);
+    return bytes.buffer.asUint8List();
   }
 
   void _addPointOfInterest(PlaceDetailEntity place) {

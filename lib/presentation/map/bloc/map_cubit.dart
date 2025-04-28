@@ -1,15 +1,16 @@
 import 'dart:async';
 import 'dart:ui' as ui;
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_polyline_algorithm/google_polyline_algorithm.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:tracio_fe/common/helper/custom_paint/numbered_circle_painter.dart';
 import 'package:tracio_fe/core/configs/utils/color_utils.dart';
 import 'package:tracio_fe/core/constants/api_url.dart';
 import 'package:tracio_fe/core/constants/app_urls.dart';
+import 'package:tracio_fe/core/network/dio_client.dart';
 import 'package:tracio_fe/domain/map/usecase/get_image_url_usecase.dart';
 import 'package:tracio_fe/presentation/map/bloc/map_state.dart';
 import 'package:tracio_fe/service_locator.dart';
@@ -38,44 +39,68 @@ class MapCubit extends Cubit<MapCubitState> {
   final Map<String, PointAnnotationManager> _managers = {};
   final Map<String, Uint8List> _imageCache = {};
 
-  Future<void> initializeMap(MapboxMap mapboxMap,
-      {bool forRiding = false}) async {
+  Future<void> initializeMap(
+    MapboxMap mapboxMap, {
+    LocationComponentSettings? locationSetting,
+    LogoSettings? logoSetting,
+    AttributionSettings? attributionSetting,
+    CompassSettings? compassSetting,
+    GesturesSettings? gesturesSetting,
+  }) async {
     this.mapboxMap = mapboxMap;
 
-    await mapboxMap.location.updateSettings(LocationComponentSettings(
-      enabled: true,
-      puckBearingEnabled: forRiding,
-    ));
-
+    // Location setting
+    await mapboxMap.location.updateSettings(
+      locationSetting ??
+          LocationComponentSettings(
+            enabled: true,
+            puckBearingEnabled: true,
+          ),
+    );
     await mapboxMap
         .setBounds(CameraBoundsOptions(maxZoom: 20.0, minZoom: 10.0));
     await mapboxMap.scaleBar.updateSettings(ScaleBarSettings(enabled: false));
 
-    mapboxMap.logo.updateSettings(LogoSettings(
-      position: OrnamentPosition.BOTTOM_RIGHT,
-      marginRight: forRiding ? 80 : 60,
-      marginBottom: forRiding ? 80 : 200,
-    ));
+    await mapboxMap.logo.updateSettings(
+      logoSetting ??
+          LogoSettings(
+            position: OrnamentPosition.BOTTOM_RIGHT,
+            marginRight: 60,
+            marginBottom: 200,
+          ),
+    );
 
-    mapboxMap.attribution.updateSettings(AttributionSettings(
-      position: OrnamentPosition.BOTTOM_RIGHT,
-      marginRight: forRiding ? 65 : 60,
-      marginBottom: forRiding ? 80 : 200,
-    ));
+    // Attribution setting
+    await mapboxMap.attribution.updateSettings(
+      attributionSetting ??
+          AttributionSettings(
+            position: OrnamentPosition.BOTTOM_RIGHT,
+            marginRight: 60,
+            marginBottom: 200,
+          ),
+    );
 
-    if (forRiding) {
-      mapboxMap.compass.updateSettings(CompassSettings(
-          position: OrnamentPosition.BOTTOM_LEFT,
-          marginLeft: 10,
-          marginBottom: 130,
-          enabled: true));
-    } else {
-      mapboxMap.gestures.updateSettings(GesturesSettings(rotateEnabled: false));
-    }
+    // Compass setting
+    await mapboxMap.compass.updateSettings(
+      compassSetting ??
+          CompassSettings(
+            position: OrnamentPosition.BOTTOM_LEFT,
+            marginLeft: 10,
+            marginBottom: 130,
+            enabled: true,
+          ),
+    );
+
+    // Gesture setting
+    await mapboxMap.gestures.updateSettings(
+      gesturesSetting ??
+          GesturesSettings(
+            rotateEnabled: true,
+          ),
+    );
   }
 
   void changeMapStyle(String style) {
-    String customTileUrl = "mapbox://styles/trminloc/cm7brl3yq006m01qyhqlx2kze";
     String styleUri = {
           "Mapbox Streets": MapboxStyles.MAPBOX_STREETS,
           "Mapbox Outdoors": MapboxStyles.OUTDOORS,
@@ -84,144 +109,71 @@ class MapCubit extends Cubit<MapCubitState> {
           "Mapbox Satellite": MapboxStyles.SATELLITE,
           "Goong Map":
               "${AppUrl.goongMaptile}${dotenv.env['GOONG_MAPTILE_TOKEN']}",
-          "Terrain-v2": customTileUrl
+          "Terrain-v2": ApiUrl.urlCustomMapTile
         }[style] ??
         MapboxStyles.OUTDOORS;
     emit(MapCubitStyleLoaded(styleUri: styleUri));
   }
 
-  void animateCamera(Position position) {
+  void animateCamera(
+    Position position, {
+    double zoom = 18,
+  }) {
     mapboxMap?.flyTo(
       CameraOptions(
         center: Point(coordinates: position),
         anchor: ScreenCoordinate(x: 0, y: 0),
-        zoom: 18,
+        zoom: zoom,
       ),
       MapAnimationOptions(duration: 2000, startDelay: 500),
     );
   }
 
-  Future<ui.Image> _createNumberedImage(int number) async {
-    final recorder = ui.PictureRecorder();
-    final canvas = Canvas(recorder);
-
-    final size = ui.Size(80, 80);
-    final painter = NumberedCirclePainter(number);
-    painter.paint(canvas, size);
-
-    final picture = recorder.endRecording();
-    final image =
-        await picture.toImage(size.width.toInt(), size.height.toInt());
-
-    return image;
-  }
-
-  Future<Uint8List> _getMarkerBytes(String assetPath) async {
-    final ByteData bytes = await rootBundle.load(assetPath);
-    return bytes.buffer.asUint8List();
-  }
-
-  Future<Uint8List> _getImageDataForOrderedPoint(int index) async {
-    if (index == 0) {
-      // Start point
-      return await _getMarkerBytes('assets/images/start-flag.png');
-    } else if (index == pointAnnotations.length - 1) {
-      // End point
-      return await _getMarkerBytes('assets/images/end-flag.png');
-    } else {
-      // Middle points
-      final image = await _createNumberedImage(index + 1);
-      final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
-      return bytes!.buffer.asUint8List();
-    }
-  }
-
-  Future<void> addPointAnnotation(Position position) async {
-    pointAnnotationManager ??= await mapboxMap?.annotations
-        .createPointAnnotationManager(below: "location-indicator");
+  Future<void> addPointAnnotation(Position position, Uint8List imageData,
+      {IconAnchor iconAnchor = IconAnchor.BOTTOM,
+      List<double?>? iconOffset,
+      double iconSize = 1}) async {
+    pointAnnotationManager ??=
+        await mapboxMap?.annotations.createPointAnnotationManager();
 
     pointAnnotationManager?.setIconAllowOverlap(true);
-
-    final Uint8List imageData =
-        await _getImageDataForOrderedPoint(pointAnnotations.length);
 
     final annotation = PointAnnotationOptions(
         geometry: Point(coordinates: position),
         image: imageData,
-        iconAnchor: IconAnchor.BOTTOM);
+        iconSize: iconSize,
+        iconAnchor: iconAnchor);
 
     pointAnnotationManager?.create(annotation);
     pointAnnotations.add(annotation);
     emit(MapAnnotationsUpdated(annotations: List.from(pointAnnotations)));
   }
 
-  Future<void> addSearchAnnotation(Position position) async {
-    pointAnnotationManager ??=
-        await mapboxMap?.annotations.createPointAnnotationManager();
-    // pointAnnotationManager?.setIconAllowOverlap(true);
-    final Uint8List imageData =
-        await _getMarkerBytes('assets/images/search_location_marker.png');
-
-    searchAnnotation = PointAnnotationOptions(
-      geometry: Point(coordinates: position),
-      image: imageData,
-      iconOffset: [-10.0, 20.0],
-      iconSize: 0.5,
-    );
-
-    await pointAnnotationManager?.create(searchAnnotation!);
-  }
-
-  Future<void> addPolylineRoute(LineString lineString) async {
+  Future<void> addPolylineRoute(LineString lineString,
+      {double lineWidth = 5.0,
+      Color lineColor = Colors.deepOrange,
+      double lineOpacity = 0.6,
+      Color lineBorderColor = Colors.white,
+      double lineBorderWidth = 1.0}) async {
     try {
       polylineAnnotationManager ??= await mapboxMap?.annotations
-          .createPolylineAnnotationManager(id: 'polyline-route');
+          .createPolylineAnnotationManager(
+              id: 'polyline-route', below: "poi-label");
 
       final polylineOptions = PolylineAnnotationOptions(
         geometry: lineString,
-        lineJoin: LineJoin.NONE,
-        lineColor: Colors.deepOrange.shade600.toInt(),
-        lineWidth: 5.0,
-        lineBorderWidth: 1.0,
-        lineBorderColor: Colors.white.toInt(),
-        lineOpacity: 0.6,
+        lineJoin: LineJoin.ROUND,
+        lineColor: lineColor.toInt(),
+        lineWidth: lineWidth,
+        lineBorderWidth: lineBorderWidth,
+        lineBorderColor: lineBorderColor.toInt(),
+        lineOpacity: lineOpacity,
       );
 
       await polylineAnnotationManager?.create(polylineOptions);
     } catch (e) {
       print('Error adding polyline: $e');
       // You may want to handle this error and show feedback to the user
-    }
-  }
-
-  Future<void> addMultiplePointAnnotations(List<Position> positions) async {
-    pointAnnotationManager ??=
-        await mapboxMap?.annotations.createPointAnnotationManager();
-    pointAnnotationManager?.setIconAllowOverlap(true);
-
-    final futures = positions.asMap().entries.map((entry) async {
-      final Uint8List imageData = await _getImageDataForOrderedPoint(entry.key);
-      return PointAnnotationOptions(
-        geometry: Point(coordinates: entry.value),
-        image: imageData,
-        iconAnchor: IconAnchor.BOTTOM,
-      );
-    });
-
-    final annotations = await Future.wait(futures);
-    pointAnnotations.clear();
-    pointAnnotations.addAll(annotations);
-    emit(MapAnnotationsUpdated(annotations: List.from(pointAnnotations)));
-    _updateAnnotationsOnMap();
-  }
-
-  Future<void> removeLastAnnotation() async {
-    if (pointAnnotations.isNotEmpty) {
-      pointAnnotations.removeLast();
-      emit(MapAnnotationsUpdated(annotations: List.from(pointAnnotations)));
-      _updateAnnotationsOnMap();
-    } else {
-      await clearAnnotations();
     }
   }
 
@@ -344,7 +296,6 @@ class MapCubit extends Cubit<MapCubitState> {
     _managers[id] = manager!;
   }
 
-  /// Public: Update existing marker location
   Future<void> updateUserMarker({
     required String id,
     required String imageUrl,
@@ -367,7 +318,6 @@ class MapCubit extends Cubit<MapCubitState> {
     _userAnnotations[id] = updated;
   }
 
-  /// Public: Remove all user markers
   Future<void> clearAllMarkers() async {
     for (final manager in _managers.values) {
       await manager.deleteAll();
@@ -395,47 +345,100 @@ class MapCubit extends Cubit<MapCubitState> {
       (data) async {
         final image = Uint8List.fromList(data);
         final resized =
-            await _resizeImageBytes(image, size, borderColor, borderSize);
+            await createMarkerImage(image, size, borderColor, borderSize);
         _imageCache[url] = resized;
         return resized;
       },
     );
   }
 
-  /// Private: Resize and circle image
-  Future<Uint8List> _resizeImageBytes(
+  Future<Uint8List> createMarkerImage(
     Uint8List data,
     int size,
     Color borderColor,
-    double borderSize,
-  ) async {
-    final codec = await ui.instantiateImageCodec(data,
-        targetWidth: size, targetHeight: size);
+    double borderSize, {
+    double borderRadius = 8,
+    double triangleHeight = 10,
+  }) async {
+    final codec = await ui.instantiateImageCodec(
+      data,
+      targetWidth: size,
+      targetHeight: size,
+    );
     final frame = await codec.getNextFrame();
     final uiImage = frame.image;
 
+    final width = size;
+    final height = size;
+
     final recorder = ui.PictureRecorder();
     final canvas = Canvas(recorder);
-    final radius = size / 2;
-    final center = Offset(radius, radius);
 
+    final paint = Paint();
     final borderPaint = Paint()
       ..color = borderColor
       ..style = PaintingStyle.stroke
       ..strokeWidth = borderSize;
 
-    final clipPath = Path()
-      ..addOval(
-          Rect.fromCircle(center: center, radius: radius - borderSize / 2));
+    final rect = Rect.fromLTWH(0, 0, width.toDouble(), height.toDouble());
+    final rrect = RRect.fromRectAndRadius(rect, Radius.circular(borderRadius));
 
-    canvas.drawCircle(center, radius, Paint()..color = Colors.transparent);
-    canvas.clipPath(clipPath);
-    canvas.drawImage(uiImage, Offset.zero, Paint());
-    canvas.drawCircle(center, radius - borderSize / 2, borderPaint);
+    // Only save layer for clipping image
+    canvas.save();
+    canvas.clipRRect(rrect);
+
+    // Draw the resized image inside clipped area
+    canvas.drawImageRect(
+      uiImage,
+      Rect.fromLTWH(0, 0, uiImage.width.toDouble(), uiImage.height.toDouble()),
+      rect,
+      paint,
+    );
+
+    canvas.restore(); // <-- restore to remove clipping for next drawing
+
+    // Now draw border (outside clip)
+    canvas.drawRRect(rrect.deflate(borderSize / 2), borderPaint);
+
+    // Draw triangle at bottom center
+    final path = Path();
+    path.moveTo(width / 2 - 5, height.toDouble());
+    path.lineTo(width / 2, height.toDouble() + triangleHeight);
+    path.lineTo(width / 2 + 5, height.toDouble());
+    path.close();
+
+    final trianglePaint = Paint()
+      ..color = borderColor
+      ..style = PaintingStyle.fill;
+
+    canvas.drawPath(path, trianglePaint);
 
     final picture = recorder.endRecording();
-    final img = await picture.toImage(size, size);
-    final byteData = await img.toByteData(format: ui.ImageByteFormat.png);
+    final finalImage =
+        await picture.toImage(width, (height + triangleHeight).toInt());
+    final byteData =
+        await finalImage.toByteData(format: ui.ImageByteFormat.png);
+
     return byteData!.buffer.asUint8List();
+  }
+
+  Future<Uint8List> getNetworkImageData(Uri imageUrl) async {
+    try {
+      final response = await sl<DioClient>().get(
+        imageUrl.toString(),
+        options: Options(responseType: ResponseType.bytes),
+      );
+
+      if (response.statusCode == 200 && response.data != null) {
+        Uint8List originalBytes = response.data as Uint8List;
+        var resizedImageBytes =
+            await createMarkerImage(originalBytes, 40, Colors.black87, 4);
+        return resizedImageBytes.buffer.asUint8List();
+      } else {
+        throw Exception('Failed to load image: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error fetching image: $e');
+    }
   }
 }
