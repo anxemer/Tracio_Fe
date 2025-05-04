@@ -15,6 +15,8 @@ class InputTextFormField extends StatefulWidget {
   final String labelText;
   final Widget? prefixIcon;
   final Function? ontap;
+  final TextInputType? keyBoardType;
+  final int? maxLine;
   const InputTextFormField({
     super.key,
     required this.controller,
@@ -30,6 +32,8 @@ class InputTextFormField extends StatefulWidget {
     required this.labelText,
     this.prefixIcon,
     this.ontap,
+    this.keyBoardType,
+    this.maxLine,
   });
 
   @override
@@ -67,6 +71,9 @@ class _InputTextFormFieldState extends State<InputTextFormField> {
         });
       },
       child: TextFormField(
+      
+        maxLines: widget.maxLine ?? 1,
+        keyboardType: widget.keyBoardType,
         onTap: widget.ontap != null ? () => widget.ontap!() : null,
         focusNode: _focusNode,
         controller: widget.controller,

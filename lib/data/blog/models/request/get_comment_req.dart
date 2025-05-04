@@ -4,12 +4,10 @@ class GetCommentReq {
   final int? commentId;
   final int? pageSize;
   final int? pageNumber;
-  final bool? ascending;
   GetCommentReq({
     required this.blogId,
     this.commentId,
     this.pageSize,
     this.pageNumber,
-    this.ascending,
   });
 }

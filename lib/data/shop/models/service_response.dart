@@ -13,12 +13,12 @@ class ServiceResponseModel extends ServiceResponseEntity {
       required List<ShopServiceEntity> service,
       required PaginationServiceDataEntity pagination})
       : super(shop: shop, service: service, paginationMetaData: pagination);
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'shops': (shop as ShopModel).toJson(),
-      'services': (service as ShopServiceModel).toMap(),
-    };
-  }
+  // Map<String, dynamic> toMap() {
+  //   return <String, dynamic>{
+  //     'shops': (shop as ShopModel).toJson(),
+  //     'services': (service as ShopServiceModel).toMap(),
+  //   };
+  // }
 
   factory ServiceResponseModel.fromMap(Map<String, dynamic> map) {
     //  final metaData = PaginationServiceDataModel(

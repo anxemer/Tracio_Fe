@@ -2,24 +2,38 @@
 import 'package:intl/intl.dart';
 
 class BookingCardViewModel {
+  final int? bookingId;
+  final int? bookingDetailId;
   final String? nameService;
+  final String? userName;
   final String? imageUrl;
   final double? price;
+  final DateTime? bookedDate;
   final String? shopName;
+  final String? userNote;
+  final String? reason;
   final String? city;
   final String? district;
   final int? duration;
+  final String? status;
   BookingCardViewModel({
+    this.bookingId,
+    this.bookingDetailId,
     this.nameService,
+    this.userName,
     this.imageUrl,
     this.price,
+    this.bookedDate,
     this.shopName,
+    this.userNote,
+    this.reason,
     this.city,
     this.district,
     this.duration,
+    this.status,
   });
 
-   String get formattedDuration {
+  String get formattedDuration {
     int totalMinutes = duration!;
 
     if (totalMinutes >= 60) {

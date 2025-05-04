@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:tracio_fe/common/helper/is_dark_mode.dart';
 import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
 import 'package:tracio_fe/common/widget/appbar/app_bar.dart';
 import 'package:tracio_fe/core/configs/theme/app_colors.dart';
@@ -15,8 +16,8 @@ import 'package:tracio_fe/presentation/notifications/page/notifications.dart';
 import 'package:tracio_fe/service_locator.dart';
 
 class GroupPage extends StatefulWidget {
-  const GroupPage({super.key});
-
+  const GroupPage({super.key, this.initialIndex = 2});
+  final int initialIndex;
   @override
   State<GroupPage> createState() => _GroupPageState();
 }
@@ -78,7 +79,7 @@ class _GroupPageState extends State<GroupPage> {
       title: Text(
         'Groups',
         style: TextStyle(
-          color: Colors.white,
+          color: context.isDarkMode ? Colors.white : Colors.black87,
           fontWeight: FontWeight.w400,
           fontSize: AppSize.textHeading * 0.9.sp,
         ),
@@ -100,7 +101,7 @@ class _GroupPageState extends State<GroupPage> {
           },
           icon: Icon(
             Icons.mail,
-            color: Colors.white,
+            color: AppColors.primary,
             size: AppSize.iconMedium.w,
           ),
           tooltip: "Message",
@@ -113,7 +114,7 @@ class _GroupPageState extends State<GroupPage> {
           onPressed: () {},
           icon: Icon(
             Icons.search,
-            color: Colors.white,
+            color: AppColors.primary,
             size: AppSize.iconMedium.w,
           ),
           tooltip: "Search",
@@ -128,7 +129,7 @@ class _GroupPageState extends State<GroupPage> {
           },
           icon: Icon(
             Icons.notifications,
-            color: Colors.white,
+            color: AppColors.primary,
             size: AppSize.iconMedium.w,
           ),
           tooltip: "Notifications",

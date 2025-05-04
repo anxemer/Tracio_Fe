@@ -28,10 +28,13 @@ class BlogResponse extends BlogResponseEntity {
       throw FormatException("Missing 'result' field in API response");
     }
     final metaData = PaginationMetaData(
-      totalBlogs: resultMap['totalBlogs'],
+      totalSeenBlogs: resultMap['totalSeenBlog'],
       pageNumber: resultMap['pageNumber'] ?? 1,
       pageSize: resultMap['pageSize'] ?? 5,
-      totalPages: resultMap['totalPages'] ?? 1,
+      isSeen: resultMap['isSeen'],
+      totalSeenBlogPages: resultMap['totalSeenBlogPage'],
+      hasNextPage: null,
+      hasPreviousPage: null,
     );
     final List<dynamic> blogsList = resultMap['blogs'] ?? [];
     return BlogResponse(

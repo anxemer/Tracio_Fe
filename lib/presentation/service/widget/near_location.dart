@@ -4,10 +4,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tracio_fe/common/helper/is_dark_mode.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/presentation/service/bloc/service_bloc/cubit/get_near_service_cubit.dart';
+import 'package:tracio_fe/presentation/service/bloc/service_bloc/near_service_cubit/get_near_service_cubit.dart';
 
+import '../../../common/widget/picture/picture.dart';
 import '../../../core/configs/theme/app_colors.dart';
-import '../../../core/configs/theme/assets/app_images.dart';
 
 class NearLocation extends StatelessWidget {
   const NearLocation({super.key});
@@ -93,16 +93,15 @@ class NearLocation extends StatelessWidget {
                         children: [
                           Expanded(
                             child: ClipRRect(
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(20.r),
-                                topRight: Radius.circular(20.r),
-                              ),
-                              child: Image.asset(
-                                AppImages.picture,
-                                width: double.infinity,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
+                                borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(20.r),
+                                  topRight: Radius.circular(20.r),
+                                ),
+                                child: PictureCustom(
+                                  width: AppSize.imageExtraLarge * 1.4.w,
+                                  imageUrl: state.shop[index].profilePicture!,
+                                  height: AppSize.imageMedium.h,
+                                )),
                           ),
                           SizedBox(
                             height: AppSize.apVerticalPadding * 0.6.h,

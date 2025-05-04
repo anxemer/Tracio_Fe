@@ -12,8 +12,9 @@ import 'package:tracio_fe/data/blog/models/request/react_blog_req.dart';
 import 'package:tracio_fe/data/blog/models/request/reply_comment_req.dart';
 import 'package:tracio_fe/data/blog/models/response/blog_response.dart';
 import 'package:tracio_fe/data/blog/models/response/category_model.dart';
-import 'package:tracio_fe/data/blog/models/response/comment_blog_model.dart';
+import 'package:tracio_fe/data/blog/models/response/get_comment_blog_rep.dart';
 import 'package:tracio_fe/data/blog/models/response/get_reaction_blog.dart';
+import 'package:tracio_fe/data/blog/models/response/get_reply_comment_rep.dart';
 import 'package:tracio_fe/data/blog/models/response/reply_comment_model.dart';
 import 'package:tracio_fe/service_locator.dart';
 
@@ -21,6 +22,7 @@ import '../../../domain/blog/usecase/un_react_blog.dart';
 
 abstract class BlogApiService {
   Future<BlogResponse> getBlogs(GetBlogReq getBlog);
+  Future<BlogResponse> getBookmarkBlogs(GetBlogReq getBlog);
   Future<Either> reactBlog(ReactBlogReq react);
   Future<bool> createBlog(CreateBlogReq react);
   Future<Either> bookmarkBlog(int blogId);
@@ -29,8 +31,8 @@ abstract class BlogApiService {
   Future<Either> unReactBlog(UnReactionParam params);
   Future<List<GetReactionBlogResponse>> getReactBlog(int reactId);
   Future<Either> commentBlog(CommentBlogReq comment);
-  Future<List<CommentBlogModel>> getCommentBlog(GetCommentReq comment);
-  Future<List<ReplyCommentModel>> getRepCommentBlog(GetReplyCommentReq comment);
+  Future<GetCommentBlogRep> getCommentBlog(GetCommentReq comment);
+  Future<GetReplyCommentRepMode> getRepCommentBlog(GetReplyCommentReq comment);
   Future<Either> repCommentBlog(ReplyCommentReq comment);
 }
 
@@ -60,9 +62,9 @@ class BlogApiServiceImpl extends BlogApiService {
   @override
   Future<Either> reactBlog(ReactBlogReq react) async {
     try {
-      var response =
+      
           await sl<DioClient>().post(ApiUrl.reactBlog, data: react.toJson());
-      return right(response.data['result']);
+      return right(true);
     } on DioException catch (e) {
       return left(e.response!.data['message']);
     }
@@ -148,47 +150,28 @@ class BlogApiServiceImpl extends BlogApiService {
   }
 
   @override
-  Future<List<CommentBlogModel>> getCommentBlog(GetCommentReq comment) async {
+  Future<GetCommentBlogRep> getCommentBlog(GetCommentReq comment) async {
     final params = {
       if (comment.commentId != null) 'commentId': comment.commentId.toString(),
       'pageSize': comment.pageSize.toString(),
       'pageNumber': comment.pageNumber.toString(),
-      'ascending': comment.ascending.toString(),
     };
 
     try {
       var response = await sl<DioClient>()
           .get(ApiUrl.urlGetBlogComments(comment.blogId, params).toString());
 
-      if (response.statusCode != 200 ||
-          response.data == null ||
-          response.data['result'] == null) {
-        return [];
+      if (response.statusCode == 200) {
+        final responseData = GetCommentBlogRep.fromMap(response.data["result"]);
+        return responseData;
+      } else {
+        throw ExceptionFailure('Error: ${response.statusCode}');
       }
-
-      var result = response.data['result'];
-
-      int totalComments = result['totalComments'] ?? 0;
-      if (totalComments <= 0) {
-        return []; // Không có comment nào
-      }
-
-      if (result['comments'] != null) {
-        return List.from(result['comments'])
-            .map((e) => CommentBlogModel.fromMap(e))
-            .toList();
-      }
-
-      if (result['blog'] != null && result['comments'] != null) {
-        return List.from(result['comments'])
-            .map((e) => CommentBlogModel.fromMap(e))
-            .toList();
-      }
-
-      return [];
+    } on DioException catch (e) {
+      throw ExceptionFailure(
+          e.response?.data['message'] ?? 'An error occurred');
     } catch (e) {
-      print("Error fetching comments: $e");
-      return [];
+      throw ExceptionFailure('An unexpected error occurred: $e');
     }
   }
 
@@ -223,53 +206,51 @@ class BlogApiServiceImpl extends BlogApiService {
               data: formData);
 
       if (response.statusCode == 400) {
-        print('bị lỗiiiiiii');
+        print('Error');
       }
       return Right(response.data);
     } catch (e) {
       if (e is DioException) {
-        return Left(ServerFailure(e.message ?? "Lỗi kết nối đến server"));
+        return Left(ServerFailure(e.message ?? "Serve Error"));
       }
-      return Left(ServerFailure("Đã xảy ra lỗi: ${e.toString()}"));
+      return Left(ServerFailure("Have some problem"));
     }
   }
 
   @override
-  Future<List<ReplyCommentModel>> getRepCommentBlog(
+  Future<GetReplyCommentRepMode> getRepCommentBlog(
       GetReplyCommentReq comment) async {
     try {
       var response = await sl<DioClient>().get(ApiUrl.urlGetRepComments(
               comment.commentId, comment.pageNumber, comment.pageSize)
           .toString());
-      if (response.statusCode != 200 ||
-          response.data == null ||
-          response.data['result'] == null) {
-        return [];
+      if (response.statusCode == 200) {
+        final responseData =
+            GetReplyCommentRepMode.fromMap(response.data["result"]);
+        return responseData;
+      } else {
+        throw ExceptionFailure('Error: ${response.statusCode}');
       }
-
-      var result = response.data['result'];
-
-      int totalReplies = result['totalReplies'] ?? 0;
-      if (totalReplies <= 0) {
-        return []; // Không có comment nào
-      }
-
-      if (result['replies'] != null) {
-        return List.from(result['replies'])
-            .map((e) => ReplyCommentModel.fromJson(e))
-            .toList();
-      }
-
-      if (result['comment'] != null && result['replies'] != null) {
-        return List.from(result['blog']['comments'])
-            .map((e) => ReplyCommentModel.fromJson(e))
-            .toList();
-      }
-
-      return [];
+    } on DioException catch (e) {
+      throw ExceptionFailure(
+          e.response?.data['message'] ?? 'An error occurred');
     } catch (e) {
-      print("Error fetching comments: $e");
-      return [];
+      throw ExceptionFailure('An unexpected error occurred: $e');
+    }
+  }
+
+  @override
+  Future<BlogResponse> getBookmarkBlogs(GetBlogReq getBlog) async {
+    Uri apiUrl = ApiUrl.urlGetBookMarkBlog(getBlog.toQueryParams());
+
+    var response = await sl<DioClient>().get(apiUrl.toString());
+    if (response.statusCode == 200) {
+      return BlogResponse.fromMap(response.data);
+    } else {
+      if (response.statusCode == 401) {
+        throw AuthenticationFailure(response.statusMessage.toString());
+      }
+      throw ServerFailure(response.statusMessage.toString());
     }
   }
 }

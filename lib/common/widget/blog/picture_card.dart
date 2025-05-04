@@ -6,8 +6,14 @@ import 'package:tracio_fe/core/configs/theme/app_colors.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
 
 class PictureCard extends StatefulWidget {
-  const PictureCard({super.key, required this.listImageUrl});
+  const PictureCard(
+      {super.key,
+      required this.listImageUrl,
+      this.imageWidth,
+      this.imageheight});
   final List<String> listImageUrl;
+  final double? imageWidth;
+  final double? imageheight;
   @override
   State<PictureCard> createState() => _PictureCardState();
 }
@@ -23,18 +29,22 @@ class _PictureCardState extends State<PictureCard> {
 
   @override
   Widget build(BuildContext context) {
-    return widget.listImageUrl.length != 0
+    return widget.listImageUrl.isNotEmpty
         ? Column(
             children: [
               SizedBox(
-                height: AppSize.imageExtraLarge.h,
-                width: 750.w,
+                height: widget.imageheight ?? AppSize.imageExtraLarge.h,
+                width: widget.imageWidth ?? 750.w,
                 child: Stack(
                   children: [
                     Align(
                       alignment: Alignment.center,
                       child: CarouselSlider(
                         options: CarouselOptions(
+                          enableInfiniteScroll: widget.listImageUrl.length > 1,
+                          scrollPhysics: widget.listImageUrl.length == 1
+                              ? const NeverScrollableScrollPhysics()
+                              : null,
                           height: AppSize.imageExtraLarge.h,
                           viewportFraction:
                               widget.listImageUrl.length == 1 ? 1 : 0.8,
@@ -78,28 +88,33 @@ class _PictureCardState extends State<PictureCard> {
                         }).toList(),
                       ),
                     ),
-                    Positioned(
-                      bottom: 10,
-                      left: 0,
-                      right: 0,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children:
-                            widget.listImageUrl.asMap().entries.map((entry) {
-                          return Container(
-                            width: _currentPage == entry.key ? 32.w : 16.w,
-                            height: 8,
-                            margin: EdgeInsets.symmetric(horizontal: 4),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(4),
-                              color: _currentPage == entry.key
-                                  ? AppColors.background
-                                  : Colors.white,
+                    widget.listImageUrl.length > 1
+                        ? Positioned(
+                            bottom: 10,
+                            left: 0,
+                            right: 0,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: widget.listImageUrl
+                                  .asMap()
+                                  .entries
+                                  .map((entry) {
+                                return Container(
+                                  width:
+                                      _currentPage == entry.key ? 32.w : 16.w,
+                                  height: 8,
+                                  margin: EdgeInsets.symmetric(horizontal: 4),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(4),
+                                    color: _currentPage == entry.key
+                                        ? AppColors.background
+                                        : Colors.white,
+                                  ),
+                                );
+                              }).toList(),
                             ),
-                          );
-                        }).toList(),
-                      ),
-                    ),
+                          )
+                        : SizedBox.shrink(),
                   ],
                 ),
               ),

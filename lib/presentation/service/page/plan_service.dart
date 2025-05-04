@@ -42,6 +42,8 @@ class _PlanServicePageState extends State<PlanServicePage>
     screenAnimationController.forward();
     // widget.animationController.forward();
     context.read<CartItemCubit>().getCartitem();
+    context.read<BookingServiceCubit>().clearBookingItem();
+
     // context.read<CartItemCubit>().resetState();
     // bookingModel = selectedService.map((item) {
     //   return BookingCardViewModel(
@@ -57,6 +59,7 @@ class _PlanServicePageState extends State<PlanServicePage>
   void dispose() {
     screenAnimationController.dispose();
     _controllers.forEach((_, controller) => controller.dispose());
+
     super.dispose();
   }
 
@@ -111,6 +114,7 @@ class _PlanServicePageState extends State<PlanServicePage>
                               padding: EdgeInsets.all(8.0),
                               child: BookingCard(
                                 service: BookingCardViewModel(
+                                    imageUrl: state.cart[index].mediaUrl,
                                     city: state.cart[index].city,
                                     district: state.cart[index].district,
                                     duration: state.cart[index].duration,
@@ -164,7 +168,7 @@ class _PlanServicePageState extends State<PlanServicePage>
                                           children: [
                                             !isSelected
                                                 ? Text(
-                                                    'Select this service',
+                                                    'Select',
                                                     style: TextStyle(
                                                       fontWeight:
                                                           FontWeight.w600,
@@ -175,7 +179,7 @@ class _PlanServicePageState extends State<PlanServicePage>
                                                     ),
                                                   )
                                                 : Text(
-                                                    'remove this service',
+                                                    'Remove',
                                                     style: TextStyle(
                                                       fontWeight:
                                                           FontWeight.w600,
@@ -241,24 +245,26 @@ class _PlanServicePageState extends State<PlanServicePage>
                         },
                       ),
                     ),
-                    Positioned(
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 8),
-                        decoration: BoxDecoration(
-                          color: context.isDarkMode
-                              ? AppColors.darkGrey
-                              : Colors.grey.shade200,
-                        ),
-                        child: AddSchedule(
-                          cartItem: bookingCubit.selectedServices,
-                          // bookingModel: bookingModel,
-                        ),
-                      ),
-                    ),
+                    state.cart.isEmpty
+                        ? SizedBox.shrink()
+                        : Positioned(
+                            bottom: 0,
+                            left: 0,
+                            right: 0,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 8),
+                              decoration: BoxDecoration(
+                                color: context.isDarkMode
+                                    ? AppColors.darkGrey
+                                    : Colors.grey.shade200,
+                              ),
+                              child: AddSchedule(
+                                  // cartItem: bookingCubit.selectedServices,
+                                  // bookingModel: bookingModel,
+                                  ),
+                            ),
+                          ),
                   ]),
                 ),
               ],

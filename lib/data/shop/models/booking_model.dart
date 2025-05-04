@@ -1,22 +1,19 @@
 import 'package:tracio_fe/domain/shop/entities/response/booking_entity.dart';
 
-import '../../../common/helper/media_file.dart';
-
 class BookingModel extends BookingEntity {
   BookingModel({
     required super.bookingId,
+    required super.bookingDetailId,
     required super.serviceName,
-    required super.receivedAt,
     required super.serviceMediaFile,
     required super.shopName,
-    required super.profilePicture,
     required super.bookedDate,
     required super.duration,
     required super.estimatedEndDate,
     required super.status,
-    required super.userNote,
-    required super.shopNote,
     required super.price,
+    required super.cyclistName,
+    required super.cyclistAvatar,
   });
   //  Map<String, dynamic> toMap() {
   //   return <String, dynamic>{
@@ -36,29 +33,35 @@ class BookingModel extends BookingEntity {
   //   };
   // }
 
-  factory BookingModel.fromMap(Map<String, dynamic> map) {
+  factory BookingModel.fromJson(Map<String, dynamic> json) {
     return BookingModel(
-      bookingId: map['bookingId'] != null ? map['bookingId'] as int : null,
-      serviceName:
-          map['serviceName'] != null ? map['serviceName'] as String : null,
-      receivedAt: map['receivedAt'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(map['receivedAt'] as int)
-          : null,
-      serviceMediaFile: map["mediaFiles"] == null
-          ? []
-          : List<MediaFile>.from(
-              map["mediaFiles"]!.map((x) => MediaFile.fromJson(x))),
-      shopName: map['shopName'] != null ? map['shopName'] as String : null,
-      profilePicture: map['profilePicture'] != null
-          ? map['profilePicture'] as String
-          : null,
-      bookedDate: DateTime.tryParse(map["bookedDate"] ?? ""),
-      duration: map['duration'] != null ? map['duration'] as int : null,
-      estimatedEndDate: DateTime.tryParse(map["estimatedEndDate"] ?? ""),
-      status: map['status'] != null ? map['status'] as String : null,
-      userNote: map['userNote'] != null ? map['userNote'] as String : null,
-      shopNote: map['shopNote'] != null ? map['shopNote'] as String : null,
-      price: map['price'] != null ? map['price'] as double : null,
+      bookingId: json["bookingId"],
+      bookingDetailId: json["bookingDetailId"],
+      serviceName: json["serviceName"],
+      serviceMediaFile: json["serviceMediaFile"],
+      shopName: json["shopName"],
+      cyclistName: json["cyclistName"],
+      cyclistAvatar: json["cyclistAvatar"],
+      bookedDate: DateTime.tryParse(json["bookedDate"] ?? ""),
+      duration: json["duration"],
+      estimatedEndDate: DateTime.tryParse(json["estimatedEndDate"] ?? ""),
+      status: json["status"],
+      price: json['price'] != null ? (json['price'] as num).toDouble() : null,
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        "bookingId": bookingId,
+        "bookingDetailId": bookingDetailId,
+        "serviceName": serviceName,
+        "serviceMediaFile": serviceMediaFile,
+        "shopName": shopName,
+        "cyclistName": cyclistName,
+        "cyclistAvatar": cyclistAvatar,
+        "bookedDate": bookedDate?.toIso8601String(),
+        "duration": duration,
+        "estimatedEndDate": estimatedEndDate?.toIso8601String(),
+        "status": status,
+        "price": price,
+      };
 }

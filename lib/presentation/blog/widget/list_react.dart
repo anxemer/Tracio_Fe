@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tracio_fe/common/bloc/generic_data_cubit.dart';
+import 'package:tracio_fe/common/widget/picture/circle_picture.dart';
+import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/domain/blog/entites/reaction_response_entity.dart';
 
 import '../../../common/bloc/generic_data_state.dart';
-import '../../../core/configs/theme/assets/app_images.dart';
+import '../../../common/widget/drag_handle/drag_handle.dart';
 import '../../../domain/blog/usecase/get_reaction_blog.dart';
 import '../../../service_locator.dart';
 
@@ -42,27 +44,36 @@ class _ListReactState extends State<ListReact> {
                 topRight: Radius.circular(32.r)),
             child: Container(
               color: Colors.white,
-              height: 300.h,
-              child: Stack(
+              // height: 300.h,
+              child: Column(
                 children: [
-                  Positioned(
-                    top: 8.h,
-                    left: 260.w,
-                    child: Container(
-                      width: 200.w,
-                      height: 3.h,
-                      color: Colors.black,
+                  SizedBox(
+                    height: 10.h,
+                  ),
+                  DragHandle(
+                    width: MediaQuery.of(context).size.width * 0.3.w,
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    'Likes',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: AppSize.textHeading.sp,
                     ),
                   ),
-                  ListView.builder(
-                    itemCount: state.data.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return Padding(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 10.h, vertical: 10.h),
-                        child: _reactItem(state.data[index]),
-                      );
-                    },
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: state.data.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 10.h, vertical: 10.h),
+                          child: _reactItem(state.data[index]),
+                        );
+                      },
+                    ),
                   ),
                   // Positioned(bottom: 0, right: 0, left: 0, child: _comment())
                 ],
@@ -83,15 +94,14 @@ class _ListReactState extends State<ListReact> {
       child: ListTile(
         leading: ClipOval(
           child: SizedBox(
-            width: 40.w,
-            height: 40.h,
-            child: Image.asset(AppImages.man),
-          ),
+              child: CirclePicture(
+                  imageUrl: reaction.cyclistAvatar!,
+                  imageSize: AppSize.iconMedium.sp)),
         ),
         title: Text(
           reaction.cyclistName!,
           style: TextStyle(
-            fontSize: 32.sp,
+            fontSize: AppSize.textMedium.sp,
             fontWeight: FontWeight.bold,
             color: Colors.black,
           ),

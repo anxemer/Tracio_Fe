@@ -81,7 +81,9 @@ class _ReplyCommentItemState extends State<ReplyCommentItem> {
                   text: TextSpan(
                     children: [
                       TextSpan(
-                        text: '@${widget.reply.cyclistName} ',
+                        text: widget.reply.reReplyCyclistName == null
+                            ? ''
+                            : '@${widget.reply.reReplyCyclistName} ',
                         style: TextStyle(
                             fontSize: AppSize.textLarge.sp,
                             color: Colors.blue,
@@ -171,7 +173,7 @@ class _ReplyCommentItemState extends State<ReplyCommentItem> {
                               color: widget.reply.isReacted
                                   ? Colors.red
                                   : Colors.black,
-                              size: AppSize.iconMedium.sp,
+                              size: AppSize.iconSmall.sp,
                             ),
                             BasicTextButton(
                                 text: widget.reply.likesCount.toString(),
@@ -184,7 +186,7 @@ class _ReplyCommentItemState extends State<ReplyCommentItem> {
                                   .updateToReplyToReply(widget.reply),
                               child: Image.asset(
                                 AppImages.reply,
-                                width: AppSize.iconMedium.w,
+                                width: AppSize.iconSmall.w,
                               ),
                             )
                           ],

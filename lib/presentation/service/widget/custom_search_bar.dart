@@ -3,19 +3,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tracio_fe/common/bloc/filter_cubit.dart';
 import 'package:tracio_fe/common/helper/is_dark_mode.dart';
-import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
-import 'package:tracio_fe/core/configs/theme/app_colors.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/data/shop/models/get_service_req.dart';
 import 'package:tracio_fe/domain/blog/entites/category.dart';
 import 'package:tracio_fe/presentation/blog/bloc/category/get_category_cubit.dart';
-import 'package:tracio_fe/presentation/service/page/my_booking.dart';
-import 'package:tracio_fe/presentation/service/widget/filter_view.dart';
-import 'package:tracio_fe/presentation/service/widget/plan_service_icon.dart';
 import 'package:tracio_fe/presentation/service/widget/search_text_field.dart';
 
 class CustomSearchBar extends StatefulWidget {
-  const CustomSearchBar({super.key});
+  const CustomSearchBar({super.key, this.isShopOwner = false});
+  final bool isShopOwner;
   // final Function(String)? onSearch;
   @override
   State<CustomSearchBar> createState() => _CustomSearchBarState();
@@ -50,65 +46,56 @@ class _CustomSearchBarState extends State<CustomSearchBar> {
                 children: [
                   InkWell(
                     onTap: () => Navigator.pop(context),
-                    child: Container(
-                        height: 40.h,
-                        width: 40.w,
-                        decoration: BoxDecoration(
-                          boxShadow: [
-                            BoxShadow(
-                                blurRadius: 5,
-                                color: context.isDarkMode
-                                    ? Colors.transparent
-                                    : Colors.grey.shade400,
-                                offset: Offset(0, 2))
-                          ],
-                          color: context.isDarkMode
-                              ? AppColors.darkGrey
-                              : Colors.grey.shade200,
-                          borderRadius:
-                              BorderRadius.circular(AppSize.borderRadiusLarge),
-                        ),
-                        child: Icon(
-                          Icons.arrow_back,
-                          color: isDark
-                              ? AppColors.secondBackground
-                              : AppColors.background,
-                          size: AppSize.iconMedium,
-                        )),
-                  ),
-                  Spacer(),
-                  InkWell(
-                    onTap: () => AppNavigator.push(context, MyBookingPage()),
-                    child: Container(
-                        height: 40.h,
-                        width: 40.w,
-                        decoration: BoxDecoration(
-                          boxShadow: [
-                            BoxShadow(
-                                blurRadius: 5,
-                                color: context.isDarkMode
-                                    ? Colors.transparent
-                                    : Colors.grey.shade400,
-                                offset: Offset(0, 2))
-                          ],
-                          color: context.isDarkMode
-                              ? AppColors.darkGrey
-                              : Colors.grey.shade200,
-                          borderRadius:
-                              BorderRadius.circular(AppSize.borderRadiusLarge),
-                        ),
-                        child: Icon(
-                          Icons.calendar_today,
-                          color: isDark
-                              ? AppColors.secondBackground
-                              : AppColors.background,
-                          size: AppSize.iconMedium,
-                        )),
+                    child: Icon(
+                      Icons.arrow_back,
+                      color: isDark ? Colors.white : Colors.black,
+                      size: AppSize.iconMedium,
+                    ),
                   ),
                   SizedBox(
-                    width: 10.w,
+                    width: 10.h,
                   ),
-                  PlanServiceIcon()
+                  Text(
+                    widget.isShopOwner ? 'Services Management' : 'Services',
+                    style: TextStyle(
+                      fontSize: AppSize.textHeading,
+                      fontWeight: FontWeight.bold,
+                      color: isDark ? Colors.white70 : Colors.black87,
+                    ),
+                  )
+                  // Spacer(),
+                  // InkWell(
+                  //   onTap: () => AppNavigator.push(context, MyBookingPage()),
+                  //   child: Container(
+                  //       height: 40.h,
+                  //       width: 40.w,
+                  //       decoration: BoxDecoration(
+                  //         boxShadow: [
+                  //           BoxShadow(
+                  //               blurRadius: 5,
+                  //               color: context.isDarkMode
+                  //                   ? Colors.transparent
+                  //                   : Colors.grey.shade400,
+                  //               offset: Offset(0, 2))
+                  //         ],
+                  //         color: context.isDarkMode
+                  //             ? AppColors.darkGrey
+                  //             : Colors.grey.shade200,
+                  //         borderRadius:
+                  //             BorderRadius.circular(AppSize.borderRadiusLarge),
+                  //       ),
+                  //       child: Icon(
+                  //         Icons.calendar_today,
+                  //         color: isDark
+                  //             ? AppColors.secondBackground
+                  //             : AppColors.background,
+                  //         size: AppSize.iconMedium,
+                  //       )),
+                  // ),
+                  // SizedBox(
+                  //   width: 10.w,
+                  // ),
+                  // PlanServiceIcon()
                   // InkWell(
                   //   onTap: () => AppNavigator.push(context, PlanServicePage()),
                   //   child: Container(

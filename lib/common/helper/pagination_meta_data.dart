@@ -1,36 +1,58 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'dart:convert';
-
 import 'package:tracio_fe/domain/blog/entites/pagination_meta_data_entity.dart';
+
 class PaginationMetaData extends PaginationMetaDataEntity {
- 
   PaginationMetaData({
+    required super.isSeen,
     required super.pageNumber,
     required super.pageSize,
-    required super.totalBlogs,
-    required super.totalPages,
+    required super.totalSeenBlogs,
+    required super.totalSeenBlogPages,
+    required this.hasNextPage,
+    required this.hasPreviousPage,
   });
 
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'pageNumber': pageNumber,
-      'pageSize': pageSize,
-      'totalBlogs': totalBlogs,
-      'totalPages': totalPages,
-    };
-  }
+  final bool? hasNextPage;
+  final bool? hasPreviousPage;
 
-  factory PaginationMetaData.fromMap(Map<String, dynamic> map) {
+  PaginationMetaData copyWith({
+    bool? isSeen,
+    int? pageNumber,
+    int? pageSize,
+    int? totalSeenBlogs,
+    int? totalSeenBlogPages,
+    bool? hasNextPage,
+    bool? hasPreviousPage,
+  }) {
     return PaginationMetaData(
-      pageNumber: map['pageNumber'] as int,
-      pageSize: map['pageSize'] as int,
-      totalBlogs: map['totalBlogs'] as int,
-      totalPages: map['totalPages'] as int,
+      isSeen: isSeen ?? this.isSeen,
+      pageNumber: pageNumber ?? this.pageNumber,
+      pageSize: pageSize ?? this.pageSize,
+      totalSeenBlogs: totalSeenBlogs ?? this.totalSeenBlogs,
+      totalSeenBlogPages: totalSeenBlogPages ?? this.totalSeenBlogPages,
+      hasNextPage: hasNextPage ?? this.hasNextPage,
+      hasPreviousPage: hasPreviousPage ?? this.hasPreviousPage,
     );
   }
 
-  String toJson() => json.encode(toMap());
+  factory PaginationMetaData.fromJson(Map<String, dynamic> json) {
+    return PaginationMetaData(
+      isSeen: json["isSeen"],
+      pageNumber: json["pageNumber"],
+      pageSize: json["pageSize"],
+      totalSeenBlogs: json["totalSeenBlogs"],
+      totalSeenBlogPages: json["totalSeenBlogPages"],
+      hasNextPage: json["hasNextPage"],
+      hasPreviousPage: json["hasPreviousPage"],
+    );
+  }
 
-  factory PaginationMetaData.fromJson(String source) =>
-      PaginationMetaData.fromMap(json.decode(source) as Map<String, dynamic>);
+  Map<String, dynamic> toJson() => {
+        "isSeen": isSeen,
+        "pageNumber": pageNumber,
+        "pageSize": pageSize,
+        "totalSeenBlogs": totalSeenBlogs,
+        "totalSeenBlogPages": totalSeenBlogPages,
+        "hasNextPage": hasNextPage,
+        "hasPreviousPage": hasPreviousPage,
+      };
 }

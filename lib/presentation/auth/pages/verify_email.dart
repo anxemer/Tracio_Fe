@@ -11,7 +11,6 @@ import '../../../core/configs/theme/app_colors.dart';
 import '../../../core/configs/theme/assets/app_images.dart';
 import '../bloc/verify_email/verify_email_state.dart';
 import '../widgets/button_auth.dart';
-import '../widgets/input_field_auth.dart';
 import 'login.dart';
 import 'register.dart';
 

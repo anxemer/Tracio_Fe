@@ -2,14 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
 import 'package:tracio_fe/common/widget/appbar/app_bar.dart';
+import 'package:tracio_fe/common/widget/picture/circle_picture.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tracio_fe/presentation/library/pages/library.dart';
 import 'package:tracio_fe/presentation/auth/pages/login.dart';
 import 'package:tracio_fe/presentation/map/pages/route_planner.dart';
 
+import '../../../common/helper/placeholder/service_card.dart';
 import '../../auth/bloc/authCubit/auth_cubit.dart';
-
+import '../../auth/bloc/authCubit/auth_state.dart';
 
 class MorePage extends StatelessWidget {
   const MorePage({super.key});
@@ -30,26 +32,39 @@ class MorePage extends StatelessWidget {
       ),
       body: ListView(
         children: [
-          ListTile(
-            leading: CircleAvatar(
-              backgroundImage: NetworkImage('https://example.com/profile.jpg'),
-              radius: 20.w,
-            ),
-            title: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('My Profile'),
-                Text(
-                  'trminloc@gmail.com',
-                  style: TextStyle(
-                    fontSize: AppSize.textSmall.sp,
-                    color: Colors.black54,
+          BlocBuilder<AuthCubit, AuthState>(
+            builder: (context, state) {
+              if (state is AuthLoaded) {
+                return ListTile(
+                  leading: CirclePicture(
+                      imageUrl: state.user!.profilePicture!,
+                      imageSize: AppSize.iconLarge),
+                  // CircleAvatar(
+                  //   backgroundImage:
+                  //       NetworkImage(state.user.profilePicture),
+                  //   radius: 20.w,
+                  // ),
+                  title: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('My Profile'),
+                      Text(
+                        state.user!.email!,
+                        style: TextStyle(
+                          fontSize: AppSize.textSmall.sp,
+                          color: Colors.black54,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
-            ),
-            onTap: () {
-              Navigator.pushNamed(context, '/profile');
+                  onTap: () {
+                    Navigator.pushNamed(context, '/profile');
+                  },
+                );
+              } else if (state is AuthLoading) {
+                return ServiceCardPlaceHolder();
+              }
+              return Container();
             },
           ),
           Divider(),

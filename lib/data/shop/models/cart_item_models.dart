@@ -9,6 +9,7 @@ class CartItemModel extends CartItemEntity {
     super.city,
     super.district,
     required super.shopName,
+    required super.mediaUrl,
     required super.duration,
     required super.serviceName,
     required super.price,
@@ -27,6 +28,7 @@ class CartItemModel extends CartItemEntity {
       price: json["price"],
       duration: json['duration'] != null ? json['duration'] as int : null,
       createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
+      mediaUrl: json["mediaUrl"],
     );
   }
 

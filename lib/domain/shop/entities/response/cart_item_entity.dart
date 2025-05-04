@@ -3,15 +3,16 @@ import 'package:intl/intl.dart';
 
 class CartItemEntity {
   CartItemEntity({
-     this.itemId,
-     this.bookingQueueId,
-     this.serviceId,
-     this.shopId,
+    this.itemId,
+    this.bookingQueueId,
+    this.serviceId,
+    this.shopId,
     this.duration,
     this.city,
     this.district,
     this.shopName,
     this.serviceName,
+    this.mediaUrl,
     this.price,
     this.createdAt,
   });
@@ -25,6 +26,7 @@ class CartItemEntity {
   final String? district;
   final String? shopName;
   final String? serviceName;
+  final String? mediaUrl;
   final double? price;
   final DateTime? createdAt;
 

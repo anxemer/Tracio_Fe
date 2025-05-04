@@ -13,11 +13,13 @@ import '../../../core/erorr/failure.dart';
 import '../../../data/blog/models/request/get_comment_req.dart';
 import '../../../data/blog/models/request/reply_comment_req.dart';
 import '../../../data/blog/models/response/blog_response.dart';
+import '../../../data/blog/models/response/get_reply_comment_rep.dart';
 import '../usecase/un_react_blog.dart';
 
 abstract class BlogRepository {
   Future<Either<Failure, BlogResponse>> getBlogs(GetBlogReq params);
-  Future<Either<Failure, ReactionResponseEntity>> reactBlogs(
+  Future<Either<Failure, BlogResponse>> getBookmarkBlogs(GetBlogReq params);
+  Future<Either<Failure, bool>> reactBlogs(
       ReactBlogReq react);
   Future<Either<Failure, List<ReactionResponseEntity>>> getReactBlogs(int blog);
   Future<Either<Failure, bool>> createBlogs(CreateBlogReq react);
@@ -27,8 +29,8 @@ abstract class BlogRepository {
   Future<Either<Failure, bool>> unReactBlog(UnReactionParam params);
   Future<Either<Failure, bool>> commentBlog(CommentBlogReq comment);
   Future<Either<Failure, bool>> repCommentBlog(ReplyCommentReq comment);
-  Future<Either<Failure, List<CommentBlogEntity>>> getCommentBlog(
+  Future<Either<Failure, CommentBlogPaginationEntity>> getCommentBlog(
       GetCommentReq comment);
-  Future<Either<Failure, List<ReplyCommentEntity>>> getRepCommentBlog(
+  Future<Either<Failure, ReplyCommentBlogPaginationEntity>> getRepCommentBlog(
       GetReplyCommentReq comment);
 }

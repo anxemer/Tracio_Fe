@@ -2,6 +2,7 @@ import 'dart:ffi';
 
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:tracio_fe/core/erorr/exception.dart';
 import 'package:tracio_fe/core/erorr/failure.dart';
@@ -17,6 +18,7 @@ import 'package:tracio_fe/domain/auth/repositories/auth_repository.dart';
 
 import '../../../domain/auth/entities/authentication_response_entity.dart';
 import '../../../service_locator.dart';
+import '../models/change_role_req.dart';
 import '../sources/auth_local_source/auth_local_source.dart';
 
 typedef _DataSourceChoose = Future<AuthenticationResponseModel> Function();
@@ -69,16 +71,12 @@ class AuthRepositotyImpl extends AuthRepository {
   }
 
   @override
-  Future<Either<Failure, bool>> isloggedIn() async {
+  Future<Either<Failure, String>> isloggedIn() async {
     try {
-      var token = await sl<AuthLocalSource>().getToken();
-      if (token == '') {
-        return Left(CacheFailure('Token null'));
-      } else {
-        return Right(true);
-      }
+      var user = sl<AuthLocalSource>().getUser();
+      return Right(user.role!);
     } on Exception catch (e) {
-      return Left(NetworkFailure('Lỗi kết nối mạng'));
+      return Left(CacheFailure(e.toString()));
     }
     // final SharedPreferences sharedPreferences =
     //     await SharedPreferences.getInstance();
@@ -99,18 +97,24 @@ class AuthRepositotyImpl extends AuthRepository {
     try {
       final remoteResponse = await getDataSource();
       String token = remoteResponse.accessToken;
+      String refreshToken = remoteResponse.refreshToken;
       Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
 
       int userId = int.parse(decodedToken['custom_id'].toString());
       String uniqueName = decodedToken['unique_name'];
+      String role = decodedToken['role'];
       String email = decodedToken['email'];
       String avatar = decodedToken['avatar'];
+      String countRole = decodedToken['count_role'];
       UserModel user = UserModel(
+          countRole: countRole,
+          role: role,
           email: email,
           profilePicture: avatar,
           userId: userId,
           userName: uniqueName);
       await sl<AuthLocalSource>().saveToken(token);
+      await sl<AuthLocalSource>().saveRefrshToken(refreshToken);
       sl<AuthLocalSource>().saveUser(user);
       return Right(remoteResponse);
     } on CredentialFailure catch (e) {
@@ -128,5 +132,48 @@ class AuthRepositotyImpl extends AuthRepository {
     } catch (e) {
       return Left(CacheFailure(e.toString()));
     }
+  }
+
+  @override
+  Future<Either<Failure, AuthenticationResponseEntity>> changeRole(
+      ChangeRoleReq changeRole) async {
+    return await _authenticate(() {
+      return sl<AuthApiService>().changeRole(changeRole);
+    });
+  }
+
+  @override
+  Future<Either<Failure, AuthenticationResponseModel>> loginGoogle() async {
+    return await _authenticate(() async {
+      final googleSignIn = GoogleSignIn(scopes: ['email', 'profile']);
+      if (await googleSignIn.isSignedIn()) {
+        await googleSignIn.disconnect();
+      }
+
+      final googleUser = await googleSignIn.signIn();
+      if (googleUser == null) {
+        throw CredentialFailure('Login Google fail');
+      }
+
+      final googleAuth = await googleUser.authentication;
+
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      final firebaseUser =
+          await FirebaseAuth.instance.signInWithCredential(credential);
+
+      final firebaseIdToken = await firebaseUser.user?.getIdToken();
+      if (firebaseIdToken == null) {
+        throw CredentialFailure('Firebase ID Token not found');
+      }
+
+      print(firebaseIdToken);
+
+      // Gửi ID Token Firebase về server
+      return await sl<AuthApiService>().loginWithGoogleIdToken(firebaseIdToken);
+    });
   }
 }

@@ -15,13 +15,24 @@ class GetBookingCubit extends Cubit<GetBookingState> {
       var result = await sl<GetBookingUseCase>().call(params);
       result.fold((error) {
         emit(GetBookingFailure(
-            [], [], PaginationBookingDataEntity(), error.message));
+            [], [], PaginationBookingDataEntity(), error.message, error));
       }, (data) {
         emit(GetBookingLoaded(
             data.booking, data.bookingOverlap, data.pagination));
       });
-    } on ExceptionFailure catch (e) {
-      emit(GetBookingFailure([], [], PaginationBookingDataEntity(), e.message));
+    } on AuthenticationFailure catch (e) {
+      emit(GetBookingFailure(
+          [], [], PaginationBookingDataEntity(), e.message, e));
+    }
+  }
+
+  void markBookingAsResolved(String bookingId) {
+    if (state is GetBookingLoaded) {
+      final currentState = state as GetBookingLoaded;
+      final newResolvedMap = Map<String, bool>.from(currentState.resolvedMap);
+      newResolvedMap[bookingId] = true;
+
+      emit(currentState.copyWith(resolvedMap: newResolvedMap));
     }
   }
 }

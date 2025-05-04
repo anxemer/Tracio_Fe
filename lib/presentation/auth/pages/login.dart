@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tracio_fe/common/helper/is_dark_mode.dart';
 import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
 import 'package:tracio_fe/common/widget/button/button.dart';
 import 'package:tracio_fe/common/widget/input_text_form_field.dart';
@@ -14,11 +12,8 @@ import 'package:tracio_fe/core/erorr/failure.dart';
 import 'package:tracio_fe/core/extension/string_extension.dart';
 import 'package:tracio_fe/data/auth/models/login_req.dart';
 import 'package:tracio_fe/presentation/auth/bloc/authCubit/auth_cubit.dart';
-import 'package:tracio_fe/presentation/auth/pages/login_phone.dart';
 import 'package:tracio_fe/presentation/auth/pages/verify_email.dart';
 import 'package:tracio_fe/presentation/auth/widgets/button_auth.dart';
-import 'package:tracio_fe/presentation/auth/widgets/input_field_auth.dart';
-import 'package:tracio_fe/service_locator.dart';
 
 import '../../../common/widget/navbar/bottom_nav_bar_manager.dart';
 import '../bloc/authCubit/auth_state.dart';
@@ -42,14 +37,12 @@ class _LoginPageState extends State<LoginPage> {
           if (state is AuthLoading) {
             EasyLoading.show(status: 'Loading...');
           } else if (state is AuthLoaded) {
-            if (sl<SharedPreferences>().getString('USER') != null) {
-              Future.microtask(
-                () {
-                  EasyLoading.dismiss();
-                  AppNavigator.pushReplacement(context, BottomNavBarManager());
-                },
-              );
-            }
+            Future.microtask(
+              () {
+                EasyLoading.dismiss();
+                AppNavigator.pushReplacement(context, BottomNavBarManager());
+              },
+            );
           } else if (state is AuthFailure) {
             if (state.failure is CredentialFailure) {
               EasyLoading.showError("Username/Password Wrong!");
@@ -64,6 +57,7 @@ class _LoginPageState extends State<LoginPage> {
         },
         child: Scaffold(
           body: SingleChildScrollView(
+            physics: NeverScrollableScrollPhysics(),
             child: Form(
               key: _formKey,
               child: Column(
@@ -71,7 +65,7 @@ class _LoginPageState extends State<LoginPage> {
                 children: [
                   _logoDisplay(context),
                   Container(
-                      height: size.height * 1.3.h,
+                      height: size.height.h,
                       width: size.width,
                       decoration: BoxDecoration(
                           color: AppColors.background.withOpacity(.5),
@@ -236,14 +230,16 @@ class _LoginPageState extends State<LoginPage> {
       children: [
         ButtonDesign(
           width: AppSize.cardWidth.w,
-          ontap: () {},
+          ontap: () {
+            context.read<AuthCubit>().loginWithGoogle();
+          },
           text: "Google",
           image: AppImages.logoGg,
           fillColor: Colors.white,
           textColor: Colors.black,
           borderColor: Colors.green,
           iconSize: AppSize.iconSmall,
-          fontSize: AppSize.textMedium,
+          fontSize: AppSize.textMedium.sp,
         ),
       ],
     );

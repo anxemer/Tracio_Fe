@@ -3,27 +3,30 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tracio_fe/common/helper/is_dark_mode.dart';
 import 'package:tracio_fe/common/widget/button/button.dart';
+import 'package:tracio_fe/common/widget/error.dart';
 import 'package:tracio_fe/common/widget/picture/circle_picture.dart';
 import 'package:tracio_fe/core/configs/theme/app_colors.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/data/shop/models/get_service_req.dart';
+import 'package:tracio_fe/domain/shop/entities/response/shop_entity.dart';
+import 'package:tracio_fe/domain/shop/entities/response/shop_service_entity.dart';
 import 'package:tracio_fe/presentation/service/bloc/service_bloc/get_service_cubit.dart';
-import 'package:tracio_fe/presentation/service/widget/filter_view.dart';
 import 'package:tracio_fe/presentation/service/widget/plan_service_icon.dart';
 import 'package:tracio_fe/presentation/service/widget/search_text_field.dart';
 
+import '../../../common/widget/button/text_button.dart';
 import '../bloc/service_bloc/get_service_state.dart';
 import '../widget/service_card.dart';
 
-class ShopServicepage extends StatefulWidget {
-  const ShopServicepage({super.key, required this.shopId});
+class ShopServicePage extends StatefulWidget {
+  const ShopServicePage({super.key, required this.shopId});
   final int shopId;
 
   @override
-  State<ShopServicepage> createState() => _ShopServicepageState();
+  State<ShopServicePage> createState() => _ShopServicePageState();
 }
 
-class _ShopServicepageState extends State<ShopServicepage> {
+class _ShopServicePageState extends State<ShopServicePage> {
   // bool isFilter = false;
   @override
   void initState() {
@@ -37,23 +40,48 @@ class _ShopServicepageState extends State<ShopServicepage> {
   Widget build(BuildContext context) {
     var isDark = context.isDarkMode;
     return BlocProvider(
-      create: (context) =>
-          GetServiceCubit()..getService(GetServiceReq(shopId: widget.shopId)),
-      child: Scaffold(
-        body: CustomScrollView(slivers: [
-          SliverToBoxAdapter(child: buildHeader(isDark, context)),
-          // SliverToBoxAdapter(
-          //   child: SizedBox(
-          //     height: 10.h,
-          //   ),
-          // ),
-          buildGrid()
-        ]),
-      ),
-    );
+        create: (context) =>
+            GetServiceCubit()..getService(GetServiceReq(shopId: widget.shopId)),
+        child: BlocBuilder<GetServiceCubit, GetServiceState>(
+          builder: (context, state) {
+            if (state is GetServiceLoaded) {
+              return Scaffold(
+                body: CustomScrollView(
+                  slivers: [
+                    SliverToBoxAdapter(
+                      child: buildHeader(isDark, context, state.service[0]),
+                    ),
+                    buildGrid(state.service),
+                  ],
+                ),
+              );
+            } else if (state is GetServiceLoading) {
+              return Scaffold(
+                body: CustomScrollView(
+                  slivers: [
+                    SliverToBoxAdapter(
+                      child: Center(child: CircularProgressIndicator()),
+                    ),
+                  ],
+                ),
+              );
+            } else {
+              return Scaffold(
+                body: CustomScrollView(
+                  slivers: [
+                    SliverToBoxAdapter(
+                      child: ErrorPage(),
+                    ),
+                  ],
+                ),
+              );
+            }
+          },
+        ));
   }
 
-  Padding buildHeader(bool isDark, BuildContext context) {
+  Padding buildHeader(
+      bool isDark, BuildContext context, ShopServiceEntity shop) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: AppSize.apVerticalPadding),
       child: Container(
@@ -77,64 +105,116 @@ class _ShopServicepageState extends State<ShopServicepage> {
             SizedBox(
               width: 4.w,
             ),
-            Row(
-              children: [
-                CirclePicture(
-                    imageUrl:
-                        'https://bizweb.dktcdn.net/100/481/209/products/img-5958-jpeg.jpg?v=1717069788060',
-                    imageSize: AppSize.iconMedium),
-                SizedBox(
-                  width: 10.w,
-                ),
-                Expanded(
-                    child: Text(
-                  'Shop name',
-                  style: TextStyle(
-                      fontSize: AppSize.textLarge,
-                      fontWeight: FontWeight.w600,
-                      color: isDark ? Colors.white70 : Colors.black87),
-                )),
-                ButtonDesign(
-                  width: 92.w,
-                  height: 30.h,
-                  ontap: () {},
-                  fillColor: Colors.transparent,
-                  borderColor: isDark
-                      ? AppColors.secondBackground
-                      : AppColors.background,
-                  fontSize: AppSize.textMedium,
-                  text: 'Chat',
-                  icon: Icon(
-                    Icons.chat_outlined,
-                    size: AppSize.iconSmall,
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      CirclePicture(
+                          imageUrl: shop.profilePicture!,
+                          imageSize: AppSize.iconLarge),
+                      SizedBox(
+                        width: 10.w,
+                      ),
+                      Column(
+                        children: [
+                          Text(
+                            shop.shopName!,
+                            style: TextStyle(
+                              color: isDark
+                                  ? Colors.grey.shade300
+                                  : Colors.black87,
+                              fontWeight: FontWeight.w600,
+                              fontSize: AppSize.textLarge,
+                            ),
+                          ),
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: AppSize.apHorizontalPadding * .8.h),
+                            height: 28,
+                            // width: 100,
+                            decoration: BoxDecoration(
+                                color: Colors.transparent,
+                                border: Border.all(
+                                    color: AppColors.secondBackground),
+                                borderRadius: BorderRadius.circular(10)),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.timer_outlined,
+                                  color: isDark
+                                      ? AppColors.secondBackground
+                                      : AppColors.background,
+                                  size: AppSize.iconSmall,
+                                ),
+                                Text(
+                                  '${shop.openTime?.substring(0, 5)} - ${shop.closeTime?.substring(0, 5)}',
+                                  style: TextStyle(
+                                    color: isDark
+                                        ? Colors.grey.shade300
+                                        : Colors.black87,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: AppSize.textSmall,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      Spacer(),
+                      ButtonDesign(
+                        height: 30,
+                        width: 40,
+                        ontap: () {},
+                        fillColor: Colors.transparent,
+                        borderColor: AppColors.secondBackground,
+                        fontSize: AppSize.textSmall,
+                        icon: Icon(Icons.chat_outlined),
+                        iconSize: AppSize.iconSmall,
+                      )
+                    ],
                   ),
-                )
-                // BasicTextButton(
-                //   text: 'Chat',
-                //   onPress: () {},
-                //   borderColor:
-                //       isDark ? AppColors.secondBackground : AppColors.background,
-                //   fontSize: AppSize.textLarge,
-                // ),
-              ],
-            ),
+                  SizedBox(
+                    height: 10.h,
+                  ),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.location_on_sharp,
+                        color: isDark
+                            ? AppColors.secondBackground
+                            : AppColors.background,
+                      ),
+                      Text(
+                        '${shop.district} ${shop.city}',
+                        style: TextStyle(
+                          color: isDark ? Colors.white : Colors.black,
+                          fontWeight: FontWeight.w600,
+                          fontSize: AppSize.textLarge,
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            )
           ],
         ),
       ),
     );
   }
 
-  Widget buildGrid() {
-    return BlocBuilder<GetServiceCubit, GetServiceState>(
-      builder: (context, state) {
-        if (state is GetServiceLoaded) {
-          if (state.service.isEmpty) {
-            return SliverToBoxAdapter(
-              child: Center(child: Text('No services available')),
-            );
-          }
-
-          return SliverPadding(
+  Widget buildGrid(List<ShopServiceEntity> service) {
+    return service.isEmpty
+        ? SliverToBoxAdapter(
+            child: Center(child: Text('No services available')),
+          )
+        : SliverPadding(
             padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 8.h),
             sliver: SliverGrid(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -145,24 +225,16 @@ class _ShopServicepageState extends State<ShopServicepage> {
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
                   return ServiceCard(
-                    service: state.service[index],
+                    service: service[index],
                   );
                 },
-                childCount: state.service.length,
+                childCount: service.length,
               ),
             ),
           );
-        } else if (state is GetServiceLoading) {
-          return SliverToBoxAdapter(
-              child: Center(child: CircularProgressIndicator()));
-        }
-        return SliverToBoxAdapter(child: Text('k có dì'));
-      },
-    );
   }
 
   Widget buildSearch(BuildContext context) {
-    var isDark = context.isDarkMode;
     return Row(
       children: [
         InkWell(
@@ -178,7 +250,9 @@ class _ShopServicepageState extends State<ShopServicepage> {
         SizedBox(
           width: 10,
         ),
-        PlanServiceIcon(),
+        PlanServiceIcon(
+          isActive: true,
+        ),
         SizedBox(
           width: 4.w,
         ),

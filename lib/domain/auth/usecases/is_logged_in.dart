@@ -5,9 +5,9 @@ import 'package:tracio_fe/service_locator.dart';
 
 import '../../../core/erorr/failure.dart';
 
-class IsLoggedInUseCase implements Usecase<bool, NoParams> {
+class IsLoggedInUseCase implements Usecase<String, NoParams> {
   @override
-  Future<Either<Failure,bool>> call(NoParams params) async {
+  Future<Either<Failure,String>> call(NoParams params) async {
     return await sl<AuthRepository>().isloggedIn();
   }
 }

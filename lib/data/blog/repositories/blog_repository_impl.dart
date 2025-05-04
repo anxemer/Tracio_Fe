@@ -12,7 +12,6 @@ import 'package:tracio_fe/data/blog/models/request/reply_comment_req.dart';
 import 'package:tracio_fe/data/blog/models/response/blog_response.dart';
 import 'package:tracio_fe/data/blog/models/response/get_reaction_blog.dart';
 import 'package:tracio_fe/data/blog/source/blog_api_service.dart';
-import 'package:tracio_fe/data/shop/models/booking_service_req.dart';
 import 'package:tracio_fe/domain/blog/entites/category.dart';
 import 'package:tracio_fe/domain/blog/entites/reaction_response_entity.dart';
 import 'package:tracio_fe/domain/blog/entites/reply_comment.dart';
@@ -22,6 +21,7 @@ import '../../../domain/blog/entites/comment_blog.dart';
 import '../../../domain/blog/usecase/un_react_blog.dart';
 import '../models/request/get_blog_req.dart';
 import '../models/request/get_comment_req.dart';
+import '../models/response/get_reply_comment_rep.dart';
 
 // typedef _ConcreteOrBlogChooser = Future<BlogResponse> Function();
 
@@ -57,13 +57,13 @@ class BlogRepositoryImpl extends BlogRepository {
   }
 
   @override
-  Future<Either<Failure, GetReactionBlogResponse>> reactBlogs(
+  Future<Either<Failure, bool>> reactBlogs(
       ReactBlogReq react) async {
     var returnedData = await remoteDataSource.reactBlog(react);
     return returnedData.fold((error) {
       return left(ExceptionFailure(''));
     }, (data) {
-      return right(GetReactionBlogResponse.fromMap(data));
+      return right(true);
     });
   }
 
@@ -107,16 +107,15 @@ class BlogRepositoryImpl extends BlogRepository {
   }
 
   @override
-  Future<Either<Failure, List<CommentBlogEntity>>> getCommentBlog(
+  Future<Either<Failure, CommentBlogPaginationEntity>> getCommentBlog(
       GetCommentReq comment) async {
     try {
-      var response = await remoteDataSource.getCommentBlog(comment);
-      if (response != []) {
-        return Right(response);
-      }
-      return Right([]);
-    } on Failure catch (e) {
-      return Left(e);
+      var returnedData = await remoteDataSource.getCommentBlog(comment);
+      return Right(returnedData);
+    } on ServerFailure {
+      return Left(ServerFailure(''));
+    } on AuthenticationFailure {
+      return Left(AuthenticationFailure('UnAuthenticated'));
     }
   }
 
@@ -147,16 +146,15 @@ class BlogRepositoryImpl extends BlogRepository {
   }
 
   @override
-  Future<Either<Failure, List<ReplyCommentEntity>>> getRepCommentBlog(
+  Future<Either<Failure, ReplyCommentBlogPaginationEntity>> getRepCommentBlog(
       GetReplyCommentReq comment) async {
     try {
-      var response = await remoteDataSource.getRepCommentBlog(comment);
-      if (response != []) {
-        return Right(response);
-      }
-      return Right([]);
-    } on Failure catch (e) {
-      return Left(e);
+      var returnedData = await remoteDataSource.getRepCommentBlog(comment);
+      return Right(returnedData);
+    } on ServerFailure {
+      return Left(ServerFailure(''));
+    } on AuthenticationFailure {
+      return Left(AuthenticationFailure('UnAuthenticated'));
     }
   }
 
@@ -174,5 +172,16 @@ class BlogRepositoryImpl extends BlogRepository {
     }
   }
 
-  
+  @override
+  Future<Either<Failure, BlogResponse>> getBookmarkBlogs(
+      GetBlogReq params) async {
+    try {
+      var returnedData = await remoteDataSource.getBookmarkBlogs(params);
+      return Right(returnedData);
+    } on ServerFailure {
+      return Left(ServerFailure(''));
+    } on AuthenticationFailure {
+      return Left(AuthenticationFailure('UnAuthenticated'));
+    }
+  }
 }

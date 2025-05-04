@@ -7,7 +7,6 @@ import 'package:tracio_fe/data/auth/models/register_req.dart';
 import 'package:tracio_fe/domain/auth/usecases/register_with_ep.dart';
 import 'package:tracio_fe/presentation/auth/pages/login.dart';
 import 'package:tracio_fe/presentation/auth/pages/login_phone.dart';
-import 'package:tracio_fe/presentation/home/pages/home.dart';
 import 'package:tracio_fe/service_locator.dart';
 
 import '../../../common/widget/button/button.dart';
@@ -15,7 +14,6 @@ import '../../../common/widget/input_text_form_field.dart';
 import '../../../core/configs/theme/assets/app_images.dart';
 import '../../../core/constants/app_size.dart';
 import '../widgets/button_auth.dart';
-import '../widgets/input_field_auth.dart';
 
 class RegisterPage extends StatelessWidget {
   RegisterPage({super.key, this.email, this.firebaseId});
@@ -149,6 +147,7 @@ class RegisterPage extends StatelessWidget {
                               if (!val.isValidPassword) {
                                 return 'Password must contain uppercase, lowercase,\n number, and special character';
                               }
+                              ; 
                               return null;
                             },
                           ),
@@ -250,7 +249,7 @@ class RegisterPage extends StatelessWidget {
 
           result.fold((l) {
             var snackbar = SnackBar(
-              content: Text('Đăng ký thất bại'),
+              content: Text('Register Failure! Please try again'),
               behavior: SnackBarBehavior.floating,
             );
             ScaffoldMessenger.of(context).showSnackBar(snackbar);

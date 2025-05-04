@@ -1,3 +1,4 @@
+import 'package:tracio_fe/data/challenge/models/response/challenge_reward_model.dart';
 import 'package:tracio_fe/domain/user/entities/user_profile_entity.dart';
 
 class UserprofileModel extends UserProfileEntity {
@@ -9,14 +10,24 @@ class UserprofileModel extends UserProfileEntity {
     required super.phoneNumber,
     required super.profilePicture,
     required super.bio,
-    required super.roleName,
-    required super.weight,
-    required super.height,
+    required super.totalDistance,
+    required super.totalDuration,
+    required super.maxDayStreak,
+    required super.dayStreak,
+    required super.totalBlog,
+    required super.followers,
+    required super.followings,
+    required super.totalRoute,
     required super.gender,
+    required super.birthDate,
     required super.city,
     required super.district,
+    required super.isActive,
+    required super.isPublic,
+    required super.createdAt,
+    required super.updatedAt,
+    required super.rewards,
   });
-
   factory UserprofileModel.fromJson(Map<String, dynamic> json) {
     return UserprofileModel(
       userId: json["userId"],
@@ -26,12 +37,25 @@ class UserprofileModel extends UserProfileEntity {
       phoneNumber: json["phoneNumber"],
       profilePicture: json["profilePicture"],
       bio: json["bio"],
-      roleName: json["roleName"],
-      weight: json["weight"],
-      height: json["height"],
+      totalDistance: json["totalDistance"],
+      totalDuration: json["totalDuration"],
+      maxDayStreak: json["maxDayStreak"],
+      dayStreak: json["dayStreak"],
+      totalBlog: json["totalBlog"],
+      followers: json["followers"],
+      followings: json["followings"],
+      totalRoute: json["totalRoute"],
       gender: json["gender"],
+      birthDate: json["birthDate"],
       city: json["city"],
       district: json["district"],
+      isActive: json["isActive"],
+      isPublic: json["isPublic"],
+      createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
+      updatedAt: DateTime.tryParse(json["updatedAt"] ?? ""),
+      rewards: json["rewards"] == null
+          ? []
+          : List<ChallengeRewardModel>.from(json["rewards"]!.map((x) => x)),
     );
   }
 
@@ -43,11 +67,22 @@ class UserprofileModel extends UserProfileEntity {
         "phoneNumber": phoneNumber,
         "profilePicture": profilePicture,
         "bio": bio,
-        "roleName": roleName,
-        "weight": weight,
-        "height": height,
+        "totalDistance": totalDistance,
+        "totalDuration": totalDuration,
+        "maxDayStreak": maxDayStreak,
+        "dayStreak": dayStreak,
+        "totalBlog": totalBlog,
+        "followers": followers,
+        "followings": followings,
+        "totalRoute": totalRoute,
         "gender": gender,
+        "birthDate": birthDate,
         "city": city,
         "district": district,
+        "isActive": isActive,
+        "isPublic": isPublic,
+        "createdAt": createdAt?.toIso8601String(),
+        "updatedAt": updatedAt?.toIso8601String(),
+        "rewards": rewards.map((x) => x).toList(),
       };
 }
