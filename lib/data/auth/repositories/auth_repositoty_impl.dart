@@ -73,13 +73,14 @@ class AuthRepositotyImpl extends AuthRepository {
   @override
   Future<Either<Failure, String>> isloggedIn() async {
     try {
-      var user = sl<AuthLocalSource>().getUser();
+      final user = sl<AuthLocalSource>().getUser();
+      if (user.role == null) {
+        return Left(CacheFailure("No user or role found"));
+      }
       return Right(user.role!);
     } on Exception catch (e) {
       return Left(CacheFailure(e.toString()));
     }
-    // final SharedPreferences sharedPreferences =
-    //     await SharedPreferences.getInstance();
   }
 
   @override
@@ -127,7 +128,7 @@ class AuthRepositotyImpl extends AuthRepository {
   @override
   Future<Either<Failure, UserEntity>> getCachUser() async {
     try {
-      final user = await sl<AuthLocalSource>().getUser();
+      final user = sl<AuthLocalSource>().getUser();
       return Right(user);
     } catch (e) {
       return Left(CacheFailure(e.toString()));
