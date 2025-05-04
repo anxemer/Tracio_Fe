@@ -100,7 +100,6 @@ dependencies:
   badges:
   animated_toggle_switch:
   loading_animation_widget:
-  url_launcher:
   google_sign_in: ^6.3.0
 dev_dependencies:
   protoc_plugin: ^21.1.2

@@ -22,7 +22,7 @@ class AuthCubit extends Cubit<AuthState> {
       result.fold((failure) => emit(AuthFailure(failure)), (data) async {
         final result = await sl<GetCacherUserUseCase>().call(NoParams());
         result.fold(
-          (err) => emit(AuthFailure(err)),
+        (err) => emit(AuthFailure(err)),
           (user) => emit(AuthLoaded(user: user)),
         );
       });

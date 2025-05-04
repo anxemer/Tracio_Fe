@@ -7,7 +7,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:tracio_fe/common/helper/is_dark_mode.dart';
-import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
 import 'package:tracio_fe/common/widget/appbar/app_bar.dart';
 import 'package:tracio_fe/common/widget/input_text_form_field.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
@@ -17,7 +16,6 @@ import 'package:tracio_fe/domain/blog/entites/category.dart';
 import 'package:tracio_fe/domain/shop/entities/response/shop_service_entity.dart';
 import 'package:tracio_fe/presentation/blog/bloc/category/get_category_cubit.dart';
 import 'package:tracio_fe/presentation/shop_owner/bloc/service_management/service_management_cubit.dart';
-import 'package:tracio_fe/presentation/shop_owner/page/dash_board.dart';
 
 import '../../../core/configs/theme/app_colors.dart';
 import '../../blog/bloc/category/get_category_state.dart';

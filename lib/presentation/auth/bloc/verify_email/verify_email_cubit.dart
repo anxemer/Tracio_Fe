@@ -21,8 +21,6 @@ class VerifyEmailCubit extends Cubit<VerifyEmailState> {
 
   Future<void> checkEmailVerified(String email, String firebaseId) async {
     var result = await sl<CheckEmailVerifiedUseCase>().call(NoParams());
-    print('Check email verified result: $result');
-   
     result.fold((error) {
       emit(VerifyEmailFailure(message: 'Email chưa được xác minh'));
     }, (data) {

@@ -14,6 +14,7 @@ class PictureCard extends StatefulWidget {
   final List<String> listImageUrl;
   final double? imageWidth;
   final double? imageheight;
+
   @override
   State<PictureCard> createState() => _PictureCardState();
 }

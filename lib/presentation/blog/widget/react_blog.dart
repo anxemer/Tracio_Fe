@@ -9,9 +9,6 @@ import 'package:tracio_fe/domain/blog/usecase/bookmark_blog.dart';
 import 'package:tracio_fe/domain/blog/usecase/unBookmark.dart';
 import 'package:tracio_fe/presentation/library/bloc/reaction/bloc/reaction_bloc.dart';
 
-import '../../../data/blog/models/request/react_blog_req.dart';
-import '../../../domain/blog/usecase/react_blog.dart';
-import '../../../domain/blog/usecase/un_react_blog.dart';
 import '../../../service_locator.dart';
 
 class ReactBlog extends StatefulWidget {
@@ -61,13 +58,13 @@ class _ReactBlogState extends State<ReactBlog> {
                           state.reactBlog.contains(widget.blogEntity.blogId);
                       return GestureDetector(
                           onTap: () async {
-                            if (isReacted) {
+                            if (widget.blogEntity.isReacted) {
                               context.read<ReactionBloc>().add(UnReactBlog(
                                   blogId: widget.blogEntity.blogId));
+                              bool isReact =
+                                  togleIsReaction(widget.blogEntity.isReacted);
 
                               setState(() {
-                                bool isReact = togleIsReaction(isReacted);
-
                                 widget.blogEntity.isReacted = isReact;
                                 if (widget.blogEntity.likesCount > 0) {
                                   widget.blogEntity.likesCount--;
@@ -76,9 +73,10 @@ class _ReactBlogState extends State<ReactBlog> {
                             } else {
                               context.read<ReactionBloc>().add(ReactionBlog(
                                   blogId: widget.blogEntity.blogId));
+                              bool isReact =
+                                  togleIsReaction(widget.blogEntity.isReacted);
 
                               setState(() {
-                                bool isReact = togleIsReaction(isReacted);
                                 widget.blogEntity.isReacted = isReact;
                                 widget.blogEntity.likesCount++;
                               });

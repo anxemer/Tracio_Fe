@@ -144,10 +144,7 @@ class RegisterPage extends StatelessWidget {
                               if (val == null || val.isEmpty) {
                                 return 'This field can\'t be empty';
                               }
-                              if (!val.isValidPassword) {
-                                return 'Password must contain uppercase, lowercase,\n number, and special character';
-                              }
-                              ; 
+
                               return null;
                             },
                           ),

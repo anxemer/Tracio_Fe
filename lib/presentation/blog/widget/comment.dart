@@ -176,9 +176,10 @@ class _CommentState extends State<Comment> {
                 fontSize: AppSize.textHeading.sp,
               ),
             ),
-            Expanded(
-              child: _buildContent(),
-            ),
+            if (widget.isDetail)
+              _buildContent() 
+            else
+              Flexible(child: _buildContent()),
             widget.isDetail
                 ? SizedBox.shrink()
                 : Padding(
@@ -217,36 +218,61 @@ class _CommentState extends State<Comment> {
         final comments = state.listComment;
         return comments.isEmpty
             ? const Center(child: Text("Haven't Comment yet"))
-            : ListView.builder(
-                shrinkWrap: !widget.isDetail,
-                physics: widget.isDetail
-                    ? NeverScrollableScrollPhysics()
-                    : AlwaysScrollableScrollPhysics(),
-                itemCount: comments.length,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 20.h, vertical: 10.h),
-                    child: CommentItem(
-                      comment: comments[index],
-                      replyCount: comments[index].replyCount,
-                      onViewMoreReviewTap: () async {},
-                      onReact: () async {},
-                      onReply: () async {
-                        _commentInputCubit
-                            .updateToReplyComment(comments[index]);
-                        FocusScope.of(context).requestFocus(FocusNode());
-                      },
-                      onViewMoreReplyTap: (commentId) async {
-                        await context
-                            .read<GetCommentCubit>()
-                            .getCommentBlogReply(commentId);
-                      },
-                    ),
+            : widget.isDetail
+                ? Column(
+                    children: comments
+                        .map((comment) => Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 20.h, vertical: 10.h),
+                              child: CommentItem(
+                                comment: comment,
+                                replyCount: comment.replyCount,
+                                onViewMoreReviewTap: () async {},
+                                onReact: () async {},
+                                onReply: () async {
+                                  _commentInputCubit
+                                      .updateToReplyComment(comment);
+                                  FocusScope.of(context)
+                                      .requestFocus(FocusNode());
+                                },
+                                onViewMoreReplyTap: (commentId) async {
+                                  await context
+                                      .read<GetCommentCubit>()
+                                      .getCommentBlogReply(commentId);
+                                },
+                              ),
+                            ))
+                        .toList(),
+                  )
+                : ListView.builder(
+                    shrinkWrap: true,
+                    physics: AlwaysScrollableScrollPhysics(),
+                    itemCount: comments.length,
+                    itemBuilder: (context, index) {
+                      final comment = comments[index];
+                      return Padding(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 20.h, vertical: 10.h),
+                        child: CommentItem(
+                          comment: comment,
+                          replyCount: comment.replyCount,
+                          onViewMoreReviewTap: () async {},
+                          onReact: () async {},
+                          onReply: () async {
+                            _commentInputCubit.updateToReplyComment(comment);
+                            FocusScope.of(context).requestFocus(FocusNode());
+                          },
+                          onViewMoreReplyTap: (commentId) async {
+                            await context
+                                .read<GetCommentCubit>()
+                                .getCommentBlogReply(commentId);
+                          },
+                        ),
+                      );
+                    },
                   );
-                },
-              );
       }
+
       return const Center(child: Text("Haven't Comment yet"));
     });
   }

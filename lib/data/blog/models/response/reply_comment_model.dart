@@ -15,7 +15,6 @@ class ReplyCommentModel extends ReplyCommentEntity {
     required super.isReacted,
     required super.mediaFiles,
     required super.createdAt,
-    required super.likesCount,
     this.isEdited,
     required super.tagUserNames,
     required super.mediaUrls,
@@ -41,7 +40,6 @@ class ReplyCommentModel extends ReplyCommentEntity {
           : List<MediaFile>.from(
               json["mediaFiles"]!.map((x) => MediaFile.fromJson(x))),
       createdAt: DateTime.parse(json['createdAt']),
-      likesCount: json["likeCount"],
       isEdited: json["isEdited"],
       tagUserNames: [],
       mediaUrls: [],

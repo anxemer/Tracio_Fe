@@ -19,8 +19,10 @@ import '../../../domain/blog/usecase/comment_blog.dart';
 import '../../../domain/blog/usecase/rep_comment.dart';
 import '../../../service_locator.dart';
 import '../bloc/comment/comment_input_cubit.dart';
+import '../bloc/comment/comment_input_state.dart';
 import '../bloc/comment/get_comment_cubit.dart';
 import '../widget/comment.dart';
+import '../widget/comment_input.dart';
 import '../widget/react_blog.dart';
 
 class DetailBlocPage extends StatefulWidget {
@@ -182,51 +184,74 @@ class _DetailBlocPageState extends State<DetailBlocPage> {
             ],
           ),
         ),
-        body: SingleChildScrollView(
+        body: CustomScrollView(
             scrollDirection: Axis.vertical,
             physics: AlwaysScrollableScrollPhysics(),
-            child: Column(
-              children: [
-                PostBlog(blogEntity: widget.blog),
-                ReactBlog(
+            slivers: [
+              SliverAppBar(
+                expandedHeight: 300.h,
+                automaticallyImplyLeading: false,
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                pinned: false,
+                floating: false,
+                flexibleSpace: FlexibleSpaceBar(
+                  background: PostBlog(blogEntity: widget.blog),
+                ),
+              ),
+              SliverAppBar(
+                expandedHeight: 50.h,
+                automaticallyImplyLeading: false,
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                pinned: false,
+                floating: false,
+                flexibleSpace: FlexibleSpaceBar(
+                  background: ReactBlog(
                     blogEntity: widget.blog,
                     textReactionAction: () {},
-                    cmtAction: () {}),
-                SizedBox(
-                  height: 10.h,
+                    cmtAction: () {},
+                  ),
                 ),
-                SizedBox(
+              ),
+              SliverToBoxAdapter(
+                child: SizedBox(
                   // width: 400.w,
-                  height: MediaQuery.of(context).size.height / 1.2,
+                  height: MediaQuery.of(context).size.height / .5,
                   child: BlocProvider(
                     create: (context) => CommentInputCubit(widget.blog.blogId),
                     child: BlocProvider.value(
                       value: commentCubit,
                       child: Comment(
+                        isDetail: true,
                         blogId: widget.blog.blogId,
                       ),
                     ),
                   ),
                 ),
-                // Padding(
-                //   padding: const EdgeInsets.only(
-                //       bottom: AppSize.apHorizontalPadding, left: 10, right: 10),
-                //   child: BlocBuilder<CommentInputCubit, CommentInputState>(
-                //     builder: (context, inputState) {
-                //       return CommentInputWidget(
-                //         inputData: inputState.inputData,
-                //         onSubmit: _handleCommentSubmit,
-                //         onReset: () {
-                //           _commentInputCubit
-                //               .updateToDefault(widget.blog.blogId);
-                //         },
-                //       );
-                //     },
-                //   ),
-                // )
-                // Comment(blogId: widget.blog.blogId, cubit: commentCubit)
-              ],
-            )));
+              ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    bottom: AppSize.apHorizontalPadding,
+                    left: 10,
+                    right: 10,
+                  ),
+                  child: BlocBuilder<CommentInputCubit, CommentInputState>(
+                    builder: (context, inputState) {
+                      return CommentInputWidget(
+                        inputData: inputState.inputData,
+                        onSubmit: _handleCommentSubmit,
+                        onReset: () {
+                          _commentInputCubit
+                              .updateToDefault(widget.blog.blogId);
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ]));
   }
 }
 

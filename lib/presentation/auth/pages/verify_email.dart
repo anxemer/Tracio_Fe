@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:tracio_fe/common/widget/button/loading.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/core/extension/string_extension.dart';
 import 'package:tracio_fe/presentation/auth/bloc/verify_email/verify_email_cubit.dart';
@@ -165,7 +166,31 @@ class VerifyEmailpage extends StatelessWidget {
     return BlocBuilder<VerifyEmailCubit, VerifyEmailState>(
       builder: (context, state) {
         if (state is VerifyEmailLoading) {
-          return const CircularProgressIndicator(); // Hiển thị loading khi đang xử lý
+          return Column(
+            children: [
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                decoration: BoxDecoration(
+                  color: Colors.green.shade50,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: Colors.green,
+                  ),
+                ),
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'A confirmation email will be sent to you soon, please check your email!',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: AppSize.textMedium,
+                    color: Colors.green,
+                  ),
+                ),
+              ),
+              LoadingButton(),
+            ],
+          );
         }
 
         return GestureDetector(

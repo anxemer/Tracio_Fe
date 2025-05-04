@@ -12,7 +12,6 @@ class ReplyCommentEntity extends BaseCommentEntity {
   final String cyclistName;
   final String? reReplyCyclistName;
   final List<MediaFile> mediaFiles;
-  int likesCount;
   ReplyCommentEntity({
     required this.replyId,
     required this.cyclistId,
@@ -23,7 +22,6 @@ class ReplyCommentEntity extends BaseCommentEntity {
     required super.content,
     required super.isReacted,
     required this.mediaFiles,
-    required this.likesCount,
     required super.createdAt,
     required super.tagUserNames,
     required super.mediaUrls,
