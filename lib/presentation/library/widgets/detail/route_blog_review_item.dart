@@ -162,8 +162,11 @@ class _RouteBlogReviewItemState extends State<RouteBlogReviewItem> {
               style: TextStyle(color: Colors.grey.shade500),
             ),
             Text(
-              "Like",
-              style: TextStyle(color: Colors.grey.shade500),
+              widget.review.isReacted ? "Liked" : "Like",
+              style: TextStyle(
+                  color: widget.review.isReacted
+                      ? Colors.blue
+                      : Colors.grey.shade500),
             ),
             Text(
               "Reply",

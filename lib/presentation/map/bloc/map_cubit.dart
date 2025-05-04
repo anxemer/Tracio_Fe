@@ -132,8 +132,9 @@ class MapCubit extends Cubit<MapCubitState> {
   Future<void> addPointAnnotation(Position position, Uint8List imageData,
       {IconAnchor iconAnchor = IconAnchor.BOTTOM,
       List<double?>? iconOffset,
-      double iconSize = 1}) async {
-    pointAnnotationManager ??=
+      double iconSize = 1,
+      PointAnnotationManager? pointAnnotation}) async {
+    pointAnnotationManager ??= pointAnnotation ??
         await mapboxMap?.annotations.createPointAnnotationManager();
 
     pointAnnotationManager?.setIconAllowOverlap(true);
@@ -146,7 +147,7 @@ class MapCubit extends Cubit<MapCubitState> {
 
     pointAnnotationManager?.create(annotation);
     pointAnnotations.add(annotation);
-    emit(MapAnnotationsUpdated(annotations: List.from(pointAnnotations)));
+    emit(MapAnnotationsUpdated());
   }
 
   Future<void> addPolylineRoute(LineString lineString,
@@ -158,7 +159,7 @@ class MapCubit extends Cubit<MapCubitState> {
     try {
       polylineAnnotationManager ??= await mapboxMap?.annotations
           .createPolylineAnnotationManager(
-              id: 'polyline-route', below: "poi-label");
+              id: 'polyline-route', below: "symbol");
 
       final polylineOptions = PolylineAnnotationOptions(
         geometry: lineString,
@@ -179,7 +180,7 @@ class MapCubit extends Cubit<MapCubitState> {
 
   Future<void> clearAnnotations() async {
     pointAnnotations.clear();
-    emit(MapAnnotationsUpdated(annotations: []));
+    emit(MapAnnotationsUpdated());
     _updateAnnotationsOnMap();
   }
 
@@ -230,7 +231,7 @@ class MapCubit extends Cubit<MapCubitState> {
   }
 
   void onBottomSheetClosed() {
-    emit(MapAnnotationsUpdated(annotations: List.from(pointAnnotations)));
+    emit(MapAnnotationsUpdated());
 
     if (searchAnnotation != null) {
       pointAnnotations.remove(searchAnnotation!);
@@ -284,7 +285,7 @@ class MapCubit extends Cubit<MapCubitState> {
     );
 
     final manager = await mapboxMap?.annotations
-        .createPointAnnotationManager(id: 'user_$id');
+        .createPointAnnotationManager(id: 'user_$id', below: "");
     final annotation = await manager?.create(
       PointAnnotationOptions(
         geometry: Point(coordinates: position),

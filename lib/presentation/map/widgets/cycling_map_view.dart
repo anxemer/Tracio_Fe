@@ -95,10 +95,10 @@ class _CyclingMapViewState extends State<CyclingMapView> {
           if (state is GetDirectionLoaded) {
             if (context.mounted) {
               // Set order of waypoints
-              for (var waypoint in state.direction.waypoints) {
+              for (var waypoint in state.direction.geometry!.coordinates) {
                 var imageData = await _getImageDataForOrderedPoint(
-                  state.direction.waypoints.indexOf(waypoint),
-                  state.direction.waypoints,
+                  state.direction.geometry!.coordinates.indexOf(waypoint),
+                  state.direction.geometry!.coordinates,
                 );
                 await mapCubit.addPointAnnotation(waypoint, imageData);
               }
@@ -162,6 +162,16 @@ class _CyclingMapViewState extends State<CyclingMapView> {
       setState(() {
         routePoints.clear();
       });
+    }
+
+    if (routePoints.isNotEmpty) {
+      final lineString = mapbox.LineString(coordinates: routePoints);
+      await mapCubit.addPolylineRoute(lineString);
+
+      mapCubit.mapboxMap?.flyTo(
+          mapbox.CameraOptions(
+              center: mapbox.Point(coordinates: newPoint), bearing: bearing),
+          mapbox.MapAnimationOptions(duration: 300, startDelay: 0));
     }
 
     if (widget.routeId != null) {

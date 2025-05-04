@@ -61,6 +61,7 @@ dependencies:
   map_elevation: ^2.0.0
   latlong2: ^0.8.0
   flutter_background_geolocation: ^4.16.9
+  turf: ^0.0.10
   #Permission
   permission_handler: ^11.3.1
   # Notifications

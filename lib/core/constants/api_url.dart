@@ -82,6 +82,7 @@ class ApiUrl {
         'overview': mapboxDirectionReq.overview,
         'steps': mapboxDirectionReq.steps.toString(),
         'access_token': mapboxDirectionReq.accessToken,
+        'banner_instructions': mapboxDirectionReq.bannerInstructions.toString()
       },
     );
 

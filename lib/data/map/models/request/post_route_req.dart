@@ -17,7 +17,7 @@ class PostRouteReq {
     this.waypoints,
     required this.polyline,
     required this.routeThumbnail,
-    this.privacyLevel = 'public',
+    this.privacyLevel = 'Public',
   });
 
   PostRouteReq copyWith({

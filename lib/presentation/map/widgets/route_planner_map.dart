@@ -82,6 +82,7 @@ class _RoutePlannerMapState extends State<RoutePlannerMap> {
     return BlocConsumer<GetDirectionCubit, GetDirectionState>(
       listener: (context, state) async {
         if (state is GetDirectionLoaded) {
+          waypoints.clear();
           if (context.mounted) {
             // Set order of waypoints
             for (var waypoint in state.direction.waypoints) {

@@ -4,9 +4,41 @@ import 'package:tracio_fe/domain/map/usecase/get_direction_using_mapbox.dart';
 import 'package:tracio_fe/domain/map/usecase/get_elevation.dart';
 import 'package:tracio_fe/presentation/map/bloc/get_direction_state.dart';
 import 'package:tracio_fe/service_locator.dart';
+import "package:turf/turf.dart";
 
 class GetDirectionCubit extends Cubit<GetDirectionState> {
   GetDirectionCubit() : super(GetDirectionWaiting());
+
+  List<Feature<Point>> getPointsAlongLine(LineString lineString,
+      {int meterInterval = 1}) {
+    final feature = Feature<LineString>(geometry: lineString);
+
+    // Calculate the total length of the line (in meters)
+    final double totalLength = length(feature, Unit.meters).toDouble();
+
+    final List<Feature<Point>> points = [];
+
+    // Walk every 1 meter along the line
+    for (double distance = 0;
+        distance <= totalLength;
+        distance += meterInterval) {
+      final point = along(feature, distance, Unit.meters);
+      points.add(point);
+    }
+
+    return points;
+  }
+
+  List<Position> coordAll(List<Feature<Point>> features) {
+    return features
+        .map((f) => f.geometry?.coordinates)
+        .whereType<Position>()
+        .toList();
+  }
+
+  String encodePolyline(List<Position> coords, {int precision = 5}) {
+    return Polyline.encode(coords, precision: precision);
+  }
 
   Future<void> getDirectionUsingMapbox(MapboxDirectionsRequest request) async {
     emit(GetDirectionLoading());
@@ -16,9 +48,11 @@ class GetDirectionCubit extends Cubit<GetDirectionState> {
     data.fold((error) {
       emit(GetDirectionFailure(errorMessage: error.toString()));
     }, (directionData) async {
-      // Now fetch elevation using polyline
-      var elevationData =
-          await sl<GetElevationUseCase>().call(directionData.polyLineOverview!);
+      List<Feature<Point>> points =
+          getPointsAlongLine(directionData.geometry!, meterInterval: 5);
+      final coords = coordAll(points);
+      final polyline = encodePolyline(coords);
+      var elevationData = await sl<GetElevationUseCase>().call(polyline);
 
       elevationData.fold((error) {
         emit(GetElevationFailure(errorMessage: error.toString()));

@@ -161,12 +161,23 @@ class _CyclingPageState extends State<CyclingPage> {
     if (!mounted || !shouldStreamLocation) return;
 
     EasyThrottle.throttle(
-      'location-cubit-throttle', // ID của throttle
-      const Duration(milliseconds: 300),
+      'location-cubit-throttle',
+      const Duration(milliseconds: 200),
       () {
         context
             .read<LocationCubit>()
             .updateLocation(location, location.coords.heading);
+      },
+    );
+    EasyThrottle.throttle(
+      'ride-notification-throttle',
+      const Duration(microseconds: 100),
+      () {
+        NotificationService.sendRideTrackingNotification(
+          'Recording',
+          'Duration: ${formatDuration(duration)}; Distance: $odometerKm km',
+          rideStartTime,
+        );
       },
     );
     setState(() {
@@ -178,24 +189,19 @@ class _CyclingPageState extends State<CyclingPage> {
   }
 
   void _streamMotionDataToBloc(bg.Location location) async {
-    NotificationService.sendRideTrackingNotification(
-      'Recording',
-      'Distance: ${formatDuration(duration)}; Distance: $odometerKm km',
-      rideStartTime,
-    );
     try {
       if (!location.isMoving) {
         context.read<LocationCubit>().pauseTracking();
-      } else {
-        final state = await bg.BackgroundGeolocation.state;
-        if (state.enabled) {
-          await bg.BackgroundGeolocation.changePace(true);
-        } else {
-          debugPrint("Geolocation not started yet.");
-        }
+        return;
       }
-    } catch (e) {
-      debugPrint("Error in changePace: $e");
+
+      final state = await bg.BackgroundGeolocation.state;
+      if (!state.enabled) {
+        debugPrint("Geolocation not enabled yet.");
+        return;
+      }
+    } catch (e, stackTrace) {
+      debugPrint("Error in _streamMotionDataToBloc: $e\n$stackTrace");
     }
   }
 
