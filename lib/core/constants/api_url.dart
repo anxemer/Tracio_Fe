@@ -7,7 +7,7 @@ class ApiUrl {
   //base Url
   // static const baseURL = 'https://192.168.1.9:';
   // static const baseURL = 'https://user.tracio.space';
-  // static const baseURL = 'https://10.87.46.103:';
+  static const baseURL = 'http://103.28.33.123:';
   static const hubUrl = 'http://103.28.33.123:5002/content-hub';
   static const groupRouteHubUrl = 'http://103.28.33.123:5009/locationHub';
   static const chatHubUrl = 'http://103.28.33.123:5005/chat-hub';
