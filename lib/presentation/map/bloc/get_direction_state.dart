@@ -1,5 +1,5 @@
 import 'package:map_elevation/map_elevation.dart';
-import 'package:tracio_fe/data/map/models/response/mapbox_direction_rep.dart';
+import 'package:tracio_fe/domain/map/entities/mapbox_direction_rep.dart';
 
 abstract class GetDirectionState {}
 
@@ -8,7 +8,7 @@ class GetDirectionWaiting extends GetDirectionState {}
 class GetDirectionLoading extends GetDirectionState {}
 
 class GetDirectionLoaded extends GetDirectionState {
-  final MapboxDirectionResponse direction;
+  final MapboxDirectionResponseEntity direction;
   final List<ElevationPoint>? elevationPoints;
 
   GetDirectionLoaded({required this.direction, this.elevationPoints});

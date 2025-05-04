@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/domain/map/entities/route.dart';
 import 'package:tracio_fe/presentation/library/pages/edit_route_planned.dart';
 
@@ -39,25 +41,52 @@ class _RouteItemState extends State<RouteItem> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Route Name
                 Text(
                   widget.routeData.routeName,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                  style: TextStyle(
+                    fontSize: AppSize.textMedium.sp,
+                    fontWeight: FontWeight.w500,
                   ),
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
                 ),
                 const SizedBox(height: 4),
+
+                // Departed at
                 Text(
-                  "Cyclist: ${widget.routeData.cyclistName}",
-                  style: const TextStyle(
-                    fontSize: 14,
+                  "Departed at ${widget.routeData.formatDateTime(widget.routeData.createdAt)}",
+                  style: TextStyle(
+                    fontSize: AppSize.textSmall.sp,
                     color: Colors.grey,
                   ),
                   overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
                 ),
+                const SizedBox(height: 2),
+
+                // Distance • Elevation • Duration
+                Text(
+                  "${(widget.routeData.totalDistance / 1000).toStringAsFixed(1)} km • "
+                  "${widget.routeData.totalElevationGain.toStringAsFixed(0)} m • "
+                  "${(widget.routeData.totalDuration / 3600).toStringAsFixed(1)} hr",
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: Colors.grey,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 2),
+
+                // City
+                if (widget.routeData.city != null)
+                  Text(
+                    widget.routeData.city!,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      color: Colors.grey,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
               ],
             ),
           ),

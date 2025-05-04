@@ -1,4 +1,7 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_polyline_algorithm/google_polyline_algorithm.dart';
 import 'package:latlong2/latlong.dart';
@@ -6,6 +9,7 @@ import 'package:map_elevation/map_elevation.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:tracio_fe/common/widget/drag_handle/drag_handle.dart';
 import 'package:tracio_fe/core/configs/theme/app_colors.dart';
+import 'package:tracio_fe/core/configs/utils/color_utils.dart';
 import 'package:tracio_fe/data/map/models/request/post_route_req.dart';
 import 'package:tracio_fe/presentation/map/bloc/get_direction_cubit.dart';
 import 'package:tracio_fe/presentation/map/bloc/get_direction_state.dart';
@@ -26,8 +30,52 @@ class RouteDetailPanel extends StatefulWidget {
 
 class _RouteDetailPanelState extends State<RouteDetailPanel> {
   ElevationPoint? hoverPoint;
+  CircleAnnotation? hoverAnnotation;
   final Distance distance = Distance();
   List<ElevationPoint> elevationPoints = [];
+  CircleAnnotationManager? circleAnnotationManager;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  Future<void> _handleHoverUpdate(Position? position) async {
+    circleAnnotationManager ??= await context
+        .read<MapCubit>()
+        .mapboxMap!
+        .annotations
+        .createCircleAnnotationManager(id: "hover");
+
+    if (position == null) {
+      // If no position, delete the hover annotation
+      if (hoverAnnotation != null) {
+        await circleAnnotationManager!.delete(hoverAnnotation!);
+        hoverAnnotation = null;
+      }
+      return;
+    }
+
+    final point = Point(coordinates: position);
+
+    if (hoverAnnotation == null) {
+      final circleOption = CircleAnnotationOptions(
+        geometry: point,
+        circleRadius: 8.0,
+        circleColor: Colors.green.toInt(),
+        circleStrokeColor: Colors.white.toInt(),
+        circleStrokeWidth: 3.0,
+      );
+
+      final createdAnnotations =
+          await circleAnnotationManager!.create(circleOption);
+      hoverAnnotation = createdAnnotations;
+    } else {
+      hoverAnnotation!.geometry = point;
+
+      await circleAnnotationManager!.update(hoverAnnotation!);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -116,8 +164,10 @@ class _RouteDetailPanelState extends State<RouteDetailPanel> {
                   ),
                   onPressed: () async {
                     // Capture the snapshot
-                    await mapCubit.getSnapshot(direction.geometry!,
-                        direction.waypoints.first, direction.waypoints.last);
+                    await mapCubit.getSnapshot(
+                        direction.geometry!,
+                        direction.geometry!.coordinates.first,
+                        direction.geometry!.coordinates.last);
                   },
                   child: BlocConsumer<MapCubit, MapCubitState>(
                       listener: (context, state) async {
@@ -127,7 +177,7 @@ class _RouteDetailPanelState extends State<RouteDetailPanel> {
                           MaterialPageRoute(
                             builder: (context) => SnapshotDisplayPage(
                               snapshotImage: mapCubit.snapshotImageUrl!,
-                              metricsSection: _buildEmptyMetricsData(),
+                              metricsSection: _buildMetricsData(),
                             ),
                           ),
                         );
@@ -149,7 +199,7 @@ class _RouteDetailPanelState extends State<RouteDetailPanel> {
                           final request = PostRouteReq(
                             routeName: routeName ?? "New Route",
                             description: routeDescription,
-                            privacyLevel: routePrivacy.toString(),
+                            privacyLevel:routePrivacy== 0?"Private":"public",
                             origin: origin,
                             destination: destination,
                             waypoints: waypoints,
@@ -234,6 +284,48 @@ class _RouteDetailPanelState extends State<RouteDetailPanel> {
     );
   }
 
+  Container _buildMetricsData() {
+    return Container(
+      height: 110,
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 16),
+      child: Row(
+        mainAxisSize: MainAxisSize.max,
+        children: <Widget>[
+          //Distance as Miles
+          _buildMetricColumn(0.64, "mi"),
+          const SizedBox(width: 8),
+          const VerticalDivider(color: Colors.black26, thickness: 1),
+          const SizedBox(width: 8),
+          //Average elevation as ft
+          _buildMetricColumn(75.52, "ft"),
+          const SizedBox(width: 8),
+          const VerticalDivider(color: Colors.black26, thickness: 1),
+          const SizedBox(width: 8),
+          //EST time as min
+          _buildMetricColumn(3.55, "est. min"),
+          const Spacer(),
+          ElevatedButton(
+            style: ButtonStyle(
+              shape: WidgetStatePropertyAll<RoundedRectangleBorder>(
+                RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(2),
+                  side: BorderSide(color: Colors.grey.shade300),
+                ),
+              ),
+              backgroundColor:
+                  WidgetStatePropertyAll<Color>(Colors.grey.shade200),
+            ),
+            onPressed: () {},
+            child: const Text(
+              "Done",
+              style: TextStyle(color: Colors.black45, fontSize: 16),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Column _buildMetricColumn(double value, String unit) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -270,9 +362,12 @@ class _RouteDetailPanelState extends State<RouteDetailPanel> {
                 )
               : NotificationListener<ElevationHoverNotification>(
                   onNotification: (ElevationHoverNotification notification) {
-                    setState(() {
-                      hoverPoint = notification.position;
-                    });
+                    _handleHoverUpdate(
+                      notification.position != null
+                          ? Position(notification.position!.longitude,
+                              notification.position!.latitude)
+                          : null,
+                    );
                     return true;
                   },
                   child: Elevation(

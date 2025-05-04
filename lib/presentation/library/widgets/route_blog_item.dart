@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
+import 'package:tracio_fe/common/widget/drag_handle/drag_handle.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/domain/map/entities/route_blog.dart';
 import 'package:tracio_fe/presentation/library/bloc/reaction/bloc/reaction_bloc.dart';
@@ -242,7 +243,142 @@ class _RouteBlogItemState extends State<RouteBlogItem> {
                   ),
                   Flexible(
                     child: IconButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          shape: const RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.vertical(top: Radius.circular(16)),
+                          ),
+                          builder: (context) {
+                            return DraggableScrollableSheet(
+                              expand: false,
+                              initialChildSize: 0.9,
+                              minChildSize: 0.7,
+                              maxChildSize: 0.9,
+                              shouldCloseOnMinExtent: true,
+                              builder: (context, scrollController) {
+                                return Container(
+                                  padding: EdgeInsets.only(
+                                      left: 16,
+                                      top: 8,
+                                      right: 16,
+                                      bottom: MediaQuery.of(context)
+                                          .viewInsets
+                                          .bottom),
+                                  decoration: const BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.vertical(
+                                        top: Radius.circular(16)),
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      // Handle
+                                      Center(
+                                        child: Container(
+                                          width: 40,
+                                          height: 5,
+                                          decoration: BoxDecoration(
+                                            color: Colors.grey[400],
+                                            borderRadius:
+                                                BorderRadius.circular(2.5),
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      // Title
+                                      Text(
+                                        "Send to",
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      const SizedBox(height: 12),
+                                      // Search bar
+                                      TextField(
+                                        decoration: InputDecoration(
+                                          hintText: "Search",
+                                          prefixIcon: const Icon(Icons.search),
+                                          contentPadding:
+                                              const EdgeInsets.symmetric(
+                                                  vertical: 0),
+                                          border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                            borderSide: BorderSide.none,
+                                          ),
+                                          filled: true,
+                                          fillColor: Colors.grey[200],
+                                        ),
+                                      ),
+                                      const SizedBox(height: 12),
+                                      // Friend list
+                                      Expanded(
+                                        child: ListView.builder(
+                                          controller: scrollController,
+                                          itemCount: 5,
+                                          itemBuilder: (context, index) {
+                                            return ListTile(
+                                              leading: CircleAvatar(
+                                                backgroundImage: NetworkImage(
+                                                  "https://via.placeholder.com/150", // fake avatar
+                                                ),
+                                              ),
+                                              title: Text("Friend Name $index"),
+                                              trailing: Checkbox(
+                                                value: false,
+                                                onChanged: (value) {},
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      // Write message
+                                      TextField(
+                                        decoration: InputDecoration(
+                                          hintText: "Write a message",
+                                          contentPadding:
+                                              const EdgeInsets.symmetric(
+                                                  vertical: 4, horizontal: 16),
+                                          border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                            borderSide: BorderSide.none,
+                                          ),
+                                          filled: true,
+                                          fillColor: Colors.grey[200],
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      // Send button
+                                      SizedBox(
+                                        width: double.infinity,
+                                        child: ElevatedButton(
+                                          onPressed: () {},
+                                          style: ElevatedButton.styleFrom(
+                                              backgroundColor:
+                                                  Colors.grey.shade300,
+                                              shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          8.0))),
+                                          child: Text(
+                                            "Send",
+                                            style: TextStyle(
+                                                color: Colors.grey.shade500),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                        );
+                      },
                       icon: Icon(
                         Icons.share,
                         size: AppSize.iconMedium.w,

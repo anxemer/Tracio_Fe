@@ -7,7 +7,7 @@ import '../../../core/erorr/failure.dart';
 
 class IsLoggedInUseCase implements Usecase<String, NoParams> {
   @override
-  Future<Either<Failure,String>> call(NoParams params) async {
-    return await sl<AuthRepository>().isloggedIn();
+  Future<Either<Failure, String>> call(NoParams params) async {
+    return await sl<AuthRepository>().isLoggedIn();
   }
 }

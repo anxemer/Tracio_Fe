@@ -1510,7 +1510,7 @@ packages:
     source: hosted
     version: "2.0.2"
   turf:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: turf
       sha256: "75347c45a5c1de805db7cb182286f05a3770e01546626c4dc292709d15cbe436"

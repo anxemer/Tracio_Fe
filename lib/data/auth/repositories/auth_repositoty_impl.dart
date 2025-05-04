@@ -71,13 +71,14 @@ class AuthRepositotyImpl extends AuthRepository {
   }
 
   @override
-  Future<Either<Failure, String>> isloggedIn() async {
+  Future<Either<Failure, String>> isLoggedIn() async {
     try {
-      final user = sl<AuthLocalSource>().getUser();
-      if (user.role == null) {
-        return Left(CacheFailure("No user or role found"));
+      var user = sl<AuthLocalSource>().getUser();
+      if (user != null) {
+        return Right(user.role!);
+      } else {
+        return Left(AuthenticationFailure("User not found"));
       }
-      return Right(user.role!);
     } on Exception catch (e) {
       return Left(CacheFailure(e.toString()));
     }
@@ -115,7 +116,7 @@ class AuthRepositotyImpl extends AuthRepository {
           userId: userId,
           userName: uniqueName);
       await sl<AuthLocalSource>().saveToken(token);
-      await sl<AuthLocalSource>().saveRefrshToken(refreshToken);
+      await sl<AuthLocalSource>().saveRefreshToken(refreshToken);
       sl<AuthLocalSource>().saveUser(user);
       return Right(remoteResponse);
     } on CredentialFailure catch (e) {
@@ -126,10 +127,14 @@ class AuthRepositotyImpl extends AuthRepository {
   }
 
   @override
-  Future<Either<Failure, UserEntity>> getCachUser() async {
+  Either<Failure, UserEntity> getCacheUser() {
     try {
       final user = sl<AuthLocalSource>().getUser();
-      return Right(user);
+      if (user != null) {
+        return Right(user);
+      } else {
+        return Left(AuthenticationFailure("User not found"));
+      }
     } catch (e) {
       return Left(CacheFailure(e.toString()));
     }
@@ -145,10 +150,11 @@ class AuthRepositotyImpl extends AuthRepository {
 
   @override
   Future<Either<Failure, AuthenticationResponseModel>> loginGoogle() async {
-    return await _authenticate(() async {
+    return _authenticate(() async {
       final googleSignIn = GoogleSignIn(scopes: ['email', 'profile']);
-      if (await googleSignIn.isSignedIn()) {
-        await googleSignIn.disconnect();
+      final isSignedIn = googleSignIn.currentUser != null;
+      if (isSignedIn) {
+        await googleSignIn.signOut();
       }
 
       final googleUser = await googleSignIn.signIn();

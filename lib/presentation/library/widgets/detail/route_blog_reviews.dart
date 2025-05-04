@@ -7,6 +7,7 @@ import 'package:tracio_fe/core/configs/theme/app_colors.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/domain/map/entities/route_blog.dart';
 import 'package:tracio_fe/domain/map/entities/route_review.dart';
+import 'package:tracio_fe/presentation/library/bloc/reaction/bloc/reaction_bloc.dart';
 import 'package:tracio_fe/presentation/library/widgets/detail/route_blog_review_item.dart';
 import 'package:tracio_fe/presentation/library/widgets/detail/route_review_input_box.dart';
 import 'package:tracio_fe/presentation/map/bloc/route_cubit.dart';
@@ -85,16 +86,52 @@ class _RouteBlogReviewsState extends State<RouteBlogReviews> {
                             _buildPlaceholderIcon(Icons.person),
                       ),
                     ),
-                    Text(widget.route.routeName),
-                    Wrap(
-                      spacing: AppSize.apHorizontalPadding / 2,
-                      runSpacing: AppSize.apHorizontalPadding / 3,
-                      children: [
-                        Text(widget.route.cyclistName),
-                        Text(
-                            "${widget.route.formatDateTime(widget.route.createdAt)} •"),
-                        Text("${widget.route.totalDistance} km"),
-                      ],
+                    const SizedBox(
+                      height: AppSize.apHorizontalPadding,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: AppSize.apHorizontalPadding / 2),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(widget.route.routeName,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                  fontSize: AppSize.textExtraLarge * 0.8.sp,
+                                  fontWeight: FontWeight.w600)),
+                          const SizedBox(
+                            height: AppSize.apHorizontalPadding / 3,
+                          ),
+                          Text(
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              "${widget.route.cyclistName} • ${widget.route.formatDateTime(widget.route.createdAt)}"),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        if (widget.route.isReacted) {
+                          context
+                              .read<ReactionBloc>()
+                              .add(UnReactRoute(routeId: widget.route.routeId));
+                        } else {
+                          context
+                              .read<ReactionBloc>()
+                              .add(ReactRoute(routeId: widget.route.routeId));
+                        }
+                      },
+                      icon: Icon(
+                        widget.route.isReacted
+                            ? Icons.favorite
+                            : Icons.favorite_border,
+                        color: widget.route.isReacted
+                            ? Colors.red
+                            : Colors.black87,
+                        size: AppSize.iconMedium.w,
+                      ),
                     ),
                     Expanded(
                       child: Padding(

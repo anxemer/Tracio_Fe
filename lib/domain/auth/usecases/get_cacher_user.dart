@@ -9,6 +9,6 @@ import '../../../service_locator.dart';
 class GetCacherUserUseCase implements Usecase<UserEntity, NoParams> {
   @override
   Future<Either<Failure, UserEntity>> call(NoParams params) async {
-    return await sl<AuthRepository>().getCachUser();
+    return sl<AuthRepository>().getCacheUser();
   }
 }

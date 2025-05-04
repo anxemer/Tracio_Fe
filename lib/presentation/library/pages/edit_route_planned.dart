@@ -95,9 +95,20 @@ class _EditRoutePlannedScreenState extends State<EditRoutePlannedScreen> {
                     decoration: InputDecoration(
                       labelText: "Name",
                       border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8)),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey.shade400),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide:
+                            const BorderSide(color: Colors.blue, width: 2),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
                   ),
+
                   const SizedBox(height: AppSize.apVerticalPadding),
                   TextField(
                     controller: _descriptionController,
@@ -105,9 +116,20 @@ class _EditRoutePlannedScreenState extends State<EditRoutePlannedScreen> {
                     decoration: InputDecoration(
                       labelText: "Description",
                       border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8)),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey.shade400),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide:
+                            const BorderSide(color: Colors.blue, width: 2),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
                   ),
+
                   const SizedBox(height: AppSize.apSectionPadding),
 
                   Text("Route privacy"),
@@ -144,7 +166,10 @@ class _EditRoutePlannedScreenState extends State<EditRoutePlannedScreen> {
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: _saveChanges,
-                      child: const Text("Save Changes"),
+                      child: const Text(
+                        "Save Changes",
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ),
                   ),
                 ],

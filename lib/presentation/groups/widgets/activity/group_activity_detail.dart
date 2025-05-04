@@ -86,10 +86,8 @@ class _GroupActivityDetailState extends State<GroupActivityDetail> {
                                               AppSize.apVerticalPadding / 2),
                                       child: Material(
                                         color: Colors.transparent,
-                                        child: RouteBlogItem(
-                                          routeId: routeState
-                                              .routeBlogs[index].routeId,
-                                          route: routeState.routeBlogs[index],
+                                        child: _buildMemberActivityCard(
+                                          routeState.routeBlogs[index],
                                         ),
                                       ),
                                     );
@@ -253,13 +251,26 @@ class _GroupActivityDetailState extends State<GroupActivityDetail> {
               ),
               child: Column(
                 children: [
-                  _buildGreyBackgroundImage(height: _imageRouteHeight * 0.8.h),
+                  // _buildGreyBackgroundImage(height: _imageRouteHeight * 0.8.h),
+                  CachedNetworkImage(
+                    imageUrl:
+                        "https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/path-5+f44-0.5(io%7B%60A%7B~jjSpCzDsFrFyGeJi@wRcGN~AjUmRlw@lM%7Ca@ri@%60h@hKeM%60OmGtG~FlGqHj]~[zHgGfK%7CI%60EmEkMsL)/auto/500x300?access_token=pk.eyJ1IjoidHJtaW5sb2MiLCJhIjoiY203MWU3NmdjMGE2azJwczh5Nzd2c2VmaCJ9.llG8qqDi6cylYa7mVdLWag",
+                    fit: BoxFit.cover,
+                    errorWidget: (context, url, error) => CircleAvatar(
+                      backgroundColor: Colors.transparent,
+                      radius: AppSize.imageSmall / 2.4.w,
+                      child: Icon(
+                        Icons.person,
+                        size: AppSize.imageSmall / 2.w,
+                      ),
+                    ),
+                  ),
                   const SizedBox(height: AppSize.apVerticalPadding),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      _buildStatText("Distance", "0.0 km"),
-                      _buildStatText("Elev. Gain", "0.0 ft"),
+                      _buildStatText("Distance", "7.2 km"),
+                      _buildStatText("Elev. Gain", "32 ft"),
                     ],
                   ),
                 ],
@@ -328,10 +339,8 @@ class _GroupActivityDetailState extends State<GroupActivityDetail> {
                   color: Colors.grey.shade300,
                   padding: const EdgeInsets.only(
                       bottom: AppSize.apVerticalPadding / 2),
-                  child: RouteBlogItem(
-                    routeId: state.groupRouteDetails[index].ridingRoute.routeId,
-                    route: state.groupRouteDetails[index].ridingRoute,
-                  ),
+                  child: _buildMemberActivityCard(
+                      state.groupRouteDetails[index].ridingRoute),
                 );
               },
             ),
@@ -340,7 +349,7 @@ class _GroupActivityDetailState extends State<GroupActivityDetail> {
     );
   }
 
-  Widget _buildMemberActivityCard(GroupRouteDetail detail) {
+  Widget _buildMemberActivityCard(RouteBlogEntity detail) {
     return InkWell(
       onTap: () {
         Navigator.push(
@@ -348,7 +357,7 @@ class _GroupActivityDetailState extends State<GroupActivityDetail> {
           MaterialPageRoute(
             builder: (context) => BlocProvider.value(
               value: context.read<GroupCubit>(),
-              child: RouteDetailScreen(routeId: detail.ridingRoute.routeId),
+              child: RouteDetailScreen(routeId: detail.routeId),
             ),
           ),
         );
@@ -362,7 +371,7 @@ class _GroupActivityDetailState extends State<GroupActivityDetail> {
         padding: const EdgeInsets.all(8.0),
         child: Row(
           children: [
-            _buildThumbnail(detail.ridingRoute.routeThumbnail),
+            _buildThumbnail(detail.routeThumbnail),
             const SizedBox(width: 8.0),
             Expanded(
               child: Column(
@@ -373,11 +382,10 @@ class _GroupActivityDetailState extends State<GroupActivityDetail> {
                   Wrap(
                     spacing: 4.0,
                     children: [
-                      Text("${detail.ridingRoute.totalDistance} km"),
-                      Text("${detail.ridingRoute.avgSpeed} km/h"),
-                      Text(
-                          "${_formatDuration(detail.ridingRoute.totalDuration)} hrs"),
-                      Text("${detail.ridingRoute.totalElevationGain} m"),
+                      Text("${detail.totalDistance} km"),
+                      Text("${detail.avgSpeed} km/h"),
+                      Text("${_formatDuration(detail.totalDuration)} hrs"),
+                      Text("${detail.totalElevationGain} m"),
                     ],
                   ),
                 ],
@@ -406,7 +414,7 @@ class _GroupActivityDetailState extends State<GroupActivityDetail> {
     );
   }
 
-  Widget _buildUserInfo(GroupRouteDetail detail) {
+  Widget _buildUserInfo(RouteBlogEntity detail) {
     return Row(
       children: [
         CircleAvatar(
@@ -414,7 +422,7 @@ class _GroupActivityDetailState extends State<GroupActivityDetail> {
           backgroundColor: Colors.grey.shade300,
           child: ClipOval(
             child: CachedNetworkImage(
-              imageUrl: detail.cyclist.profilePicture,
+              imageUrl: detail.cyclistAvatar,
               fit: BoxFit.cover,
               width: 32.w,
               height: 32.w,
@@ -427,7 +435,7 @@ class _GroupActivityDetailState extends State<GroupActivityDetail> {
         ),
         const SizedBox(width: 8.0),
         Text(
-          detail.cyclist.userName,
+          detail.cyclistName,
           style: TextStyle(
             fontSize: AppSize.textMedium.sp,
             fontWeight: FontWeight.w600,
@@ -490,6 +498,7 @@ class _GroupActivityDetailState extends State<GroupActivityDetail> {
 
   Widget _buildMenuButton() {
     return PopupMenuButton<String>(
+      style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.white)),
       tooltip: "More",
       icon: Icon(Icons.more_vert,
           color: Colors.black87, size: AppSize.iconMedium.w),

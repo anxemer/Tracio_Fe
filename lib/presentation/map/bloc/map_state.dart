@@ -19,9 +19,7 @@ class MapCubitStyleLoaded extends MapCubitState {
 }
 
 class MapAnnotationsUpdated extends MapCubitState {
-  final List<PointAnnotationOptions> annotations;
-
-  MapAnnotationsUpdated({required this.annotations});
+  MapAnnotationsUpdated();
 }
 
 class StaticImageLoading extends MapCubitState {}

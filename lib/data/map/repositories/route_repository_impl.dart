@@ -7,23 +7,23 @@ import 'package:tracio_fe/data/map/models/response/get_route_blog_review_rep.dar
 import 'package:tracio_fe/data/map/models/response/get_route_rep.dart';
 import 'package:tracio_fe/data/map/models/request/get_route_req.dart';
 import 'package:tracio_fe/data/map/models/response/get_route_reply_rep.dart';
-import 'package:tracio_fe/data/map/models/response/mapbox_direction_rep.dart';
 import 'package:tracio_fe/data/map/models/request/mapbox_direction_req.dart';
 import 'package:tracio_fe/data/map/models/request/post_route_req.dart';
 import 'package:tracio_fe/data/map/source/route_api_service.dart';
+import 'package:tracio_fe/domain/map/entities/mapbox_direction_rep.dart';
 import 'package:tracio_fe/domain/map/entities/route_detail.dart';
 import 'package:tracio_fe/domain/map/repositories/route_repository.dart';
 import 'package:tracio_fe/service_locator.dart';
 
 class RouteRepositoryImpl extends RouteRepository {
   @override
-  Future<Either<Failure, MapboxDirectionResponse>> getDirectionUsingMapbox(
-      MapboxDirectionsRequest request) async {
+  Future<Either<Failure, MapboxDirectionResponseEntity>>
+      getDirectionUsingMapbox(MapboxDirectionsRequest request) async {
     var returnedData = await sl<RouteApiService>().getRouteUsingMapBox(request);
     return returnedData.fold((error) {
       return left(error);
     }, (data) {
-      final direction = MapboxDirectionResponse.fromJson(data);
+      final direction = MapboxDirectionResponseEntity.fromMap(data);
       return right(direction);
     });
   }

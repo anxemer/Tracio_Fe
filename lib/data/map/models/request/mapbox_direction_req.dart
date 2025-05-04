@@ -9,19 +9,20 @@ class MapboxDirectionsRequest {
   final String language; // Language for instructions
   final String overview; // Overview type (e.g., "full")
   final bool steps; // Include turn-by-turn instructions
+  final bool bannerInstructions;
 
-  MapboxDirectionsRequest({
-    required this.profile,
-    required this.coordinates,
-    required this.accessToken,
-    this.alternatives = true,
-    this.annotations = 'distance,duration,speed',
-    this.continueStraight = true,
-    this.geometries = 'polyline',
-    this.language = 'en',
-    this.overview = 'full',
-    this.steps = true,
-  });
+  MapboxDirectionsRequest(
+      {required this.profile,
+      required this.coordinates,
+      required this.accessToken,
+      this.alternatives = true,
+      this.annotations = 'distance,duration,speed',
+      this.continueStraight = true,
+      this.geometries = 'polyline',
+      this.language = 'en',
+      this.overview = 'full',
+      this.steps = true,
+      this.bannerInstructions = true});
 
   Uri toUri() {
     final coordsString =
@@ -39,6 +40,7 @@ class MapboxDirectionsRequest {
         'overview': overview,
         'steps': steps.toString(),
         'access_token': accessToken,
+        'banner_instructions': bannerInstructions.toString()
       },
     );
   }

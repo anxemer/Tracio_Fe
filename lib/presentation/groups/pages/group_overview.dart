@@ -9,6 +9,7 @@ import 'package:tracio_fe/domain/groups/entities/group_route.dart';
 import 'package:tracio_fe/presentation/groups/cubit/group_cubit.dart';
 import 'package:tracio_fe/presentation/groups/cubit/group_state.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:tracio_fe/presentation/groups/pages/group_participant.dart';
 
 class GroupOverview extends StatefulWidget {
   final int groupId;
@@ -187,7 +188,13 @@ class _GroupOverviewState extends State<GroupOverview> {
             color: Colors.transparent,
             child: InkWell(
               onTap: () {
-                // action here
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => BlocProvider.value(
+                              value: context.read<GroupCubit>(),
+                              child: GroupParticipant(),
+                            )));
               },
               child: Ink(
                 padding: const EdgeInsets.all(8),

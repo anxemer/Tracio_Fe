@@ -7,14 +7,14 @@ import 'package:tracio_fe/data/map/models/response/get_route_blog_review_rep.dar
 import 'package:tracio_fe/data/map/models/response/get_route_rep.dart';
 import 'package:tracio_fe/data/map/models/request/get_route_req.dart';
 import 'package:tracio_fe/data/map/models/response/get_route_reply_rep.dart';
-import 'package:tracio_fe/data/map/models/response/mapbox_direction_rep.dart';
 import 'package:tracio_fe/data/map/models/request/mapbox_direction_req.dart';
 import 'package:tracio_fe/data/map/models/request/post_route_req.dart';
+import 'package:tracio_fe/domain/map/entities/mapbox_direction_rep.dart';
 import 'package:tracio_fe/domain/map/entities/route_detail.dart';
 
 abstract class RouteRepository {
   Future<Either<Failure, GetRouteRepModel>> getRoutes(GetRouteReq request);
-  Future<Either<Failure, MapboxDirectionResponse>> getDirectionUsingMapbox(
+  Future<Either<Failure, MapboxDirectionResponseEntity>> getDirectionUsingMapbox(
       MapboxDirectionsRequest request);
   Future<Either<Failure, dynamic>> postRoute(PostRouteReq request);
   Future<Either<Failure, dynamic>> startTracking(Map<String, dynamic> request);
