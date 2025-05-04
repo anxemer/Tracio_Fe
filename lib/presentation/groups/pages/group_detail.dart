@@ -3,13 +3,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
 import 'package:tracio_fe/common/widget/appbar/app_bar.dart';
+import 'package:tracio_fe/common/widget/navbar/bottom_nav_bar_manager.dart';
 import 'package:tracio_fe/core/configs/theme/app_colors.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/data/groups/models/request/get_group_list_req.dart';
 import 'package:tracio_fe/domain/auth/entities/user.dart';
 import 'package:tracio_fe/presentation/groups/cubit/group_cubit.dart';
 import 'package:tracio_fe/presentation/groups/cubit/group_state.dart';
-import 'package:tracio_fe/presentation/groups/pages/group.dart';
 import 'package:tracio_fe/presentation/groups/widgets/detail/group_detail_loaded.dart';
 import 'package:tracio_fe/presentation/groups/widgets/detail/group_detail_skeleton.dart';
 
@@ -44,10 +44,14 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
         if (!didPop && Navigator.canPop(context)) {
-          GetGroupListReq request = GetGroupListReq(
-              pageNumber: 1, pageSize: 10, getMyGroups: true);
+          GetGroupListReq request =
+              GetGroupListReq(pageNumber: 1, pageSize: 10, getMyGroups: true);
           context.read<GroupCubit>().getGroupList(request);
-          AppNavigator.pushAndRemove(context, GroupPage());
+          AppNavigator.pushAndRemove(
+              context,
+              BottomNavBarManager(
+                selectedIndex: 3,
+              ));
         }
       },
       child: Scaffold(
