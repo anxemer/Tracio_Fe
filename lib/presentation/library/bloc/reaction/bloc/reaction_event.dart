@@ -15,6 +15,14 @@ class InitializeReactionRoute extends ReactionEvent {
   List<Object> get props => [route];
 }
 
+class InitializeReactionBlog extends ReactionEvent {
+  final BlogEntity blog;
+  const InitializeReactionBlog({required this.blog});
+
+  @override
+  List<Object> get props => [blog];
+}
+
 final class ReactRoute extends ReactionEvent {
   final int routeId;
   const ReactRoute({required this.routeId});
@@ -61,4 +69,49 @@ final class UnReactRoute extends ReactionEvent {
 
   @override
   List<Object> get props => [routeId];
+}
+
+final class ReactionBlog extends ReactionEvent {
+  final int blogId;
+  const ReactionBlog({required this.blogId});
+  @override
+  List<Object> get props => [blogId];
+}
+
+final class UnReactBlog extends ReactionEvent {
+  final int blogId;
+
+  const UnReactBlog({required this.blogId});
+  @override
+  List<Object> get props => [blogId];
+}
+
+final class ReactComment extends ReactionEvent {
+  final int commentId;
+  const ReactComment({required this.commentId});
+  @override
+  List<Object> get props => [commentId];
+}
+
+final class UnReactComment extends ReactionEvent {
+  final int commentId;
+
+  const UnReactComment({required this.commentId});
+  @override
+  List<Object> get props => [commentId];
+}
+
+final class ReactReplyComment extends ReactionEvent {
+  final int replyCommentId;
+  const ReactReplyComment({required this.replyCommentId});
+  @override
+  List<Object> get props => [replyCommentId];
+}
+
+final class UnReactReplyComment extends ReactionEvent {
+  final int replyCommentId;
+
+  const UnReactReplyComment({required this.replyCommentId});
+  @override
+  List<Object> get props => [replyCommentId];
 }

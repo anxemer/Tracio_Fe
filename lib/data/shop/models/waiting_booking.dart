@@ -6,6 +6,7 @@ class ConfirmBookingModel {
     required this.shopNote,
     required this.reason,
     required this.price,
+    this.adjustPriceReason,
     this.bookingId,
   });
 
@@ -14,6 +15,7 @@ class ConfirmBookingModel {
   final String? shopNote;
   final String? reason;
   final String? price;
+  final String? adjustPriceReason;
   final int? bookingId;
 
   ConfirmBookingModel copyWith({
@@ -22,6 +24,7 @@ class ConfirmBookingModel {
     String? shopNote,
     String? reason,
     String? price,
+    String? adjustPriceReason,
     int? bookingId,
   }) {
     return ConfirmBookingModel(
@@ -53,6 +56,7 @@ class ConfirmBookingModel {
       "userNote": userNote,
       "shopNote": shopNote,
       "reason": reason,
+      "readjustPriceReasonason": adjustPriceReason,
       "price": price,
       "bookingId": bookingId,
     };

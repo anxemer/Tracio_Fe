@@ -31,7 +31,7 @@ class ReactBlog extends StatefulWidget {
 }
 
 class _ReactBlogState extends State<ReactBlog> {
-  bool toogleIsReaction(bool isReaction) {
+  bool togleIsReaction(bool isReaction) {
     return !isReaction;
   }
 
@@ -61,18 +61,25 @@ class _ReactBlogState extends State<ReactBlog> {
                           state.reactBlog.contains(widget.blogEntity.blogId);
                       return GestureDetector(
                           onTap: () async {
-                            print(isReacted);
                             if (isReacted) {
                               context.read<ReactionBloc>().add(UnReactBlog(
                                   blogId: widget.blogEntity.blogId));
 
                               setState(() {
-                                widget.blogEntity.likesCount--;
+                                bool isReact = togleIsReaction(isReacted);
+
+                                widget.blogEntity.isReacted = isReact;
+                                if (widget.blogEntity.likesCount > 0) {
+                                  widget.blogEntity.likesCount--;
+                                }
                               });
                             } else {
                               context.read<ReactionBloc>().add(ReactionBlog(
                                   blogId: widget.blogEntity.blogId));
+
                               setState(() {
+                                bool isReact = togleIsReaction(isReacted);
+                                widget.blogEntity.isReacted = isReact;
                                 widget.blogEntity.likesCount++;
                               });
                             }
@@ -110,10 +117,10 @@ class _ReactBlogState extends State<ReactBlog> {
                             // }
                           },
                           child: Icon(
-                            isReacted
+                            widget.blogEntity.isReacted
                                 ? Icons.favorite
                                 : Icons.favorite_border_outlined,
-                            color: isReacted
+                            color: widget.blogEntity.isReacted
                                 ? Colors.red
                                 : context.isDarkMode
                                     ? Colors.white
@@ -167,11 +174,11 @@ class _ReactBlogState extends State<ReactBlog> {
                     result.fold((error) {
                       error;
                     }, (data) {
-                      bool isReact =
-                          toogleIsReaction(widget.blogEntity.isBookmarked);
+                      bool isBookmark =
+                          togleIsReaction(widget.blogEntity.isBookmarked);
 
                       setState(() {
-                        widget.blogEntity.isBookmarked = isReact;
+                        widget.blogEntity.isBookmarked = isBookmark;
                       });
                     });
                   }
