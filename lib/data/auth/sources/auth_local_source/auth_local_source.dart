@@ -9,10 +9,10 @@ import '../../../../service_locator.dart';
 abstract class AuthLocalSource {
   Future<String> getToken();
   Future<String> getRefreshToken();
-  UserEntity getUser();
+  UserEntity? getUser();
   Future<void> saveToken(String token);
   Future<void> saveUser(UserModel user);
-  Future<void> saveRefrshToken(String token);
+  Future<void> saveRefreshToken(String token);
   Future<void> clearCache();
 }
 
@@ -36,7 +36,7 @@ class AuthLocalSourceImp extends AuthLocalSource {
   }
 
   @override
-  UserEntity getUser() {
+  UserEntity? getUser() {
     final jsonString = sl<SharedPreferences>().getString(cachedUser);
     if (jsonString != null) {
       return UserModel.fromJson(jsonString);
@@ -63,9 +63,9 @@ class AuthLocalSourceImp extends AuthLocalSource {
   }
 
   @override
-  Future<void> saveRefrshToken(String refreshToken) async {
+  Future<void> saveRefreshToken(String token) async {
     await sl<FlutterSecureStorage>()
-        .write(key: cachedRefreshToken, value: refreshToken);
+        .write(key: cachedRefreshToken, value: token);
   }
 
   @override

@@ -15,8 +15,9 @@ abstract class AuthRepository {
   Future<Either<Failure, bool>> checkEmailVerified();
   Future<Either<Failure, AuthenticationResponseEntity>> login(LoginReq login);
   Future<Either<Failure, AuthenticationResponseModel>> loginGoogle();
-  Future<Either<Failure, AuthenticationResponseEntity>> changeRole(ChangeRoleReq changeRole);
-  Future<Either<Failure, String>> isloggedIn();
+  Future<Either<Failure, AuthenticationResponseEntity>> changeRole(
+      ChangeRoleReq changeRole);
+  Future<Either<Failure, String>> isLoggedIn();
   Future<Either<Failure, NoParams>> logout();
-  Future<Either<Failure, UserEntity>> getCachUser();
+  Either<Failure, UserEntity> getCacheUser();
 }
