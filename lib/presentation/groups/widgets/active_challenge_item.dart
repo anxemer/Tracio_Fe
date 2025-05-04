@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:tracio_fe/common/widget/picture/circle_picture.dart';
 import 'package:tracio_fe/core/configs/theme/app_colors.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
 
@@ -35,12 +36,14 @@ class ActiveChallengeItem extends StatelessWidget {
                 valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
               ),
               ClipOval(
-                child: Image.network(
-                  imageUrl,
-                  width: 30,
-                  height: 30,
-                  fit: BoxFit.cover,
-                ),
+                child: CirclePicture(
+                    imageUrl: imageUrl, imageSize: AppSize.iconMedium),
+                // Image.network(
+                //   imageUrl,
+                //   width: 30,
+                //   height: 30,
+                //   fit: BoxFit.cover,
+                // ),
               ),
             ],
           ),

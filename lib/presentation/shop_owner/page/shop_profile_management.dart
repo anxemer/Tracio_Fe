@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -7,13 +9,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tracio_fe/common/widget/appbar/app_bar.dart';
+import 'package:tracio_fe/common/widget/button/loading.dart';
 import 'package:tracio_fe/common/widget/input_text_form_field.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' as mapbox;
+import 'package:tracio_fe/data/shop/models/create_shop_profile_req.dart';
 import 'package:tracio_fe/domain/shop/entities/response/shop_profile_entity.dart';
 
+import '../../../domain/map/entities/place.dart';
 import '../../map/bloc/map_cubit.dart';
 import '../../map/bloc/map_state.dart';
+import '../../map/pages/search_location.dart';
+import '../bloc/shop_profile/shop_profile_manage/shop_profile_manage_cubit.dart';
 
 class ShopProfileManagementScreen extends StatefulWidget {
   final ShopProfileEntity? initialData; // Dữ liệu ban đầu nếu là chỉnh sửa
@@ -32,6 +39,7 @@ class ShopProfileManagementScreen extends StatefulWidget {
 
 class _ShopProfileManagementScreenState
     extends State<ShopProfileManagementScreen> {
+  late bool status;
   final _formKey = GlobalKey<FormState>(); // Key để quản lý Form
 
   // Controllers cho các trường Text
@@ -43,7 +51,8 @@ class _ShopProfileManagementScreenState
   late TextEditingController _districtController;
   late TextEditingController _openTimeController;
   late TextEditingController _closeTimeController;
-
+  double? latitude;
+  double? longitude;
   File? _pickedImageFile; // File ảnh được chọn từ picker
   TimeOfDay? _selectedOpenTime;
   TimeOfDay? _selectedCloseTime;
@@ -88,7 +97,9 @@ class _ShopProfileManagementScreenState
       _addressController.text = data.address ?? '';
       _cityController.text = data.city ?? '';
       _districtController.text = data.district ?? '';
-      _existingImageUrl = data.profilePicture; // Lưu URL ảnh cũ
+      _existingImageUrl = data.profilePicture;
+      latitude = data.coordinate!.latitude!; // Lưu URL ảnh cũ
+      longitude = data.coordinate!.longitude!; // Lưu URL ảnh cũ
 
       // if (_selectedOpenTime != null) {
       //   _openTimeController.text =
@@ -106,7 +117,6 @@ class _ShopProfileManagementScreenState
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    // Giờ mới được dùng context để format
     if (_selectedOpenTime != null) {
       _openTimeController.text = _formatTimeOfDay(_selectedOpenTime!, context);
     }
@@ -118,7 +128,6 @@ class _ShopProfileManagementScreenState
 
   @override
   void dispose() {
-    // Hủy controllers khi widget bị loại bỏ để tránh rò rỉ bộ nhớ
     _contactNumberController.dispose();
     _shopNameController.dispose();
     _taxCodeController.dispose();
@@ -130,32 +139,28 @@ class _ShopProfileManagementScreenState
     super.dispose();
   }
 
-  // Hàm chọn ảnh từ thư viện hoặc camera
   Future<void> _pickImage(ImageSource source) async {
     try {
       final pickedFile = await _picker.pickImage(
         source: source,
-        maxWidth: 800, // Giới hạn kích thước ảnh để tối ưu
-        imageQuality: 85, // Giảm chất lượng ảnh một chút
+        maxWidth: 800,
+        imageQuality: 85,
       );
 
       if (pickedFile != null) {
         setState(() {
           _pickedImageFile = File(pickedFile.path);
-          _existingImageUrl = null; // Xoá ảnh cũ nếu chọn ảnh mới
+          _existingImageUrl = null;
         });
       }
     } catch (e) {
-      // Xử lý lỗi (ví dụ: không có quyền truy cập)
-      print("Lỗi chọn ảnh: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-            content: Text('Không thể chọn ảnh. Vui lòng kiểm tra quyền.')),
+            content: Text('Unable to select image. Please check permissions.')),
       );
     }
   }
 
-  // Hiển thị dialog chọn nguồn ảnh
   void _showImageSourceDialog() {
     showModalBottomSheet(
       context: context,
@@ -189,10 +194,8 @@ class _ShopProfileManagementScreenState
       initialTime: (isOpeningTime ? _selectedOpenTime : _selectedCloseTime) ??
           TimeOfDay.now(),
       builder: (context, child) {
-        // Tùy chỉnh giao diện TimePicker nếu muốn
         return MediaQuery(
-          data: MediaQuery.of(context)
-              .copyWith(alwaysUse24HourFormat: true), // Sử dụng định dạng 24h
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
           child: child!,
         );
       },
@@ -210,53 +213,59 @@ class _ShopProfileManagementScreenState
     }
   }
 
-  // Định dạng TimeOfDay thành chuỗi HH:mm
   String _formatTimeOfDay(TimeOfDay tod, BuildContext context) {
     final MaterialLocalizations localizations =
         MaterialLocalizations.of(context);
-    // Sử dụng format của MaterialLocalizations để đảm bảo định dạng đúng theo locale
     return localizations.formatTimeOfDay(tod, alwaysUse24HourFormat: true);
   }
 
-  // Hàm xử lý khi nhấn nút Lưu
-  void _saveForm() {
-    // Validate toàn bộ Form
+  void _saveForm() async {
     if (_formKey.currentState!.validate()) {
-      // Nếu Form hợp lệ, gọi hàm save (thường là gửi dữ liệu đi)
-      _formKey.currentState!
-          .save(); // Gọi onSaved của các TextFormField (nếu có)
+      _formKey.currentState!.save();
 
-      // Thu thập dữ liệu từ controllers và state
       final contactNumber = _contactNumberController.text;
       final shopName = _shopNameController.text;
       final taxCode = _taxCodeController.text;
       final address = _addressController.text;
       final city = _cityController.text;
       final district = _districtController.text;
-      // _pickedImageFile chứa ảnh mới (nếu có)
-      // _selectedOpenTime và _selectedCloseTime chứa thời gian đã chọn
-
-      // --- TODO: Xử lý logic lưu trữ thực tế ---
-      // 1. Upload ảnh (_pickedImageFile) nếu có ảnh mới và lấy URL về.
-      // 2. Tạo hoặc cập nhật đối tượng ShopProfileData.
-      // 3. Gọi API để gửi dữ liệu lên server.
-      // 4. Hiển thị thông báo thành công/thất bại (SnackBar).
-      // 5. Điều hướng người dùng về trang trước hoặc trang hồ sơ.
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(widget.isEditing
-              ? 'Updare Profile success!'
-              : 'Register shop profile success!'),
-        ),
-      );
-      // Ví dụ điều hướng về trang trước:
-      // if (Navigator.canPop(context)) {
-      //   Navigator.pop(context);
-      // }
+      final image = _pickedImageFile;
+      final openTime = _openTimeController.text;
+      final closeTime = _closeTimeController.text;
+      
+     
+      if (widget.isEditing) {
+        await context.read<ShopProfileManageCubit>().editShop(
+            CreateShopProfileReq(
+                contactNumber: contactNumber,
+                shopName: shopName,
+                taxCode: taxCode,
+                address: address,
+                profilePicture: image != null ? [image] : null,
+                city: city,
+                district: district,
+                latitude: latitude,
+                longitude: longitude,
+                openTime: openTime,
+                closedTime: closeTime));
+      } else {
+        await context.read<ShopProfileManageCubit>().registerShop(
+            CreateShopProfileReq(
+                contactNumber: contactNumber,
+                shopName: shopName,
+                taxCode: taxCode,
+                address: address,
+                profilePicture: [image!],
+                city: city,
+                district: district,
+                latitude: latitude ?? 0.0,
+                longitude: longitude ?? 0.0,
+                openTime: openTime,
+                closedTime: closeTime));
+      }
+     
     } else {
-      // Nếu Form không hợp lệ, hiển thị thông báo (thường tự động bởi TextFormField)
-      print("Form không hợp lệ");
+      print("Form invalid");
     }
   }
 
@@ -267,290 +276,400 @@ class _ShopProfileManagementScreenState
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
 
-    return Scaffold(
-      appBar: BasicAppbar(
-        title: Text(
-          widget.isEditing ? 'Edit Shop profile' : 'Register Shop',
-          style: TextStyle(
-              fontWeight: FontWeight.bold, fontSize: AppSize.textHeading),
-        ),
-        backgroundColor: Colors.transparent,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          // Bọc các trường nhập liệu trong Form
-          key: _formKey, // Gán key cho Form
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Stack(
-                  alignment: Alignment.bottomRight,
-                  children: [
-                    CircleAvatar(
-                      radius: 60,
-                      backgroundColor: Colors.grey[300],
-                      // Hiển thị ảnh đã chọn hoặc ảnh cũ hoặc placeholder
-                      backgroundImage: _pickedImageFile != null
-                          ? FileImage(_pickedImageFile!)
-                          : (_existingImageUrl != null &&
-                                  _existingImageUrl!.isNotEmpty
-                              ? NetworkImage(_existingImageUrl!)
-                              : null) as ImageProvider?,
-                      child: (_pickedImageFile == null &&
-                              (_existingImageUrl == null ||
-                                  _existingImageUrl!.isEmpty))
-                          ? Icon(Icons.storefront,
-                              size: 60, color: Colors.grey[600])
-                          : null,
-                    ),
-                    Material(
-                      color: colorScheme.primary,
-                      shape: const CircleBorder(),
-                      clipBehavior: Clip.antiAlias,
-                      elevation: 2,
-                      child: InkWell(
-                        splashColor: Colors.white.withOpacity(0.3),
-                        onTap: _showImageSourceDialog,
-                        child: const Padding(
-                          padding: EdgeInsets.all(6.0),
-                          child:
-                              Icon(Icons.edit, color: Colors.white, size: 20),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+    return BlocListener<ShopProfileManageCubit, ShopProfileManageState>(
+        listener: (context, state) {
+          if (state is ShopProfileManageSuccess) {
+            Navigator.pop(context, state.success);
+          }
+          if (state is ShopProfileManageFailure) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
               ),
-              const SizedBox(height: 24.0),
-
-              Text("Information",
-                  style: TextStyle(
-                      fontSize: AppSize.textHeading,
-                      fontWeight: FontWeight.bold)),
-              const SizedBox(height: 16.0),
-
-              InputTextFormField(
-                controller: _shopNameController,
-                labelText: 'Shop Name *',
-                hint: 'Input Shop Name',
-                prefixIcon: Icon(Icons.store_mall_directory_outlined),
-                validation: (value) => (value == null || value.isEmpty)
-                    ? 'Please input shop name'
-                    : null,
-              ),
-              SizedBox(
-                height: 10.h,
-              ),
-              InputTextFormField(
-                controller: _contactNumberController,
-                labelText: 'Contact Number *',
-                hint: 'Input Contact Number',
-                prefixIcon: Icon(Icons.phone_outlined),
-                keyBoardType: TextInputType.phone,
-                //  inputFormatters: [FilteringTextInputFormatter.digitsOnly], // Chỉ cho nhập số
-                validation: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please input contact number';
-                  }
-                  // Thêm validation phức tạp hơn nếu cần (ví dụ: độ dài, định dạng)
-                  return null;
-                },
-              ),
-              SizedBox(
-                height: 10.h,
-              ),
-
-              InputTextFormField(
-                controller: _taxCodeController,
-                labelText: 'Tax ',
-                hint: 'Input Tax',
-                prefixIcon: Icon(Icons.receipt_long_outlined),
-                // Không bắt buộc nên không cần validator
-              ),
-
-              const SizedBox(height: 24.0),
-              Text("Location",
-                  style: TextStyle(
-                      fontSize: AppSize.textHeading,
-                      fontWeight: FontWeight.bold)),
-              const SizedBox(height: 16.0),
-              Stack(
-                children: [
-                  SizedBox(
-                    height: 300,
-                    child: BlocConsumer<MapCubit, MapCubitState>(
-                      listener: (context, state) {
-                        if (state is MapCubitRouteLoaded) {
-                          mapCubit.addPolylineRoute(state.lineString);
-                        }
-                      },
-                      builder: (context, state) {
-                        return mapbox.MapWidget(
-                          key: const ValueKey("mapWidget"),
-                          cameraOptions: mapCubit.camera,
-                          onMapCreated: (map) {
-                            mapCubit.initializeMap(map);
-                          },
-                          onTapListener: (tapListenerEvent) async {
-                            // final tappedPosition =
-                            //     tapListenerEvent.point.coordinates;
-                            // await mapCubit.addPointAnnotation(tappedPosition);
-                            // if (mapCubit.pointAnnotations.length >= 2) {
-                            //   List<Coordinate> coordinates =
-                            //       mapCubit.pointAnnotations
-                            //           .map((annotation) => Coordinate(
-                            //                 annotation.geometry.coordinates.lng
-                            //                     as double,
-                            //                 annotation.geometry.coordinates.lat
-                            //                     as double,
-                            //               ))
-                            //           .toList();
-
-                            //   String accessToken =
-                            //       dotenv.env['MAPBOX_ACCESS_TOKEN']!;
-
-                            //   final request = MapboxDirectionsRequest(
-                            //     profile: 'cycling',
-                            //     coordinates: coordinates,
-                            //     accessToken: accessToken,
-                            //   );
-                            //   //Clear annotations for re-position
-                            //   mapCubit.clearAnnotations();
-                            //   // directionCubit.getDirectionUsingMapbox(request);
-                            // }
-                          },
-                        );
-                      },
-                    ),
-                  ),
-                  // Show loading indicator while fetching directions
-
-                  // Center(
-                  //   child: CircularProgressIndicator(),
-                  // ),
-                ],
-              ),
-              const SizedBox(height: 24.0),
-
-              InputTextFormField(
-                controller: _addressController,
-                labelText: 'Detailed address *',
-                hint: 'House number, street name, ward/commune...',
-                prefixIcon: Icon(Icons.location_on_outlined),
-                maxLine: 2, // Cho phép nhập nhiều dòng hơn
-                validation: (value) => (value == null || value.isEmpty)
-                    ? 'Please input address'
-                    : null,
-              ),
-              SizedBox(
-                height: 10.h,
-              ),
-
-              Row(
-                crossAxisAlignment: CrossAxisAlignment
-                    .start, // Quan trọng khi có TextFormField lỗi
-                children: [
-                  Expanded(
-                    child: InputTextFormField(
-                      controller: _districtController,
-                      labelText: 'District *',
-                      hint: 'Input District',
-                      prefixIcon: Icon(
-                          Icons.location_city_outlined), // Tạm dùng icon này
-                      validation: (value) => (value == null || value.isEmpty)
-                          ? 'Input District'
-                          : null,
-                    ),
-                  ),
-                  const SizedBox(width: 12.0),
-                  Expanded(
-                    child: InputTextFormField(
-                      controller: _cityController,
-                      labelText: 'City *',
-                      hint: 'Input City',
-                      prefixIcon: Icon(Icons.map_outlined), // Tạm dùng icon này
-                      validation: (value) => (value == null || value.isEmpty)
-                          ? 'Input City'
-                          : null,
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 24.0),
-              Text("Hours of Operation",
-                  style: TextStyle(
-                      fontSize: AppSize.textHeading,
-                      fontWeight: FontWeight.bold)),
-              const SizedBox(height: 16.0),
-
-              Row(
+            );
+          }
+        },
+        child: Scaffold(
+          appBar: BasicAppbar(
+            title: Text(
+              widget.isEditing ? 'Edit Shop profile' : 'Register Shop',
+              style: TextStyle(
+                  fontWeight: FontWeight.bold, fontSize: AppSize.textHeading),
+            ),
+            backgroundColor: Colors.transparent,
+          ),
+          body: SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: Form(
+              key: _formKey, 
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: _buildTimePickerField(
-                      controller: _openTimeController,
-                      labelText: 'Time Open *',
-                      hintText: 'Open',
-                      onTapIcon: () => _selectTime(context, true),
-                      validator: (value) => (value == null || value.isEmpty)
-                          ? 'Choose Time open'
-                          : null,
+                  Center(
+                    child: Stack(
+                      alignment: Alignment.bottomRight,
+                      children: [
+                        CircleAvatar(
+                          radius: 60,
+                          backgroundColor: Colors.grey[300],
+                          backgroundImage: _pickedImageFile != null
+                              ? FileImage(_pickedImageFile!)
+                              : (_existingImageUrl != null &&
+                                      _existingImageUrl!.isNotEmpty
+                                  ? NetworkImage(_existingImageUrl!)
+                                  : null) as ImageProvider?,
+                          child: (_pickedImageFile == null &&
+                                  (_existingImageUrl == null ||
+                                      _existingImageUrl!.isEmpty))
+                              ? Icon(Icons.storefront,
+                                  size: 60, color: Colors.grey[600])
+                              : null,
+                        ),
+                        Material(
+                          color: colorScheme.primary,
+                          shape: const CircleBorder(),
+                          clipBehavior: Clip.antiAlias,
+                          elevation: 2,
+                          child: InkWell(
+                            splashColor: Colors.white.withOpacity(0.3),
+                            onTap: _showImageSourceDialog,
+                            child: const Padding(
+                              padding: EdgeInsets.all(6.0),
+                              child: Icon(Icons.edit,
+                                  color: Colors.white, size: 20),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(width: 12.0),
-                  Expanded(
-                    child: _buildTimePickerField(
-                        controller: _closeTimeController,
-                        labelText: 'Close *',
-                        hintText: 'Close',
-                        onTapIcon: () => _selectTime(context, false),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Choose Time Close';
-                          }
-                          // Optional: Validate close time > open time
-                          if (_selectedOpenTime != null &&
-                              _selectedCloseTime != null) {
-                            final openMinutes = _selectedOpenTime!.hour * 60 +
-                                _selectedOpenTime!.minute;
-                            final closeMinutes = _selectedCloseTime!.hour * 60 +
-                                _selectedCloseTime!.minute;
-                            if (closeMinutes <= openMinutes) {
-                              return 'Closing time must be after opening time';
-                            }
-                          }
-                          return null;
-                        }),
+                  const SizedBox(height: 24.0),
+
+                  Text("Information",
+                      style: TextStyle(
+                          fontSize: AppSize.textHeading,
+                          fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 16.0),
+
+                  InputTextFormField(
+                    controller: _shopNameController,
+                    labelText: 'Shop Name *',
+                    hint: 'Input Shop Name',
+                    prefixIcon: Icon(Icons.store_mall_directory_outlined),
+                    validation: (value) => (value == null || value.isEmpty)
+                        ? 'Please input shop name'
+                        : null,
                   ),
+                  SizedBox(
+                    height: 10.h,
+                  ),
+                  InputTextFormField(
+                    controller: _contactNumberController,
+                    labelText: 'Contact Number *',
+                    hint: 'Input Contact Number',
+                    prefixIcon: Icon(Icons.phone_outlined),
+                    keyBoardType: TextInputType.phone,
+                    //  inputFormatters: [FilteringTextInputFormatter.digitsOnly], // Chỉ cho nhập số
+                    validation: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please input contact number';
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(
+                    height: 10.h,
+                  ),
+
+                  InputTextFormField(
+                    controller: _taxCodeController,
+                    labelText: 'Tax ',
+                    hint: 'Input Tax',
+                    prefixIcon: Icon(Icons.receipt_long_outlined),
+                    // Không bắt buộc nên không cần validator
+                  ),
+
+                  const SizedBox(height: 24.0),
+                  Text("Location",
+                      style: TextStyle(
+                          fontSize: AppSize.textHeading,
+                          fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 16.0),
+                  Stack(
+                    children: [
+                      Column(
+                        children: [
+                          SizedBox(
+                            width: 0.6.sw,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  elevation: 1,
+                                  backgroundColor: Colors.white,
+                                  foregroundColor: Colors.black,
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 10)),
+                              onPressed: () async {
+                                final result = await Navigator.push<dynamic>(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const SearchLocationPage(
+                                            shopProfile: true),
+                                  ),
+                                );
+
+                                if (result is! PlaceDetailEntity ||
+                                    !context.mounted) return;
+
+                                final searchedCoordinate = result;
+
+                                final parts = searchedCoordinate.address
+                                    .split(',')
+                                    .map((e) => e.trim())
+                                    .toList();
+
+                                final address = parts.length >= 2
+                                    ? '${parts[0]}, ${parts[1]}'
+                                    : parts[0];
+                                final district =
+                                    parts.length >= 3 ? parts[2] : '';
+                                final city = parts.length >= 4 ? parts[3] : '';
+
+                                _addressController.text = address;
+                                _districtController.text = district;
+                                _cityController.text = city;
+                                latitude = searchedCoordinate.latitude;
+                                longitude = searchedCoordinate.longitude;
+                                final position = mapbox.Position(
+                                  searchedCoordinate.longitude,
+                                  searchedCoordinate.latitude,
+                                );
+
+                                final mapCubit = context.read<MapCubit>();
+                                mapCubit.animateCamera(position);
+
+                                final imageData = await _getMarkerBytes(
+                                  'assets/images/search_location_marker.png',
+                                );
+
+                                mapCubit.addPointAnnotation(
+                                  position,
+                                  imageData,
+                                  iconOffset: [-10.0, 20.0],
+                                  iconSize: 0.5,
+                                );
+                              },
+                              child: Row(
+                                children: const [
+                                  Icon(
+                                    Icons.search,
+                                    color: Colors.black38,
+                                  ),
+                                  SizedBox(width: 10),
+                                  Flexible(
+                                    child: Text(
+                                      'Search location',
+                                      style: TextStyle(
+                                          color: Colors.black54,
+                                          overflow: TextOverflow.ellipsis),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Align(
+                            alignment: Alignment.bottomCenter,
+                            child: SizedBox(
+                              height: 300,
+                              child: BlocConsumer<MapCubit, MapCubitState>(
+                                listener: (context, state) {
+                                  if (state is MapCubitRouteLoaded) {
+                                    mapCubit.addPolylineRoute(state.lineString);
+                                  }
+                                },
+                                builder: (context, state) {
+                                  return mapbox.MapWidget(
+                                    key: const ValueKey("mapWidget"),
+                                    gestureRecognizers: {
+                                      Factory<OneSequenceGestureRecognizer>(
+                                          () => EagerGestureRecognizer()),
+                                    },
+                                    cameraOptions: mapCubit.camera,
+                                    onMapCreated: (map) {
+                                      mapCubit.initializeMap(map);
+                                    },
+                                    onTapListener: (tapListenerEvent) async {
+                                      await context
+                                          .read<MapCubit>()
+                                          .clearAnnotations();
+                                      final tappedPosition =
+                                          tapListenerEvent.point.coordinates;
+                                      var imageData = await _getMarkerBytes(
+                                          "assets/images/search_location_marker.png");
+
+                                      await context
+                                          .read<MapCubit>()
+                                          .addPointAnnotation(
+                                              tappedPosition, imageData)
+                                          .then((value) {
+                                        context.read<MapCubit>().animateCamera(
+                                            tappedPosition,
+                                            zoom: 14);
+                                        latitude =
+                                            tappedPosition.lat.toDouble();
+                                        longitude =
+                                            tappedPosition.lng.toDouble();
+                                      });
+                                    },
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                        ],
+                      )
+
+                      // Show loading indicator while fetching directions
+
+                      // Center(
+                      //   child: CircularProgressIndicator(),
+                      // ),
+                    ],
+                  ),
+                  const SizedBox(height: 24.0),
+
+                  InputTextFormField(
+                    controller: _addressController,
+                    labelText: 'Detailed address *',
+                    hint: 'House number, street name, ward/commune...',
+                    prefixIcon: Icon(Icons.location_on_outlined),
+                    maxLine: 2, // Cho phép nhập nhiều dòng hơn
+                    validation: (value) => (value == null || value.isEmpty)
+                        ? 'Please input address'
+                        : null,
+                  ),
+                  SizedBox(
+                    height: 10.h,
+                  ),
+
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment
+                        .start, // Quan trọng khi có TextFormField lỗi
+                    children: [
+                      Expanded(
+                        child: InputTextFormField(
+                          controller: _districtController,
+                          labelText: 'District *',
+                          hint: 'Input District',
+                          prefixIcon: Icon(Icons
+                              .location_city_outlined), // Tạm dùng icon này
+                          validation: (value) =>
+                              (value == null || value.isEmpty)
+                                  ? 'Input District'
+                                  : null,
+                        ),
+                      ),
+                      const SizedBox(width: 12.0),
+                      Expanded(
+                        child: InputTextFormField(
+                          controller: _cityController,
+                          labelText: 'City *',
+                          hint: 'Input City',
+                          prefixIcon:
+                              Icon(Icons.map_outlined), // Tạm dùng icon này
+                          validation: (value) =>
+                              (value == null || value.isEmpty)
+                                  ? 'Input City'
+                                  : null,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 24.0),
+                  Text("Hours of Operation",
+                      style: TextStyle(
+                          fontSize: AppSize.textHeading,
+                          fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 16.0),
+
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: _buildTimePickerField(
+                          controller: _openTimeController,
+                          labelText: 'Time Open *',
+                          hintText: 'Open',
+                          onTapIcon: () => _selectTime(context, true),
+                          validator: (value) => (value == null || value.isEmpty)
+                              ? 'Choose Time open'
+                              : null,
+                        ),
+                      ),
+                      const SizedBox(width: 12.0),
+                      Expanded(
+                        child: _buildTimePickerField(
+                            controller: _closeTimeController,
+                            labelText: 'Close *',
+                            hintText: 'Close',
+                            onTapIcon: () => _selectTime(context, false),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Choose Time Close';
+                              }
+                              // Optional: Validate close time > open time
+                              if (_selectedOpenTime != null &&
+                                  _selectedCloseTime != null) {
+                                final openMinutes =
+                                    _selectedOpenTime!.hour * 60 +
+                                        _selectedOpenTime!.minute;
+                                final closeMinutes =
+                                    _selectedCloseTime!.hour * 60 +
+                                        _selectedCloseTime!.minute;
+                                if (closeMinutes <= openMinutes) {
+                                  return 'Closing time must be after opening time';
+                                }
+                              }
+                              return null;
+                            }),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 32.0),
+                  // Nút Lưu lớn ở cuối Form (tùy chọn, vì đã có nút trên AppBar)
+
+                  BlocBuilder<ShopProfileManageCubit, ShopProfileManageState>(
+                    builder: (context, state) {
+                      if (state is ShopProfileManageLoading) {
+                        return LoadingButton();
+                      }
+                      return Center(
+                        child: ElevatedButton.icon(
+                          icon: const Icon(Icons.save),
+                          label: Text(widget.isEditing
+                              ? 'Save'
+                              : 'Create Shop Profile'),
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 40, vertical: 15),
+                            textStyle: textTheme.titleMedium,
+                            backgroundColor: colorScheme.primary,
+                            foregroundColor: colorScheme.onPrimary,
+                          ),
+                          onPressed: _saveForm,
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 20.0), // Khoảng trống dưới cùng
                 ],
               ),
-
-              const SizedBox(height: 32.0),
-              // Nút Lưu lớn ở cuối Form (tùy chọn, vì đã có nút trên AppBar)
-              Center(
-                child: ElevatedButton.icon(
-                  icon: const Icon(Icons.save),
-                  label:
-                      Text(widget.isEditing ? 'Save' : 'Create Shop Profile'),
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 40, vertical: 15),
-                    textStyle: textTheme.titleMedium,
-                    backgroundColor: colorScheme.primary,
-                    foregroundColor: colorScheme.onPrimary,
-                  ),
-                  onPressed: _saveForm,
-                ),
-              ),
-              const SizedBox(height: 20.0), // Khoảng trống dưới cùng
-            ],
+            ),
           ),
-        ),
-      ),
-    );
+        ));
   }
 
   // Widget trợ giúp tạo TextFormField chuẩn
@@ -593,5 +712,10 @@ class _ShopProfileManagementScreenState
         autovalidateMode: AutovalidateMode.onUserInteraction,
       ),
     );
+  }
+
+  Future<Uint8List> _getMarkerBytes(String assetPath) async {
+    final ByteData bytes = await rootBundle.load(assetPath);
+    return bytes.buffer.asUint8List();
   }
 }

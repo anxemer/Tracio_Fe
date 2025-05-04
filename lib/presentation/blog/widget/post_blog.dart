@@ -8,7 +8,7 @@ import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
 import 'package:tracio_fe/common/widget/blog/animation_react.dart';
 import 'package:tracio_fe/common/widget/blog/header_information.dart';
 import 'package:tracio_fe/common/widget/blog/picture_card.dart';
-import 'package:tracio_fe/common/widget/button/button.dart';
+import 'package:tracio_fe/core/configs/theme/app_colors.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/data/blog/models/request/react_blog_req.dart';
 import 'package:tracio_fe/domain/blog/entites/blog_entity.dart';
@@ -20,10 +20,16 @@ import 'package:tracio_fe/presentation/blog/widget/animated_button_follow.dart';
 
 import '../../../service_locator.dart';
 import '../bloc/comment/get_comment_cubit.dart';
+import '../pages/edit_blog.dart';
 
 class PostBlog extends StatefulWidget {
-  const PostBlog({super.key, required this.blogEntity, this.onLikeUpdated});
+  const PostBlog(
+      {super.key,
+      required this.blogEntity,
+      this.onLikeUpdated,
+      this.isPersonal = false});
   final BlogEntity blogEntity;
+  final bool isPersonal;
   final Function()? onLikeUpdated;
   @override
   State<PostBlog> createState() => _PostBlogState();
@@ -35,7 +41,6 @@ class _PostBlogState extends State<PostBlog> {
   bool isAlreadyFollowed = false; // Lấy từ state/dữ liệu thực tế
 
   void _handleFollowLogic() async {
-    print("Đã nhấn Follow! Thực hiện gọi API hoặc cập nhật state...");
     await sl<FollowUserUseCase>().call(widget.blogEntity.userId);
     setState(() {
       isAlreadyFollowed = true;
@@ -51,7 +56,7 @@ class _PostBlogState extends State<PostBlog> {
 
   @override
   Widget build(BuildContext context) {
-    final commentCubit = context.read<GetCommentCubit>();
+    var isDark = context.isDarkMode;
     List<String> mediaUrls = widget.blogEntity.mediaFiles
         .map((file) => file.mediaUrl ?? "")
         .toList();
@@ -85,33 +90,67 @@ class _PostBlogState extends State<PostBlog> {
                 ),
               ),
             ),
-            trailling: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (!isAlreadyFollowed && _showFollowButton)
-                  AnimatedFollowButton(
-                    onFollow: _handleFollowLogic,
-                    // initialFillColor: Colors.blue,
-                    // initialBorderColor: Colors.blue,
-                    // initialTextColor: Colors.white,
-                    width: 80.w,
-                    height: 30.h,
+            trailling: widget.isPersonal
+                ? PopupMenuButton<int>(
+                    icon:
+                        Icon(Icons.more_vert), // hoặc bất kỳ icon nào bạn muốn
+                    onSelected: (int result) {
+                      if (result == 0) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => EditBlogPostScreen(
+                                    imageUrl: widget.blogEntity.mediaFiles,
+                                    blogId: widget.blogEntity.blogId,
+                                    initialContent: widget.blogEntity.content,
+                                    initialIsPublic: widget.blogEntity.isPublic,
+                                  )),
+                        );
+                      } else if (result == 1) {
+                        // handle delete
+                      }
+                    },
+                    itemBuilder: (BuildContext context) =>
+                        <PopupMenuEntry<int>>[
+                      PopupMenuItem<int>(
+                        value: 0,
+                        child: Row(
+                          children: [
+                            Icon(Icons.edit, color: Colors.black),
+                            SizedBox(width: 8),
+                            Text('Edit'),
+                          ],
+                        ),
+                      ),
+                      PopupMenuItem<int>(
+                        value: 1,
+                        child: Row(
+                          children: [
+                            Icon(Icons.delete, color: Colors.red),
+                            SizedBox(width: 8),
+                            Text('Delete'),
+                          ],
+                        ),
+                      ),
+                    ],
                   )
-                // else if (isAlreadyFollowed)
-                //   const Text(
-                //       "Followed") // Hoặc ButtonDesign với trạng thái "Unfollow"
-                else
-                  const SizedBox.shrink(),
-                GestureDetector(
-                    onTap: () => AppNavigator.push(
-                        context,
-                        DetailBlocPage(
-                          cubit: commentCubit,
-                          blog: widget.blogEntity,
-                        )),
-                    child: Icon(Icons.arrow_forward_ios_rounded)),
-              ],
-            )),
+                : Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (!isAlreadyFollowed && _showFollowButton)
+                        AnimatedFollowButton(
+                          initialFillColor: Colors.transparent,
+                          onFollow: _handleFollowLogic,
+                          initialTextColor:
+                              !isDark ? Colors.black87 : Colors.white,
+                          width: 80.w,
+                          height: 30.h,
+                        )
+                      // else if (isAlreadyFollowed)
+                      //   const Text(
+                      //       "Followed") // Hoặc ButtonDesign với trạng thái "Unfollow"
+                    ],
+                  )),
         SizedBox(
           height: 10.h,
         ),
@@ -131,9 +170,11 @@ class _PostBlogState extends State<PostBlog> {
         GestureDetector(
             onTap: () => AppNavigator.push(
                 context,
-                DetailBlocPage(
-                  cubit: commentCubit,
-                  blog: widget.blogEntity,
+                BlocProvider.value(
+                  value: context.read<GetCommentCubit>(),
+                  child: DetailBlocPage(
+                    blog: widget.blogEntity,
+                  ),
                 )),
             onDoubleTap: () async {
               await sl<ReactBlogUseCase>().call(ReactBlogReq(

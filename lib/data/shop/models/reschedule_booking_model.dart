@@ -3,10 +3,10 @@
 import 'booking_service_req.dart';
 
 class RescheduleBookingModel {
-  final List<int>? bookingIds;
+  final List<int> bookingIds;
   final List<UserScheduleCreateDto>? userScheduleCreateDtos;
   RescheduleBookingModel({
-    this.bookingIds,
+    required this.bookingIds,
     this.userScheduleCreateDtos,
   });
 

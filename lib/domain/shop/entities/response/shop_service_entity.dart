@@ -23,7 +23,7 @@ class ShopServiceEntity {
   final int? duration;
   final int? totalReviews;
   final double? distance;
-    final List<MediaFile>? mediaFiles;
+  final List<MediaFile>? mediaFiles;
   ShopServiceEntity({
     this.serviceId,
     this.shopId,
@@ -64,17 +64,17 @@ class ShopServiceEntity {
     }
   }
 
- String? get mediaUrl {
-  if (mediaFiles != null && mediaFiles!.isNotEmpty) {
-    return mediaFiles!.first.mediaUrl;
+  String? get mediaUrl {
+    if (mediaFiles != null && mediaFiles!.isNotEmpty) {
+      return mediaFiles!.first.mediaUrl;
+    }
+    return null;
   }
-  return null;  
-}
 
   String get formattedPrice {
     double priceAsInt = price!.toDouble();
 
-    final formatter = NumberFormat('#,###');
+    final formatter = NumberFormat('#,###', 'vi_VN');
     return formatter.format(priceAsInt);
   }
 }

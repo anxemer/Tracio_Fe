@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tracio_fe/common/helper/is_dark_mode.dart';
 import 'package:tracio_fe/common/widget/button/text_button.dart';
@@ -6,6 +7,7 @@ import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/domain/blog/entites/blog_entity.dart';
 import 'package:tracio_fe/domain/blog/usecase/bookmark_blog.dart';
 import 'package:tracio_fe/domain/blog/usecase/unBookmark.dart';
+import 'package:tracio_fe/presentation/library/bloc/reaction/bloc/reaction_bloc.dart';
 
 import '../../../data/blog/models/request/react_blog_req.dart';
 import '../../../domain/blog/usecase/react_blog.dart';
@@ -34,6 +36,14 @@ class _ReactBlogState extends State<ReactBlog> {
   }
 
   @override
+  void initState() {
+    context
+        .read<ReactionBloc>()
+        .add(InitializeReactionBlog(blog: widget.blogEntity));
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       children: [
@@ -45,50 +55,73 @@ class _ReactBlogState extends State<ReactBlog> {
             children: [
               Row(
                 children: [
-                  GestureDetector(
-                      onTap: () async {
-                        if (widget.blogEntity.isReacted == true) {
-                          await sl<UnReactBlogUseCase>().call(UnReactionParam(
-                              id: widget.blogEntity.blogId, type: 'blog'));
-                          setState(() {
-                            // if (widget.blogEntity.likesCount > 0) {
-                            widget.blogEntity.likesCount--;
+                  BlocBuilder<ReactionBloc, ReactionState>(
+                    builder: (context, state) {
+                      final isReacted =
+                          state.reactBlog.contains(widget.blogEntity.blogId);
+                      return GestureDetector(
+                          onTap: () async {
+                            print(isReacted);
+                            if (isReacted) {
+                              context.read<ReactionBloc>().add(UnReactBlog(
+                                  blogId: widget.blogEntity.blogId));
+
+                              setState(() {
+                                widget.blogEntity.likesCount--;
+                              });
+                            } else {
+                              context.read<ReactionBloc>().add(ReactionBlog(
+                                  blogId: widget.blogEntity.blogId));
+                              setState(() {
+                                widget.blogEntity.likesCount++;
+                              });
+                            }
+                            // if (widget.blogEntity.isReacted == true) {
+                            //   await sl<UnReactBlogUseCase>().call(
+                            //       UnReactionParam(
+                            //           id: widget.blogEntity.blogId,
+                            //           type: 'blog'));
+                            //   setState(() {
+                            //     // if (widget.blogEntity.likesCount > 0) {
+                            //     widget.blogEntity.likesCount--;
+                            //     // }
+
+                            //     widget.blogEntity.isReacted = false;
+                            //     // widget.blogEntity. = 0;
+                            //   });
+                            // } else {
+                            //   var result = await sl<ReactBlogUseCase>().call(
+                            //       ReactBlogReq(
+                            //           entityId: widget.blogEntity.blogId,
+                            //           entityType: "blog"));
+                            //   result.fold((error) {
+                            //     error;
+                            //   }, (data) {
+                            //     bool isReact = toogleIsReaction(
+                            //         widget.blogEntity.isReacted);
+                            //     // context.read<ReactBlogCubit>().reactBlog(isReact);
+
+                            //     setState(() {
+                            //       widget.blogEntity.likesCount++;
+                            //       // widget.blogEntity.reactionId = data.reactionId!;
+                            //       widget.blogEntity.isReacted = isReact;
+                            //     });
+                            //   });
                             // }
-
-                            widget.blogEntity.isReacted = false;
-                            // widget.blogEntity. = 0;
-                          });
-                        } else {
-                          var result = await sl<ReactBlogUseCase>().call(
-                              ReactBlogReq(
-                                  entityId: widget.blogEntity.blogId,
-                                  entityType: "blog"));
-                          result.fold((error) {
-                            error;
-                          }, (data) {
-                            bool isReact =
-                                toogleIsReaction(widget.blogEntity.isReacted);
-                            // context.read<ReactBlogCubit>().reactBlog(isReact);
-
-                            setState(() {
-                              widget.blogEntity.likesCount++;
-                              // widget.blogEntity.reactionId = data.reactionId!;
-                              widget.blogEntity.isReacted = isReact;
-                            });
-                          });
-                        }
-                      },
-                      child: Icon(
-                        widget.blogEntity.isReacted
-                            ? Icons.favorite
-                            : Icons.favorite_border_outlined,
-                        color: widget.blogEntity.isReacted
-                            ? Colors.red
-                            : context.isDarkMode
-                                ? Colors.white
-                                : Colors.black,
-                        size: AppSize.iconSmall,
-                      )),
+                          },
+                          child: Icon(
+                            isReacted
+                                ? Icons.favorite
+                                : Icons.favorite_border_outlined,
+                            color: isReacted
+                                ? Colors.red
+                                : context.isDarkMode
+                                    ? Colors.white
+                                    : Colors.black,
+                            size: AppSize.iconSmall,
+                          ));
+                    },
+                  ),
                   // SizedBox(
                   //   width: 2.w,
                   // ),
@@ -121,7 +154,6 @@ class _ReactBlogState extends State<ReactBlog> {
               Spacer(),
               GestureDetector(
                 onTap: () async {
-                 
                   if (widget.blogEntity.isBookmarked == true) {
                     await sl<UnBookmarkUseCase>()
                         .call(widget.blogEntity.blogId);

@@ -21,11 +21,10 @@ class AnimatedFollowButton extends StatefulWidget {
   const AnimatedFollowButton({
     Key? key,
     required this.onFollow,
-    // Giá trị mặc định hoặc bạn có thể truyền từ ngoài vào
-    this.initialFillColor = Colors.transparent, // Giống ví dụ gốc của bạn
-    this.initialBorderColor = Colors.black, // Giống ví dụ gốc của bạn
+    this.initialFillColor = Colors.transparent,
+    this.initialBorderColor = Colors.black,
     this.initialTextColor = Colors.black,
-    this.width, // Kích thước từ ví dụ gốc của bạn
+    this.width,
     this.height,
   }) : super(key: key);
 
@@ -66,12 +65,9 @@ class _AnimatedFollowButtonState extends State<AnimatedFollowButton> {
 
   @override
   Widget build(BuildContext context) {
-    // Sử dụng kích thước được truyền vào hoặc kích thước mặc định từ ButtonDesign
-    // Lấy kích thước từ ví dụ đầu tiên của bạn làm mặc định nếu không được truyền vào
     final double buttonWidth = widget.width ?? 80.w;
     final double buttonHeight = widget.height ?? 30.h;
-    // Lấy fontSize từ AppSize hoặc định nghĩa một giá trị mặc định
-    final double fontSize = AppSize.textSmall; // Hoặc fontSize bạn muốn
+    final double fontSize = AppSize.textSmall;
 
     return AnimatedOpacity(
       opacity: _isVisible ? 1.0 : 0.0,
@@ -105,16 +101,14 @@ class _AnimatedFollowButtonState extends State<AnimatedFollowButton> {
           width: width,
           height: height,
           ontap: _handleFollow,
-          fillColor: widget.initialFillColor, // Sử dụng màu từ tham số widget
-          borderColor:
-              widget.initialBorderColor, // Sử dụng màu từ tham số widget
-          textColor: widget.initialTextColor, // Sử dụng màu từ tham số widget
-          fontSize: fontSize, // Sử dụng fontSize đã xác định
-          text: 'Follow', // Hoặc lấy từ localization
+          fillColor: widget.initialFillColor,
+          borderColor: AppColors.secondBackground,
+          textColor: widget.initialTextColor,
+          fontSize: fontSize,
+          text: 'Follow',
         );
       case FollowButtonState.processing:
       case FollowButtonState.done:
-        // Hiển thị icon check, cố gắng giữ nguyên style và kích thước
         return Container(
           key: const ValueKey('check_icon'),
           width: width,

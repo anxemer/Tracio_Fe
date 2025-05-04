@@ -19,6 +19,7 @@ import 'package:tracio_fe/presentation/groups/cubit/group_cubit.dart';
 import 'package:tracio_fe/presentation/library/bloc/reaction/bloc/reaction_bloc.dart';
 import 'package:tracio_fe/presentation/map/bloc/route_cubit.dart';
 import 'package:tracio_fe/presentation/blog/bloc/category/get_category_cubit.dart';
+import 'package:tracio_fe/presentation/profile/bloc/user_profile_cubit.dart';
 import 'package:tracio_fe/presentation/service/bloc/bookingservice/reschedule_booking/cubit/reschedule_booking_cubit.dart';
 import 'package:tracio_fe/presentation/service/bloc/get_booking/get_booking_cubit.dart';
 import 'package:tracio_fe/presentation/service/bloc/service_bloc/get_service_cubit.dart';
@@ -104,14 +105,16 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
         providers: [
+          BlocProvider(
+            create: (context) => UserProfileCubit(),
+          ),
           BlocProvider(create: (context) => SplashCubit()..appStarted()),
-BlocProvider(
+          BlocProvider(
             create: (context) => ReviewBookingCubit(),
           ),
           BlocProvider(create: (context) => GetReviewCubit()),
 
           BlocProvider(create: (context) => AuthCubit()),
-          BlocProvider(create: (context) => GetCommentCubit()),
           BlocProvider(create: (context) => GenericDataCubit()),
           BlocProvider(create: (context) => LocationCubit()),
           BlocProvider(create: (context) => RouteCubit()),
@@ -119,7 +122,7 @@ BlocProvider(
           BlocProvider(create: (context) => ThemeCubit()),
           BlocProvider(create: (context) => CartItemCubit()..getCartitem()),
           BlocProvider(create: (context) => GetServiceCubit()),
-BlocProvider(create: (context) => GetBookingCubit()),
+          BlocProvider(create: (context) => GetBookingCubit()),
           BlocProvider(create: (context) => ResolveBookingShopCubit()),
           BlocProvider(
               create: (context) => ChallengeCubit()..getChallengeOverview()),
@@ -129,7 +132,7 @@ BlocProvider(create: (context) => GetBookingCubit()),
           BlocProvider(
             create: (context) => BookingServiceCubit(),
           ),
-BlocProvider(
+          BlocProvider(
             create: (context) => RescheduleBookingCubit(),
           ),
           BlocProvider(
@@ -141,7 +144,7 @@ BlocProvider(
           BlocProvider(
             create: (context) => ConversationBloc(),
           ),
-BlocProvider(
+          BlocProvider(
             create: (context) => ServiceManagementCubit(),
           ),
           // BlocProvider(create: (context) => AuthCubit()..checkUser())

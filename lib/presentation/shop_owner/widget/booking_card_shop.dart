@@ -1,7 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:tracio_fe/common/helper/is_dark_mode.dart';
 import 'package:tracio_fe/core/configs/theme/assets/app_images.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
@@ -55,23 +57,27 @@ class _BookingCardState extends State<BookingCardShop> {
                     children: [
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8),
-                        child: Image.asset(
-                          AppImages
-                              .picture, // Should replace with actual image from service if available
-                          width: widget.imageSize ?? AppSize.imageMedium.w,
-                          height:
-                              widget.imageSize ?? AppSize.imageMedium.h * .8,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) =>
-                              Container(
-                            // Add fallback for image error
-                            width: widget.imageSize ?? AppSize.imageMedium.w,
-                            height:
-                                widget.imageSize ?? AppSize.imageMedium.h * .8,
-                            color: Colors.grey.shade300,
-                            child: Icon(Icons.image_not_supported,
-                                color: Colors.grey.shade600),
+                        child: CachedNetworkImage(
+                          imageUrl: widget.service.imageUrl ??
+                              'https://xedaptoanthang.com/wp-content/uploads/2023/01/Khi-nao-nen-dua-xe-dap-di-bao-tri-6-1.jpg',
+                          imageBuilder: (context, imageProvider) {
+                            return Container(
+                                width: AppSize.imageMedium.w,
+                                height: AppSize.imageMedium.h,
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                    image: imageProvider,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ));
+                          },
+                          placeholder: (context, url) =>
+                              LoadingAnimationWidget.fourRotatingDots(
+                            color: AppColors.secondBackground,
+                            size: AppSize.iconExtraLarge,
                           ),
+                          errorWidget: (context, url, error) =>
+                              Icon(Icons.error),
                         ),
                       ),
                       SizedBox(
@@ -106,7 +112,8 @@ class _BookingCardState extends State<BookingCardShop> {
                                 if (widget.service.price != null)
                                   _buildInfoRow(
                                     icon: Icons.attach_money_rounded,
-                                    text: '${widget.service.formattedPrice} \$',
+                                    text:
+                                        '${widget.service.formattedPrice} \VNĐ',
                                     isDark: isDark,
                                   ),
                                 if (widget.service.price != null &&

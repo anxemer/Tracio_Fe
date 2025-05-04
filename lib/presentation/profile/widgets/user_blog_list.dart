@@ -3,16 +3,20 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/data/blog/models/request/get_blog_req.dart';
+import 'package:tracio_fe/common/helper/is_dark_mode.dart';
 import 'package:tracio_fe/presentation/blog/bloc/get_blog_cubit.dart';
-import 'package:tracio_fe/presentation/blog/widget/new_feed.dart';
+import 'package:tracio_fe/presentation/profile/widgets/blog_tab.dart';
+import 'package:tracio_fe/presentation/profile/widgets/bookmark_blog.dart';
 
 import '../../../common/widget/appbar/app_bar.dart';
+import '../../../core/configs/theme/app_colors.dart';
+import '../../../core/constants/app_size.dart';
 import '../../blog/bloc/get_blog_state.dart';
 
 class UserBlogList extends StatefulWidget {
-  const UserBlogList({super.key, required this.userId});
+  const UserBlogList({super.key, required this.userId, required this.userName});
   final int userId;
+  final String userName;
 
   @override
   State<UserBlogList> createState() => _UserBlogListState();
@@ -57,16 +61,18 @@ class _UserBlogListState extends State<UserBlogList> {
   // final List<BlogEntity> blogs;
   @override
   Widget build(BuildContext context) {
+    var isDark = context.isDarkMode;
     return Scaffold(
         appBar: BasicAppbar(
+            centralTitle: true,
             height: 100.h,
             hideBack: false,
             title: Text(
-              'Profile',
+              widget.userName,
               style: TextStyle(
-                  color: Colors.black,
                   fontWeight: FontWeight.bold,
-                  fontSize: 40.sp),
+                  fontSize: AppSize.textHeading.sp,
+                  color: Colors.white),
             ),
             action: Row(
               children: [
@@ -81,48 +87,43 @@ class _UserBlogListState extends State<UserBlogList> {
                 // ),
               ],
             )),
-        body: BlocBuilder<GetBlogCubit, GetBlogState>(
-          builder: (context, state) {
-            if (state is GetBlogLoaded) {
-              return ListView.builder(
-                physics: const BouncingScrollPhysics(),
-                scrollDirection: Axis.vertical,
-                controller: scrollController,
-                itemCount: state.blogs!.length,
-                itemBuilder: (context, index) {
-                  // if (index == state.blogs!.length && state.isLoading!) {
-                  //   return const Padding(
-                  //     padding: EdgeInsets.symmetric(vertical: 16.0),
-                  //     child: Center(child: CircularProgressIndicator()),
-                  //   );
-                  // }
-
-                  if (index < state.blogs!.length) {
-                    return Container(
-                      decoration: BoxDecoration(
-                        border: Border(
-                          top: BorderSide(
-                            color: Colors.grey[300]!,
-                            width: 0.7,
-                          ),
+        body: DefaultTabController(
+            length: 2,
+            initialIndex: 1,
+            child: Column(
+              children: [
+                TabBar(
+                    padding: EdgeInsets.only(left: 0),
+                    labelStyle: TextStyle(
+                        fontSize: AppSize.textMedium,
+                        fontWeight: FontWeight.w600),
+                    unselectedLabelColor:
+                        isDark ? Colors.white70 : Colors.grey.shade500,
+                    labelColor: isDark ? AppColors.primary : Colors.black,
+                    indicatorColor: AppColors.primary,
+                    tabs: [
+                      Tab(
+                        icon: Icon(
+                          Icons.photo_size_select_large_rounded,
+                          size: AppSize.iconMedium,
                         ),
                       ),
-                      child: NewFeeds(
-                        key: ValueKey('blog_${state.blogs![index].blogId}'),
-                        blogs: state.blogs![index],
-                      ),
-                    );
-                  }
-                  return null;
-                },
-              );
-            } else if (state is GetBlogLoading) {
-              return const Center(child: CircularProgressIndicator());
-            } else {
-              // GetBlogInitial or other states
-              return const Center(child: Text('Lỗi nè'));
-            }
-          },
-        ));
+                      Tab(
+                        icon: Icon(
+                          Icons.bookmark_added,
+                          size: AppSize.iconMedium,
+                        ),
+                      )
+                    ]),
+                Expanded(
+                  child: TabBarView(children: [
+                    BlogTab(
+                        scrollController: scrollController,
+                        userId: widget.userId),
+                    BookmarkBlogTab(scrollController: scrollController)
+                  ]),
+                )
+              ],
+            )));
   }
 }

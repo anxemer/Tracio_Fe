@@ -6,7 +6,6 @@ import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:tracio_fe/common/helper/is_dark_mode.dart';
 import 'package:tracio_fe/common/widget/list_cell_animation_view.dart';
-import 'package:tracio_fe/core/configs/theme/assets/app_images.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/domain/shop/entities/response/booking_card_view.dart';
 
@@ -65,8 +64,7 @@ class _BookingCardState extends State<BookingCard> {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(12.0),
                     child: CachedNetworkImage(
-                      imageUrl: widget.service.imageUrl ??
-                          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMd16UwbgCKZvGEtelCk44Dx3nJCQ9ba3x7eTisJNuUenuBAP3zFtQ_2GDSzkVotZN8TU&usqp=CAU',
+                      imageUrl: widget.service.imageUrl!,
                       imageBuilder: (context, imageProvider) {
                         return Container(
                             width: AppSize.imageMedium.w,
@@ -91,6 +89,7 @@ class _BookingCardState extends State<BookingCard> {
                   ),
                   Expanded(
                     child: Column(
+                      spacing: 10.h,
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -103,63 +102,61 @@ class _BookingCardState extends State<BookingCard> {
                                 isDark ? Colors.grey.shade300 : Colors.black87,
                           ),
                         ),
-                        SizedBox(
-                          height: 10.h,
-                        ),
-                        Row(
+
+                        Wrap(
+                          spacing: 20.w,
+                          runSpacing: 4.h,
+                          crossAxisAlignment: WrapCrossAlignment.center,
                           children: [
-                            widget.service.price != null
-                                ? Row(
-                                    children: [
-                                      Icon(
-                                        Icons.attach_money_rounded,
-                                        size: AppSize.iconMedium,
-                                        color: isDark
-                                            ? AppColors.secondBackground
-                                            : AppColors.background,
-                                      ),
-                                      Text(
-                                        '${widget.service.formattedPrice} \$',
-                                        style: TextStyle(
-                                            fontSize: AppSize.textMedium),
-                                      ),
-                                    ],
-                                  )
-                                : Container(),
-                            SizedBox(
-                              width: 20.w,
-                            ),
-                            widget.service.duration != null
-                                ? Row(
-                                    children: [
-                                      Icon(
-                                        Icons.access_time_rounded,
-                                        size: AppSize.iconMedium,
-                                        color: isDark
-                                            ? AppColors.secondBackground
-                                            : AppColors.background,
-                                      ),
-                                      SizedBox(
-                                        width: 4.w,
-                                      ),
-                                      Text(
-                                        widget.service.formattedDuration,
-                                        style: TextStyle(
-                                            fontSize: AppSize.textMedium),
-                                      ),
-                                    ],
-                                  )
-                                : Container(),
+                            if (widget.service.price != null)
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.attach_money_rounded,
+                                    size: AppSize.iconMedium,
+                                    color: isDark
+                                        ? AppColors.secondBackground
+                                        : AppColors.background,
+                                  ),
+                                  Text(
+                                    '${widget.service.formattedPrice} VNĐ',
+                                    style:
+                                        TextStyle(fontSize: AppSize.textMedium),
+                                  ),
+                                ],
+                              ),
+                            if (widget.service.duration != null)
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.access_time_rounded,
+                                    size: AppSize.iconSmall.sp,
+                                    color: isDark
+                                        ? AppColors.secondBackground
+                                        : AppColors.background,
+                                  ),
+                                  SizedBox(width: 4.w),
+                                  Expanded(
+                                    child: Text(
+                                      widget.service.formattedDuration,
+                                      style: TextStyle(
+                                          fontSize: AppSize.textMedium),
+                                      softWrap: true,
+                                      overflow: TextOverflow.visible,
+                                    ),
+                                  ),
+                                ],
+                              ),
                           ],
                         ),
-                        SizedBox(
-                          height: 10.h,
-                        ),
+
                         Row(
                           children: [
                             Icon(
                               Icons.storefront_outlined,
-                              size: AppSize.iconMedium,
+                              size: AppSize.iconSmall.sp,
                               color: isDark
                                   ? AppColors.secondBackground
                                   : AppColors.background,
@@ -170,13 +167,10 @@ class _BookingCardState extends State<BookingCard> {
                             Text(
                               widget.service.shopName!,
                               style: TextStyle(
-                                  fontSize: AppSize.textMedium,
+                                  fontSize: AppSize.textMedium.sp,
                                   color: isDark
                                       ? Colors.grey.shade300
                                       : Colors.black87),
-                            ),
-                            SizedBox(
-                              width: 20.w,
                             ),
                           ],
                         ),
@@ -186,7 +180,7 @@ class _BookingCardState extends State<BookingCard> {
                                 children: [
                                   Icon(
                                     Icons.location_on_outlined,
-                                    size: AppSize.iconSmall,
+                                    size: AppSize.iconSmall.sp,
                                     color: isDark
                                         ? AppColors.secondBackground
                                         : AppColors.background,
@@ -197,7 +191,7 @@ class _BookingCardState extends State<BookingCard> {
                                   Text(
                                     '${widget.service.district} - ${widget.service.city}',
                                     style: TextStyle(
-                                        fontSize: AppSize.textSmall,
+                                        fontSize: AppSize.textSmall.sp,
                                         color: isDark
                                             ? Colors.white
                                             : Colors.black),

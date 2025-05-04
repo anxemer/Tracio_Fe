@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:path/path.dart' as p;
 
 import 'package:dio/dio.dart';
 
@@ -15,25 +16,32 @@ class CommentBlogReq {
 
   Future<FormData> toFormData() async {
     List<MultipartFile> files = [];
-
-    // Kiểm tra null cho mediaFiles
-    if (mediaFiles != null) {
+    final Map<String, dynamic> data = {
+      'BlogId': blogId.toString(),
+      'Content': content,
+      'files': files,
+    };
+    if (mediaFiles != null && mediaFiles!.isNotEmpty) {
+      // List<MultipartFile> files = [];
       for (var file in mediaFiles!) {
         if (await file.exists()) {
-          files.add(await MultipartFile.fromFile(file.path,
-              filename: file.path.split('/').last));
+          final image =
+              p.extension(file.path).toLowerCase().replaceFirst('.', '');
+          files.add(await MultipartFile.fromFile(
+            file.path,
+            filename: file.path.split('/').last,
+            contentType: DioMediaType.parse('image/$image'),
+          ));
         } else {
           print("⚠️ File không tồn tại: ${file.path}");
         }
       }
-    } else {
-      print("No media files provided");
+
+      if (files.isNotEmpty) {
+        data['ProfilePicture'] = files;
+      }
     }
 
-    return FormData.fromMap({
-      'BlogId': blogId.toString(),
-      'Content': content,
-      'files': files,
-    });
+    return FormData.fromMap(data);
   }
 }

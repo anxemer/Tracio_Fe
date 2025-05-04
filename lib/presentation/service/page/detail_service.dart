@@ -64,6 +64,7 @@ class _DetailServicePageState extends State<DetailServicePage> {
               horizontal: AppSize.apHorizontalPadding.w,
             ),
             child: PlanServiceIcon(
+              isDetail: true,
               isActive: true,
             ),
           ),
@@ -162,7 +163,9 @@ class _DetailServicePageState extends State<DetailServicePage> {
                                       children: [
                                         Text(
                                             '${state.detailService.service.avgRating}/5'),
-                                        RatingStart.ratingStart(rating: 4.7)
+                                        RatingStart.ratingStart(
+                                            rating: state.detailService.service
+                                                .avgRating!)
                                       ],
                                     ),
                                     trailing: InkWell(
@@ -197,10 +200,12 @@ class _DetailServicePageState extends State<DetailServicePage> {
                                       ),
                                     ),
                                   )),
-                              ReviewService(
-                                  review: state.detailService.reviewService,
-                                  avgRating:
-                                      state.detailService.service.avgRating!)
+                              state.detailService.reviewService.isEmpty
+                                  ? SizedBox.shrink()
+                                  : ReviewService(
+                                      review: state.detailService.reviewService,
+                                      avgRating: state
+                                          .detailService.service.avgRating!)
                               // ListView.builder(
                               //   itemCount:
                               //       state.detailService.reviewService.length,
@@ -264,7 +269,7 @@ class _DetailServicePageState extends State<DetailServicePage> {
                       width: AppSize.imageLarge,
                     ),
                     SizedBox(height: 16.h),
-                    Text('No blogs yet. Pull down to refresh.'),
+                    Text('Pull down to refresh.'),
                   ],
                 ),
               );
@@ -405,7 +410,7 @@ class _DetailServicePageState extends State<DetailServicePage> {
                     isDark ? AppColors.secondBackground : AppColors.background,
               ),
               Text(
-                price,
+                '$price VNĐ',
                 style: TextStyle(
                   color: isDark ? Colors.grey.shade300 : Colors.black87,
                   fontWeight: FontWeight.w600,
@@ -641,7 +646,7 @@ class _DetailServicePageState extends State<DetailServicePage> {
           text: 'Book Now',
           // image: AppImages.share,
           fillColor: AppColors.secondBackground,
-          textColor: context.isDarkMode ? Colors.grey.shade200 : Colors.black87,
+          textColor: Colors.white,
           borderColor:
               context.isDarkMode ? Colors.grey.shade200 : Colors.black87,
           fontSize: AppSize.textMedium,

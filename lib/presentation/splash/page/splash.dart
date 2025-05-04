@@ -11,8 +11,20 @@ import 'package:tracio_fe/common/widget/navbar/bottom_nav_bar_manager.dart';
 
 import '../bloc/splash_state.dart';
 
-class SplashPage extends StatelessWidget {
+class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
+
+  @override
+  State<SplashPage> createState() => _SplashPageState();
+}
+
+class _SplashPageState extends State<SplashPage> {
+  @override
+  void initState() {
+    context.read<SplashCubit>().checkUser();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -3,18 +3,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tracio_fe/common/helper/is_dark_mode.dart';
 import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
+import 'package:tracio_fe/domain/shop/usecase/cancel_booking.dart';
 import 'package:tracio_fe/presentation/service/page/review_booking.dart';
+import 'package:tracio_fe/presentation/service/widget/cancel_reason.dart';
 import 'package:tracio_fe/presentation/service/widget/review_service.dart';
 
 import '../../../common/widget/button/button.dart';
 import '../../../core/configs/theme/app_colors.dart';
 import '../../../core/constants/app_size.dart';
 import '../../../domain/shop/entities/response/booking_card_view.dart';
-import '../../../domain/shop/usecase/process_booking.dart';
 import '../../../service_locator.dart';
 import '../bloc/bookingservice/booking_service_cubit.dart';
 import '../bloc/bookingservice/resolve_overlap_service/cubit/resolve_overlap_service_cubit.dart';
-import 'booking_card.dart';
 
 class ResolveBooking extends StatefulWidget {
   const ResolveBooking({
@@ -166,8 +166,8 @@ class _ResolveBookingState extends State<ResolveBooking> {
                 Expanded(
                   child: FilledButton(
                     onPressed: () {
-                      sl<ProcessBookingUseCase>()
-                          .call(service.bookingDetailId!);
+                      AppNavigator.push(context, CancelReasonScreen());
+                      // sl<CancelBookingUseCase>().call(service.bookingDetailId!);
                       // showDialogConfirmation(service
                       // BookingCardViewModel(
                       //   bookingDetailId: service.bookingDetailId,
@@ -214,7 +214,7 @@ class _ResolveBookingState extends State<ResolveBooking> {
                         ),
                       ),
                     ),
-                    child: Text('Reschedule',
+                    child: Text('No',
                         style: TextStyle(
                             fontSize: AppSize.textMedium,
                             fontWeight: FontWeight.w600)),
@@ -226,18 +226,5 @@ class _ResolveBookingState extends State<ResolveBooking> {
         );
       },
     );
-
-    if (result == null) return;
-    if (result is! String) return;
-    if (result == 'no') {
-      return;
-    }
-    if (result == 'yes') {
-      context
-          .read<ResolveOverlapServiceCubit>()
-          .markAction(service.bookingDetailId!, OverlapActionStatus.confirmed);
-
-      return;
-    }
   }
 }

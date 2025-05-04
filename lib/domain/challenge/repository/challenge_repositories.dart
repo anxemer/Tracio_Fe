@@ -9,6 +9,7 @@ abstract class ChallengeRepositories {
   Future<Either<Failure, ChallengeOverviewResponseEntity>>
       getChallengeOverview();
   Future<Either<Failure, ChallengeEntity>> getChallengeDetail(int challengeId);
+  Future<Either<Failure, ChallengeEntity>> getRewardUser(int userId);
   Future<Either<Failure, bool>> joinChallenge(int challengeId);
   Future<Either<Failure,ParticipantsResponseEntity>> getParticipants(
       int challengeId);

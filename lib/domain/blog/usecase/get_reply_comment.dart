@@ -7,9 +7,9 @@ import 'package:tracio_fe/domain/blog/repositories/blog_repository.dart';
 import 'package:tracio_fe/service_locator.dart';
 
 class GetReplyCommentUsecase
-    extends Usecase<List<ReplyCommentEntity>, GetReplyCommentReq> {
+    extends Usecase<ReplyCommentBlogPaginationEntity, GetReplyCommentReq> {
   @override
-  Future<Either<Failure, List<ReplyCommentEntity>>> call(
+  Future<Either<Failure, ReplyCommentBlogPaginationEntity>> call(
       GetReplyCommentReq? params) async {
     return await sl<BlogRepository>().getRepCommentBlog(params!);
   }

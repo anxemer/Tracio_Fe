@@ -1,5 +1,5 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:io';
+import 'package:path/path.dart' as p;
 
 import 'package:dio/dio.dart';
 
@@ -19,25 +19,32 @@ class ReplyCommentReq {
   // Phương thức để chuyển đổi thành FormData
   Future<FormData> toFormData() async {
     List<MultipartFile> mutibleFiles = [];
-
-    // Kiểm tra null cho mediaFiles
-    if (files != null) {
-      for (var file in files!) {
-        if (await file.exists()) {
-          mutibleFiles.add(await MultipartFile.fromFile(file.path,
-              filename: file.path.split('/').last));
-        } else {
-          print("⚠️ File không tồn tại: ${file.path}");
-        }
-      }
-    } else {
-      print("No media files provided");
-    }
     Map<String, dynamic> formMap = {
       'CommentId': commentId.toString(),
       'Content': content,
       'files': mutibleFiles
     };
+    if (files != null && files!.isNotEmpty) {
+      // List<MultipartFile> files = [];
+      for (var file in files!) {
+        if (await file.exists()) {
+          final image =
+              p.extension(file.path).toLowerCase().replaceFirst('.', '');
+          mutibleFiles.add(await MultipartFile.fromFile(
+            file.path,
+            filename: file.path.split('/').last,
+            contentType: DioMediaType.parse('image/$image'),
+          ));
+        } else {
+          print("⚠️ File không tồn tại: ${file.path}");
+        }
+      }
+
+      if (mutibleFiles.isNotEmpty) {
+        formMap['ProfilePicture'] = files;
+      }
+    }
+
     if (replyId != null) {
       formMap['ReplyId'] = replyId.toString();
     } else {

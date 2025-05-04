@@ -29,6 +29,8 @@ class ApiUrl {
   static const userProfile = '$portUser/api/users';
   static const follow = '$portUser/api/follow';
   static const changeRole = '$portUser/api/auth/refresh-token';
+  static const registerShop = '$portUser/api/users/shop-profile';
+  static const editShop = '$portShop/api/shops';
 
   //Api Blog
   static const reactBlog = '$portBlog/api/reactions';
@@ -36,6 +38,11 @@ class ApiUrl {
   static const getReactBlog = '$portBlog/api/blogs';
   static Uri urlGetBlog([Map<String, String>? params]) {
     return Uri.parse('$portBlog/api/blogs').replace(queryParameters: params);
+  }
+
+  static Uri urlGetBookMarkBlog([Map<String, String>? params]) {
+    return Uri.parse('$portBlog/api/blogs/bookmarks')
+        .replace(queryParameters: params);
   }
 
   static Uri urlReplyComment([Map<String, String>? params]) {
@@ -158,6 +165,7 @@ class ApiUrl {
   static const deleteCartItem = '$portShop/api/carts';
   static const getShopProfile = '$portShop/api/shops/profile';
   static const reviewBooking = '$portShop/api/reviews';
+  static const replyReview = '$portShop/api/replies';
   // static const submitBooking = '${portShop}/api/carts';
   static const rescheduleBooking = '$portShop/api/bookings/reschedule-booking';
 
@@ -206,6 +214,11 @@ class ApiUrl {
   //Challenge Api
   static const getChallengeOverview = '$portUser/api/challenge/overview';
   static const apiChallenge = '$portUser/api/challenge';
+  // static const apiChallengeReward = '$portUser/api/challenge-reward';
+  static Uri apiChallengeReward([Map<String, String>? params]) {
+    return Uri.parse('$portUser/api/challenge-reward')
+        .replace(queryParameters: params);
+  }
 
   static Uri urlPostGroupRoute(int groupId) {
     return Uri.parse('$portGroup/api/group/$groupId/route');

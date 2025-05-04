@@ -12,6 +12,7 @@ class ResolveBookingShopCubit extends Cubit<ResolveBookingShopState> {
   ResolveBookingShopCubit() : super(ResolveShopBookingInitial());
   DateTime? bookedDate;
   String? shopNote;
+  String? adjPrice;
   String? price;
   String? reason;
   void updatebookedDate(DateTime newBookedDate) {
@@ -32,10 +33,11 @@ class ResolveBookingShopCubit extends Cubit<ResolveBookingShopState> {
         reason: reason));
   }
 
-  void updatePrice(String newPrice, newReason) {
+  void updatePrice(String newPrice, String newReason) {
     price = newPrice;
-    reason = newReason;
+    adjPrice = newReason;
     emit(UpdateParamsWaitingBooking(
+        adjPrice: adjPrice,
         bookedDate: bookedDate,
         shopNote: shopNote,
         price: price,
@@ -79,6 +81,7 @@ class ResolveBookingShopCubit extends Cubit<ResolveBookingShopState> {
     }
 
     var result = await sl<ConfirmBookingUseCase>().call(ConfirmBookingModel(
+        adjustPriceReason: adjPrice,
         bookedDate: bookedDate,
         userNote: userNote,
         shopNote: shopNote,

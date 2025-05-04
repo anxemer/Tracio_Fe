@@ -18,14 +18,14 @@ class BookingStatus {
   static const String pending = 'Pending';
   static const String reschedule = 'Reschedule';
   static const String submitted = 'Confirmed';
-  static const String processing = 'processing';
+  static const String processing = 'Processing';
   static const String completed = 'Completed';
   static const String canceled = 'Cancelled';
 }
 
 class BookingManagementScreen extends StatefulWidget {
-  const BookingManagementScreen({super.key});
-
+  const BookingManagementScreen({super.key, this.initialIndex = 0});
+  final int initialIndex;
   @override
   State<BookingManagementScreen> createState() =>
       _BookingManagementScreenState();
@@ -51,17 +51,16 @@ class _BookingManagementScreenState extends State<BookingManagementScreen>
   void initState() {
     super.initState();
 
-    final initialIndex = _tabTitles.indexOf(BookingStatus.pending);
     _tabController = TabController(
       length: _tabTitles.length,
       vsync: this,
-      initialIndex: initialIndex >= 0 ? initialIndex : 0,
+      initialIndex: widget.initialIndex,
     );
 
-    // Add listener to detect tab changes
+    _currentStatus = _tabTitles[widget.initialIndex];
+
     _tabController.addListener(_handleTabChange);
 
-    // Initial fetch for the first tab (Pending)
     _fetchBookingsByStatus(_currentStatus);
   }
 
@@ -190,6 +189,7 @@ class _BookingManagementScreenState extends State<BookingManagementScreen>
                               BookingDetailShopScreen(
                                   bookingId: booking.bookingDetailId!)),
                           service: BookingCardViewModel(
+                            imageUrl: booking.serviceMediaFile!,
                             userName: booking.cyclistName,
                             status: booking.status,
                             bookingDetailId: booking.bookingDetailId,

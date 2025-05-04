@@ -7,7 +7,6 @@ import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/presentation/service/bloc/bookingservice/get_booking_detail_cubit/get_booking_detail_cubit.dart';
 import 'package:tracio_fe/presentation/service/bloc/bookingservice/resolve_overlap_service/cubit/resolve_overlap_service_cubit.dart';
 import 'package:tracio_fe/presentation/service/bloc/get_booking/get_booking_cubit.dart';
-import 'package:tracio_fe/presentation/service/bloc/review_booking/cubit/review_booking_cubit.dart';
 import 'package:tracio_fe/presentation/service/widget/booking_status_tab.dart';
 
 import '../../../core/configs/theme/app_colors.dart';
@@ -56,7 +55,6 @@ class _MyBookingPageState extends State<MyBookingPage>
     var isDark = context.isDarkMode;
     return MultiBlocProvider(
       providers: [
-     
         BlocProvider(
           create: (context) => GetBookingCubit(),
         ),
@@ -151,36 +149,38 @@ class _MyBookingPageState extends State<MyBookingPage>
                           ]),
                     ),
                     Expanded(
-                      child: TabBarView(children: [
-                        BookingStatusTab(
-                          status: 'Pending',
-                          animationController: tabAnimationController,
-                        ),
-                        BookingStatusTab(
-                          status: 'Reschedule',
-                          animationController: tabAnimationController,
-                        ),
-                        BookingStatusTab(
-                          status: 'Confirmed',
-                          animationController: tabAnimationController,
-                        ),
-                        BookingStatusTab(
-                          status: 'processing',
-                          animationController: tabAnimationController,
-                        ),
-                        BookingStatusTab(
-                          status: 'Completed',
-                          animationController: tabAnimationController,
-                        ),
-                        BookingStatusTab(
-                          status: 'Cancelled',
-                          animationController: tabAnimationController,
-                        ),
-                        BookingStatusTab(
-                          status: 'NotArrive',
-                          animationController: tabAnimationController,
-                        ),
-                      ]),
+                      child: TabBarView(
+                          physics: NeverScrollableScrollPhysics(),
+                          children: [
+                            BookingStatusTab(
+                              status: 'Pending',
+                              animationController: tabAnimationController,
+                            ),
+                            BookingStatusTab(
+                              status: 'Reschedule',
+                              animationController: tabAnimationController,
+                            ),
+                            BookingStatusTab(
+                              status: 'Confirmed',
+                              animationController: tabAnimationController,
+                            ),
+                            BookingStatusTab(
+                              status: 'Processing',
+                              animationController: tabAnimationController,
+                            ),
+                            BookingStatusTab(
+                              status: 'Completed',
+                              animationController: tabAnimationController,
+                            ),
+                            BookingStatusTab(
+                              status: 'Cancelled',
+                              animationController: tabAnimationController,
+                            ),
+                            BookingStatusTab(
+                              status: 'NotArrive',
+                              animationController: tabAnimationController,
+                            ),
+                          ]),
                     )
                   ],
                 ),

@@ -146,19 +146,34 @@ class AuthRepositotyImpl extends AuthRepository {
   Future<Either<Failure, AuthenticationResponseModel>> loginGoogle() async {
     return await _authenticate(() async {
       final googleSignIn = GoogleSignIn(scopes: ['email', 'profile']);
+      if (await googleSignIn.isSignedIn()) {
+        await googleSignIn.disconnect();
+      }
+
       final googleUser = await googleSignIn.signIn();
       if (googleUser == null) {
-        throw CredentialFailure('Đăng nhập Google bị huỷ');
+        throw CredentialFailure('Login Google fail');
       }
 
       final googleAuth = await googleUser.authentication;
-      final idToken = googleAuth.idToken;
-      if (idToken == null) {
-        throw CredentialFailure('Không lấy được ID Token từ Google');
+
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      final firebaseUser =
+          await FirebaseAuth.instance.signInWithCredential(credential);
+
+      final firebaseIdToken = await firebaseUser.user?.getIdToken();
+      if (firebaseIdToken == null) {
+        throw CredentialFailure('Firebase ID Token not found');
       }
 
-      // Gửi idToken lên server để login (api backend bạn đã chuẩn bị rồi)
-      return await sl<AuthApiService>().loginWithGoogleIdToken(idToken);
+      print(firebaseIdToken);
+
+      // Gửi ID Token Firebase về server
+      return await sl<AuthApiService>().loginWithGoogleIdToken(firebaseIdToken);
     });
   }
 }

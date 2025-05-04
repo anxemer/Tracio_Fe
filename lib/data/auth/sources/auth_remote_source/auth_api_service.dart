@@ -81,6 +81,12 @@ class AuthApiServiceImpl extends AuthApiService {
       String tokenId) async {
     final response =
         await DioClient().post(ApiUrl.loginWithEP, data: {"idToken": tokenId});
-    return AuthenticationResponseModel.fromJson(response.data['result']);
+    if (response.statusCode == 201) {
+      return (AuthenticationResponseModel.fromMap(response.data['result']));
+    } else if (response.statusCode == 400) {
+      throw CredentialFailure("Lỗi server: ${response.data['message']}");
+    } else {
+      throw ServerException();
+    }
   }
 }

@@ -6,8 +6,9 @@ import 'package:tracio_fe/common/helper/is_dark_mode.dart';
 import 'package:tracio_fe/common/widget/appbar/app_bar.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/data/shop/models/get_review_req.dart';
+import 'package:tracio_fe/data/shop/models/reply_review_req.dart';
+import 'package:tracio_fe/presentation/service/bloc/review_booking/cubit/review_booking_cubit.dart';
 import 'package:tracio_fe/presentation/service/bloc/service_bloc/review_service_cubit/get_reviewcubit/get_review_cubit.dart';
-import 'package:tracio_fe/presentation/service/widget/review_service.dart';
 
 import '../../../common/widget/blog/custom_bottomsheet.dart';
 import '../../../common/widget/button/button.dart';
@@ -19,36 +20,58 @@ import 'add_schedule.dart';
 import 'review_service_card.dart';
 
 class AllReviewService extends StatefulWidget {
-  const AllReviewService({super.key, required this.serviceId});
-  final int serviceId;
+  const AllReviewService(
+      {super.key,
+      this.serviceId,
+      this.bookingId,
+      this.isShopOwner = false,
+      this.isBooking = false,
+      this.isReviewd = false});
+  final int? serviceId;
+  final int? bookingId;
+  final bool isShopOwner;
+  final bool isBooking;
+  final bool isReviewd;
   @override
   State<AllReviewService> createState() => _AllReviewServiceState();
 }
 
 class _AllReviewServiceState extends State<AllReviewService> {
   TextEditingController noteCon = TextEditingController();
+  TextEditingController replyReviewCon = TextEditingController();
   @override
   void initState() {
-    context.read<GetReviewCubit>().getReviewService(
-        GetReviewReq(seriveId: widget.serviceId, pageSize: 10, pageNumber: 1));
+    if (widget.serviceId != null) {
+      context.read<GetReviewCubit>().getReviewService(GetReviewReq(
+          seriveId: widget.serviceId!, pageSize: 10, pageNumber: 1));
+    }
+    if (widget.bookingId != null) {
+      context.read<GetReviewCubit>().getReviewBooking(widget.bookingId);
+    }
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    var isDark = context.isDarkMode;
     return Scaffold(
       appBar: BasicAppbar(
         title: Text(
           'Review',
           style: TextStyle(
-              fontSize: AppSize.textHeading, fontWeight: FontWeight.bold),
+              fontSize: AppSize.textHeading,
+              fontWeight: FontWeight.bold,
+              color: Colors.white),
         ),
       ),
       body: RefreshIndicator(
         onRefresh: () async {
-          await context.read<GetReviewCubit>().getReviewService(GetReviewReq(
-              seriveId: widget.serviceId, pageSize: 10, pageNumber: 1));
+          if (widget.serviceId != null) {
+            context.read<GetReviewCubit>().getReviewService(GetReviewReq(
+                seriveId: widget.serviceId!, pageSize: 10, pageNumber: 1));
+          }
+          if (widget.bookingId != null) {
+            context.read<GetReviewCubit>().getReviewBooking(widget.bookingId);
+          }
         },
         child: BlocBuilder<GetReviewCubit, GetReviewState>(
           builder: (context, state) {
@@ -64,13 +87,13 @@ class _AllReviewServiceState extends State<AllReviewService> {
                         physics: const AlwaysScrollableScrollPhysics(),
                         itemBuilder: (context, index) {
                           return Container(
-                            decoration: BoxDecoration(),
-                            margin: EdgeInsets.only(top: index == 0 ? 12 : 16),
-                            // height: 120,
-                            child: ReviewServiceCard(
-                              review: state.review[index],
-                            ),
-                          );
+                              decoration: BoxDecoration(),
+                              margin:
+                                  EdgeInsets.only(top: index == 0 ? 12 : 16),
+                              // height: 120,
+                              child: ReviewServiceCard(
+                                review: state.review[index],
+                              ));
                         },
                       ),
                       Positioned(
@@ -92,7 +115,47 @@ class _AllReviewServiceState extends State<AllReviewService> {
                             //   ),
                             // ],
                           ),
-                          child: buildButton(context),
+                          child: widget.isShopOwner
+                              ? !widget.isReviewd
+                                  ? Row(
+                                      children: [
+                                        Expanded(
+                                          child: InputTextFormField(
+                                            controller: replyReviewCon,
+                                            labelText: 'Reply',
+                                            hint: 'Reply This Review',
+                                          ),
+                                        ),
+
+                                        // Send button
+                                        IconButton(
+                                          icon: Icon(
+                                            Icons.send_rounded,
+                                            color: context.isDarkMode
+                                                ? AppColors.primary
+                                                : AppColors.background,
+                                            size: AppSize.iconLarge.sp,
+                                          ),
+                                          onPressed: () {
+                                            context
+                                                .read<ReviewBookingCubit>()
+                                                .replyReview(ReplyReviewReq(
+                                                    reviewId: state
+                                                        .review.first.reviewId!,
+                                                    content:
+                                                        replyReviewCon.text));
+                                            replyReviewCon.clear();
+
+                                            FocusManager.instance.primaryFocus
+                                                ?.unfocus();
+                                          },
+                                        ),
+                                      ],
+                                    )
+                                  : SizedBox.shrink()
+                              : widget.isBooking
+                                  ? buildButton(context)
+                                  : SizedBox.shrink(),
                         ),
                       ),
                     ]),
@@ -134,7 +197,7 @@ class _AllReviewServiceState extends State<AllReviewService> {
                 SnackBar(content: Text('Service is already in cart!')),
               );
             } else {
-              context.read<CartItemCubit>().addCartItem(widget.serviceId);
+              context.read<CartItemCubit>().addCartItem(widget.serviceId!);
             }
           },
           text: 'Add To Plan',

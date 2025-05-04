@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
+
 import 'package:tracio_fe/common/widget/picture/circle_picture.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/domain/user/entities/user_profile_entity.dart';
-import 'package:tracio_fe/presentation/profile/pages/edit_profile.dart';
-
-import '../../../common/widget/blog/header_information.dart';
-import '../../../core/configs/theme/app_colors.dart';
-import '../../../core/configs/theme/assets/app_images.dart';
+import 'package:tracio_fe/presentation/profile/widgets/vital_tile.dart';
 
 class Userinformation extends StatelessWidget {
   const Userinformation({super.key, required this.user});
@@ -16,170 +12,211 @@ class Userinformation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      padding: EdgeInsets.symmetric(vertical: AppSize.apVerticalPadding * .2.h),
       width: double.infinity,
-      height: 400.w,
+      // height: 400.w,
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           color: const Color.fromARGB(255, 255, 255, 255)),
       child: Column(
         children: [
-          HeaderInformation(
-              widthImage: AppSize.imageLarge.w,
-              subtitle: Text(
-                '${user.district} ${user.city}',
-                style: TextStyle(
-                    color: Colors.grey,
-                    fontWeight: FontWeight.w400,
-                    fontSize: AppSize.textLarge.sp),
-              ),
-              title: Text(
-                user.userName ?? '',
-                style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                    fontSize: AppSize.textExtraLarge.sp),
-              ),
-              imageUrl: CirclePicture(
-                  imageUrl: user.profilePicture!, imageSize: AppSize.iconLarge),
-              trailling: InkWell(
-                onTap: () => AppNavigator.push(
-                    context,
-                    EditProfilePage(
-                      user: user,
-                    )),
-                child: SizedBox(
-                  child: Image.asset(
-                    AppImages.edit,
-                    width: AppSize.iconMedium.w,
-                  ),
-                  // width: AppSize.imageSmall,
-                ),
-              )),
-          SizedBox(
-            height: 10.h,
+          // Avatar
+          CirclePicture(
+              imageUrl: user.profilePicture!, imageSize: AppSize.imageSmall.sp),
+          // CircleAvatar(
+          //   radius: 50,
+          //   backgroundColor: Colors.grey[300],
+          //   child: const Icon(Icons.person, size: 60),
+          // ),
+          const SizedBox(height: 12),
+
+          // Name & Email
+          Text(
+            user.userName!,
+            style: TextStyle(
+                fontSize: AppSize.textHeading, fontWeight: FontWeight.bold),
           ),
+          const SizedBox(height: 4),
+          Text(
+            user.email!,
+            style: TextStyle(color: Colors.grey.shade700),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            user.bio!,
+            style: TextStyle(color: Colors.grey.shade700),
+          ),
+          const SizedBox(height: 20),
+          // Gender, Age, Height, Weight
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 10.h),
+            padding: const EdgeInsets.symmetric(horizontal: 40),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  user.bio ?? '',
+                Text.rich(TextSpan(
+                  text: 'Gender: ',
                   style: TextStyle(
-                      color: Colors.grey.shade700,
-                      fontWeight: FontWeight.w400,
-                      fontSize: AppSize.textLarge.sp),
-                ),
-                SizedBox(
-                  width: 150.w,
-                  height: 50.h,
-                  // color: Colors.black,
-                  child: Stack(
-                    children: [
-                      Align(
-                        alignment: Alignment.topLeft,
-                        child: Text(
-                          'Beginner',
-                          style: TextStyle(
-                              fontSize: AppSize.textMedium,
-                              color: AppColors.primary,
-                              fontWeight: FontWeight.w500),
-                        ),
-                      ),
-                      Align(
-                        alignment: Alignment.center,
-                        child: Container(
-                          decoration: BoxDecoration(
-                              color: Colors.grey.shade300,
-                              borderRadius: BorderRadius.circular(10)),
-                          width: double.infinity,
-                          height: 10.h,
-                        ),
-                      ),
-                      Align(
-                        alignment: Alignment.bottomRight,
-                        child: Text(
-                          '50/100',
-                          style: TextStyle(color: Colors.grey.shade500),
-                        ),
-                      )
-                    ],
-                  ),
-                )
+                      fontWeight: FontWeight.bold, fontSize: AppSize.textLarge),
+                  children: [
+                    TextSpan(
+                        text: user.gender,
+                        style: TextStyle(
+                            fontWeight: FontWeight.normal,
+                            fontSize: AppSize.textLarge))
+                  ],
+                )),
+                Text.rich(TextSpan(
+                  text: 'BirthDate: ',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: AppSize.textLarge),
+                  children: [
+                    TextSpan(
+                        text: user.birthDate ?? '24/04/2003',
+                        style: TextStyle(fontWeight: FontWeight.normal))
+                  ],
+                )),
               ],
             ),
           ),
-          Expanded(
-              child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20.h),
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 40),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                Text.rich(TextSpan(
+                  text: 'Follower: ',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: AppSize.textLarge),
                   children: [
-                    Text('Following'),
-                    Text(
-                      '89',
-                      style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: AppSize.textLarge.sp),
-                    )
+                    TextSpan(
+                        text: user.followers.toString(),
+                        style: TextStyle(
+                            fontWeight: FontWeight.normal,
+                            fontSize: AppSize.textLarge))
                   ],
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                )),
+                Text.rich(TextSpan(
+                  text: 'Following: ',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: AppSize.textLarge),
                   children: [
-                    Text('Follower'),
-                    Text(
-                      '89',
-                      style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: AppSize.textLarge.sp),
-                    )
+                    TextSpan(
+                        text: user.followings.toString(),
+                        style: TextStyle(
+                            fontWeight: FontWeight.normal,
+                            fontSize: AppSize.textLarge))
                   ],
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('ACtivities'),
-                    Text(
-                      '89',
-                      style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: AppSize.textLarge.sp),
-                    )
-                  ],
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text('Challenges'),
-                    Text(
-                      '89',
-                      style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: AppSize.textLarge.sp),
-                    )
-                  ],
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text('Blogs'),
-                    Text(
-                      '89',
-                      style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: AppSize.textLarge.sp),
-                    )
-                  ],
-                ),
+                )),
               ],
             ),
-          ))
+          ),
+          const SizedBox(height: 24),
+          Row(
+            spacing: 10.w,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              rewardItem(
+                  'https://hoanghamobile.com/tin-tuc/wp-content/uploads/2024/09/lich-thi-dau-cktg-2024-5.jpg',
+                  'run 50km'),
+              rewardItem(
+                  'https://cdnmedia.webthethao.vn/uploads/2021-05-20/msi-2021-chung-ket.jpg',
+                  'run 30 hours'),
+            ],
+          ),
+          // Average Vitals Label + Tabs
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Center(
+              child: Text(
+                'Achievements',
+                style: TextStyle(
+                    fontSize: AppSize.textHeading, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // Vital Items
+          VitalTile(
+            icon: Icons.directions_bike_outlined,
+            title: 'Total Distance',
+            value: '500 KM',
+          ),
+          VitalTile(
+            icon: Icons.timer_outlined,
+            title: 'Total Duration',
+            value: '1000 Hour',
+          ),
+          VitalTile(
+            icon: Icons.route_outlined,
+            title: 'Total Route',
+            value: '30',
+          ),
+          VitalTile(
+            icon: Icons.photo_size_select_actual_outlined,
+            title: 'Total Blog',
+            value: '50',
+          ),
         ],
       ),
     );
   }
+
+  Widget rewardItem(String imageUrl, String title) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        ClipOval(
+          child: CirclePicture(
+              imageUrl: imageUrl, imageSize: AppSize.iconMedium.sp),
+          // Image.network(
+          //   imageUrl,
+          //   width: 30,
+          //   height: 30,
+          //   fit: BoxFit.cover,
+          // ),
+        ),
+        SizedBox(height: 8),
+        // Title below the image
+        Text(
+          title, // Dynamic title
+          style: TextStyle(
+              fontSize: AppSize.textMedium * 0.8.sp,
+              fontWeight: FontWeight.w600),
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          textAlign: TextAlign.center,
+        ),
+      ],
+    );
+  }
+  // Widget rowText(String lable, String text) {
+  //   return Padding(
+  //     padding: const EdgeInsets.symmetric(horizontal: 40),
+  //     child: Row(
+  //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //       children: const [
+  //         Text.rich(TextSpan(
+  //           text: 'Height: ',
+  //           style: TextStyle(fontWeight: FontWeight.bold),
+  //           children: [
+  //             TextSpan(
+  //                 text: '174 cms',
+  //                 style: TextStyle(fontWeight: FontWeight.normal))
+  //           ],
+  //         )),
+  //         Text.rich(TextSpan(
+  //           text: 'Weight: ',
+  //           style: TextStyle(fontWeight: FontWeight.bold),
+  //           children: [
+  //             TextSpan(
+  //                 text: '68 kgs',
+  //                 style: TextStyle(fontWeight: FontWeight.normal))
+  //           ],
+  //         )),
+  //       ],
+  //     ),
+  //   );
+  // }
 }

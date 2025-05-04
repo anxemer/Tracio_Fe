@@ -2,7 +2,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tracio_fe/core/erorr/failure.dart';
 import 'package:tracio_fe/domain/shop/entities/response/cart_item_entity.dart';
 import 'package:tracio_fe/domain/shop/usecase/booking_service.dart';
-import 'package:tracio_fe/domain/shop/usecase/reschedule_booking.dart';
 import 'package:tracio_fe/presentation/service/bloc/bookingservice/booking_service_state.dart';
 
 import '../../../../common/helper/schedule_model.dart';

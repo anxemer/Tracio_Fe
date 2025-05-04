@@ -45,7 +45,9 @@ class _ServiceManagementPageState extends State<ServiceManagementPage> {
             bottom: false,
             child: Column(
               children: [
-                CustomSearchBar(),
+                CustomSearchBar(
+                  isShopOwner: true,
+                ),
 
                 // BlocBuilder<GetCategoryCubit, GetCategoryState>(
                 //   builder: (context, state) {
@@ -67,7 +69,7 @@ class _ServiceManagementPageState extends State<ServiceManagementPage> {
                     width: 100.w,
                     ontap: () {
                       AppNavigator.push(context,
-                          CreateEditServiceScreen(shopId: widget.shopId));
+                        CreateEditServiceScreen(shopId: widget.shopId));
                     },
                     fillColor: AppColors.primary,
                     borderColor: Colors.transparent,

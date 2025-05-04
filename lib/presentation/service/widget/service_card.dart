@@ -71,8 +71,6 @@ class ServiceCard extends StatelessWidget {
                           style: TextStyle(
                               fontSize: AppSize.textMedium.sp,
                               fontWeight: FontWeight.w600),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 2,
                         ),
                         SizedBox(height: 4.h),
                         Row(
@@ -89,21 +87,20 @@ class ServiceCard extends StatelessWidget {
                               service.formattedDuration,
                               style: TextStyle(fontSize: AppSize.textSmall),
                             ),
-                            const Spacer(),
                             Row(
                               children: [
                                 Icon(
                                   Icons.attach_money_rounded,
-                                  size: AppSize.iconMedium,
+                                  size: AppSize.iconSmall,
                                   color: isDark
                                       ? AppColors.secondBackground
                                       : AppColors.background,
                                 ),
                                 Text(
-                                  service.price.toString(),
+                                  '${service.formattedPrice} VNĐ',
                                   style: TextStyle(
-                                      fontSize: AppSize.textLarge,
-                                      fontWeight: FontWeight.bold),
+                                      fontSize: AppSize.textMedium,
+                                      fontWeight: FontWeight.w600),
                                 ),
                               ],
                             ),

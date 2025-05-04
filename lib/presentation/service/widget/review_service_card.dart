@@ -145,7 +145,8 @@ class ReviewServiceCard extends StatelessWidget {
                     //     ),
                     //   ),
                     // ),
-                    ))
+                    )),
+        moreWidget ?? SizedBox.shrink()
       ],
     );
   }

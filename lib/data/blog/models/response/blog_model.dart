@@ -21,23 +21,27 @@ class BlogModels extends BlogEntity {
 
   factory BlogModels.fromJson(Map<String, dynamic> json) {
     return BlogModels(
-      blogId: json["blogId"],
-      userId: json["creatorId"],
-      userName: json["creatorName"],
-      avatar: json["creatorAvatar"],
-      isPublic: json["isPublic"],
-      isReacted: json["isReacted"],
-      isBookmarked: json["isBookmarked"],
-      content: json["content"],
-      mediaFiles: json["mediaFiles"] == null
-          ? []
-          : List<MediaFile>.from(
-              json["mediaFiles"]!.map((x) => MediaFile.fromJson(x))),
-      createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
-      updatedAt: DateTime.tryParse(json["updatedAt"] ?? ""),
-      likesCount: json["likeCount"],
-      commentsCount: json["commentCount"],
-      isFollowed: json["isFollowed"],
+      blogId: json["blogId"] ?? 0,
+      userId: json["creatorId"] ?? 0,
+      userName: json["creatorName"] ?? "",
+      avatar: json["creatorAvatar"] ?? "",
+      isPublic: json["isPublic"] ?? true,
+      isReacted: json["isReacted"] ?? false,
+      isBookmarked: json["isBookmarked"] ?? false,
+      content: json["content"] ?? "",
+      mediaFiles: (json["mediaFiles"] != null && json["mediaFiles"] is List)
+          ? List<MediaFile>.from(
+              json["mediaFiles"].map((x) => MediaFile.fromJson(x)))
+          : [],
+      createdAt: json["createdAt"] != null
+          ? DateTime.tryParse(json["createdAt"])
+          : null,
+      updatedAt: json["updatedAt"] != null
+          ? DateTime.tryParse(json["updatedAt"])
+          : null,
+      likesCount: json["likeCount"] ?? 0,
+      commentsCount: json["commentCount"] ?? 0,
+      isFollowed: json["isFollowed"] ?? false,
     );
   }
 

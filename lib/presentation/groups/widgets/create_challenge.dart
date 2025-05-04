@@ -136,8 +136,7 @@ class _CreateChallengeScreenState extends State<CreateChallengeScreen> {
                 Text(
                   'Challenge Name',
                   style: TextStyle(
-                      color: isDark ? Colors.white70 : Colors.black87,
-                      fontSize: AppSize.textLarge),
+                      color: Colors.white70, fontSize: AppSize.textLarge),
                 ),
                 const SizedBox(height: 8),
                 InputTextFormField(
@@ -201,7 +200,7 @@ class _CreateChallengeScreenState extends State<CreateChallengeScreen> {
                             color: isDark ? Colors.white70 : Colors.black87),
                         dropdownColor: !isDark ? Colors.white : Colors.black,
                         validator: (value) =>
-                            value == null ? 'Please Choose Type' : null,
+                            value == null ? 'Please Choose Type Challenge' : null,
                       ),
                     ),
                     const SizedBox(width: 10),
@@ -256,7 +255,7 @@ class _CreateChallengeScreenState extends State<CreateChallengeScreen> {
                     style: TextStyle(
                         color: _startDate == null
                             ? Colors.grey.shade600
-                            : Colors.white),
+                            : Colors.black),
                   ),
                   trailing: Icon(Icons.chevron_right, color: AppColors.primary),
                   onTap: () => _selectDate(context, true),
@@ -291,7 +290,7 @@ class _CreateChallengeScreenState extends State<CreateChallengeScreen> {
                     style: TextStyle(
                         color: _endDate == null
                             ? Colors.grey.shade600
-                            : Colors.white),
+                            : Colors.black),
                   ),
                   trailing: Icon(Icons.chevron_right, color: AppColors.primary),
                   onTap: () => _selectDate(context, false),

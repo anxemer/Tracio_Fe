@@ -7,8 +7,8 @@ import 'package:tracio_fe/presentation/map/widgets/search_location_options.dart'
 import 'package:tracio_fe/presentation/map/widgets/search_location_result.dart';
 
 class SearchLocationPage extends StatefulWidget {
-  const SearchLocationPage({super.key});
-
+  const SearchLocationPage({super.key, this.shopProfile = false});
+  final bool shopProfile;
   @override
   State<SearchLocationPage> createState() => _SearchLocationPageState();
 }
@@ -33,7 +33,7 @@ class _SearchLocationPageState extends State<SearchLocationPage> {
               backgroundColor: Colors.grey.shade700,
               showPrefixIcon: true,
             ),
-            SearchLocationOptions(),
+            widget.shopProfile ? SizedBox.shrink() : SearchLocationOptions(),
             SearchLocationResult()
           ],
         ),

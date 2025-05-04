@@ -11,7 +11,6 @@ import 'package:tracio_fe/presentation/blog/bloc/comment/get_comment_cubit.dart'
 import 'package:tracio_fe/presentation/blog/pages/blog.dart';
 import 'package:tracio_fe/presentation/chat/bloc/bloc/conversation_bloc.dart';
 import 'package:tracio_fe/presentation/chat/pages/conversation.dart';
-import 'package:tracio_fe/presentation/groups/cubit/challenge_cubit.dart';
 import 'package:tracio_fe/presentation/notifications/page/notifications.dart';
 
 import '../../../data/blog/models/request/get_blog_req.dart';
@@ -27,17 +26,17 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final ScrollController _scrollController = ScrollController();
-  @override
-  void initState() {
-    super.initState();
-  }
+  // final ScrollController _scrollController = ScrollController();
+  // @override
+  // void initState() {
+  //   super.initState();
+  // }
 
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   _scrollController.dispose();
+  //   super.dispose();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -55,8 +54,8 @@ class _HomePageState extends State<HomePage> {
         child: Scaffold(
           appBar: _buildAppBar(),
           body: BlogPage(
-            scrollController: _scrollController,
-          ),
+              // scrollController: _scrollController,
+              ),
         ),
       ),
     );
@@ -71,7 +70,7 @@ class _HomePageState extends State<HomePage> {
       title: Text(
         'Home',
         style: TextStyle(
-          color: isDark ? Colors.white70 : Colors.black87,
+          color: Colors.white,
           fontWeight: FontWeight.w400,
           fontSize: AppSize.textHeading * 0.9.sp,
         ),
@@ -81,8 +80,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildActionIcons() {
-    var isDark = context.isDarkMode;
-
     return Row(
       children: [
         IconButton(

@@ -3,7 +3,6 @@ import 'package:tracio_fe/domain/blog/entites/reply_comment.dart';
 import '../../../../common/helper/media_file.dart';
 
 class ReplyCommentModel extends ReplyCommentEntity {
-  final DateTime? updatedAt;
   final bool? isEdited;
   ReplyCommentModel({
     required super.replyId,
@@ -17,8 +16,11 @@ class ReplyCommentModel extends ReplyCommentEntity {
     required super.mediaFiles,
     required super.createdAt,
     required super.likesCount,
-    this.updatedAt,
     this.isEdited,
+    required super.tagUserNames,
+    required super.mediaUrls,
+    required super.likeCount,
+    required super.replyCount,
   });
   factory ReplyCommentModel.fromJson(Map<String, dynamic> json) {
     return ReplyCommentModel(
@@ -38,10 +40,13 @@ class ReplyCommentModel extends ReplyCommentEntity {
           ? []
           : List<MediaFile>.from(
               json["mediaFiles"]!.map((x) => MediaFile.fromJson(x))),
-      createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
-      updatedAt: json["updatedAt"],
+      createdAt: DateTime.parse(json['createdAt']),
       likesCount: json["likeCount"],
       isEdited: json["isEdited"],
+      tagUserNames: [],
+      mediaUrls: [],
+      likeCount: json["likeCount"],
+      replyCount: 0,
     );
   }
 }

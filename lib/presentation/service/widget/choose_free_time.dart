@@ -22,6 +22,7 @@ class ChooseFreeTime {
   DateTime? _selectedDate;
   TimeOfDay? _selectedTimeFrom;
   TimeOfDay? _selectedTimeTo;
+  final ValueNotifier<String?> errorMessageNotifier = ValueNotifier(null);
 
   final List<ScheduleModel> _schedules = [];
   void showScheduleBottomSheet(BuildContext context, int? serviceId) {
@@ -35,15 +36,13 @@ class ChooseFreeTime {
     _selectedTimeFrom = null;
     _selectedTimeTo = null;
 
-    // Biến để theo dõi lỗi
-    String? errorMessage;
-
     CustomModalBottomSheet.show(
       maxSize: 1,
       initialSize: .8,
       context: context,
-      child: StatefulBuilder(
-        builder: (context, setModalState) {
+      child: ValueListenableBuilder<String?>(
+        valueListenable: errorMessageNotifier,
+        builder: (context, errorMessage, _) {
           return Column(
             children: [
               Container(
@@ -103,9 +102,7 @@ class ChooseFreeTime {
                             ),
                             InkWell(
                               onTap: () {
-                                setModalState(() {
-                                  errorMessage = null;
-                                });
+                                errorMessageNotifier.value = null;
                               },
                               child: Icon(Icons.close,
                                   color: Colors.red, size: AppSize.iconLarge),
@@ -139,13 +136,10 @@ class ChooseFreeTime {
                                   final pickedDate = await pickDateTime(
                                       context, currentSchedules);
                                   if (pickedDate != null) {
-                                    setModalState(() {
-                                      errorMessage =
-                                          null; // Xóa lỗi nếu thành công
-                                      _selectedDate = pickedDate;
-                                      _dateCon.text = DateFormat('dd-MM-yyyy')
-                                          .format(pickedDate);
-                                    });
+                                    errorMessageNotifier.value = null;
+                                    _selectedDate = pickedDate;
+                                    _dateCon.text = DateFormat('dd-MM-yyyy')
+                                        .format(pickedDate);
                                   }
                                 },
                                 child: Icon(
@@ -189,10 +183,9 @@ class ChooseFreeTime {
                                     suffixIcon: InkWell(
                                       onTap: () async {
                                         if (_selectedDate == null) {
-                                          setModalState(() {
-                                            errorMessage =
-                                                'Please select a date first';
-                                          });
+                                          errorMessageNotifier.value =
+                                              'Please select a date first';
+
                                           return;
                                         }
 
@@ -210,28 +203,25 @@ class ChooseFreeTime {
                                           // Kiểm tra thời gian hợp lệ nếu là ngày hôm nay
                                           if (!_isValidTimeForToday(
                                               _selectedDate!, time)) {
-                                            setModalState(() {
-                                              errorMessage =
-                                                  'Cannot select time in the past';
-                                            });
+                                            errorMessageNotifier.value =
+                                                'Cannot select time in the past';
+
                                             return;
                                           }
 
-                                          setModalState(() {
-                                            errorMessage =
-                                                null; // Xóa lỗi nếu thành công
-                                            _selectedTimeFrom = time;
-                                            _timeFromCon.text =
-                                                time.format(context);
+                                          errorMessageNotifier.value =
+                                              null; // Xóa lỗi nếu thành công
+                                          _selectedTimeFrom = time;
+                                          _timeFromCon.text =
+                                              time.format(context);
 
-                                            // Reset timeTo nếu không còn hợp lệ
-                                            if (_selectedTimeTo != null &&
-                                                !_isTimeFromBeforeTimeTo(
-                                                    time, _selectedTimeTo!)) {
-                                              _selectedTimeTo = null;
-                                              _timeToCon.clear();
-                                            }
-                                          });
+                                          // Reset timeTo nếu không còn hợp lệ
+                                          if (_selectedTimeTo != null &&
+                                              !_isTimeFromBeforeTimeTo(
+                                                  time, _selectedTimeTo!)) {
+                                            _selectedTimeTo = null;
+                                            _timeToCon.clear();
+                                          }
                                         }
                                       },
                                       child: Icon(
@@ -274,18 +264,16 @@ class ChooseFreeTime {
                                     suffixIcon: InkWell(
                                       onTap: () async {
                                         if (_selectedDate == null) {
-                                          setModalState(() {
-                                            errorMessage =
-                                                'Please select a date first';
-                                          });
+                                          errorMessageNotifier.value =
+                                              'Please select a date first';
+
                                           return;
                                         }
 
                                         if (_selectedTimeFrom == null) {
-                                          setModalState(() {
-                                            errorMessage =
-                                                'Please select start time first';
-                                          });
+                                          errorMessageNotifier.value =
+                                              'Please select start time first';
+
                                           return;
                                         }
 
@@ -304,20 +292,17 @@ class ChooseFreeTime {
                                           // Kiểm tra timeTo phải sau timeFrom
                                           if (!_isTimeFromBeforeTimeTo(
                                               _selectedTimeFrom!, time)) {
-                                            setModalState(() {
-                                              errorMessage =
-                                                  'End time must be after start time';
-                                            });
+                                            errorMessageNotifier.value =
+                                                'End time must be after start time';
+
                                             return;
                                           }
 
-                                          setModalState(() {
-                                            errorMessage =
-                                                null; // Xóa lỗi nếu thành công
-                                            _selectedTimeTo = time;
-                                            _timeToCon.text =
-                                                time.format(context);
-                                          });
+                                          errorMessageNotifier.value =
+                                              null; // Xóa lỗi nếu thành công
+                                          _selectedTimeTo = time;
+                                          _timeToCon.text =
+                                              time.format(context);
                                         }
                                       },
                                       child: Icon(
@@ -351,29 +336,27 @@ class ChooseFreeTime {
                               if (_selectedDate == null ||
                                   _selectedTimeFrom == null ||
                                   _selectedTimeTo == null) {
-                                setModalState(() {
-                                  errorMessage = 'Please select date and time';
-                                });
+                                errorMessageNotifier.value =
+                                    'Please select date and time';
+
                                 return;
                               }
 
                               // Kiểm tra from < to
                               if (!_isTimeFromBeforeTimeTo(
                                   _selectedTimeFrom!, _selectedTimeTo!)) {
-                                setModalState(() {
-                                  errorMessage =
-                                      'Start time must be before end time';
-                                });
+                                errorMessageNotifier.value =
+                                    'Start time must be before end time';
+
                                 return;
                               }
 
                               // Kiểm tra thời gian hợp lệ (nếu ngày hôm nay thì giờ phải > giờ hiện tại)
                               if (!_isValidTimeForToday(
                                   _selectedDate!, _selectedTimeFrom!)) {
-                                setModalState(() {
-                                  errorMessage =
-                                      'Cannot select time in the past';
-                                });
+                                errorMessageNotifier.value =
+                                    'Cannot select time in the past';
+
                                 return;
                               }
 
@@ -391,9 +374,8 @@ class ChooseFreeTime {
                               //   widget.onSchedulesChanged!(_schedules);
                               // }
 
-                              setModalState(() {
-                                errorMessage = null; // Xóa lỗi nếu thành công
-                              });
+                              errorMessageNotifier.value =
+                                  null; // Xóa lỗi nếu thành công
 
                               // Navigator.pop(context);
                             },
@@ -526,51 +508,77 @@ class ChooseFreeTime {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    List<int> rescheduleBooking = bookingCubit.reschedule;
-                    // widget.confirm;
-                    List<UserScheduleCreateDto> scheduleDtos =
-                        bookingCubit.schedules!.map((schedule) {
-                      return UserScheduleCreateDto(
+                    try {
+                      if (bookingCubit.schedules == null ||
+                          bookingCubit.schedules!.isEmpty) {
+                        throw Exception(
+                            "You have not selected an appointment yet.");
+                      }
+                      if (bookingCubit.schedules!.isEmpty) {
+                        throw Exception(
+                            "You have not selected an service yet.");
+                      }
+                      List<UserScheduleCreateDto> scheduleDtos =
+                          bookingCubit.schedules!.map((schedule) {
+                        if (schedule.timeFrom == null ||
+                            schedule.timeTo == null) {
+                          throw Exception(
+                              "Please select full start and end times.");
+                        }
+                        return UserScheduleCreateDto(
                           date: schedule.date,
                           timeFrom: _formatTime(schedule.timeFrom!),
-                          timeTo: _formatTime(schedule.timeTo!));
-                    }).toList();
+                          timeTo: _formatTime(schedule.timeTo!),
+                        );
+                      }).toList();
 
-                    // If you have cart items, use bookingCartCreateDtos
-                    if (bookingCubit.selectedServices.isNotEmpty) {
-                      List<BookingCartCreateDto> bookingCartDtos =
-                          bookingCubit.selectedServices.map((item) {
-                        return BookingCartCreateDto(
+                      List<int> rescheduleBooking = bookingCubit.reschedule;
+
+                      if (bookingCubit.selectedServices.isNotEmpty) {
+                        List<BookingCartCreateDto> bookingCartDtos =
+                            bookingCubit.selectedServices.map((item) {
+                          return BookingCartCreateDto(
                             bookingQueueId: item.itemId,
                             note: bookingCubit
                                     .serviceNotes[item.itemId.toString()] ??
-                                "");
-                      }).toList();
+                                "",
+                          );
+                        }).toList();
 
-                      context.read<BookingServiceCubit>().bookingServie(
-                          BookingServiceReq(
-                              bookingCreateDto: null,
-                              bookingCartCreateDtos: bookingCartDtos,
-                              userScheduleCreateDtos: scheduleDtos));
-                    } else if (serviceId != null) {
-                      BookingCreateDto bookingCreateDto = BookingCreateDto(
-                          serviceId: serviceId,
-                          note:
-                              bookingCubit.serviceNotes[serviceId.toString()]);
-                      context.read<BookingServiceCubit>().bookingServie(
-                          BookingServiceReq(
-                              bookingCreateDto: bookingCreateDto,
-                              bookingCartCreateDtos: null,
-                              userScheduleCreateDtos: scheduleDtos));
-                    } else if (rescheduleBooking.isNotEmpty) {
-                      context.read<RescheduleBookingCubit>().rescheduleBooking(
-                          RescheduleBookingModel(
-                              bookingIds: rescheduleBooking,
-                              userScheduleCreateDtos: scheduleDtos));
+                        context.read<BookingServiceCubit>().bookingServie(
+                            BookingServiceReq(
+                                bookingCreateDto: null,
+                                bookingCartCreateDtos: bookingCartDtos,
+                                userScheduleCreateDtos: scheduleDtos));
+                      } else if (serviceId != null) {
+                        BookingCreateDto bookingCreateDto = BookingCreateDto(
+                            serviceId: serviceId,
+                            note: bookingCubit
+                                    .serviceNotes[serviceId.toString()] ??
+                                "");
+
+                        context.read<BookingServiceCubit>().bookingServie(
+                            BookingServiceReq(
+                                bookingCreateDto: bookingCreateDto,
+                                bookingCartCreateDtos: null,
+                                userScheduleCreateDtos: scheduleDtos));
+                      } else if (rescheduleBooking.isNotEmpty) {
+                        context
+                            .read<RescheduleBookingCubit>()
+                            .rescheduleBooking(RescheduleBookingModel(
+                                bookingIds: rescheduleBooking,
+                                userScheduleCreateDtos: scheduleDtos));
+                      } else {
+                        throw Exception("No valid booking data.");
+                      }
+
+                      bookingCubit.reschedule.clear();
+                      bookingCubit.schedules!.clear();
+                      Navigator.pop(context);
+                    } catch (e) {
+                      errorMessageNotifier.value = e.toString();
+                      // Show alert dialog hoặc snackbar
                     }
-                    bookingCubit.reschedule.clear();
-                    bookingCubit.schedules!.clear();
-                    Navigator.pop(context);
                   },
                   child: Text(
                     'Confirm',
@@ -622,7 +630,7 @@ class ChooseFreeTime {
 
     final pickedDate = await showDatePicker(
       context: context,
-      firstDate: today, 
+      firstDate: today,
       lastDate: DateTime(now.year + 1, now.month + 1),
       initialDate: now,
       selectableDayPredicate: (DateTime day) {

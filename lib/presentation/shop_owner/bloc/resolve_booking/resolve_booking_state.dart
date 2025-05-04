@@ -7,12 +7,14 @@ abstract class ResolveBookingShopState extends Equatable {
   final String? shopNote;
   final String? price;
   final String? reason;
+  final String? adjPrice;
 
   const ResolveBookingShopState({
     this.bookedDate,
     this.shopNote,
     this.price,
     this.reason,
+    this.adjPrice,
   });
 
   @override
@@ -83,5 +85,6 @@ class UpdateParamsWaitingBooking extends ResolveBookingShopState {
     super.shopNote,
     super.price,
     super.reason,
+    super.adjPrice,
   });
 }

@@ -4,10 +4,7 @@ import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
 import 'package:tracio_fe/common/widget/navbar/bottom_nav_bar_manager.dart';
 import 'package:tracio_fe/core/configs/theme/app_colors.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/domain/groups/entities/group.dart';
 import 'package:tracio_fe/presentation/service/page/bottom_nav_bar_service.dart';
-
-import '../../groups/pages/group.dart';
 
 class ShortcutKey extends StatelessWidget {
   const ShortcutKey({super.key});
@@ -24,7 +21,7 @@ class ShortcutKey extends StatelessWidget {
                 horizontal: AppSize.apHorizontalPadding * 0.2,
                 vertical: AppSize.apVerticalPadding * 0.6),
             decoration: BoxDecoration(
-                color: Colors.grey.shade300,
+                color: Colors.transparent,
                 borderRadius: BorderRadius.circular(AppSize.borderRadiusLarge)),
             // height: 120,
             child: Row(

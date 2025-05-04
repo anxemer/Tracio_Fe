@@ -114,6 +114,7 @@ class _PlanServicePageState extends State<PlanServicePage>
                               padding: EdgeInsets.all(8.0),
                               child: BookingCard(
                                 service: BookingCardViewModel(
+                                    imageUrl: state.cart[index].mediaUrl,
                                     city: state.cart[index].city,
                                     district: state.cart[index].district,
                                     duration: state.cart[index].duration,

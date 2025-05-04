@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:tracio_fe/common/helper/is_dark_mode.dart';
 import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
 import 'package:tracio_fe/common/widget/appbar/app_bar.dart';
 import 'package:tracio_fe/common/widget/input_text_form_field.dart';
@@ -21,15 +22,10 @@ import 'package:tracio_fe/presentation/shop_owner/page/dash_board.dart';
 import '../../../core/configs/theme/app_colors.dart';
 import '../../blog/bloc/category/get_category_state.dart';
 
-// --- Dữ liệu mẫu ---
-// Dữ liệu cho một Service (dùng khi edit)
-
-// --- Kết thúc dữ liệu mẫu ---
-
 class CreateEditServiceScreen extends StatefulWidget {
-  final ShopServiceEntity? initialData; // Dữ liệu nếu là chỉnh sửa
+  final ShopServiceEntity? initialData;
   final bool isEditing;
-  final int shopId; // Shop ID hiện tại, truyền vào từ màn hình trước
+  final int shopId;
 
   const CreateEditServiceScreen({
     super.key,
@@ -58,10 +54,14 @@ class _CreateEditServiceScreenState extends State<CreateEditServiceScreen> {
   int? _selectedCategoryId;
   // int? _selectedDuration;
   List<File> _selectedImageFiles = [];
+  List<String> _existedImage = [];
 
   @override
   void initState() {
     super.initState();
+    // List<String> mediaUrls = widget.initialData?.mediaFiles!
+    //     .map((file) => file.mediaUrl ?? "")
+    //     .toList();
 
     _nameController = TextEditingController();
     _descriptionController = TextEditingController();
@@ -73,6 +73,7 @@ class _CreateEditServiceScreenState extends State<CreateEditServiceScreen> {
       _nameController.text = data.serviceName!;
       _descriptionController.text = data.description!;
       _priceController.text = data.formattedPrice;
+      // _existedImage = mediaUrls;
       // _selectedCategoryId = _categories.;
       _durationController.text = data.formattedDuration;
     }
@@ -104,7 +105,7 @@ class _CreateEditServiceScreenState extends State<CreateEditServiceScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-              content: Text('Can\'t pick picture! please check permistion')),
+              content: Text('Can\'t pick picture! please check permission')),
         );
       }
     }
@@ -116,13 +117,13 @@ class _CreateEditServiceScreenState extends State<CreateEditServiceScreen> {
     });
   }
 
-  // void _removeExistingImage(String url) {
-  //   setState(() {
-  //     _existingImageUrls.remove(url);
-  //   });
-  //   print(
-  //       "TODO: Implement logic to permanently delete existing image with url: $url from server if needed");
-  // }
+  void _removeExistingImage(String url) {
+    setState(() {
+      _existedImage.remove(url);
+    });
+    print(
+        "TODO: Implement logic to permanently delete existing image with url: $url from server if needed");
+  }
 
   void _saveForm() async {
     if (_formKey.currentState!.validate()) {
@@ -135,17 +136,7 @@ class _CreateEditServiceScreenState extends State<CreateEditServiceScreen> {
       final duration = _durationController.text;
       final newImages = _selectedImageFiles;
 
-      print('--- Dữ liệu Dịch vụ ---');
-      print('Shop ID: ${widget.shopId}');
-      print(
-          'Service ID (khi edit): ${widget.isEditing ? widget.initialData?.serviceId : 'N/A'}');
-      print('Category ID: $categoryId');
-      print('Name: $name');
-      print('Description: $description');
-      print('Price: $price');
-      print('Duration: $duration');
-      print(
-          'Ảnh mới chọn (${newImages.length}): ${newImages.map((f) => f.path).toList()}');
+     
       if (!widget.isEditing) {
         context.read<ServiceManagementCubit>().createService(CreateServiceReq(
             shopId: widget.shopId,
@@ -154,18 +145,9 @@ class _CreateEditServiceScreenState extends State<CreateEditServiceScreen> {
             description: description,
             price: price,
             duration: duration,
-            files: newImages));
+            mediaFiles: newImages));
       }
-      // --- TODO: Xử lý logic lưu trữ thực tế ---
-      // 1. Upload các ảnh mới trong `newImages` lên server, nhận về danh sách URL mới.
-      // 2. Kết hợp danh sách URL ảnh mới với `remainingExistingImages`.
-      // 3. Tạo object dữ liệu dịch vụ hoàn chỉnh.
-      // 4. Gọi API:
-      //    - Nếu `widget.isEditing == true`: Gọi API cập nhật dịch vụ với `widget.initialData.serviceId`.
-      //    - Nếu `widget.isEditing == false`: Gọi API tạo dịch vụ mới cho `widget.shopId`.
-      // 5. Xử lý kết quả trả về từ API (thành công/thất bại).
-      // 6. Hiển thị SnackBar thông báo.
-      // 7. Điều hướng về màn hình trước (Navigator.pop).
+  
 
       // if (Navigator.canPop(context)) { Navigator.pop(context); }
     } else {
@@ -175,6 +157,7 @@ class _CreateEditServiceScreenState extends State<CreateEditServiceScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var isDark = context.isDarkMode;
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
     final colorScheme = theme.colorScheme;
@@ -197,7 +180,9 @@ class _CreateEditServiceScreenState extends State<CreateEditServiceScreen> {
           title: Text(
             widget.isEditing ? 'Edit Service' : 'Create Service',
             style: TextStyle(
-                fontSize: AppSize.textHeading.sp, fontWeight: FontWeight.bold),
+                fontSize: AppSize.textHeading.sp,
+                fontWeight: FontWeight.bold,
+                color: Colors.white70),
           ),
         ),
         body: SingleChildScrollView(
@@ -222,7 +207,7 @@ class _CreateEditServiceScreenState extends State<CreateEditServiceScreen> {
                               c.categoryName ==
                               widget.initialData!.categoryName,
                           orElse: () =>
-                              CategoryModel (categoryId: -1, categoryName: ''),
+                              CategoryModel(categoryId: -1, categoryName: ''),
                         );
                         if (matched.categoryId != -1) {
                           _selectedCategoryId = matched.categoryId;
@@ -261,7 +246,7 @@ class _CreateEditServiceScreenState extends State<CreateEditServiceScreen> {
                   hint: 'Service Name',
                   prefixIcon: Icon(Icons.design_services_outlined),
                   validation: (value) => (value == null || value.isEmpty)
-                      ? 'Please Input Name Service Name'
+                      ? 'Please Enter Name Service Name'
                       : null,
                 ),
 
@@ -269,7 +254,7 @@ class _CreateEditServiceScreenState extends State<CreateEditServiceScreen> {
                 InputTextFormField(
                   controller: _descriptionController,
                   labelText: 'Description',
-                  hint: 'Input Desciption for this service',
+                  hint: 'Enter Desciption for this service',
                   prefixIcon: Icon(Icons.notes_outlined),
                   maxLine: 3,
                   // validator: optional
@@ -283,13 +268,13 @@ class _CreateEditServiceScreenState extends State<CreateEditServiceScreen> {
                       child: InputTextFormField(
                         controller: _priceController,
                         labelText: 'Price (VNĐ) *',
-                        hint: 'Input Price',
+                        hint: 'Enter Price',
                         prefixIcon: Icon(Icons.attach_money_outlined),
                         keyBoardType: const TextInputType.numberWithOptions(
                             decimal: false),
                         validation: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Input Price';
+                            return 'please enter Price';
                           }
                           if (double.tryParse(value) == null) {
                             return 'Price Invalid';
@@ -308,7 +293,7 @@ class _CreateEditServiceScreenState extends State<CreateEditServiceScreen> {
                         keyBoardType: TextInputType.number,
                         validation: (value) {
                           if (value == null || value.isEmpty)
-                            return 'Please input duration';
+                            return 'Please enter duration';
                           final minutes = int.tryParse(value);
                           if (minutes == null) return 'Minute invalid';
                           if (minutes <= 0)
@@ -394,7 +379,7 @@ class _CreateEditServiceScreenState extends State<CreateEditServiceScreen> {
         spacing: 10.0,
         runSpacing: 10.0,
         children: [
-          // ..._existingImageUrls.map((url) => _buildImageThumbnail(
+          // ..._existedImage.map((url) => _buildImageThumbnail(
           //       imageProvider: NetworkImage(url), // Dùng NetworkImage
           //       onRemove: () => _removeExistingImage(url),
           //     )),

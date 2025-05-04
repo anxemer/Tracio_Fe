@@ -3,13 +3,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:tracio_fe/common/helper/is_dark_mode.dart';
-import 'package:tracio_fe/common/helper/placeholder/booking_detail.dart';
+import 'package:tracio_fe/common/helper/placeholder/booking_detail_holder.dart';
 import 'package:tracio_fe/common/helper/schedule_model.dart';
 import 'package:tracio_fe/common/widget/appbar/app_bar.dart';
+import 'package:tracio_fe/common/widget/dialog_confirm.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/domain/shop/usecase/cancel_booking.dart';
 import 'package:tracio_fe/presentation/service/bloc/bookingservice/booking_service_cubit.dart';
 import 'package:tracio_fe/presentation/service/bloc/bookingservice/get_booking_detail_cubit/get_booking_detail_cubit.dart';
+import 'package:tracio_fe/presentation/service/widget/all_review_service.dart';
+import 'package:tracio_fe/presentation/service/widget/cancel_reason.dart';
 import 'package:tracio_fe/presentation/service/widget/dialog_confirm_booking.dart';
 
 import '../../../common/helper/navigator/app_navigator.dart';
@@ -17,14 +19,13 @@ import '../../../common/widget/blog/custom_bottomsheet.dart';
 import '../../../common/widget/button/button.dart';
 import '../../../common/widget/input_text_form_field.dart';
 import '../../../common/widget/picture/circle_picture.dart';
+import '../../../common/widget/picture/picture.dart';
 import '../../../core/configs/theme/app_colors.dart';
 import '../../../core/configs/theme/assets/app_images.dart';
 import '../../../domain/shop/entities/response/booking_detail_entity.dart';
-import '../../../service_locator.dart';
 import '../widget/add_schedule.dart';
 import '../widget/booking_status_tab.dart';
 import '../widget/choose_free_time.dart';
-import '../widget/review_service.dart';
 import 'review_booking.dart';
 
 class BookingDetailScreen extends StatefulWidget {
@@ -84,14 +85,11 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
                                 children: [
                                   Row(
                                     children: [
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(8),
-                                        child: Image.asset(
-                                          AppImages.picture,
-                                          width: AppSize.imageMedium.w,
-                                          height: AppSize.imageMedium.h,
-                                          fit: BoxFit.cover,
-                                        ),
+                                      PictureCustom(
+                                        width: AppSize.imageMedium.w,
+                                        imageUrl: state
+                                            .bookingdetail.serviceMediaFile!,
+                                        height: AppSize.imageMedium.h,
                                       ),
                                       SizedBox(
                                         width: 10.w,
@@ -126,7 +124,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
                                                 width: 4.w,
                                               ),
                                               Text(
-                                                'Thu Duc - Ho Chi Minh',
+                                                ' ${state.bookingdetail.district} - ${state.bookingdetail.city} ',
                                                 style: TextStyle(
                                                     fontSize:
                                                         AppSize.textMedium,
@@ -185,16 +183,48 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
                                   SizedBox(
                                     height: 10.h,
                                   ),
-                                  shopInformation(context),
+                                  shopInformation(
+                                      state.bookingdetail.shopName!,
+                                      state.bookingdetail.openTime!,
+                                      state.bookingdetail.closeTime!,
+                                      state.bookingdetail.shopId!,
+                                      state.bookingdetail.profilePicture!),
                                   SizedBox(
                                     height: 10.h,
                                   ),
-                                  bookingSumary(
-                                      state.bookingdetail.bookedDate,
-                                      state.bookingdetail.estimatedEndDate,
-                                      state.bookingdetail.formattedDuration,
-                                      state.bookingdetail.formattedPrice,
-                                      state.bookingdetail.adjustPriceReason)
+                                  state.bookingdetail.status == 'Cancelled'
+                                      ? Row(
+                                          spacing: 20.h,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'Cancel Reason: ',
+                                              style: TextStyle(
+                                                fontSize: AppSize.textLarge,
+                                                color: Colors.black87,
+                                              ),
+                                            ),
+                                            Text(
+                                              state.bookingdetail
+                                                      .userCancelledReason ??
+                                                  state.bookingdetail
+                                                      .shopCancelledReason ??
+                                                  'No reason provided',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: AppSize.textLarge,
+                                                color: Colors.black87,
+                                              ),
+                                            ),
+                                          ],
+                                        )
+                                      : bookingSumary(
+                                          state.bookingdetail.bookedDate,
+                                          state.bookingdetail.estimatedEndDate,
+                                          state.bookingdetail.formattedDuration,
+                                          state.bookingdetail.formattedPrice,
+                                          state.bookingdetail.adjustPriceReason)
                                 ],
                               ),
                             ),
@@ -334,7 +364,8 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
     );
   }
 
-  Widget shopInformation(BuildContext context) {
+  Widget shopInformation(String shopName, String openTime, String closeTime,
+      int shopId, String shopImage) {
     var isDark = context.isDarkMode;
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16),
@@ -343,17 +374,14 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
         children: [
           Row(
             children: [
-              CirclePicture(
-                  imageUrl:
-                      'https://bizweb.dktcdn.net/100/481/209/products/img-5958-jpeg.jpg?v=1717069788060',
-                  imageSize: AppSize.iconMedium),
+              CirclePicture(imageUrl: shopImage, imageSize: AppSize.iconLarge),
               SizedBox(
                 width: 10.w,
               ),
               Column(
                 children: [
                   Text(
-                    'Shop name',
+                    shopName,
                     style: TextStyle(
                       color: isDark ? Colors.grey.shade300 : Colors.black87,
                       fontWeight: FontWeight.w600,
@@ -361,8 +389,10 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
                     ),
                   ),
                   Container(
+                    padding: EdgeInsets.symmetric(
+                        horizontal: AppSize.apHorizontalPadding * .8.h),
                     height: 28,
-                    width: 100,
+                    // width: 100,
                     decoration: BoxDecoration(
                         color: Colors.transparent,
                         border: Border.all(color: AppColors.secondBackground),
@@ -379,7 +409,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
                           size: AppSize.iconSmall,
                         ),
                         Text(
-                          '7h - 22h',
+                          '${openTime.substring(0, 5)} - ${closeTime.substring(0, 5)}',
                           style: TextStyle(
                             color:
                                 isDark ? Colors.grey.shade300 : Colors.black87,
@@ -390,34 +420,6 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
                       ],
                     ),
                   ),
-                ],
-              ),
-              Spacer(),
-              Row(
-                children: [
-                  SizedBox(
-                    width: AppSize.iconSmall.w,
-                    height: AppSize.iconSmall.h,
-                    child: IconButton(
-                        onPressed: () {},
-                        icon: Icon(
-                          Icons.phone,
-                          size: AppSize.iconSmall,
-                        )),
-                  ),
-                  SizedBox(
-                    width: 10.w,
-                  ),
-                  SizedBox(
-                    width: AppSize.iconSmall.w,
-                    height: AppSize.iconSmall.h,
-                    child: IconButton(
-                        onPressed: () {},
-                        icon: Icon(
-                          Icons.message_rounded,
-                          size: AppSize.iconSmall,
-                        )),
-                  )
                 ],
               ),
             ],
@@ -452,33 +454,33 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
           children: [
             Stack(
               children: [
-                Positioned(
-                  top: 0,
-                  right: 0,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      const Text(
-                        'Service Type',
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 14,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      const Text(
-                        'Service',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 10.h,
-                ),
+                // Positioned(
+                //   top: 0,
+                //   right: 0,
+                //   child: Column(
+                //     crossAxisAlignment: CrossAxisAlignment.end,
+                //     children: [
+                //       const Text(
+                //         'Service Type',
+                //         style: TextStyle(
+                //           color: Colors.grey,
+                //           fontSize: 14,
+                //         ),
+                //       ),
+                //       const SizedBox(height: 4),
+                //       const Text(
+                //         'Service',
+                //         style: TextStyle(
+                //           fontWeight: FontWeight.w600,
+                //           fontSize: 16,
+                //         ),
+                //       ),
+                //     ],
+                //   ),
+                // ),
+                // SizedBox(
+                //   height: 10.h,
+                // ),
                 Positioned(
                   top: 0,
                   left: 0,
@@ -616,7 +618,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
                                 fontSize: AppSize.textMedium,
                                 color: Colors.grey)),
                         Text(
-                          '$price \$',
+                          '$price \VNĐ',
                           style: TextStyle(
                             fontSize: AppSize.textLarge,
                             fontWeight: FontWeight.bold,
@@ -654,7 +656,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
                                 fontSize: AppSize.textMedium,
                                 color: Colors.grey)),
                         Text(
-                          price,
+                          '$price \VNĐ',
                           style: TextStyle(
                             fontSize: AppSize.textLarge,
                             fontWeight: FontWeight.bold,
@@ -685,11 +687,19 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
             width: 140.w,
             height: 40.h,
             ontap: () {
-              sl<CancelBookingUseCase>().call(booking.bookingDetailId!);
+              DialogConfirm(
+                      btnLeft: () => Navigator.pop(context),
+                      btnRight: () =>
+                          AppNavigator.push(context, CancelReasonScreen()),
+                      notification:
+                          'Are you sure you want to cancel this Booking?')
+                  .showDialogConfirmation(context);
+
+              // sl<CancelBookingUseCase>().call(booking.bookingDetailId!);
             },
             text: 'Cancel',
-            fillColor: Colors.green.shade200,
-            textColor: isDark ? Colors.white70 : Colors.black,
+            fillColor: AppColors.primary,
+            textColor: Colors.white,
             borderColor: isDark ? Colors.grey.shade200 : Colors.black87,
             fontSize: AppSize.textMedium,
           ),
@@ -699,13 +709,16 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
             height: 40.h,
             ontap: () {
               DialogConfirmBooking().showDialogConfirmation(context, () {
+                context
+                    .read<BookingServiceCubit>()
+                    .addRescheduleBooking(booking.bookingDetailId!);
                 ChooseFreeTime()
                     .showScheduleBottomSheet(context, booking.serviceId);
               });
             },
             text: 'Reschedule',
-            fillColor: AppColors.secondBackground,
-            textColor: isDark ? Colors.grey.shade200 : Colors.white,
+            fillColor: Colors.transparent,
+            textColor: isDark ? Colors.grey.shade200 : Colors.black,
             borderColor: isDark ? Colors.grey.shade200 : Colors.black87,
             fontSize: AppSize.textMedium,
           ),
@@ -718,14 +731,16 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
             height: 40.h,
             ontap: () {
               booking.isReviewed!
-                  ? ReviewService(
-                      bookingDetailId: booking.bookingDetailId!,
-                    )
+                  ? AppNavigator.push(
+                      context,
+                      AllReviewService(
+                        bookingId: booking.bookingDetailId!,
+                      ))
                   : AppNavigator.push(
                       context,
                       ReviewBookingScreen(
                         bookingId: booking.bookingDetailId!,
-                        imageUrl: booking.profilePicture!,
+                        imageUrl: booking.serviceMediaFile!,
                         serviceName: booking.serviceName!,
                       ));
             },
@@ -739,10 +754,49 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
           ButtonDesign(
             width: 140.w,
             height: 40.h,
-            ontap: () {},
+            ontap: () {
+              CustomModalBottomSheet.show(
+                  initialSize: .3,
+                  maxSize: .4,
+                  minSize: .1,
+                  context: context,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(20),
+                          topRight: Radius.circular(20)),
+                      color: context.isDarkMode
+                          ? AppColors.darkGrey
+                          : Colors.grey.shade200,
+                    ),
+                    padding: EdgeInsets.symmetric(
+                        horizontal: AppSize.apHorizontalPadding,
+                        vertical: AppSize.apVerticalPadding),
+                    // height: 100,
+                    // width: double.infinity,
+                    child: Column(
+                      children: [
+                        AddSchedule(
+                          serviceId: booking.serviceId,
+                        ),
+                        SizedBox(
+                          height: 16.h,
+                        ),
+                        InputTextFormField(
+                            controller: noteCon,
+                            labelText: 'Note',
+                            hint: 'Note',
+                            onFieldSubmitted: (value) {
+                              bookingCubit.updateNote(
+                                  booking.serviceId.toString(), value);
+                            }),
+                      ],
+                    ),
+                  ));
+            },
             text: 'Rebook',
             fillColor: AppColors.primary,
-            textColor: Colors.white70,
+            textColor: Colors.white,
             borderColor: isDark ? Colors.grey.shade200 : Colors.black87,
             fontSize: AppSize.textMedium,
           ),
@@ -795,7 +849,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
             },
             text: 'Rebooking',
             fillColor: AppColors.primary,
-            textColor: Colors.white70,
+            textColor: Colors.white,
             borderColor: isDark ? Colors.grey.shade200 : Colors.black87,
             fontSize: AppSize.textMedium,
           ),

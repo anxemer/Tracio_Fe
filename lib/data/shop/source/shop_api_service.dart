@@ -6,10 +6,12 @@ import 'package:tracio_fe/data/shop/models/booking_response_model.dart';
 import 'package:tracio_fe/data/shop/models/booking_service_req.dart';
 import 'package:tracio_fe/data/shop/models/cart_item_models.dart';
 import 'package:tracio_fe/data/shop/models/create_service_req.dart';
+import 'package:tracio_fe/data/shop/models/create_shop_profile_req.dart';
 import 'package:tracio_fe/data/shop/models/detail_service_response_model.dart';
 import 'package:tracio_fe/data/shop/models/get_booking_req.dart';
 import 'package:tracio_fe/data/shop/models/get_review_req.dart';
 import 'package:tracio_fe/data/shop/models/get_service_req.dart';
+import 'package:tracio_fe/data/shop/models/reply_review_req.dart';
 import 'package:tracio_fe/data/shop/models/reschedule_booking_model.dart';
 import 'package:tracio_fe/data/shop/models/review_booking_req.dart';
 import 'package:tracio_fe/data/shop/models/review_service_response_model.dart';
@@ -26,6 +28,7 @@ import '../models/review_service_model.dart';
 
 abstract class ShopApiService {
   Future<ServiceResponseModel> getService(GetServiceReq serviceReq);
+  Future<ServiceResponseModel> getMineService();
   Future<ReviewServiceResponseModel> getReviewService(
       GetReviewReq getServiceReq);
   Future<ReviewServiceModel> getReviewBooking(int bookingDetailId);
@@ -45,7 +48,10 @@ abstract class ShopApiService {
   Future<Either> reviewBooking(ReviewBookingReq review);
   Future<ShopProfileModel> getShopProfile();
   Future<Either> createService(CreateServiceReq createService);
+  Future<Either> registerShopProfile(CreateShopProfileReq createShop);
+  Future<Either> editShopProfile(CreateShopProfileReq createShop);
   Future<Either> deleteService(int serviceId);
+  Future<Either> replyReview(ReplyReviewReq reply);
 }
 
 class ShopApiServiceImpl extends ShopApiService {
@@ -320,8 +326,14 @@ class ShopApiServiceImpl extends ShopApiService {
   Future<ReviewServiceModel> getReviewBooking(int bookingDetailId) async {
     var response = await sl<DioClient>()
         .get('${ApiUrl.bookingService}/$bookingDetailId/review');
+
     if (response.statusCode == 200) {
-      return ReviewServiceModel.fromJson(response.data['result']);
+      final result = response.data['result'];
+      if (result != null) {
+        return ReviewServiceModel.fromJson(result);
+      } else {
+        return ReviewServiceModel.empty();
+      }
     } else {
       if (response.statusCode == 401) {
         throw AuthenticationFailure(response.statusMessage.toString());
@@ -335,6 +347,71 @@ class ShopApiServiceImpl extends ShopApiService {
     try {
       await sl<DioClient>().delete('${ApiUrl.apiService}/$serviceId');
       return Right(true);
+    } on DioException catch (e) {
+      return Left(e);
+    }
+  }
+
+  @override
+  Future<ServiceResponseModel> getMineService() async {
+    var response = await sl<DioClient>().get('${ApiUrl.apiService}/mine');
+    if (response.statusCode == 200) {
+      return ServiceResponseModel.fromMap(response.data['result']);
+    } else {
+      if (response.statusCode == 401) {
+        throw AuthenticationFailure(response.statusMessage.toString());
+      }
+      throw ServerFailure(response.statusMessage.toString());
+    }
+  }
+
+  @override
+  Future<Either> replyReview(ReplyReviewReq reply) async {
+    try {
+      var response = await sl<DioClient>()
+          .post(ApiUrl.replyReview, data: reply.toMap(), isMultipart: false);
+      if (response.statusCode == 201) {
+        return Right(true);
+      }
+      return Right(false);
+    } on DioException catch (e) {
+      return Left(e);
+    }
+  }
+
+  @override
+  Future<Either> registerShopProfile(CreateShopProfileReq createShop) async {
+    try {
+      FormData formData = await createShop.toFormData();
+      var response = await sl<DioClient>()
+          .post(ApiUrl.registerShop, data: formData, isMultipart: true);
+      if (response.statusCode == 201) {
+        return Right(true);
+      }
+      if (response.statusCode == 401) {
+        return Left(AuthenticationFailure(''));
+      }
+      return Right(false);
+    } on DioException catch (e) {
+      return Left(e);
+    }
+  }
+
+  @override
+  Future<Either> editShopProfile(CreateShopProfileReq createShop) async {
+    try {
+      FormData formData = await createShop.toFormData();
+      var response = await sl<DioClient>().put(ApiUrl.editShop, data: formData);
+      if (response.statusCode == 201) {
+        return Right(true);
+      }
+      if (response.statusCode == 401) {
+        return Left(AuthenticationFailure(''));
+      }
+      if (response.statusCode == 404) {
+        return Left(ExceptionFailure(''));
+      }
+      return Left(false);
     } on DioException catch (e) {
       return Left(e);
     }

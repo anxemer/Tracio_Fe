@@ -4,13 +4,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tracio_fe/common/helper/is_dark_mode.dart';
 import 'package:tracio_fe/presentation/service/bloc/cart_item_bloc/cart_item_cubit.dart';
 
+import '../../../common/helper/navigator/app_navigator.dart';
 import '../../../core/configs/theme/app_colors.dart';
 import '../../../core/constants/app_size.dart';
 import '../bloc/cart_item_bloc/cart_item_state.dart';
+import '../page/plan_service.dart';
 
 class PlanServiceIcon extends StatelessWidget {
-  const PlanServiceIcon({super.key, required this.isActive});
+  const PlanServiceIcon(
+      {super.key, required this.isActive, this.isDetail = false});
   final bool isActive;
+
+  final bool isDetail;
   @override
   Widget build(BuildContext context) {
     var isDark = context.isDarkMode;
@@ -47,9 +52,16 @@ class PlanServiceIcon extends StatelessWidget {
 
               elevation: 0,
             ),
-            child: Icon(Icons.edit_calendar_rounded,
-                color: isActive ? AppColors.primary : Colors.grey.shade600,
-                size: AppSize.iconSmall),
+            child: InkWell(
+              onTap: () {
+                isDetail
+                    ? AppNavigator.push(context, PlanServicePage())
+                    : SizedBox.shrink();
+              },
+              child: Icon(Icons.edit_calendar_rounded,
+                  color: isActive ? AppColors.primary : Colors.grey.shade600,
+                  size: AppSize.iconSmall),
+            ),
             //  IconButton(
             //   padding: EdgeInsets.zero,
             //   constraints: BoxConstraints(),

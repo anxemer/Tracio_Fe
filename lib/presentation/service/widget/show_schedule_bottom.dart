@@ -8,11 +8,11 @@ import 'confirm_information_booking.dart';
 class ShowScheduleBottom extends StatefulWidget {
   const ShowScheduleBottom({
     super.key,
-    this.serviceId,
+    this.serviceId,  this.isPlan = false,
   });
   final int? serviceId;
-  // final List<BookingCardViewModel> cartItem;
-  // final Function(List<ScheduleModel>)? onSchedulesChanged;
+  final bool isPlan;
+
   @override
   State<ShowScheduleBottom> createState() => _ShowScheduleBottomState();
 }
@@ -27,6 +27,7 @@ class _ShowScheduleBottomState extends State<ShowScheduleBottom> {
         BasicTextButton(
           text: 'Choose Your Free Time',
           onPress: () {
+            
             ChooseFreeTime().showScheduleBottomSheet(context, widget.serviceId);
             // _showScheduleBottomSheet(context);
           },

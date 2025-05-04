@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:tracio_fe/common/helper/is_dark_mode.dart';
 import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
 import 'package:tracio_fe/common/widget/appbar/app_bar.dart';
 import 'package:tracio_fe/common/widget/picture/circle_picture.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/domain/shop/entities/response/shop_profile_entity.dart';
 import 'package:tracio_fe/presentation/map/bloc/map_cubit.dart';
+import 'package:tracio_fe/presentation/shop_owner/bloc/shop_profile/shop_profile_manage/shop_profile_manage_cubit.dart';
 import 'package:tracio_fe/presentation/shop_owner/page/shop_profile_management.dart';
+
+import '../../../core/configs/theme/app_colors.dart';
+import '../../auth/bloc/authCubit/auth_cubit.dart';
+import '../../auth/pages/login.dart';
 
 class ShopOwnerProfileScreen extends StatelessWidget {
   const ShopOwnerProfileScreen({super.key, required this.shopProfile});
@@ -14,9 +21,8 @@ class ShopOwnerProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
-
+    var isDark = context.isDarkMode;
     return Scaffold(
       appBar: BasicAppbar(
         title: Text(
@@ -33,28 +39,61 @@ class ShopOwnerProfileScreen extends StatelessWidget {
           children: [
             Center(
               child: Column(
+                spacing: 20.h,
                 children: [
                   CirclePicture(
                       imageUrl: shopProfile.profilePicture!,
-                      imageSize: AppSize.iconLarge),
+                      imageSize: AppSize.imageSmall.sp),
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                        horizontal: AppSize.apHorizontalPadding * .8.h),
+                    height: 28,
+                    width: 200,
+                    decoration: BoxDecoration(
+                        color: Colors.transparent,
+                        border: Border.all(color: AppColors.secondBackground),
+                        borderRadius: BorderRadius.circular(10)),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.timer_outlined,
+                          color: isDark
+                              ? AppColors.secondBackground
+                              : AppColors.background,
+                          size: AppSize.iconMedium,
+                        ),
+                        Text(
+                          '${shopProfile.openTime!.substring(0, 5)} - ${shopProfile.closedTime!.substring(0, 5)}',
+                          style: TextStyle(
+                            color:
+                                isDark ? Colors.grey.shade300 : Colors.black87,
+                            fontWeight: FontWeight.w600,
+                            fontSize: AppSize.textMedium,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
                   // CircleAvatar(
                   //   radius: 50, // Kích thước ảnh đại diện
                   //   backgroundImage: NetworkImage(
                   //       'https://api.xedap.vn/wp-content/uploads/2023/01/xe-dap-tphcm.jpg'),
                   //   backgroundColor: Colors.grey.shade300,
                   // ),
-                  const SizedBox(height: 12.0),
-                  Text(
-                    'An Xểm',
-                    style: textTheme.headlineSmall
-                        ?.copyWith(fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 4.0),
-                  Text(
-                    'An Xểm Shop owner', // Tên cửa hàng hoặc vai trò
-                    style: textTheme.titleMedium
-                        ?.copyWith(color: Colors.grey.shade600),
-                  ),
+                  // const SizedBox(height: 12.0),
+                  // Text(
+                  //   shopProfile.,
+                  //   style: textTheme.headlineSmall
+                  //       ?.copyWith(fontWeight: FontWeight.bold),
+                  // ),
+                  // const SizedBox(height: 4.0),
+                  // Text(
+                  //   'An Xểm Shop owner', // Tên cửa hàng hoặc vai trò
+                  //   style: textTheme.titleMedium
+                  //       ?.copyWith(color: Colors.grey.shade600),
+                  // ),
                 ],
               ),
             ),
@@ -119,17 +158,33 @@ class ShopOwnerProfileScreen extends StatelessWidget {
                       icon: Icons.edit_outlined,
                       title: 'Edit Profile',
                       context: context,
-                      onTap: () {
-                        AppNavigator.push(
-                          context,
-                          BlocProvider<MapCubit>(
-                            create: (context) => MapCubit(),
-                            child: ShopProfileManagementScreen(
-                              isEditing: true,
-                              initialData: shopProfile,
-                            ),
-                          ),
-                        );
+                      onTap: () async {
+                        final result =
+                            await Navigator.push(context, MaterialPageRoute(
+                          builder: (context) {
+                            return MultiBlocProvider(
+                              providers: [
+                                BlocProvider<MapCubit>(
+                                  create: (context) => MapCubit(),
+                                ),
+                                BlocProvider(
+                                  create: (context) => ShopProfileManageCubit(),
+                                ),
+                              ],
+                              child: ShopProfileManagementScreen(
+                                isEditing: true,
+                                initialData: shopProfile,
+                              ),
+                            );
+                          },
+                        ));
+
+                        if (result) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text('Edit Shop Profile Success!')),
+                          );
+                        }
                       },
                     ),
                     // const Divider(indent: 16, endIndent: 16),
@@ -168,13 +223,12 @@ class ShopOwnerProfileScreen extends StatelessWidget {
               child: _buildActionTile(
                 icon: Icons.logout,
                 title: 'Logout',
-                iconColor: colorScheme.error, // Màu đỏ cho icon đăng xuất
-                textColor: colorScheme.error, // Màu đỏ cho chữ đăng xuất
+                iconColor: colorScheme.error, 
+                textColor: colorScheme.error, 
                 context: context,
                 onTap: () {
-                  // TODO: Xử lý logic đăng xuất
-                  _showLogoutConfirmationDialog(context);
-                  print('Đăng xuất');
+                  context.read<AuthCubit>().logout();
+                  AppNavigator.pushAndRemove(context, LoginPage());
                 },
                 showTrailingIcon: false, // Không cần mũi tên cho Đăng xuất
               ),

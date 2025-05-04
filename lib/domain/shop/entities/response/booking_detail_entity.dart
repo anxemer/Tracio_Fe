@@ -22,7 +22,8 @@ class BookingDetailEntity {
     this.serviceName,
     this.bookedDate,
     this.estimatedEndDate,
-    this.reason,
+    this.userCancelledReason,
+    this.shopCancelledReason,
     this.duration,
     this.status,
     this.userNote,
@@ -50,7 +51,8 @@ class BookingDetailEntity {
   final String? serviceName;
   final DateTime? bookedDate;
   final DateTime? estimatedEndDate;
-  final String? reason;
+  final String? userCancelledReason;
+  final String? shopCancelledReason;
   final int? duration;
   final String? status;
   final String? userNote;

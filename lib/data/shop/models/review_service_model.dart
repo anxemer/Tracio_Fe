@@ -83,4 +83,20 @@ class ReviewServiceModel extends ReviewServiceEntity {
         "mediaFiles": mediaFiles.map((x) => x).toList(),
         "reply": reply,
       };
+
+    factory ReviewServiceModel.empty() {
+    return ReviewServiceModel(
+      reviewId: 0,
+      cyclistId: 0,
+      cyclistName: '',
+      cyclistAvatar: '',
+      content: '',
+      rating: 0.0,
+      isUpdated: false,
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+      mediaFiles: [],
+      reply: null,
+    );
+  }
 }

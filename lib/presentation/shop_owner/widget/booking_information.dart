@@ -18,7 +18,8 @@ class BookingInformation extends StatefulWidget {
       this.userNote,
       this.bookedDate,
       required this.status,
-      this.shopNote});
+      this.shopNote,
+      this.adjPrice});
   final DateTime? start;
   final String? duration;
   final String? price;
@@ -26,6 +27,7 @@ class BookingInformation extends StatefulWidget {
   final DateTime? bookedDate;
   final String status;
   final String? shopNote;
+  final String? adjPrice;
   @override
   State<BookingInformation> createState() => _BookingInformationState();
 }
@@ -34,6 +36,7 @@ class _BookingInformationState extends State<BookingInformation> {
   final TextEditingController shopNote = TextEditingController();
   final TextEditingController priceAdjust = TextEditingController();
   final TextEditingController reason = TextEditingController();
+  final TextEditingController adjPriceCon = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -64,6 +67,7 @@ class _BookingInformationState extends State<BookingInformation> {
                 price: widget.price,
                 note: state.shopNote,
                 reason: state.reason,
+                adjPriceReason: state.adjPrice,
                 isUpdated: true,
               );
             } else {
@@ -74,7 +78,7 @@ class _BookingInformationState extends State<BookingInformation> {
                 duration: widget.duration,
                 price: widget.price,
                 note: widget.userNote,
-                
+                adjPriceReason: widget.adjPrice,
                 isUpdated: false,
               );
             }
@@ -116,7 +120,7 @@ class _BookingInformationState extends State<BookingInformation> {
               height: 10.h,
             ),
             InputTextFormField(
-              controller: reason,
+              controller: adjPriceCon,
               labelText: 'reason',
               hint: 'Reason for price adjustment',
             ),
@@ -130,7 +134,7 @@ class _BookingInformationState extends State<BookingInformation> {
                     onPressed: () {
                       context
                           .read<ResolveBookingShopCubit>()
-                          .updatePrice(priceAdjust.text, reason.text);
+                          .updatePrice(priceAdjust.text, adjPriceCon.text);
                       Navigator.pop(context);
                     },
                     style: ButtonStyle(
@@ -182,6 +186,7 @@ class _BookingInformationState extends State<BookingInformation> {
     String? shopNote,
     String? note,
     String? reason,
+    String? adjPriceReason,
     required bool isUpdated,
     required bool isEditable, // ✅ Truyền status ở đây
   }) {
@@ -320,7 +325,7 @@ class _BookingInformationState extends State<BookingInformation> {
                               fontSize: AppSize.textMedium,
                               color: Colors.grey)),
                       Text(
-                        '$price \$',
+                        '$price \VNĐ',
                         style: const TextStyle(
                           fontSize: AppSize.textMedium,
                           decoration: TextDecoration.lineThrough,
@@ -338,7 +343,7 @@ class _BookingInformationState extends State<BookingInformation> {
                               fontSize: AppSize.textMedium,
                               color: Colors.grey)),
                       Text(
-                        '$newPrice \$',
+                        '$newPrice \VNĐ',
                         style: TextStyle(
                           fontSize: AppSize.textLarge,
                           fontWeight: FontWeight.bold,
@@ -356,7 +361,7 @@ class _BookingInformationState extends State<BookingInformation> {
                               fontSize: AppSize.textMedium,
                               color: Colors.grey)),
                       Text(
-                        '$newPrice \$',
+                        '$newPrice \VNĐ',
                         style: TextStyle(
                           fontSize: AppSize.textLarge,
                           fontWeight: FontWeight.bold,
@@ -367,28 +372,41 @@ class _BookingInformationState extends State<BookingInformation> {
                   ),
                   SizedBox(height: 4),
                   Text(
-                    'Reason: $reason',
+                    'Reason: $adjPriceReason',
                     style: TextStyle(
                       fontSize: AppSize.textLarge,
                       color: Colors.black87,
                     ),
                   ),
                 ] else ...[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Total Price:',
-                          style: TextStyle(
-                              fontSize: AppSize.textMedium,
-                              color: Colors.grey)),
-                      Text(
-                        price!,
-                        style: TextStyle(
-                          fontSize: AppSize.textLarge,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blue.shade700,
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text('Total Price:',
+                              style: TextStyle(
+                                  fontSize: AppSize.textMedium,
+                                  color: Colors.grey)),
+                          Text(
+                            '$price VNĐ',
+                            style: TextStyle(
+                              fontSize: AppSize.textLarge,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blue.shade700,
+                            ),
+                          ),
+                        ],
                       ),
+                      // SizedBox(height: 4),
+                      // Text(
+                      //   'Reason: $adjPriceReason',
+                      //   style: TextStyle(
+                      //     fontSize: AppSize.textLarge,
+                      //     color: Colors.black87,
+                      //   ),
+                      // ),
                     ],
                   ),
                 ],

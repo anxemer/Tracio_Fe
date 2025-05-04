@@ -19,16 +19,13 @@ import '../../../domain/blog/usecase/comment_blog.dart';
 import '../../../domain/blog/usecase/rep_comment.dart';
 import '../../../service_locator.dart';
 import '../bloc/comment/comment_input_cubit.dart';
-import '../bloc/comment/comment_input_state.dart';
 import '../bloc/comment/get_comment_cubit.dart';
 import '../widget/comment.dart';
-import '../widget/comment_input.dart';
 import '../widget/react_blog.dart';
 
 class DetailBlocPage extends StatefulWidget {
-  const DetailBlocPage({super.key, required this.blog, required this.cubit});
+  const DetailBlocPage({super.key, required this.blog});
   final BlogEntity blog;
-  final GetCommentCubit cubit;
 
   @override
   State<DetailBlocPage> createState() => _DetailBlocPageState();
@@ -57,13 +54,12 @@ class _DetailBlocPageState extends State<DetailBlocPage> {
             );
           },
           (success) {
-            widget.cubit.getCommentBlog(GetCommentReq(
-              blogId: widget.blog.blogId,
-              ascending: true,
-              commentId: 0,
-              pageNumber: 1,
-              pageSize: 10,
-            ));
+            context.read<GetCommentCubit>().getCommentBlog(GetCommentReq(
+                  blogId: widget.blog.blogId,
+                  commentId: 0,
+                  pageNumber: 1,
+                  pageSize: 10,
+                ));
           },
         );
         break;
@@ -91,13 +87,12 @@ class _DetailBlocPageState extends State<DetailBlocPage> {
               //     commentId: inputData.commentId!,
               //     pageSize: 10,
               //     pageNumber: 1));
-              widget.cubit.getCommentBlog(GetCommentReq(
-                blogId: widget.blog.blogId,
-                ascending: true,
-                commentId: 0,
-                pageNumber: 1,
-                pageSize: 10,
-              ));
+              context.read<GetCommentCubit>().getCommentBlog(GetCommentReq(
+                    blogId: widget.blog.blogId,
+                    commentId: 0,
+                    pageNumber: 1,
+                    pageSize: 10,
+                  ));
             },
           );
         }
@@ -123,13 +118,12 @@ class _DetailBlocPageState extends State<DetailBlocPage> {
             (success) {
               _commentInputCubit.updateToDefault(widget.blog.blogId);
 
-              widget.cubit.getCommentBlog(GetCommentReq(
-                blogId: widget.blog.blogId,
-                ascending: true,
-                commentId: 0,
-                pageNumber: 1,
-                pageSize: 10,
-              ));
+              context.read<GetCommentCubit>().getCommentBlog(GetCommentReq(
+                    blogId: widget.blog.blogId,
+                    commentId: 0,
+                    pageNumber: 1,
+                    pageSize: 10,
+                  ));
             },
           );
         }
@@ -138,10 +132,16 @@ class _DetailBlocPageState extends State<DetailBlocPage> {
   }
 
   @override
+  void initState() {
+    _commentInputCubit = CommentInputCubit(widget.blog.blogId);
+
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     Item? selectedItem;
     final commentCubit = context.read<GetCommentCubit>();
-    // final reacCubit = context.read<GenericDataCubit>();
     return Scaffold(
         appBar: BasicAppbar(
           backgroundColor: AppColors.lightBackground,
@@ -181,19 +181,6 @@ class _DetailBlocPageState extends State<DetailBlocPage> {
                   value: Item.delete, child: Text('Delete')),
             ],
           ),
-          // Row(
-          //   children: [
-          //     FloatingButton(
-          //       elevation: 0,
-          //       backgroundColor: Colors.white,
-          //       onPressed: () {},
-          //       action: Icon(
-          //         Icons.more_vert,
-          //         color: Colors.black,
-          //       ),
-          //     ),
-          //   ],
-          // ),
         ),
         body: SingleChildScrollView(
             scrollDirection: Axis.vertical,
@@ -211,27 +198,32 @@ class _DetailBlocPageState extends State<DetailBlocPage> {
                 SizedBox(
                   // width: 400.w,
                   height: MediaQuery.of(context).size.height / 1.2,
-                  child: Comment(
-                      isDetail: true,
-                      blogId: widget.blog.blogId,
-                      cubit: commentCubit),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(
-                      bottom: AppSize.apHorizontalPadding, left: 10, right: 10),
-                  child: BlocBuilder<CommentInputCubit, CommentInputState>(
-                    builder: (context, inputState) {
-                      return CommentInputWidget(
-                        inputData: inputState.inputData,
-                        onSubmit: _handleCommentSubmit,
-                        onReset: () {
-                          _commentInputCubit
-                              .updateToDefault(widget.blog.blogId);
-                        },
-                      );
-                    },
+                  child: BlocProvider(
+                    create: (context) => CommentInputCubit(widget.blog.blogId),
+                    child: BlocProvider.value(
+                      value: commentCubit,
+                      child: Comment(
+                        blogId: widget.blog.blogId,
+                      ),
+                    ),
                   ),
-                )
+                ),
+                // Padding(
+                //   padding: const EdgeInsets.only(
+                //       bottom: AppSize.apHorizontalPadding, left: 10, right: 10),
+                //   child: BlocBuilder<CommentInputCubit, CommentInputState>(
+                //     builder: (context, inputState) {
+                //       return CommentInputWidget(
+                //         inputData: inputState.inputData,
+                //         onSubmit: _handleCommentSubmit,
+                //         onReset: () {
+                //           _commentInputCubit
+                //               .updateToDefault(widget.blog.blogId);
+                //         },
+                //       );
+                //     },
+                //   ),
+                // )
                 // Comment(blogId: widget.blog.blogId, cubit: commentCubit)
               ],
             )));

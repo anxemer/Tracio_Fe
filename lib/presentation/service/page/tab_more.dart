@@ -11,11 +11,13 @@ import 'package:tracio_fe/main.dart';
 import 'package:tracio_fe/presentation/auth/pages/login.dart';
 import 'package:tracio_fe/presentation/map/pages/route_planner.dart';
 import 'package:tracio_fe/presentation/shop_owner/page/shop_profile_management.dart';
+import 'package:tracio_fe/presentation/splash/page/splash.dart';
 import 'package:tracio_fe/service_locator.dart';
 
 import '../../../common/widget/picture/circle_picture.dart';
 import '../../auth/bloc/authCubit/auth_cubit.dart';
 import '../../auth/bloc/authCubit/auth_state.dart';
+import '../../map/bloc/map_cubit.dart';
 
 class TabMorePage extends StatelessWidget {
   const TabMorePage({super.key});
@@ -26,7 +28,6 @@ class TabMorePage extends StatelessWidget {
       create: (context) => AuthCubit()..checkUser(),
       child: Scaffold(
         appBar: BasicAppbar(
-          backgroundColor: Colors.transparent,
           title: Text(
             'More',
             style: TextStyle(
@@ -78,8 +79,13 @@ class TabMorePage extends StatelessWidget {
                         DialogConfirm(
                                 btnLeft: () => Navigator.pop(context),
                                 btnRight: () {
-                                  AppNavigator.pushReplacement(
-                                      context, ShopProfileManagementScreen());
+                                  AppNavigator.push(
+                                    context,
+                                    BlocProvider<MapCubit>(
+                                      create: (context) => MapCubit(),
+                                      child: ShopProfileManagementScreen(),
+                                    ),
+                                  );
                                 },
                                 notification:
                                     'You don\'t have a store! DO you wan\'t create your store',
@@ -155,7 +161,7 @@ class TabMorePage extends StatelessWidget {
               );
             } else if (state is AuthChangeRole) {
               Future.microtask(() {
-                AppNavigator.pushAndRemove(context, MyApp());
+                AppNavigator.pushAndRemove(context, SplashPage());
               });
             }
             return Container();

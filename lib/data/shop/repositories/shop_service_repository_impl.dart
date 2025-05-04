@@ -2,6 +2,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:tracio_fe/data/shop/models/booking_service_req.dart';
 import 'package:tracio_fe/data/shop/models/create_service_req.dart';
+import 'package:tracio_fe/data/shop/models/create_shop_profile_req.dart';
 import 'package:tracio_fe/data/shop/models/get_review_req.dart';
 import 'package:tracio_fe/data/shop/models/reschedule_booking_model.dart';
 import 'package:tracio_fe/data/shop/models/review_booking_req.dart';
@@ -21,6 +22,7 @@ import 'package:tracio_fe/domain/shop/repositories/shop_service_repository.dart'
 import '../../../core/erorr/failure.dart';
 import '../models/get_booking_req.dart';
 import '../models/get_service_req.dart';
+import '../models/reply_review_req.dart';
 
 class ShopServiceRepositoryImpl extends ShopServiceRepository {
   final ShopApiService remoteDataSource;
@@ -261,6 +263,56 @@ class ShopServiceRepositoryImpl extends ShopServiceRepository {
       return Right(true);
     } on ExceptionFailure catch (e) {
       return Left(ExceptionFailure(e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, ServiceResponseEntity>> getMineService() async {
+    try {
+      var returnedData = await remoteDataSource.getMineService();
+      return Right(returnedData);
+    } on ServerFailure {
+      return Left(ServerFailure(''));
+    } on AuthenticationFailure {
+      return Left(AuthenticationFailure('UnAuthenticated'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> replyReview(ReplyReviewReq reply) async {
+    try {
+      await remoteDataSource.replyReview(reply);
+      return Right(true);
+    } on ExceptionFailure {
+      return Left(ExceptionFailure('Submit service fail'));
+    } on AuthenticationFailure {
+      return Left(AuthenticationFailure('UnAuthenticated'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> registerShop(
+      CreateShopProfileReq createShop) async {
+    try {
+      await remoteDataSource.registerShopProfile(createShop);
+      return Right(true);
+    } on ExceptionFailure {
+      return Left(ExceptionFailure('Submit service fail'));
+    } on AuthenticationFailure {
+      return Left(AuthenticationFailure('UnAuthenticated'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> eidtShop(
+      CreateShopProfileReq createShop) async {
+    try {
+      await remoteDataSource.editShopProfile(createShop);
+      return Right(true);
+    } on ExceptionFailure {
+      return Left(ExceptionFailure('Submit service fail'));
+    } on AuthenticationFailure {
+      return Left(AuthenticationFailure('UnAuthenticated'));
     }
   }
 }

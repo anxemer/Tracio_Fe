@@ -239,7 +239,7 @@ class _LoginPageState extends State<LoginPage> {
           textColor: Colors.black,
           borderColor: Colors.green,
           iconSize: AppSize.iconSmall,
-          fontSize: AppSize.textMedium,
+          fontSize: AppSize.textMedium.sp,
         ),
       ],
     );

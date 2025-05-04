@@ -32,11 +32,7 @@ class _ReviewServiceState extends State<ReviewService> {
 
     if (passedReview == null || passedReview!.isEmpty) {
       context.read<GetReviewCubit>().getReviewBooking(
-            GetReviewReq(
-              seriveId: widget.bookingDetailId!,
-              pageSize: 10,
-              pageNumber: 1,
-            ),
+            widget.bookingDetailId!,
           );
     }
   }
@@ -51,7 +47,7 @@ class _ReviewServiceState extends State<ReviewService> {
       builder: (context, state) {
         if (state is GetReviewLoading) {
           return const Center(child: CircularProgressIndicator());
-        } else if (state is GetReviewLoading) {
+        } else if (state is GetReviewSuccess) {
           final reviews = state.review;
 
           if (reviews.isEmpty) {
@@ -69,7 +65,13 @@ class _ReviewServiceState extends State<ReviewService> {
           return Center(child: Text("Error loading reviews: ${state.message}"));
         }
 
-        return const SizedBox();
+        return const Center(
+          child: Text(
+            'No reviews yet',
+            style: TextStyle(
+                fontSize: AppSize.textLarge, fontWeight: FontWeight.bold),
+          ),
+        );
       },
     );
   }

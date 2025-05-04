@@ -1,5 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:io';
+import 'package:path/path.dart' as p;
 
 import 'package:dio/dio.dart';
 
@@ -10,7 +11,7 @@ class CreateServiceReq {
   final String description;
   final double price;
   final String duration;
-  final List<File> files;
+  final List<File> mediaFiles;
   CreateServiceReq({
     required this.shopId,
     required this.categoryId,
@@ -18,17 +19,18 @@ class CreateServiceReq {
     required this.description,
     required this.price,
     required this.duration,
-    required this.files,
+    required this.mediaFiles,
   });
   Future<FormData> toFormData() async {
-    List<MultipartFile> mediaFiles = [];
+    List<MultipartFile> files = [];
 
-    for (var file in files) {
+    for (var file in mediaFiles) {
       if (await file.exists()) {
-        mediaFiles.add(await MultipartFile.fromFile(
-          file.path,
-          filename: file.path.split('/').last,
-        ));
+        final image =
+            p.extension(file.path).toLowerCase().replaceFirst('.', '');
+        files.add(await MultipartFile.fromFile(file.path,
+            filename: file.path.split('/').last,
+            contentType: DioMediaType.parse('image/$image')));
       } else {
         print("⚠️ File không tồn tại: ${file.path}");
       }

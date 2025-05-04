@@ -7,6 +7,7 @@ import 'package:tracio_fe/common/helper/is_dark_mode.dart';
 import 'package:tracio_fe/common/widget/drag_handle/drag_handle.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/data/blog/models/request/comment_blog_req.dart';
+import 'package:tracio_fe/data/blog/models/request/get_reply_comment_req.dart';
 import 'package:tracio_fe/data/blog/models/request/reply_comment_req.dart';
 import 'package:tracio_fe/domain/blog/usecase/comment_blog.dart';
 import 'package:tracio_fe/domain/blog/usecase/rep_comment.dart';
@@ -22,12 +23,10 @@ import 'comment_input.dart';
 
 class Comment extends StatefulWidget {
   final int blogId;
-  final GetCommentCubit cubit;
   final bool isDetail;
   const Comment({
     super.key,
     required this.blogId,
-    required this.cubit,
     this.isDetail = false,
   });
 
@@ -41,15 +40,9 @@ class _CommentState extends State<Comment> {
   @override
   void initState() {
     super.initState();
-    _commentInputCubit = CommentInputCubit(widget.blogId);
-    if (widget.cubit.state is GetCommentLoading) {
-      widget.cubit.getCommentBlog(GetCommentReq(
-          blogId: widget.blogId,
-          ascending: true,
-          commentId: 0,
-          pageNumber: 1,
-          pageSize: 10));
-    }
+    _commentInputCubit = context.read<CommentInputCubit>();
+    context.read<GetCommentCubit>().getCommentBlog(GetCommentReq(
+        blogId: widget.blogId, commentId: 0, pageNumber: 1, pageSize: 10));
   }
 
   @override
@@ -79,13 +72,12 @@ class _CommentState extends State<Comment> {
             );
           },
           (success) {
-            widget.cubit.getCommentBlog(GetCommentReq(
-              blogId: widget.blogId,
-              ascending: true,
-              commentId: 0,
-              pageNumber: 1,
-              pageSize: 10,
-            ));
+            context.read<GetCommentCubit>().getCommentBlog(GetCommentReq(
+                  blogId: widget.blogId,
+                  commentId: 0,
+                  pageNumber: 1,
+                  pageSize: 10,
+                ));
           },
         );
         break;
@@ -113,13 +105,12 @@ class _CommentState extends State<Comment> {
               //     commentId: inputData.commentId!,
               //     pageSize: 10,
               //     pageNumber: 1));
-              widget.cubit.getCommentBlog(GetCommentReq(
-                blogId: widget.blogId,
-                ascending: true,
-                commentId: 0,
-                pageNumber: 1,
-                pageSize: 10,
-              ));
+              context.read<GetCommentCubit>().getCommentBlog(GetCommentReq(
+                    blogId: widget.blogId,
+                    commentId: 0,
+                    pageNumber: 1,
+                    pageSize: 10,
+                  ));
             },
           );
         }
@@ -145,13 +136,12 @@ class _CommentState extends State<Comment> {
             (success) {
               _commentInputCubit.updateToDefault(widget.blogId);
 
-              widget.cubit.getCommentBlog(GetCommentReq(
-                blogId: widget.blogId,
-                ascending: true,
-                commentId: 0,
-                pageNumber: 1,
-                pageSize: 10,
-              ));
+              context.read<GetCommentCubit>().getCommentBlog(GetCommentReq(
+                    blogId: widget.blogId,
+                    commentId: 0,
+                    pageNumber: 1,
+                    pageSize: 10,
+                  ));
             },
           );
         }
@@ -161,101 +151,103 @@ class _CommentState extends State<Comment> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: _commentInputCubit,
-      child: BlocBuilder<GetCommentCubit, GetCommentState>(
-        bloc: widget.cubit,
-        builder: (context, state) {
-          return ClipRRect(
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(AppSize.borderRadiusLarge),
-              topRight: Radius.circular(AppSize.borderRadiusLarge),
+    return ClipRRect(
+      borderRadius: const BorderRadius.only(
+        topLeft: Radius.circular(AppSize.borderRadiusLarge),
+        topRight: Radius.circular(AppSize.borderRadiusLarge),
+      ),
+      child: Container(
+        color: context.isDarkMode ? Color(0xFF1E1E1E) : Colors.white,
+        child: Column(
+          children: [
+            SizedBox(
+              height: 10.h,
             ),
-            child: Container(
-              color: context.isDarkMode ? Color(0xFF1E1E1E) : Colors.white,
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: 10.h,
-                  ),
-                  DragHandle(
-                    width: MediaQuery.of(context).size.width * 0.3.w,
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Text(
-                    'Comments',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: AppSize.textHeading.sp,
-                    ),
-                  ),
-                  Expanded(
-                    child: _buildContent(state),
-                  ),
-                  widget.isDetail
-                      ? SizedBox.shrink()
-                      : Padding(
-                          padding: const EdgeInsets.only(
-                              bottom: AppSize.apHorizontalPadding,
-                              left: 10,
-                              right: 10),
-                          child:
-                              BlocBuilder<CommentInputCubit, CommentInputState>(
-                            builder: (context, inputState) {
-                              return CommentInputWidget(
-                                inputData: inputState.inputData,
-                                onSubmit: _handleCommentSubmit,
-                                onReset: () {
-                                  _commentInputCubit
-                                      .updateToDefault(widget.blogId);
-                                },
-                              );
-                            },
-                          ),
-                        ),
-                ],
+            DragHandle(
+              width: MediaQuery.of(context).size.width * 0.3.w,
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Text(
+              'Comments',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: AppSize.textHeading.sp,
               ),
             ),
-          );
-        },
+            Expanded(
+              child: _buildContent(),
+            ),
+            widget.isDetail
+                ? SizedBox.shrink()
+                : Padding(
+                    padding: const EdgeInsets.only(
+                        bottom: AppSize.apHorizontalPadding,
+                        left: 10,
+                        right: 10),
+                    child: BlocBuilder<CommentInputCubit, CommentInputState>(
+                      builder: (context, inputState) {
+                        return CommentInputWidget(
+                          inputData: inputState.inputData,
+                          onSubmit: _handleCommentSubmit,
+                          onReset: () {
+                            _commentInputCubit.updateToDefault(widget.blogId);
+                          },
+                        );
+                      },
+                    ),
+                  ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildContent(GetCommentState state) {
-    if (state is GetCommentLoading) {
-      return const Center(child: CircularProgressIndicator());
-    }
-    if (state is GetCommentFailure) {
+  Widget _buildContent() {
+    return BlocBuilder<GetCommentCubit, GetCommentState>(
+        builder: (context, state) {
+      if (state is GetCommentLoading) {
+        return const Center(child: CircularProgressIndicator());
+      }
+      if (state is GetCommentFailure) {
+        return const Center(child: Text("Haven't Comment yet"));
+      }
+      if (state is GetCommentLoaded) {
+        final comments = state.listComment;
+        return comments.isEmpty
+            ? const Center(child: Text("Haven't Comment yet"))
+            : ListView.builder(
+                shrinkWrap: !widget.isDetail,
+                physics: widget.isDetail
+                    ? NeverScrollableScrollPhysics()
+                    : AlwaysScrollableScrollPhysics(),
+                itemCount: comments.length,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 20.h, vertical: 10.h),
+                    child: CommentItem(
+                      comment: comments[index],
+                      replyCount: comments[index].replyCount,
+                      onViewMoreReviewTap: () async {},
+                      onReact: () async {},
+                      onReply: () async {
+                        _commentInputCubit
+                            .updateToReplyComment(comments[index]);
+                        FocusScope.of(context).requestFocus(FocusNode());
+                      },
+                      onViewMoreReplyTap: (commentId) async {
+                        await context
+                            .read<GetCommentCubit>()
+                            .getCommentBlogReply(commentId);
+                      },
+                    ),
+                  );
+                },
+              );
+      }
       return const Center(child: Text("Haven't Comment yet"));
-    }
-    if (state is GetCommentLoaded) {
-      final comments = state.listComment;
-      return comments.isEmpty
-          ? const Center(child: Text("Haven't Comment yet"))
-          : ListView.builder(
-              shrinkWrap: !widget.isDetail,
-              physics: widget.isDetail
-                  ? NeverScrollableScrollPhysics()
-                  : AlwaysScrollableScrollPhysics(),
-              itemCount: comments.length,
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 20.h, vertical: 10.h),
-                  child: CommentItem(
-                    comment: comments[index],
-                    onReplyTap: () {
-                      _commentInputCubit.updateToReplyComment(comments[index]);
-                      FocusScope.of(context).requestFocus(FocusNode());
-                    },
-                  ),
-                );
-              },
-            );
-    }
-    return const Center(child: Text("Haven't Comment yet"));
+    });
   }
 }

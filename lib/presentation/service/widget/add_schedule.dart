@@ -40,7 +40,7 @@ class _AddScheduleState extends State<AddSchedule> {
       } else if (state is BookingServiceFailure) {
         EasyLoading.dismiss();
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Booking failed: ${state.message}')),
+          SnackBar(content: Text('Booking failed')),
         );
       }
     }, builder: (context, state) {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tracio_fe/common/helper/is_dark_mode.dart';
+import 'package:tracio_fe/core/configs/theme/app_colors.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
 
 class BasicAppbar extends StatelessWidget implements PreferredSizeWidget {
@@ -28,7 +29,7 @@ class BasicAppbar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: backgroundColor ??  Colors.transparent,
+      backgroundColor: backgroundColor ?? AppColors.darkGrey,
       elevation: 0,
       centerTitle: centralTitle ?? false,
       automaticallyImplyLeading: false, // Don't automatically show back button
@@ -37,7 +38,11 @@ class BasicAppbar extends StatelessWidget implements PreferredSizeWidget {
         padding: padding ??
             EdgeInsets.symmetric(
                 horizontal: !hideBack ? 0 : AppSize.apHorizontalPadding.w),
-        child: title ?? const Text(''),
+        child: title ??
+            const Text(
+              '',
+              style: TextStyle(color: Colors.white),
+            ),
       ),
       titleSpacing: hideBack ? 0 : 24.w,
       actions: [
@@ -60,7 +65,7 @@ class BasicAppbar extends StatelessWidget implements PreferredSizeWidget {
                       color: Colors.transparent, shape: BoxShape.circle),
                   child: Icon(Icons.arrow_back_ios_new,
                       size: AppSize.iconSmall,
-                      color: !context.isDarkMode
+                      color: context.isDarkMode
                           ? Colors.white
                           : Color.fromARGB(255, 0, 0, 0)),
                 ),

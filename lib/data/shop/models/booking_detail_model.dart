@@ -21,7 +21,8 @@ class BookingDetailModel extends BookingDetailEntity {
       super.serviceName,
       super.bookedDate,
       super.estimatedEndDate,
-      super.reason,
+      super.shopCancelledReason,
+      super.userCancelledReason,
       super.duration,
       super.status,
       super.userNote,
@@ -42,7 +43,8 @@ class BookingDetailModel extends BookingDetailEntity {
       'serviceName': serviceName,
       'bookedDate': bookedDate?.millisecondsSinceEpoch,
       'estimatedEndDate': estimatedEndDate?.millisecondsSinceEpoch,
-      'reason': reason,
+      'userCancelledReason': userCancelledReason,
+      'shopCancelledReason': shopCancelledReason,
       'duration': duration,
       'status': status,
       'userNote': userNote,
@@ -70,7 +72,12 @@ class BookingDetailModel extends BookingDetailEntity {
           json['serviceName'] != null ? json['serviceName'] as String : null,
       bookedDate: DateTime.tryParse(json["bookedDate"] ?? ""),
       estimatedEndDate: DateTime.tryParse(json["estimatedEndDate"] ?? ""),
-      reason: json['reason'] != null ? json['reason'] as String : "",
+      shopCancelledReason: json['shopCancelledReason'] != null
+          ? json['shopCancelledReason'] as String
+          : null,
+      userCancelledReason: json['userCancelledReason'] != null
+          ? json['userCancelledReason'] as String
+          : null,
       duration: json['duration'] != null ? json['duration'] as int : null,
       status: json['status'] != null ? json['status'] as String : null,
       userNote: json['userNote'] != null ? json['userNote'] as String : null,

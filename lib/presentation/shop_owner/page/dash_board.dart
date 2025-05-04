@@ -14,10 +14,9 @@ import 'package:tracio_fe/data/shop/models/get_booking_req.dart';
 import 'package:tracio_fe/domain/auth/usecases/logout.dart';
 import 'package:tracio_fe/domain/shop/entities/response/shop_profile_entity.dart';
 import 'package:tracio_fe/presentation/auth/pages/login.dart';
-import 'package:tracio_fe/presentation/blog/bloc/category/get_category_cubit.dart';
 import 'package:tracio_fe/presentation/service/bloc/get_booking/get_booking_cubit.dart';
-import 'package:tracio_fe/presentation/shop_owner/bloc/service_management/service_management_cubit.dart';
 import 'package:tracio_fe/presentation/shop_owner/bloc/shop_profile/shop_profile_cubit.dart';
+import 'package:tracio_fe/presentation/shop_owner/bloc/shop_profile/shop_profile_manage/shop_profile_manage_cubit.dart';
 import 'package:tracio_fe/presentation/shop_owner/page/service_management.dart';
 import 'package:tracio_fe/presentation/shop_owner/page/shop_profile.dart';
 import 'package:tracio_fe/service_locator.dart';
@@ -25,8 +24,14 @@ import 'package:tracio_fe/service_locator.dart';
 import '../../../common/widget/picture/circle_picture.dart';
 import '../../../core/configs/theme/app_colors.dart';
 import '../../../core/configs/theme/assets/app_images.dart';
-import '../../map/bloc/map_cubit.dart';
+import '../../../data/auth/models/change_role_req.dart';
+import '../../../data/auth/sources/auth_local_source/auth_local_source.dart';
+import '../../auth/bloc/authCubit/auth_cubit.dart';
+import '../../chat/bloc/bloc/conversation_bloc.dart';
+import '../../chat/pages/conversation.dart';
+import '../../notifications/page/notifications.dart';
 import '../../service/bloc/get_booking/get_booking_state.dart';
+import 'booking_detail_shop.dart';
 import 'booking_management.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -51,14 +56,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ],
         child: Scaffold(
             appBar: BasicAppbar(
+              action: _buildActionIcons(),
               hideBack: true,
-              backgroundColor: Colors.transparent,
               title: Text(
                 'Dashboard',
                 style: TextStyle(
                     fontSize: AppSize.textHeading,
                     fontWeight: FontWeight.bold,
-                    color: isDark ? Colors.white70 : Colors.black87),
+                    color: Colors.white),
               ),
             ),
             body: BlocBuilder<ShopProfileCubit, ShopProfileState>(
@@ -88,6 +93,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
                             _buildStatisticCard(
+                              ontap: () => AppNavigator.push(
+                                  context, BookingManagementScreen()),
                               title: 'Pending Booking',
                               value: state.shopPrifile.totalPendingBooking
                                   .toString(),
@@ -95,6 +102,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               color: Colors.blue,
                             ),
                             _buildStatisticCard(
+                              ontap: () => AppNavigator.push(
+                                  context,
+                                  ServiceManagementPage(
+                                      shopId: state.shopPrifile.shopId!)),
                               title: 'Service',
                               value: state.shopPrifile.totalService.toString(),
                               icon: Icons.directions_bike,
@@ -107,11 +118,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
                             _buildStatisticCard(
+                              ontap: () => AppNavigator.push(
+                                  context,
+                                  BookingManagementScreen(
+                                    initialIndex: 4,
+                                  )),
                               title: 'Completed booking',
                               value: state.shopPrifile.totalBooking.toString(),
                               icon: Icons.check_circle_outline,
                               color: Colors.green,
                             ),
+
                             // _buildStatisticCard(
                             //   title: 'Doanh thu dự kiến hôm nay',
                             //   value: _currencyFormat.format(_expectedRevenueToday),
@@ -143,7 +160,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     subtitle: Text(
                                         '${state.bookingList[index].serviceName}'),
                                     trailing: _buildStatusChip(booking.status!),
-                                    onTap: () {},
+                                    onTap: () {
+                                      AppNavigator.push(
+                                          context,
+                                          BookingDetailShopScreen(
+                                              bookingId: state
+                                                  .bookingList[index]
+                                                  .bookingDetailId!));
+                                    },
                                   );
                                 },
                               );
@@ -167,7 +191,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   AppImages.error,
                                   width: AppSize.imageLarge,
                                 ),
-                                Text('Can\'t load blog....'),
+                                Text('Can\'t load booking....'),
                                 IconButton(
                                     onPressed: () async {
                                       // await context.read<GetBlogCubit>().getBlog(GetBlogReq());
@@ -223,12 +247,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             ),
                             _buildQuickActionButton(
                               icon: Icons.logout_rounded,
-                              label: 'Logout',
-                              onTap: () {
-                                AppNavigator.pushAndRemove(
-                                    context, LoginPage());
-                                sl<LogoutUseCase>().call(
-                                    NoParams()); // Đảm bảo bạn đã định nghĩa route này
+                              label: 'Back To Tracio',
+                              onTap: () async {
+                                var refreshToken = await sl<AuthLocalSource>()
+                                    .getRefreshToken();
+                                context.read<AuthCubit>().changeRole(ChangeRoleReq(
+                                    refreshToken: refreshToken,
+                                    role:
+                                        'user')); // Đảm bảo bạn đã định nghĩa route này
                               },
                             ),
                           ],
@@ -251,6 +277,49 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 return SizedBox.shrink();
               },
             )));
+  }
+
+  Widget _buildActionIcons() {
+    return Row(
+      children: [
+        IconButton(
+          padding: EdgeInsets.zero,
+          highlightColor: Colors.grey.shade600,
+          splashColor: Colors.white.withAlpha(30),
+          hoverColor: Colors.white.withAlpha(10),
+          onPressed: () {
+            AppNavigator.push(context, NotificationsPage());
+          },
+          icon: Icon(
+            Icons.notifications,
+            color: AppColors.primary,
+            size: AppSize.iconMedium.w,
+          ),
+          tooltip: "Notifications",
+        ),
+        IconButton(
+          padding: EdgeInsets.zero,
+          highlightColor: Colors.grey.shade600,
+          splashColor: Colors.white.withAlpha(30),
+          hoverColor: Colors.white.withAlpha(10),
+          onPressed: () {
+            AppNavigator.push(
+                context,
+                BlocProvider.value(
+                  value: context.read<ConversationBloc>()
+                    ..add(GetConversations()),
+                  child: ConversationScreen(),
+                ));
+          },
+          icon: Icon(
+            Icons.message_outlined,
+            color: AppColors.primary,
+            size: AppSize.iconMedium.w,
+          ),
+          tooltip: "Message",
+        ),
+      ],
+    );
   }
 
   Widget _buildShopInfoCard(bool isDark, ShopProfileEntity shopProfile) {
@@ -283,6 +352,38 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       color: Colors.grey,
                     ),
                   ),
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                        horizontal: AppSize.apHorizontalPadding * .8.h),
+                    height: 28,
+                    // width: 100,
+                    decoration: BoxDecoration(
+                        color: Colors.transparent,
+                        border: Border.all(color: AppColors.secondBackground),
+                        borderRadius: BorderRadius.circular(10)),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.timer_outlined,
+                          color: isDark
+                              ? AppColors.secondBackground
+                              : AppColors.background,
+                          size: AppSize.iconSmall,
+                        ),
+                        Text(
+                          '${shopProfile.openTime!.substring(0, 5)} - ${shopProfile.closedTime!.substring(0, 5)}',
+                          style: TextStyle(
+                            color:
+                                isDark ? Colors.grey.shade300 : Colors.black87,
+                            fontWeight: FontWeight.w600,
+                            fontSize: AppSize.textSmall,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
                   // SizedBox(height: 8.0),
                   // Row(
                   //   children: [
@@ -311,21 +412,27 @@ class _DashboardScreenState extends State<DashboardScreen> {
     required String value,
     required IconData icon,
     required Color color,
+    required VoidCallback ontap,
   }) {
     return Expanded(
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Icon(icon, size: 32, color: color),
-              SizedBox(height: 8.0),
-              Text(title, style: TextStyle(fontSize: 16)),
-              Text(value,
-                  style: TextStyle(
-                      fontSize: 24, fontWeight: FontWeight.bold, color: color)),
-            ],
+      child: InkWell(
+        onTap: ontap,
+        child: Card(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(icon, size: 32, color: color),
+                SizedBox(height: 8.0),
+                Text(title, style: TextStyle(fontSize: 16)),
+                Text(value,
+                    style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: color)),
+              ],
+            ),
           ),
         ),
       ),

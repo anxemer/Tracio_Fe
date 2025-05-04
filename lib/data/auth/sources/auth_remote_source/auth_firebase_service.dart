@@ -36,16 +36,19 @@ class AuthFirebaseServiceImpl extends AuthFirebaseService {
   }
 
   @override
-  Future<bool> checkEmailVerify() async {
-    for (int i = 0; i <= 5; i++) {
-      User? user = _firebaseAuth.currentUser;
+  Future<bool> checkEmailVerify(
+      {int maxAttempts = 24,
+      Duration delay = const Duration(seconds: 5)}) async {
+    for (int i = 0; i < maxAttempts; i++) {
+      final User? user = _firebaseAuth.currentUser;
 
-      await Future.delayed(Duration(seconds: 2)); // Kiểm tra sau mỗi 3 giây
-      await user?.reload(); // Refresh user info
+      await user?.reload();
 
       if (user?.emailVerified ?? false) {
-        return true; // Email đã được xác minh
+        return true;
       }
+
+      await Future.delayed(delay);
     }
     return false;
   }

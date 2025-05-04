@@ -41,6 +41,9 @@ import 'package:tracio_fe/data/user/source/user_api_source.dart';
 import 'package:tracio_fe/domain/auth/repositories/auth_repository.dart';
 import 'package:tracio_fe/domain/auth/usecases/change_role.dart';
 import 'package:tracio_fe/domain/auth/usecases/check_email_verified.dart';
+import 'package:tracio_fe/domain/blog/usecase/get_bookmark_blog.dart';
+import 'package:tracio_fe/domain/shop/usecase/edit_shop.dart';
+import 'package:tracio_fe/domain/shop/usecase/get_review_booking.dart';
 import 'package:tracio_fe/domain/shop/usecase/get_shop_profile.dart';
 import 'package:tracio_fe/domain/auth/usecases/get_cacher_user.dart';
 import 'package:tracio_fe/domain/auth/usecases/is_logged_in.dart';
@@ -132,6 +135,8 @@ import 'package:tracio_fe/domain/shop/usecase/get_cate_service.dart';
 import 'package:tracio_fe/domain/shop/usecase/get_review_service.dart';
 import 'package:tracio_fe/domain/shop/usecase/get_service.dart';
 import 'package:tracio_fe/domain/shop/usecase/get_service_detail.dart';
+import 'package:tracio_fe/domain/shop/usecase/register_shop_profile.dart';
+import 'package:tracio_fe/domain/shop/usecase/reply_review.dart';
 import 'package:tracio_fe/domain/shop/usecase/reschedule_booking.dart';
 import 'package:tracio_fe/domain/shop/usecase/process_booking.dart';
 import 'package:tracio_fe/domain/shop/usecase/confirm_booking.dart';
@@ -214,6 +219,7 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton(() => ChatHubService(sl<SignalRCoreService>()));
   // * USECASES--use registerFactory
   sl.registerFactory<GetBlogsUseCase>(() => GetBlogsUseCase());
+  sl.registerFactory<GetBookmarkBlogsUseCase>(() => GetBookmarkBlogsUseCase());
   sl.registerFactory<GetReactBlogUseCase>(() => GetReactBlogUseCase());
   sl.registerFactory<ReactBlogUseCase>(() => ReactBlogUseCase());
   sl.registerFactory<UnReactBlogUseCase>(() => UnReactBlogUseCase());
@@ -323,4 +329,8 @@ Future<void> initializeDependencies() async {
   sl.registerFactory<GetParticipantsUseCase>(() => GetParticipantsUseCase());
   sl.registerFactory<LoginGoogleUseCase>(() => LoginGoogleUseCase());
   sl.registerFactory<FollowUserUseCase>(() => FollowUserUseCase());
+  sl.registerFactory<GetReviewBookingUseCase>(() => GetReviewBookingUseCase());
+  sl.registerFactory<ReplyReviewUseCase>(() => ReplyReviewUseCase());
+  sl.registerFactory<RegisterShopUseCase>(() => RegisterShopUseCase());
+  sl.registerFactory<EditShopUseCase>(() => EditShopUseCase());
 }

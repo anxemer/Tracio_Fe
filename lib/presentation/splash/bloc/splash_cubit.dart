@@ -5,6 +5,8 @@ import 'package:tracio_fe/domain/auth/usecases/is_logged_in.dart';
 import 'package:tracio_fe/presentation/splash/bloc/splash_state.dart';
 import 'package:tracio_fe/service_locator.dart';
 
+import '../../../domain/auth/usecases/get_cacher_user.dart';
+
 class SplashCubit extends Cubit<SplashState> {
   SplashCubit() : super(SplashLoading());
 
@@ -17,5 +19,14 @@ class SplashCubit extends Cubit<SplashState> {
     }, (data) {
       emit(Authenticated(role: data));
     });
+  }
+  void checkUser() async {
+    try {
+      final result = await sl<GetCacherUserUseCase>().call(NoParams());
+      result.fold((error) => emit(UnAuthenticated()),
+          (data) => emit(Authenticated(role:  data.role!)));
+    } catch (e) {
+      emit((UnAuthenticated()));
+    }
   }
 }
