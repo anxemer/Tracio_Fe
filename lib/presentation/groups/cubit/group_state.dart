@@ -55,8 +55,8 @@ class GetGroupListSuccess extends GroupState {
 
 class GetGroupDetailSuccess extends GroupState {
   final Group group;
-  final List<GroupRouteEntity> groupRoutes;
-  final List<Participant> participants;
+  final GroupRoutePaginationEntity groupRoutes;
+  final GroupParticipantPaginationEntity participants;
   final List<GroupRouteDetail> groupRouteDetails;
   final bool groupError;
   final bool participantsError;
@@ -74,8 +74,8 @@ class GetGroupDetailSuccess extends GroupState {
 
   GetGroupDetailSuccess copyWith({
     Group? group,
-    List<GroupRouteEntity>? groupRoutes,
-    List<Participant>? participants,
+    GroupRoutePaginationEntity? groupRoutes,
+    GroupParticipantPaginationEntity? participants,
     List<GroupRouteDetail>? groupRouteDetails,
     bool? groupError,
     bool? participantsError,

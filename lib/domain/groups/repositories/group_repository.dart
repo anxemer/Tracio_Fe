@@ -17,9 +17,9 @@ abstract class GroupRepository {
   Future<Either<Failure, PostGroupRouteRep>> postGroupRoute(
       int groupId, PostGroupRouteReq request);
   Future<Either<Failure, GetGroupRouteListRep>> getGroupRoutesByGroup(
-      int groupId);
+      int groupId, Map<String, String> params);
   Future<Either<Failure, GetParticipantListRep>> getParticipantsByGroup(
-      int groupId);
+      int groupId, Map<String, String> params);
   Future<Either<Failure, dynamic>> leaveGroup(int groupId);
   Future<Either<Failure, GetRouteDetailRep>> getGroupRouteDetail(
       int groupRouteId,

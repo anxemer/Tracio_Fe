@@ -44,9 +44,14 @@ class _GroupOverviewState extends State<GroupOverview> {
                 separatorBuilder: (_, __) => const SizedBox.shrink(),
                 itemBuilder: (context, index) {
                   if (index == 0) return _buildHeader(state.group);
-                  if (index == 1) {
+                  if (index == 1 && !state.participantsError) {
                     return _buildMembersSection(
-                        state.participants, state.group.participantCount);
+                        state.participants.participants
+                            .where((p) => p.isOrganizer)
+                            .toList(),
+                        state.group.participantCount);
+                  } else if (index == 1) {
+                    return SizedBox.shrink();
                   }
                   return _buildActionsSection(
                       state.group.groupId, state.group.membership);
@@ -193,7 +198,9 @@ class _GroupOverviewState extends State<GroupOverview> {
                     MaterialPageRoute(
                         builder: (context) => BlocProvider.value(
                               value: context.read<GroupCubit>(),
-                              child: GroupParticipant(),
+                              child: GroupParticipant(
+                                groupId: widget.groupId,
+                              ),
                             )));
               },
               child: Ink(
@@ -272,7 +279,7 @@ class _GroupOverviewState extends State<GroupOverview> {
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
-                      "ADMIN",
+                      "ORGANIZER",
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: AppSize.textSmall * 0.7.sp,
@@ -315,7 +322,7 @@ class _GroupOverviewState extends State<GroupOverview> {
             style: TextStyle(
                 fontSize: AppSize.textLarge.sp, fontWeight: FontWeight.bold),
           ),
-          SizedBox(height: AppSize.apHorizontalPadding.h),
+          const SizedBox(height: 12),
           if (membership == MembershipEnum.member ||
               membership == MembershipEnum.admin)
             BlocConsumer<GroupCubit, GroupState>(

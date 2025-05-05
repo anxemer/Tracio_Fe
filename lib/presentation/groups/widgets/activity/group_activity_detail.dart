@@ -48,7 +48,7 @@ class _GroupActivityDetailState extends State<GroupActivityDetail> {
       body: BlocBuilder<GroupCubit, GroupState>(
         builder: (context, state) {
           if (state is GetGroupDetailSuccess) {
-            final groupRoute = state.groupRoutes
+            final groupRoute = state.groupRoutes.groupList
                 .firstWhere((p) => p.groupRouteId == widget.groupRouteId);
 
             return Stack(

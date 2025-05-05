@@ -1,8 +1,13 @@
+import 'package:dartz/dartz.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tracio_fe/core/constants/membership_enum.dart';
+import 'package:tracio_fe/core/erorr/failure.dart';
 import 'package:tracio_fe/data/groups/models/request/get_group_list_req.dart';
+import 'package:tracio_fe/data/groups/models/request/get_group_participant_req.dart';
+import 'package:tracio_fe/data/groups/models/request/get_group_route_req.dart';
 import 'package:tracio_fe/data/groups/models/request/post_group_req.dart';
 import 'package:tracio_fe/data/groups/models/request/post_group_route_req.dart';
+import 'package:tracio_fe/domain/groups/entities/group_route.dart';
 import 'package:tracio_fe/domain/groups/usecases/get_group_detail_usecase.dart';
 import 'package:tracio_fe/domain/groups/usecases/get_group_list_usecase.dart';
 import 'package:tracio_fe/domain/groups/usecases/get_group_route_detail_usecase.dart';
@@ -51,46 +56,91 @@ class GroupCubit extends Cubit<GroupState> {
     });
   }
 
-  Future<void> getGroupDetail(int groupId) async {
+  Future<void> getGroupDetail(int groupId,
+      {int participantPageNumber = 1,
+      int participantRowsPerPage = 10,
+      int groupRoutePageNumber = 1,
+      int groupRouteRowsPerPage = 10}) async {
     emit(GroupLoading());
 
     final groupResult = await sl<GetGroupDetailUsecase>().call(groupId);
+
     await groupResult.fold(
       (error) async {
-        emit(GroupFailure(errorMessage: error.toString()));
+        emit(GroupFailure(errorMessage: error.message));
       },
       (group) async {
-        final routeResult = await sl<GetGroupRouteUsecase>().call(groupId);
-        await routeResult.fold(
-          (error) async {
-            //TODO Catch error when group route is private
-            emit(GroupFailure(errorMessage: error.toString()));
-          },
-          (groupRoutes) async {
-            final initialState = GetGroupDetailSuccess(
-                group: group,
-                groupRoutes: groupRoutes.groupList,
-                participants: [],
-                groupRouteDetails: []);
-
-            emit(initialState);
-
-            final participantResult =
-                await sl<GetParticipantListUsecase>().call(groupId);
-
-            participantResult.fold(
-              (error) {
-                emit(initialState.copyWith(participantsError: true));
-              },
-              (cyclistListResponse) {
-                emit(initialState.copyWith(
-                    participants: cyclistListResponse.participants));
-              },
-            );
-          },
+        GroupRoutePaginationEntity groupRoutes = GroupRoutePaginationEntity(
+          groupList: [],
+          totalCount: 0,
+          pageNumber: 1,
+          pageSize: 10,
+          totalPages: 0,
+          hasPreviousPage: false,
+          hasNextPage: false,
         );
+
+        GroupParticipantPaginationEntity participants =
+            GroupParticipantPaginationEntity(
+          participants: [],
+          totalCount: 0,
+          pageNumber: 1,
+          pageSize: 10,
+          totalPages: 0,
+          hasPreviousPage: false,
+          hasNextPage: false,
+        );
+
+        bool groupRouteError = false;
+        bool participantError = false;
+
+        // ✅ Use helper for routes
+        final routeResult = await getGroupRoutes(groupId,
+            pageNumber: groupRoutePageNumber,
+            rowsPerPage: groupRouteRowsPerPage);
+        routeResult.fold(
+          (error) => groupRouteError = true,
+          (data) => groupRoutes = data,
+        );
+
+        // ✅ Use helper for participants
+        final participantResult = await getParticipants(groupId,
+            pageNumber: participantPageNumber,
+            rowsPerPage: participantRowsPerPage);
+        participantResult.fold(
+          (error) => participantError = true,
+          (data) => participants = data,
+        );
+
+        // ✅ Emit success with aggregated state
+        emit(GetGroupDetailSuccess(
+          group: group,
+          groupRoutes: groupRoutes,
+          participants: participants,
+          groupRouteDetails: [],
+          groupRouteDetailsError: groupRouteError,
+          participantsError: participantError,
+        ));
       },
     );
+  }
+
+  Future<Either<Failure, GroupRoutePaginationEntity>> getGroupRoutes(
+      int groupId,
+      {int pageNumber = 1,
+      int rowsPerPage = 10}) {
+    var groupRouteRequest = GetGroupRouteReq(
+        groupId: groupId, pageNumber: pageNumber, rowsPerPage: rowsPerPage);
+    return sl<GetGroupRouteUsecase>().call(groupRouteRequest);
+  }
+
+  Future<Either<Failure, GroupParticipantPaginationEntity>> getParticipants(
+      int groupId,
+      {int pageNumber = 1,
+      int rowsPerPage = 10}) {
+    var groupParticipantRequest = GetGroupParticipantReq(
+        groupId: groupId, pageNumber: pageNumber, rowsPerPage: rowsPerPage);
+    return sl<GetParticipantListUsecase>().call(groupParticipantRequest);
   }
 
   Future<void> getGroupRouteDetail(int groupRouteId,

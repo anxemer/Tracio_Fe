@@ -1,4 +1,6 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
+
 import 'package:tracio_fe/data/map/models/route_blog.dart';
 import 'package:tracio_fe/domain/map/entities/route_blog.dart';
 
@@ -138,6 +140,84 @@ class Cyclist {
       userId: map['userId'] as int,
       userName: map['userName'] as String,
       profilePicture: map['profilePicture'] as String,
+    );
+  }
+}
+
+class GroupRoutePaginationEntity {
+  final List<GroupRouteEntity> groupList;
+  final int totalCount;
+  final int pageNumber;
+  final int pageSize;
+  final int totalPages;
+  final bool hasPreviousPage;
+  final bool hasNextPage;
+  GroupRoutePaginationEntity({
+    required this.groupList,
+    required this.totalCount,
+    required this.pageNumber,
+    required this.pageSize,
+    required this.totalPages,
+    required this.hasPreviousPage,
+    required this.hasNextPage,
+  });
+
+  GroupRoutePaginationEntity copyWith({
+    List<GroupRouteEntity>? groupList,
+    int? totalCount,
+    int? pageNumber,
+    int? pageSize,
+    int? totalPages,
+    bool? hasPreviousPage,
+    bool? hasNextPage,
+  }) {
+    return GroupRoutePaginationEntity(
+      groupList: groupList ?? this.groupList,
+      totalCount: totalCount ?? this.totalCount,
+      pageNumber: pageNumber ?? this.pageNumber,
+      pageSize: pageSize ?? this.pageSize,
+      totalPages: totalPages ?? this.totalPages,
+      hasPreviousPage: hasPreviousPage ?? this.hasPreviousPage,
+      hasNextPage: hasNextPage ?? this.hasNextPage,
+    );
+  }
+}
+
+class GroupParticipantPaginationEntity {
+  final List<Participant> participants;
+  final int totalCount;
+  final int pageNumber;
+  final int pageSize;
+  final int totalPages;
+  final bool hasPreviousPage;
+  final bool hasNextPage;
+  GroupParticipantPaginationEntity({
+    required this.participants,
+    required this.totalCount,
+    required this.pageNumber,
+    required this.pageSize,
+    required this.totalPages,
+    required this.hasPreviousPage,
+    required this.hasNextPage,
+  });
+
+  GroupParticipantPaginationEntity copyWith({
+    List<Participant>? participants,
+    int? totalCount,
+    int? pageNumber,
+    int? pageSize,
+    int? totalPages,
+    bool? hasPreviousPage,
+    bool? hasNextPage,
+  }) {
+    return GroupParticipantPaginationEntity(
+      participants: participants ?? this.participants,
+      totalCount: totalCount ?? this.totalCount,
+      pageNumber: pageNumber ?? this.pageNumber,
+      pageSize: pageSize ?? this.pageSize,
+      totalPages: totalPages ?? this.totalPages,
+      hasPreviousPage: hasPreviousPage ?? this.hasPreviousPage,
+      hasNextPage: hasNextPage ?? this.hasNextPage,
     );
   }
 }
