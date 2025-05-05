@@ -4,8 +4,10 @@ import 'package:intl/intl.dart';
 import 'package:tracio_fe/common/widget/drag_handle/drag_handle.dart';
 import 'package:tracio_fe/core/configs/theme/app_colors.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
+import 'package:tracio_fe/data/map/models/request/get_route_req.dart';
 import 'package:tracio_fe/presentation/library/bloc/route_filter_cubit.dart';
 import 'package:tracio_fe/presentation/library/bloc/route_filter_state.dart';
+import 'package:tracio_fe/presentation/map/bloc/route_cubit.dart';
 
 class RouteDateRangeFilter extends StatefulWidget {
   const RouteDateRangeFilter({super.key});
@@ -126,6 +128,11 @@ class _RouteDateRangeFilterState extends State<RouteDateRangeFilter> {
                     context
                         .read<RouteFilterCubit>()
                         .setDateRange(fromDate, toDate, getDateRangeText());
+                    GetRouteReq request = GetRouteReq(
+                        pageNumber: 1,
+                        pageSize: 10,
+                        isPlanned: state.isPlanned.toString());
+                    context.read<RouteCubit>().getRoutes(request);
                     Navigator.pop(context);
                   },
                   child:

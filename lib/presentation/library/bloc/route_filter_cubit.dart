@@ -2,7 +2,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tracio_fe/presentation/library/bloc/route_filter_state.dart';
 
 class RouteFilterCubit extends Cubit<RouteFilterState> {
-  RouteFilterCubit() : super(const RouteFilterState());
+  RouteFilterCubit({bool isPlanned = true})
+      : super(RouteFilterState(isPlanned: isPlanned));
 
   int maxLength = 50;
   int maxSpeed = 100;

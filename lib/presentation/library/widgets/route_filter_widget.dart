@@ -112,7 +112,7 @@ class _RouteFilterWidgetState extends State<RouteFilterWidget> {
           child: BlocProvider<RouteFilterCubit>.value(
             value: BlocProvider.of<RouteFilterCubit>(context),
             child: DraggableScrollableSheet(
-              expand: false, 
+              expand: false,
               builder: (_, scrollController) {
                 return RouteLocationFilter(scrollController: scrollController);
               },

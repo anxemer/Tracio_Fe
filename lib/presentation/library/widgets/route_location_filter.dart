@@ -96,7 +96,6 @@ class _RouteLocationFilterState extends State<RouteLocationFilter> {
                           },
                           child: const Text("Save",
                               style: TextStyle(color: Colors.blue)),
-                          // TODO: fetch by filter
                         ),
                       ],
                     ),

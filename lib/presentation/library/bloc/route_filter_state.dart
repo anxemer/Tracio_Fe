@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 class RouteFilterState extends Equatable {
+  final bool isPlanned;
   final DateTime? fromDate;
   final DateTime? toDate;
   final String dateString;
@@ -24,7 +25,8 @@ class RouteFilterState extends Equatable {
   final int maxMovingTime = 24;
 
   const RouteFilterState(
-      {this.fromDate,
+      {required this.isPlanned,
+      this.fromDate,
       this.toDate,
       this.dateString = "Date",
       this.location,
@@ -70,6 +72,7 @@ class RouteFilterState extends Equatable {
     String? sortField,
   }) {
     return RouteFilterState(
+        isPlanned: isPlanned,
         fromDate: fromDate ?? this.fromDate,
         toDate: toDate ?? this.toDate,
         dateString: dateString ?? this.dateString,

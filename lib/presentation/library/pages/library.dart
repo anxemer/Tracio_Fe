@@ -11,26 +11,65 @@ import 'package:tracio_fe/presentation/library/widgets/route_tab.dart';
 import 'package:tracio_fe/presentation/library/widgets/saved_tab.dart';
 import 'package:tracio_fe/presentation/map/bloc/get_location_cubit.dart';
 
-class LibraryPage extends StatelessWidget {
+class LibraryPage extends StatefulWidget {
   const LibraryPage({super.key});
 
   @override
+  State<LibraryPage> createState() => _LibraryPageState();
+}
+
+class _LibraryPageState extends State<LibraryPage>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+  int _selectedTabIndex = 0;
+  final Map<int, bool> _isMapView = {
+    0: false, // Rides
+    1: false, // Routes
+  };
+  bool _isSearching = false;
+  String _searchQuery = '';
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 4, vsync: this);
+    _tabController.addListener(() {
+      if (_tabController.indexIsChanging) return;
+      setState(() {
+        _selectedTabIndex = _tabController.index;
+      });
+    });
+  }
+
+  void _toggleViewMode() {
+    setState(() {
+      _isMapView[_selectedTabIndex] = !(_isMapView[_selectedTabIndex] ?? false);
+    });
+    _searchController.dispose();
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(create: (context) => RouteFilterCubit()),
-        BlocProvider(create: (context) => GetLocationCubit()),
-      ],
+    return BlocProvider(
+      create: (context) => GetLocationCubit(),
       child: DefaultTabController(
         length: 4,
         child: Scaffold(
           appBar: _buildAppBar(),
           body: Column(
             children: [
-              const TabBar(
+              TabBar(
+                controller: _tabController,
                 labelColor: Colors.black,
                 indicatorColor: AppColors.primary,
-                tabs: [
+                tabs: const [
                   Tab(text: "Rides"),
                   Tab(text: "Routes"),
                   Tab(text: "Saved"),
@@ -39,8 +78,20 @@ class LibraryPage extends StatelessWidget {
               ),
               Expanded(
                 child: TabBarView(
-                  physics: NeverScrollableScrollPhysics(),
-                  children: [RidesTab(), RouteTab(), SavedTab(), OfflineTab()],
+                  controller: _tabController,
+                  physics: const NeverScrollableScrollPhysics(),
+                  children: [
+                    BlocProvider(
+                      create: (context) => RouteFilterCubit(isPlanned: false),
+                      child: RidesTab(),
+                    ),
+                    BlocProvider(
+                      create: (context) => RouteFilterCubit(isPlanned: true),
+                      child: RouteTab(),
+                    ),
+                    SavedTab(),
+                    OfflineTab()
+                  ],
                 ),
               ),
             ],
@@ -50,26 +101,77 @@ class LibraryPage extends StatelessWidget {
     );
   }
 
-//TODO: Build app bar
   PreferredSizeWidget _buildAppBar() {
     return BasicAppbar(
-      hideBack: false,
+      hideBack: _isSearching,
       action: _buildAppbarAction(),
-      title: Text(
-        'Library',
-        style: TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.w400,
-          fontSize: AppSize.textHeading * 0.9.sp,
-        ),
-      ),
+      title: _isSearching
+          ? Container(
+              color: Colors.white,
+              child: TextField(
+                controller: _searchController,
+                autofocus: true,
+                style: const TextStyle(color: Colors.black87),
+                cursorColor: Colors.black87,
+                decoration: const InputDecoration(
+                  contentPadding:
+                      EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                  hintText: 'Search...',
+                  hintStyle: TextStyle(color: Colors.black87),
+                  border: InputBorder.none,
+                ),
+                onChanged: (value) {
+                  setState(() {
+                    _searchQuery = value;
+                  });
+                },
+              ),
+            )
+          : Text(
+              'Library',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w400,
+                fontSize: AppSize.textHeading * 0.9.sp,
+              ),
+            ),
     );
   }
 
   Widget _buildAppbarAction() {
-    return IconButton(
-      onPressed: () {},
-      icon: Icon(Icons.search),
-    );
+    final isMap = _isMapView[_selectedTabIndex] ?? false;
+
+    switch (_selectedTabIndex) {
+      case 0:
+      case 1:
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              icon: Icon(
+                _isSearching ? Icons.close : Icons.search,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                setState(() {
+                  if (_isSearching) {
+                    _isSearching = false;
+                    _searchController.clear();
+                    _searchQuery = '';
+                  } else {
+                    _isSearching = true;
+                  }
+                });
+              },
+            ),
+            IconButton(
+              icon: Icon(isMap ? Icons.list : Icons.map, color: Colors.white),
+              onPressed: _toggleViewMode,
+            ),
+          ],
+        );
+      default:
+        return const SizedBox.shrink();
+    }
   }
 }

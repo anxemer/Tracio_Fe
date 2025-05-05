@@ -30,7 +30,7 @@ class _RouteItemState extends State<RouteItem> {
               height: 60,
               fit: BoxFit.fill,
               errorBuilder: (context, error, stackTrace) =>
-                  Icon(Icons.broken_image, size: 80, color: Colors.grey),
+                  Icon(Icons.broken_image, size: 60, color: Colors.grey),
             ),
           ),
 

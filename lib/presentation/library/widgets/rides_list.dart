@@ -5,23 +5,23 @@ import 'package:tracio_fe/presentation/library/widgets/feature_section.dart';
 import 'package:tracio_fe/presentation/library/widgets/route_item.dart';
 import 'package:tracio_fe/presentation/map/bloc/route_cubit.dart';
 import 'package:tracio_fe/presentation/map/bloc/route_state.dart';
-import 'package:tracio_fe/presentation/map/pages/route_planner.dart';
+import 'package:tracio_fe/presentation/map/pages/cycling.dart';
 import 'package:flutter/cupertino.dart';
 
-class RouteList extends StatefulWidget {
-  const RouteList({super.key});
+class RidesList extends StatefulWidget {
+  const RidesList({super.key});
 
   @override
-  State<RouteList> createState() => _RouteListState();
+  State<RidesList> createState() => _RidesListState();
 }
 
-class _RouteListState extends State<RouteList> {
+class _RidesListState extends State<RidesList> {
   Future<void> _fetchRoutes() async {
     final GetRouteReq request = GetRouteReq(
       pageNumber: 1,
       pageSize: 5,
       sortAsc: false,
-      isPlanned: "true",
+      isPlanned: "false",
     );
     await context.read<RouteCubit>().getRoutes(request);
   }
@@ -62,13 +62,12 @@ class _RouteListState extends State<RouteList> {
                   if ((state is GetRouteLoaded && state.routes.isEmpty) ||
                       state is GetRouteFailure)
                     FeatureSection(
-                      banner: Image.asset("assets/images/routes.png"),
-                      title: "Plan Your Own Routes",
+                      banner: Image.asset("assets/images/rides.png"),
+                      title: "Cycling Mode",
                       description:
-                          "Use the Mobile Route Planner to plan your routes, in advance or on-the-fly, with turn-by-turn directions, waypoints, estimated ride times, and custom cues.",
-                      buttonText: "Start Planning",
-                      onPressed: () =>
-                          _navigateTo(context, const RoutePlanner()),
+                          "Track your rides and enjoy guided cycling with real-time metrics and insights.",
+                      buttonText: "Start Riding",
+                      onPressed: () => _navigateTo(context, CyclingPage()),
                     ),
                   const SizedBox(height: 100),
                 ],
