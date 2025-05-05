@@ -13,11 +13,15 @@ import 'package:tracio_fe/data/blog/models/request/react_blog_req.dart';
 import 'package:tracio_fe/domain/blog/entites/blog_entity.dart';
 import 'package:tracio_fe/domain/blog/usecase/react_blog.dart';
 import 'package:tracio_fe/domain/user/usecase/follow_user.dart';
+import 'package:tracio_fe/presentation/blog/bloc/comment/comment_input_cubit.dart';
 import 'package:tracio_fe/presentation/blog/pages/detail_blog.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:tracio_fe/presentation/blog/widget/animated_button_follow.dart';
 
+import '../../../domain/auth/entities/user.dart';
 import '../../../service_locator.dart';
+import '../../auth/bloc/authCubit/auth_cubit.dart';
+import '../../auth/bloc/authCubit/auth_state.dart';
 import '../bloc/comment/get_comment_cubit.dart';
 import '../pages/edit_blog.dart';
 
@@ -25,11 +29,11 @@ class PostBlog extends StatefulWidget {
   const PostBlog(
       {super.key,
       required this.blogEntity,
-      this.onLikeUpdated,
+      // required this.onLikeUpdated,
       this.isPersonal = false});
   final BlogEntity blogEntity;
   final bool isPersonal;
-  final Function()? onLikeUpdated;
+  // final Function() onLikeUpdated;
   @override
   State<PostBlog> createState() => _PostBlogState();
 }
@@ -55,6 +59,14 @@ class _PostBlogState extends State<PostBlog> {
 
   @override
   Widget build(BuildContext context) {
+    final state = context.read<AuthCubit>().state;
+    UserEntity? user;
+
+    if (state is AuthLoaded) {
+      user = state.user;
+    } else if (state is AuthChangeRole) {
+      user = state.user;
+    }
     var isDark = context.isDarkMode;
     List<String> mediaUrls = widget.blogEntity.mediaFiles
         .map((file) => file.mediaUrl ?? "")
@@ -133,23 +145,25 @@ class _PostBlogState extends State<PostBlog> {
                       ),
                     ],
                   )
-                : Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (!isAlreadyFollowed && _showFollowButton)
-                        AnimatedFollowButton(
-                          initialFillColor: Colors.transparent,
-                          onFollow: _handleFollowLogic,
-                          initialTextColor:
-                              !isDark ? Colors.black87 : Colors.white,
-                          width: 80.w,
-                          height: 30.h,
-                        )
-                      // else if (isAlreadyFollowed)
-                      //   const Text(
-                      //       "Followed") // Hoặc ButtonDesign với trạng thái "Unfollow"
-                    ],
-                  )),
+                : user?.userId != widget.blogEntity.userId
+                    ? Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (!isAlreadyFollowed && _showFollowButton)
+                            AnimatedFollowButton(
+                              initialFillColor: Colors.transparent,
+                              onFollow: _handleFollowLogic,
+                              initialTextColor:
+                                  !isDark ? Colors.black87 : Colors.white,
+                              width: 80.w,
+                              height: 30.h,
+                            )
+                          // else if (isAlreadyFollowed)
+                          //   const Text(
+                          //       "Followed") // Hoặc ButtonDesign với trạng thái "Unfollow"
+                        ],
+                      )
+                    : SizedBox.shrink()),
         SizedBox(
           height: 10.h,
         ),
@@ -169,22 +183,27 @@ class _PostBlogState extends State<PostBlog> {
         GestureDetector(
             onTap: () => AppNavigator.push(
                 context,
-                BlocProvider.value(
-                  value: context.read<GetCommentCubit>(),
-                  child: DetailBlocPage(
-                    blog: widget.blogEntity,
+                BlocProvider(
+                  create: (context) =>
+                      CommentInputCubit(widget.blogEntity.blogId),
+                  child: BlocProvider.value(
+                    value: context.read<GetCommentCubit>(),
+                    child: DetailBlocPage(
+                      userId: user!.userId!,
+                      blog: widget.blogEntity,
+                    ),
                   ),
                 )),
-            onDoubleTap: () async {
-              await sl<ReactBlogUseCase>().call(ReactBlogReq(
-                  entityId: widget.blogEntity.blogId, entityType: "blog"));
-              setState(() {
-                widget.blogEntity.likesCount++;
-                widget.blogEntity.isReacted = true;
-                isAnimating = true;
-              });
-              widget.onLikeUpdated;
-            },
+            // onDoubleTap: () async {
+            //   await sl<ReactBlogUseCase>().call(ReactBlogReq(
+            //       entityId: widget.blogEntity.blogId, entityType: "blog"));
+            //   setState(() {
+            //     widget.blogEntity.likesCount++;
+            //     widget.blogEntity.isReacted = true;
+            //     isAnimating = true;
+            //   });
+            //   widget.onLikeUpdated();
+            // },
             child: mediaUrls.isNotEmpty
                 ? Stack(alignment: Alignment.center, children: [
                     PictureCard(listImageUrl: mediaUrls),

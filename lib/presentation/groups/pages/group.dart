@@ -8,6 +8,7 @@ import 'package:tracio_fe/core/configs/theme/app_colors.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/core/services/signalR/implement/group_route_hub_service.dart';
 import 'package:tracio_fe/presentation/chat/pages/conversation.dart';
+import 'package:tracio_fe/presentation/groups/cubit/challenge_cubit.dart';
 import 'package:tracio_fe/presentation/groups/cubit/invitation_bloc.dart';
 import 'package:tracio_fe/presentation/groups/widgets/active_challenge_tab.dart';
 import 'package:tracio_fe/presentation/groups/widgets/challenge_tab.dart';
@@ -36,11 +37,18 @@ class _GroupPageState extends State<GroupPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => InvitationBloc(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => InvitationBloc(),
+        ),
+        BlocProvider(
+          create: (context) => ChallengeCubit()..getChallengeOverview(),
+        ),
+      ],
       child: DefaultTabController(
         length: 3,
-        initialIndex: 2,
+        initialIndex: widget.initialIndex,
         child: Scaffold(
           backgroundColor: Colors.grey.shade200,
           appBar: _buildAppBar(),

@@ -100,6 +100,7 @@ class _CommentItemState extends State<CommentItem> {
               final likeCount = widget.comment.likeCount;
 
               return _buildComment(
+                mediaUrls,
                 comment,
                 isReacted: isReacted,
                 likeCount: likeCount,
@@ -128,6 +129,7 @@ class _CommentItemState extends State<CommentItem> {
               final likeCount = reply.likeCount;
 
               return _buildComment(
+                reply.mediaUrls,
                 reply,
                 isReacted: isReacted,
                 likeCount: likeCount,
@@ -193,6 +195,7 @@ class _CommentItemState extends State<CommentItem> {
   }
 
   Widget _buildComment(
+    List<String> imageUrl,
     BaseCommentEntity comment, {
     required bool isReacted,
     required int likeCount,
@@ -222,25 +225,26 @@ class _CommentItemState extends State<CommentItem> {
                   style: TextStyle(
                     fontSize: AppSize.textMedium.sp,
                   )),
-              if (comment.mediaUrls.isNotEmpty)
-                SizedBox(
-                  height: AppSize.imageLarge.h,
-                  width: AppSize.imageLarge.w,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade100,
-                    ),
-                    margin: EdgeInsets.symmetric(horizontal: 4.0),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: PictureCard(
-                        listImageUrl: comment.mediaUrls,
-                        imageWidth: AppSize.imageSmall.w,
-                        imageheight: AppSize.imageSmall.h,
+              imageUrl.isNotEmpty
+                  ? SizedBox(
+                      height: AppSize.imageLarge.h,
+                      width: AppSize.imageLarge.w,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade100,
+                        ),
+                        margin: EdgeInsets.symmetric(horizontal: 4.0),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: PictureCard(
+                            listImageUrl: imageUrl,
+                            imageWidth: AppSize.imageLarge.w,
+                            imageheight: AppSize.imageLarge.h,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                ),
+                    )
+                  : SizedBox.shrink(),
             ],
           ),
         ),

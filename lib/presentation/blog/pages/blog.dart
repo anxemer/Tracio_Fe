@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tracio_fe/data/blog/models/request/get_blog_req.dart';
+import 'package:tracio_fe/presentation/auth/bloc/authCubit/auth_cubit.dart';
 import 'package:tracio_fe/presentation/blog/bloc/get_blog_cubit.dart';
 import 'package:tracio_fe/presentation/blog/widget/blog_list_view.dart';
 import 'package:tracio_fe/presentation/blog/widget/create_blog_header.dart';
 import 'package:tracio_fe/presentation/blog/widget/shortcut_key.dart';
 import 'package:tracio_fe/presentation/blog/widget/snapshot_home.dart';
 
+import '../../../domain/auth/entities/user.dart';
+import '../../auth/bloc/authCubit/auth_state.dart';
 import '../bloc/get_blog_state.dart';
 
 class BlogPage extends StatefulWidget {
@@ -50,6 +53,7 @@ class _BlogPageState extends State<BlogPage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+  
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -58,7 +62,9 @@ class _BlogPageState extends State<BlogPage> with TickerProviderStateMixin {
           headerSliverBuilder: (context, innerBoxIsScrolled) => [
             SliverAppBar(
               toolbarHeight: 60.h,
-              flexibleSpace: CreateBlogHeader(),
+              flexibleSpace: CreateBlogHeader(
+               
+              ),
             ),
             SliverToBoxAdapter(
               child:
@@ -101,8 +107,7 @@ class _BlogPageState extends State<BlogPage> with TickerProviderStateMixin {
             children: [
               // Tab 1: Blogs
               BlocProvider(
-                create: (_) =>
-                    GetBlogCubit()..getBlog(GetBlogReq()),
+                create: (_) => GetBlogCubit()..getBlog(GetBlogReq()),
                 child: const BlogListView(),
               ),
               // Tab 2: Routes

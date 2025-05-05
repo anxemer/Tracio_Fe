@@ -58,7 +58,7 @@ class _BlogListViewState extends State<BlogListView>
     return RefreshIndicator(
       onRefresh: _onRefresh,
       child: SingleChildScrollView(
-        // Sử dụng SingleChildScrollView để hỗ trợ RefreshIndicator
+        
         physics: const AlwaysScrollableScrollPhysics(),
         child: ConstrainedBox(
           constraints: BoxConstraints(

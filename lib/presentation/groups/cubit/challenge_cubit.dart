@@ -7,6 +7,7 @@ import 'package:tracio_fe/domain/challenge/entities/challenge_overview_response_
 import 'package:tracio_fe/domain/challenge/usecase/get_challenge_detail.dart';
 import 'package:tracio_fe/domain/challenge/usecase/get_challenge_overview.dart';
 import 'package:tracio_fe/domain/challenge/usecase/join_challenge.dart';
+import 'package:tracio_fe/domain/challenge/usecase/leave_challenge.dart';
 import 'package:tracio_fe/service_locator.dart';
 
 part 'challenge_state.dart';
@@ -39,7 +40,16 @@ class ChallengeCubit extends Cubit<ChallengeState> {
     result.fold((error) {
       emit(ChallengeFailure(error.message, error));
     }, (data) {
-      emit(JoinChallengeLoaded());
+      emit(JoinChallengeLoaded(data));
+    });
+  }
+
+  void leaveChallenge(int params) async {
+    var result = await sl<LeaveChallengeUseCase>().call(params);
+    result.fold((error) {
+      emit(ChallengeFailure(error.message, error));
+    }, (data) {
+      emit(LeaveChallengeLoaded());
     });
   }
 }

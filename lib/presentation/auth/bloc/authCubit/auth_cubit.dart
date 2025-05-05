@@ -3,6 +3,7 @@ import 'package:tracio_fe/core/erorr/failure.dart';
 import 'package:tracio_fe/core/usecase/usecase.dart';
 import 'package:tracio_fe/data/auth/models/change_role_req.dart';
 import 'package:tracio_fe/data/auth/models/login_req.dart';
+import 'package:tracio_fe/domain/auth/entities/user.dart';
 import 'package:tracio_fe/domain/auth/usecases/change_role.dart';
 import 'package:tracio_fe/domain/auth/usecases/get_cacher_user.dart';
 import 'package:tracio_fe/domain/auth/usecases/login.dart';
@@ -14,7 +15,6 @@ import '../../../../service_locator.dart';
 
 class AuthCubit extends Cubit<AuthState> {
   AuthCubit() : super(AuthInitial());
-
   void login(LoginReq login) async {
     try {
       emit(AuthLoading());
@@ -22,7 +22,7 @@ class AuthCubit extends Cubit<AuthState> {
       result.fold((failure) => emit(AuthFailure(failure)), (data) async {
         final result = await sl<GetCacherUserUseCase>().call(NoParams());
         result.fold(
-        (err) => emit(AuthFailure(err)),
+          (err) => emit(AuthFailure(err)),
           (user) => emit(AuthLoaded(user: user)),
         );
       });

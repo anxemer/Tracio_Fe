@@ -12,7 +12,6 @@ import 'package:tracio_fe/common/bloc/filter_cubit.dart';
 import 'package:tracio_fe/common/bloc/generic_data_cubit.dart';
 import 'package:tracio_fe/core/services/notifications/notification_service.dart';
 import 'package:tracio_fe/core/configs/theme/app_theme.dart';
-import 'package:tracio_fe/core/signalr_service.dart';
 import 'package:tracio_fe/firebase_options.dart';
 import 'package:tracio_fe/presentation/chat/bloc/bloc/conversation_bloc.dart';
 import 'package:tracio_fe/presentation/groups/cubit/group_cubit.dart';
@@ -114,7 +113,7 @@ class _MyAppState extends State<MyApp> {
           ),
           BlocProvider(create: (context) => GetReviewCubit()),
 
-          BlocProvider(create: (context) => AuthCubit()),
+          BlocProvider(create: (context) => AuthCubit()..checkUser()),
           BlocProvider(create: (context) => GenericDataCubit()),
           BlocProvider(create: (context) => LocationCubit()),
           BlocProvider(create: (context) => RouteCubit()),

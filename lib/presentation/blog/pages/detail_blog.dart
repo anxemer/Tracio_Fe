@@ -26,8 +26,9 @@ import '../widget/comment_input.dart';
 import '../widget/react_blog.dart';
 
 class DetailBlocPage extends StatefulWidget {
-  const DetailBlocPage({super.key, required this.blog});
+  const DetailBlocPage({super.key, required this.blog, required this.userId});
   final BlogEntity blog;
+  final int userId;
 
   @override
   State<DetailBlocPage> createState() => _DetailBlocPageState();
@@ -56,6 +57,7 @@ class _DetailBlocPageState extends State<DetailBlocPage> {
             );
           },
           (success) {
+            FocusScope.of(context).unfocus();
             context.read<GetCommentCubit>().getCommentBlog(GetCommentReq(
                   blogId: widget.blog.blogId,
                   commentId: 0,
@@ -72,7 +74,7 @@ class _DetailBlocPageState extends State<DetailBlocPage> {
             ReplyCommentReq(
               commentId: inputData.commentId!,
               content: content,
-              files: files,
+              mediaFiles: files,
               // replyId: 1,
             ),
           );
@@ -85,6 +87,7 @@ class _DetailBlocPageState extends State<DetailBlocPage> {
             },
             (success) {
               _commentInputCubit.updateToDefault(widget.blog.blogId);
+              FocusScope.of(context).unfocus();
               // sl<GetReplyCommentUsecase>().call(GetReplyCommentReq(
               //     commentId: inputData.commentId!,
               //     pageSize: 10,
@@ -106,7 +109,7 @@ class _DetailBlocPageState extends State<DetailBlocPage> {
             ReplyCommentReq(
               commentId: inputData.commentId!,
               content: content,
-              files: files,
+              mediaFiles: files,
               replyId: inputData.replyId,
             ),
           );
@@ -119,7 +122,7 @@ class _DetailBlocPageState extends State<DetailBlocPage> {
             },
             (success) {
               _commentInputCubit.updateToDefault(widget.blog.blogId);
-
+              FocusScope.of(context).unfocus();
               context.read<GetCommentCubit>().getCommentBlog(GetCommentReq(
                     blogId: widget.blog.blogId,
                     commentId: 0,
@@ -135,7 +138,7 @@ class _DetailBlocPageState extends State<DetailBlocPage> {
 
   @override
   void initState() {
-    _commentInputCubit = CommentInputCubit(widget.blog.blogId);
+    _commentInputCubit = context.read<CommentInputCubit>();
 
     super.initState();
   }
@@ -145,113 +148,113 @@ class _DetailBlocPageState extends State<DetailBlocPage> {
     Item? selectedItem;
     final commentCubit = context.read<GetCommentCubit>();
     return Scaffold(
-        appBar: BasicAppbar(
-          backgroundColor: AppColors.lightBackground,
-          height: 100.h,
-          hideBack: false,
-          title: Text(
-            'Blog',
-            style: TextStyle(
-                color:
-                    context.isDarkMode ? Colors.grey.shade200 : Colors.black87,
-                fontWeight: FontWeight.bold,
-                fontSize: AppSize.textHeading.sp),
-          ),
-          action: PopupMenuButton<Item>(
-            initialValue: selectedItem,
-            onSelected: (Item item) {
-              setState(() {
-                selectedItem = item;
-              });
-              if (item == Item.edit) {
-                // Chuyển sang trang Edit
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => EditBlogPostScreen(
-                            imageUrl: widget.blog.mediaFiles,
-                            blogId: widget.blog.blogId,
-                            initialContent: widget.blog.content,
-                            initialIsPublic: widget.blog.isPublic,
-                          )),
-                );
-              } else if (item == Item.delete) {}
-            },
-            itemBuilder: (BuildContext context) => <PopupMenuEntry<Item>>[
-              const PopupMenuItem<Item>(value: Item.edit, child: Text('Edit')),
-              const PopupMenuItem<Item>(
-                  value: Item.delete, child: Text('Delete')),
-            ],
-          ),
+      appBar: BasicAppbar(
+        backgroundColor: AppColors.lightBackground,
+        height: 100.h,
+        hideBack: false,
+        title: Text(
+          'Blog',
+          style: TextStyle(
+              color: context.isDarkMode ? Colors.grey.shade200 : Colors.black87,
+              fontWeight: FontWeight.bold,
+              fontSize: AppSize.textHeading.sp),
         ),
-        body: CustomScrollView(
-            scrollDirection: Axis.vertical,
-            physics: AlwaysScrollableScrollPhysics(),
-            slivers: [
-              SliverAppBar(
-                expandedHeight: 300.h,
-                automaticallyImplyLeading: false,
-                backgroundColor: Colors.transparent,
-                elevation: 0,
-                pinned: false,
-                floating: false,
-                flexibleSpace: FlexibleSpaceBar(
-                  background: PostBlog(blogEntity: widget.blog),
+        action: widget.userId == widget.blog.userId
+            ? PopupMenuButton<Item>(
+                initialValue: selectedItem,
+                onSelected: (Item item) {
+                  setState(() {
+                    selectedItem = item;
+                  });
+                  if (item == Item.edit) {
+                    // Chuyển sang trang Edit
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => EditBlogPostScreen(
+                                imageUrl: widget.blog.mediaFiles,
+                                blogId: widget.blog.blogId,
+                                initialContent: widget.blog.content,
+                                initialIsPublic: widget.blog.isPublic,
+                              )),
+                    );
+                  } else if (item == Item.delete) {}
+                },
+                itemBuilder: (BuildContext context) => <PopupMenuEntry<Item>>[
+                  const PopupMenuItem<Item>(
+                      value: Item.edit, child: Text('Edit')),
+                  const PopupMenuItem<Item>(
+                      value: Item.delete, child: Text('Delete')),
+                ],
+              )
+            : SizedBox.shrink(),
+      ),
+      body: CustomScrollView(
+          scrollDirection: Axis.vertical,
+          physics: AlwaysScrollableScrollPhysics(),
+          slivers: [
+            SliverAppBar(
+              expandedHeight: 300.h,
+              automaticallyImplyLeading: false,
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              pinned: false,
+              floating: false,
+              flexibleSpace: FlexibleSpaceBar(
+                background: PostBlog(
+                  blogEntity: widget.blog,
+                  // onLikeUpdated: () {},
                 ),
               ),
-              SliverAppBar(
-                expandedHeight: 50.h,
-                automaticallyImplyLeading: false,
-                backgroundColor: Colors.transparent,
-                elevation: 0,
-                pinned: false,
-                floating: false,
-                flexibleSpace: FlexibleSpaceBar(
-                  background: ReactBlog(
-                    blogEntity: widget.blog,
-                    textReactionAction: () {},
-                    cmtAction: () {},
+            ),
+            SliverAppBar(
+              expandedHeight: 50.h,
+              automaticallyImplyLeading: false,
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              pinned: false,
+              floating: false,
+              flexibleSpace: FlexibleSpaceBar(
+                background: ReactBlog(
+                  blogEntity: widget.blog,
+                  textReactionAction: () {},
+                  cmtAction: () {},
+                ),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: SizedBox(
+                // width: 400.w,
+                // height: MediaQuery.of(context).size.height / .5,
+                child: BlocProvider.value(
+                  value: commentCubit,
+                  child: Comment(
+                    isDetail: true,
+                    blogId: widget.blog.blogId,
                   ),
                 ),
               ),
-              SliverToBoxAdapter(
-                child: SizedBox(
-                  // width: 400.w,
-                  height: MediaQuery.of(context).size.height / .5,
-                  child: BlocProvider(
-                    create: (context) => CommentInputCubit(widget.blog.blogId),
-                    child: BlocProvider.value(
-                      value: commentCubit,
-                      child: Comment(
-                        isDetail: true,
-                        blogId: widget.blog.blogId,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: EdgeInsets.only(
-                    bottom: AppSize.apHorizontalPadding,
-                    left: 10,
-                    right: 10,
-                  ),
-                  child: BlocBuilder<CommentInputCubit, CommentInputState>(
-                    builder: (context, inputState) {
-                      return CommentInputWidget(
-                        inputData: inputState.inputData,
-                        onSubmit: _handleCommentSubmit,
-                        onReset: () {
-                          _commentInputCubit
-                              .updateToDefault(widget.blog.blogId);
-                        },
-                      );
-                    },
-                  ),
-                ),
-              ),
-            ]));
+            ),
+          ]),
+      bottomNavigationBar: Padding(
+        padding: EdgeInsets.only(
+          bottom: AppSize.apHorizontalPadding,
+          left: 10,
+          right: 10,
+        ),
+        child: BlocBuilder<CommentInputCubit, CommentInputState>(
+          builder: (context, inputState) {
+            return CommentInputWidget(
+              inputData: inputState.inputData,
+              onSubmit: _handleCommentSubmit,
+              onReset: () {
+                _commentInputCubit.updateToDefault(widget.blog.blogId);
+              },
+            );
+          },
+        ),
+      ),
+    );
   }
 }
 

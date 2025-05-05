@@ -13,7 +13,8 @@ abstract class ChallengeApiService {
   Future<ChallengeOverviewResponseModel> getChallengeOverview();
   Future<ChallengeModel> getChallengeDetail(int challengeId);
   Future<ChallengeModel> getRewardUser(int userId);
-  Future<Either> joinChallenge(int challengeId);
+  Future<int> joinChallenge(int challengeId);
+  Future<Either> leaveChallenge(int challengeId);
   Future<ParticipantsResponseModel> getParticipant(int challengeId);
 }
 
@@ -52,12 +53,14 @@ class ChallengeApiServiceImpl extends ChallengeApiService {
   }
 
   @override
-  Future<Either> joinChallenge(int challengeId) async {
+  Future<int> joinChallenge(int challengeId) async {
     try {
       var response = await sl<DioClient>()
           .post('${ApiUrl.apiChallenge}/$challengeId/invitation/request');
       if (response.statusCode == 200) {
-        return Right(true);
+        final data = response.data['result'];
+        final int joinedChallengeId = data['challengeId'];
+        return joinedChallengeId;
       }
       if (response.statusCode == 401) {
         throw AuthenticationFailure('');
@@ -100,6 +103,18 @@ class ChallengeApiServiceImpl extends ChallengeApiService {
         throw AuthenticationFailure('');
       }
       throw throw ExceptionFailure('');
+    } on DioException catch (e) {
+      throw ServerFailure(e.toString());
+    }
+  }
+
+  @override
+  Future<Either> leaveChallenge(int challengeId) async {
+    try {
+      await sl<DioClient>()
+          .post('${ApiUrl.apiChallenge}/$challengeId/participant/leave');
+
+      return Right(true);
     } on DioException catch (e) {
       throw ServerFailure(e.toString());
     }

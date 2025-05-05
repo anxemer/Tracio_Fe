@@ -22,27 +22,31 @@ class ChallengeTab extends StatefulWidget {
   State<ChallengeTab> createState() => _ChallengeTabState();
 }
 
-class _ChallengeTabState extends State<ChallengeTab>
-    with AutomaticKeepAliveClientMixin {
+class _ChallengeTabState extends State<ChallengeTab> {
   @override
-  bool get wantKeepAlive => true;
+  void initState() {
+    if (context.read<ChallengeCubit>().state is! ChallengeLoaded) {
+      context.read<ChallengeCubit>().getChallengeOverview();
+    }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     var isDark = context.isDarkMode;
-    super.build(context);
-    return BlocBuilder<ChallengeCubit, ChallengeState>(
-      builder: (context, state) {
-        if (state is ChallengeLoaded) {
-          List<ChallengeEntity> activeChallenge =
-              state.challengeOverview.activeChallenges;
-          List<ChallengeEntity> recommendChallenge =
-              state.challengeOverview.suggestedChallenges;
-          return RefreshIndicator(
-            onRefresh: () async {
-              context.read<ChallengeCubit>().getChallengeOverview();
-            },
-            child: SingleChildScrollView(
+
+    return RefreshIndicator(
+      onRefresh: () async {
+        context.read<ChallengeCubit>().getChallengeOverview();
+      },
+      child: BlocBuilder<ChallengeCubit, ChallengeState>(
+        builder: (context, state) {
+          if (state is ChallengeLoaded) {
+            List<ChallengeEntity> activeChallenge =
+                state.challengeOverview.activeChallenges;
+            List<ChallengeEntity> recommendChallenge =
+                state.challengeOverview.suggestedChallenges;
+            return SingleChildScrollView(
               scrollDirection: Axis.vertical,
               physics: AlwaysScrollableScrollPhysics(),
               child: Column(
@@ -117,11 +121,15 @@ class _ChallengeTabState extends State<ChallengeTab>
                                     itemCount: activeChallenge.length,
                                     itemBuilder: (context, index) {
                                       return InkWell(
-                                        onTap: () => AppNavigator.push(
-                                            context,
-                                            ChallengeProgressScreen(
-                                                challenge:
-                                                    activeChallenge[index])),
+                                        onTap: () {
+                                          AppNavigator.push(
+                                              context,
+                                              ChallengeProgressScreen(
+                                                challengeId:
+                                                    activeChallenge[index]
+                                                        .challengeId!,
+                                              ));
+                                        },
                                         child: _buildActiveChallengeItem(
                                             activeChallenge[index].title!,
                                             activeChallenge[index]
@@ -225,22 +233,22 @@ class _ChallengeTabState extends State<ChallengeTab>
                   ),
                 ],
               ),
-            ),
-          );
-        }
-        if (state is ChallengeLoading) {
-          return Center(
-            child: LoadingAnimationWidget.fourRotatingDots(
-              color: AppColors.secondBackground,
-              size: AppSize.iconExtraLarge,
-            ),
-          );
-        }
-        if (state is ChallengeFailure) {
+            );
+          }
+          if (state is ChallengeLoading) {
+            return Center(
+              child: LoadingAnimationWidget.fourRotatingDots(
+                color: AppColors.secondBackground,
+                size: AppSize.iconExtraLarge,
+              ),
+            );
+          }
+          if (state is ChallengeFailure) {
+            return Container();
+          }
           return Container();
-        }
-        return Container();
-      },
+        },
+      ),
     );
   }
 

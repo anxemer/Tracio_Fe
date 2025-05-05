@@ -4,11 +4,10 @@ import 'package:tracio_fe/core/usecase/usecase.dart';
 import 'package:tracio_fe/domain/challenge/repository/challenge_repository.dart';
 
 import '../../../service_locator.dart';
-import '../entities/participants_response_entity.dart';
 
-class GetParticipantsUseCase extends Usecase<ParticipantsResponseEntity, int> {
+class LeaveChallengeUseCase extends Usecase<bool, int> {
   @override
-  Future<Either<Failure, ParticipantsResponseEntity>> call(params) async {
-    return await sl<ChallengeRepository>().getParticipants(params);
+  Future<Either<Failure, bool>> call(params) async {
+    return await sl<ChallengeRepository>().leaveChallenge(params);
   }
 }

@@ -16,7 +16,6 @@ import 'package:tracio_fe/domain/shop/entities/response/shop_profile_entity.dart
 import 'package:tracio_fe/presentation/auth/pages/login.dart';
 import 'package:tracio_fe/presentation/service/bloc/get_booking/get_booking_cubit.dart';
 import 'package:tracio_fe/presentation/shop_owner/bloc/shop_profile/shop_profile_cubit.dart';
-import 'package:tracio_fe/presentation/shop_owner/bloc/shop_profile/shop_profile_manage/shop_profile_manage_cubit.dart';
 import 'package:tracio_fe/presentation/shop_owner/page/service_management.dart';
 import 'package:tracio_fe/presentation/shop_owner/page/shop_profile.dart';
 import 'package:tracio_fe/service_locator.dart';

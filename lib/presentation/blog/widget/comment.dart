@@ -47,7 +47,7 @@ class _CommentState extends State<Comment> {
 
   @override
   void dispose() {
-    _commentInputCubit.close();
+    // _commentInputCubit.close();
     super.dispose();
   }
 
@@ -72,6 +72,7 @@ class _CommentState extends State<Comment> {
             );
           },
           (success) {
+            FocusScope.of(context).unfocus();
             context.read<GetCommentCubit>().getCommentBlog(GetCommentReq(
                   blogId: widget.blogId,
                   commentId: 0,
@@ -88,7 +89,7 @@ class _CommentState extends State<Comment> {
             ReplyCommentReq(
               commentId: inputData.commentId!,
               content: content,
-              files: files,
+              mediaFiles: files,
               // replyId: 1,
             ),
           );
@@ -101,6 +102,7 @@ class _CommentState extends State<Comment> {
             },
             (success) {
               _commentInputCubit.updateToDefault(widget.blogId);
+              FocusScope.of(context).unfocus();
               // sl<GetReplyCommentUsecase>().call(GetReplyCommentReq(
               //     commentId: inputData.commentId!,
               //     pageSize: 10,
@@ -122,7 +124,7 @@ class _CommentState extends State<Comment> {
             ReplyCommentReq(
               commentId: inputData.commentId!,
               content: content,
-              files: files,
+              mediaFiles: files,
               replyId: inputData.replyId,
             ),
           );
@@ -135,7 +137,7 @@ class _CommentState extends State<Comment> {
             },
             (success) {
               _commentInputCubit.updateToDefault(widget.blogId);
-
+              FocusScope.of(context).unfocus();
               context.read<GetCommentCubit>().getCommentBlog(GetCommentReq(
                     blogId: widget.blogId,
                     commentId: 0,
@@ -177,7 +179,7 @@ class _CommentState extends State<Comment> {
               ),
             ),
             if (widget.isDetail)
-              _buildContent() 
+              _buildContent()
             else
               Flexible(child: _buildContent()),
             widget.isDetail
@@ -218,59 +220,35 @@ class _CommentState extends State<Comment> {
         final comments = state.listComment;
         return comments.isEmpty
             ? const Center(child: Text("Haven't Comment yet"))
-            : widget.isDetail
-                ? Column(
-                    children: comments
-                        .map((comment) => Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 20.h, vertical: 10.h),
-                              child: CommentItem(
-                                comment: comment,
-                                replyCount: comment.replyCount,
-                                onViewMoreReviewTap: () async {},
-                                onReact: () async {},
-                                onReply: () async {
-                                  _commentInputCubit
-                                      .updateToReplyComment(comment);
-                                  FocusScope.of(context)
-                                      .requestFocus(FocusNode());
-                                },
-                                onViewMoreReplyTap: (commentId) async {
-                                  await context
-                                      .read<GetCommentCubit>()
-                                      .getCommentBlogReply(commentId);
-                                },
-                              ),
-                            ))
-                        .toList(),
-                  )
-                : ListView.builder(
-                    shrinkWrap: true,
-                    physics: AlwaysScrollableScrollPhysics(),
-                    itemCount: comments.length,
-                    itemBuilder: (context, index) {
-                      final comment = comments[index];
-                      return Padding(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 20.h, vertical: 10.h),
-                        child: CommentItem(
-                          comment: comment,
-                          replyCount: comment.replyCount,
-                          onViewMoreReviewTap: () async {},
-                          onReact: () async {},
-                          onReply: () async {
-                            _commentInputCubit.updateToReplyComment(comment);
-                            FocusScope.of(context).requestFocus(FocusNode());
-                          },
-                          onViewMoreReplyTap: (commentId) async {
-                            await context
-                                .read<GetCommentCubit>()
-                                .getCommentBlogReply(commentId);
-                          },
-                        ),
-                      );
-                    },
+            : ListView.builder(
+                shrinkWrap: true,
+                physics: widget.isDetail
+                    ? NeverScrollableScrollPhysics()
+                    : AlwaysScrollableScrollPhysics(),
+                itemCount: comments.length,
+                itemBuilder: (context, index) {
+                  final comment = comments[index];
+                  return Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 20.h, vertical: 10.h),
+                    child: CommentItem(
+                      comment: comment,
+                      replyCount: comment.replyCount,
+                      onViewMoreReviewTap: () async {},
+                      onReact: () async {},
+                      onReply: () async {
+                        _commentInputCubit.updateToReplyComment(comment);
+                        FocusScope.of(context).requestFocus(FocusNode());
+                      },
+                      onViewMoreReplyTap: (commentId) async {
+                        await context
+                            .read<GetCommentCubit>()
+                            .getCommentBlogReply(commentId);
+                      },
+                    ),
                   );
+                },
+              );
       }
 
       return const Center(child: Text("Haven't Comment yet"));

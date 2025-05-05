@@ -27,13 +27,7 @@ class BottomNavBarManagerState extends State<BottomNavBarManager> {
   final double _navHeight = 60;
   bool _isNavVisible = true;
 
-  final List<Widget> _screens = [
-    HomePage(),
-    ExplorationPage(),
-    CyclingPage(),
-    GroupPage(),
-    MorePage(),
-  ];
+  late List<Widget> _screens;
   void _onTabChanged(int index) {
     setState(() {
       _selectedIndex = index;
@@ -57,6 +51,15 @@ class BottomNavBarManagerState extends State<BottomNavBarManager> {
   void initState() {
     _selectedIndex = widget.selectedIndex ?? 0;
     _isNavVisible = widget.isNavVisible ?? true;
+    _screens = [
+      HomePage(),
+      ExplorationPage(),
+      CyclingPage(),
+      GroupPage(
+        initialIndex: _selectedIndex == 3 ? 1 : 2,
+      ),
+      MorePage(),
+    ];
     Future.microtask(() async {
       await sl<ChatHubService>().connect();
     });

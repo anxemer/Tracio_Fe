@@ -5,12 +5,13 @@ import 'package:tracio_fe/domain/challenge/entities/participants_response_entity
 
 import '../entities/challenge_overview_response_entity.dart';
 
-abstract class ChallengeRepositories {
+abstract class ChallengeRepository {
   Future<Either<Failure, ChallengeOverviewResponseEntity>>
       getChallengeOverview();
   Future<Either<Failure, ChallengeEntity>> getChallengeDetail(int challengeId);
   Future<Either<Failure, ChallengeEntity>> getRewardUser(int userId);
-  Future<Either<Failure, bool>> joinChallenge(int challengeId);
-  Future<Either<Failure,ParticipantsResponseEntity>> getParticipants(
+  Future<Either<Failure, int>> joinChallenge(int challengeId);
+  Future<Either<Failure, bool>> leaveChallenge(int challengeId);
+  Future<Either<Failure, ParticipantsResponseEntity>> getParticipants(
       int challengeId);
 }

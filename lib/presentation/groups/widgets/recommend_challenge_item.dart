@@ -8,7 +8,7 @@ import 'package:tracio_fe/core/configs/theme/app_colors.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/domain/challenge/entities/challenge_entity.dart';
 import 'package:tracio_fe/presentation/groups/cubit/challenge_cubit.dart';
-import 'package:tracio_fe/presentation/groups/pages/challenge_loading.dart';
+import 'package:tracio_fe/presentation/groups/widgets/challenge_progress.dart';
 
 import 'challenge_detail.dart';
 
@@ -23,18 +23,27 @@ class RecommendChallengeItem extends StatelessWidget {
   Widget build(BuildContext context) {
     var isDark = context.isDarkMode;
     return BlocListener<ChallengeCubit, ChallengeState>(
+      listenWhen: (previous, current) {
+        return current is JoinChallengeLoaded;
+      },
       listener: (context, state) {
-        if (state is JoinChallengeLoaded) {
-          AppNavigator.push(context,
-              ChallengeJoiningLoadingScreen(challengeEntity: challenge));
+        if (state is JoinChallengeLoaded &&
+            state.challengeId == challenge.challengeId) {
+          AppNavigator.push(
+            context,
+            ChallengeProgressScreen(challengeId: challenge.challengeId!),
+          );
         }
       },
       child: InkWell(
-        onTap: () => AppNavigator.push(
+        onTap: () async {
+          AppNavigator.push(
             context,
             ChallengeDetailScreen(
               challengeId: challenge.challengeId!,
-            )),
+            ),
+          );
+        },
         child: Container(
           padding: const EdgeInsets.all(AppSize.apHorizontalPadding * 0.7),
           // width: MediaQuery.of(context).size.width * 0.4,

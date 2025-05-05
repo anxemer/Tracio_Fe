@@ -3,7 +3,6 @@ import 'package:dartz/dartz.dart';
 
 import 'package:tracio_fe/core/erorr/failure.dart';
 import 'package:tracio_fe/core/network/network_infor.dart';
-import 'package:tracio_fe/core/signalr_service.dart';
 import 'package:tracio_fe/data/blog/models/request/comment_blog_req.dart';
 import 'package:tracio_fe/data/blog/models/request/create_blog_req.dart';
 import 'package:tracio_fe/data/blog/models/request/get_reply_comment_req.dart';
@@ -28,12 +27,10 @@ import '../models/response/get_reply_comment_rep.dart';
 class BlogRepositoryImpl extends BlogRepository {
   final NetworkInfor networkInfo;
   final BlogApiService remoteDataSource;
-  final SignalRService signalRService;
 
   BlogRepositoryImpl({
     required this.networkInfo,
     required this.remoteDataSource,
-    required this.signalRService,
   });
   @override
   Future<Either<Failure, BlogResponse>> getBlogs(GetBlogReq params) async {

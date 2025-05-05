@@ -34,4 +34,10 @@ final class ChallengeDetailLoaded extends ChallengeState {
   List<Object> get props => [challenge];
 }
 
-final class JoinChallengeLoaded extends ChallengeState {}
+final class JoinChallengeLoaded extends ChallengeState {
+  final int challengeId;
+
+  const JoinChallengeLoaded(this.challengeId);
+}
+
+final class LeaveChallengeLoaded extends ChallengeState {}

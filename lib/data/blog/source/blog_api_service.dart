@@ -15,7 +15,6 @@ import 'package:tracio_fe/data/blog/models/response/category_model.dart';
 import 'package:tracio_fe/data/blog/models/response/get_comment_blog_rep.dart';
 import 'package:tracio_fe/data/blog/models/response/get_reaction_blog.dart';
 import 'package:tracio_fe/data/blog/models/response/get_reply_comment_rep.dart';
-import 'package:tracio_fe/data/blog/models/response/reply_comment_model.dart';
 import 'package:tracio_fe/service_locator.dart';
 
 import '../../../domain/blog/usecase/un_react_blog.dart';

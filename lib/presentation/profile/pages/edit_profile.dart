@@ -21,15 +21,11 @@ class EditProfilePage extends StatefulWidget {
 }
 
 class _EditProfilePageState extends State<EditProfilePage> {
-  final TextEditingController _firstNameCon = TextEditingController();
-  final TextEditingController _lastNameCon = TextEditingController();
+  final TextEditingController _fullnameCon = TextEditingController();
   final TextEditingController _cityCon = TextEditingController();
-  final TextEditingController _stateCon = TextEditingController();
+  final TextEditingController _districtCon = TextEditingController();
   final TextEditingController _bioCon = TextEditingController();
   final TextEditingController _genderCon = TextEditingController();
-  final TextEditingController _heightCon = TextEditingController();
-  final TextEditingController _weightCon = TextEditingController();
-  final TextEditingController _birthdatCon = TextEditingController();
 
   File? _imageFile;
   final ImagePicker _picker = ImagePicker();
@@ -53,6 +49,16 @@ class _EditProfilePageState extends State<EditProfilePage> {
         _imageFile = File(pickedFile.path);
       });
     }
+  }
+
+  @override
+  void initState() {
+    _fullnameCon.text = widget.user.userName!;
+    _bioCon.text = widget.user.bio!;
+    _cityCon.text = widget.user.city!;
+    _districtCon.text = widget.user.district!;
+    _genderCon.text = widget.user.gender!;
+    super.initState();
   }
 
   @override
@@ -137,66 +143,42 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       ],
                     ),
                     SizedBox(
-                      height: 10.h,
+                      height: 8.h,
                     ),
+                    SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.45,
+                        height: AppSize.formFieldHeight,
+                        child: InputTextFormField(
+                          controller: _fullnameCon,
+                          hint: 'Fullname',
+                          labelText: 'Fullname',
+                        )),
                     SizedBox(
                       width: double.infinity,
                       height: AppSize.formFieldHeight * 2 + 10,
-                      child: Stack(
+                      child: Row(
+                        spacing: 4.w,
                         children: [
-                          Align(
-                            alignment: Alignment.topLeft,
-                            child: SizedBox(
-                              width: MediaQuery.of(context).size.width * 0.45,
-                              height: AppSize.formFieldHeight,
-                              child: InputTextFormField(
-                                controller: _firstNameCon,
-                                hint: 'First Name',
-                                labelText: 'First Name',
-                              ),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.45,
+                            height: AppSize.formFieldHeight,
+                            child: InputTextFormField(
+                              controller: _cityCon,
+                              hint: 'City',
+                              labelText: 'City',
                             ),
                           ),
-                          Align(
-                            alignment: Alignment.topRight,
-                            child: SizedBox(
-                              width: MediaQuery.of(context).size.width * 0.45,
-                              height: AppSize.formFieldHeight,
-                              child: InputTextFormField(
-                                controller: _lastNameCon,
-                                hint: 'Last name',
-                                labelText: 'Last name',
-                              ),
-                            ),
-                          ),
-                          Align(
-                            alignment: Alignment.bottomLeft,
-                            child: SizedBox(
-                              width: MediaQuery.of(context).size.width * 0.45,
-                              height: AppSize.formFieldHeight,
-                              child: InputTextFormField(
-                                controller: _cityCon,
-                                hint: 'City',
-                                labelText: 'City',
-                              ),
-                            ),
-                          ),
-                          Align(
-                            alignment: Alignment.bottomRight,
-                            child: SizedBox(
-                              width: MediaQuery.of(context).size.width * 0.45,
-                              height: AppSize.formFieldHeight,
-                              child: InputTextFormField(
-                                controller: _stateCon,
-                                hint: 'State',
-                                labelText: 'State',
-                              ),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.45,
+                            height: AppSize.formFieldHeight,
+                            child: InputTextFormField(
+                              controller: _districtCon,
+                              hint: 'District',
+                              labelText: 'District',
                             ),
                           ),
                         ],
                       ),
-                    ),
-                    SizedBox(
-                      height: 10.h,
                     ),
                     SizedBox(
                       width: double.infinity,
@@ -238,77 +220,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       width: 400.w,
                       color: Colors.grey.shade400,
                     ),
-                    TextField(
-                      controller: _heightCon,
-                      decoration: InputDecoration(
-                          icon: Icon(
-                            Icons.person,
-                            color: Colors.grey.shade500,
-                          ),
-                          fillColor: Colors.transparent,
-                          hintText: 'Height',
-                          enabledBorder:
-                              OutlineInputBorder(borderSide: BorderSide.none),
-                          border:
-                              OutlineInputBorder(borderSide: BorderSide.none)),
-                    ),
-                    Container(
-                      height: 1.h,
-                      width: 400.w,
-                      color: Colors.grey.shade400,
-                    ),
-                    TextField(
-                      controller: _weightCon,
-                      decoration: InputDecoration(
-                          icon: Icon(
-                            Icons.person,
-                            color: Colors.grey.shade500,
-                          ),
-                          fillColor: Colors.transparent,
-                          hintText: 'Weight',
-                          enabledBorder:
-                              OutlineInputBorder(borderSide: BorderSide.none),
-                          border:
-                              OutlineInputBorder(borderSide: BorderSide.none)),
-                    ),
-                    Container(
-                      height: 1.h,
-                      width: 400.w,
-                      color: Colors.grey.shade400,
-                    ),
-                    TextField(
-                      controller: _birthdatCon,
-                      decoration: InputDecoration(
-                          icon: Icon(
-                            Icons.person,
-                            color: Colors.grey.shade500,
-                          ),
-                          fillColor: Colors.transparent,
-                          hintText: 'Birthday',
-                          enabledBorder:
-                              OutlineInputBorder(borderSide: BorderSide.none),
-                          border:
-                              OutlineInputBorder(borderSide: BorderSide.none)),
-                    ),
-                    Container(
-                      height: 1.h,
-                      width: 400.w,
-                      color: Colors.grey.shade400,
-                    ),
                   ],
                 ),
               ),
-              SizedBox(
-                height: 20.h,
-              ),
-              Text(
-                'Gender, height, weight and date of birth are used to calculate values like calories burned, optimal calorie intake, and heart rate ranges during exercises. You don’t have to provide this information, but the health recommendations you get will be more accurate if you do. ',
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: AppSize.textLarge,
-                  color: Colors.grey.shade700,
-                ),
-              )
             ],
           ),
         ),

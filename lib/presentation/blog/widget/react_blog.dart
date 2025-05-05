@@ -54,7 +54,7 @@ class _ReactBlogState extends State<ReactBlog> {
                 children: [
                   BlocBuilder<ReactionBloc, ReactionState>(
                     builder: (context, state) {
-                      final isReacted =
+                     
                           state.reactBlog.contains(widget.blogEntity.blogId);
                       return GestureDetector(
                           onTap: () async {
