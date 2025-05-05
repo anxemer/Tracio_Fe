@@ -62,4 +62,16 @@ class ChatRepositoryImpl extends ChatRepository {
       return right(data);
     });
   }
+
+  @override
+  Future<Either<Failure, MessagePaginationEntity>> getShopMessages(
+      int entityId, Map<String, String> params) async {
+    var returnedData =
+        await sl<ChatApiService>().getShopMessages(entityId, params);
+    return returnedData.fold((error) {
+      return left(error);
+    }, (data) {
+      return right(data);
+    });
+  }
 }

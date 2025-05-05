@@ -36,30 +36,48 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
   ) async {
     emit(ConversationLoading());
 
-    var response = await sl<GetConversationsUsecase>().call({
+    // First fetch: user conversations
+    final userResponse = await sl<GetConversationsUsecase>().call({
+      "isShop": 'false',
       "pageSize": event.pageSize.toString(),
       "pageNumber": event.pageNumber.toString()
     });
-    response.fold(
-      (failure) => emit(ConversationFailure(errorMessage: failure.message)),
-      (result) {
-        final List<ConversationEntity> conversations = result;
 
-        emit(ConversationLoaded(
-          pagination: ConversationPaginationEntity(
-              conversations: [],
-              totalCount: 0,
-              pageNumber: 0,
-              pageSize: 0,
-              totalPage: 0,
-              hasPreviousPage: false,
-              hasNextPage: false),
-          conversations: conversations,
-          pageNumber: event.pageNumber,
-          pageSize: event.pageSize,
-        ));
-      },
-    );
+    if (userResponse.isLeft()) {
+      final failure = userResponse.fold((f) => f, (_) => null);
+      return emit(ConversationFailure(errorMessage: failure!.message));
+    }
+
+    // Second fetch: shop conversations
+    final shopResponse = await sl<GetConversationsUsecase>().call({
+      "isShop": 'true',
+      "pageSize": event.pageSize.toString(),
+      "pageNumber": event.pageNumber.toString()
+    });
+
+    if (shopResponse.isLeft()) {
+      final failure = shopResponse.fold((f) => f, (_) => null);
+      return emit(ConversationFailure(errorMessage: failure!.message));
+    }
+
+    final userConversations = userResponse.fold((_) => [], (r) => r);
+    final shopConversations = shopResponse.fold((_) => [], (r) => r);
+
+    emit(ConversationLoaded(
+      pagination: ConversationPaginationEntity(
+        conversations: [...userConversations, ...shopConversations],
+        totalCount: userConversations.length + shopConversations.length,
+        pageNumber: event.pageNumber,
+        pageSize: event.pageSize,
+        totalPage: 0, // adjust if you have pagination data
+        hasPreviousPage: false,
+        hasNextPage: false,
+      ),
+      conversations: userConversations as List<ConversationEntity>,
+      shopConversations: shopConversations as List<ConversationEntity>,
+      pageNumber: event.pageNumber,
+      pageSize: event.pageSize,
+    ));
   }
 
   Future<void> _onGetMessages(
@@ -260,20 +278,31 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
   ) async {
     final state = this.state;
     if (state is ConversationLoaded) {
-      final updatedConversations =
+      final updatedUserList =
           List<ConversationEntity>.from(state.conversations);
+      final updatedShopList =
+          List<ConversationEntity>.from(state.shopConversations);
+      final incoming = event.conversation;
 
-      final index = updatedConversations.indexWhere(
-        (c) => c.conversationId == event.conversation.conversationId,
+      final userIndex = updatedUserList.indexWhere(
+        (c) => c.conversationId == incoming.conversationId,
       );
 
-      if (index != -1) {
-        updatedConversations.removeAt(index);
+      final shopIndex = updatedShopList.indexWhere(
+        (c) => c.conversationId == incoming.conversationId,
+      );
+
+      if (userIndex != -1) {
+        updatedUserList.removeAt(userIndex);
+        updatedUserList.insert(0, incoming);
+      } else if (shopIndex != -1) {
+        updatedShopList.removeAt(shopIndex);
+        updatedShopList.insert(0, incoming);
       }
-      updatedConversations.insert(0, event.conversation);
 
       emit(state.copyWith(
-        conversations: updatedConversations,
+        conversations: updatedUserList,
+        shopConversations: updatedShopList,
         refreshKey: state.refreshKey + 1,
       ));
     }

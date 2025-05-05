@@ -16,6 +16,7 @@ final class ConversationLoading extends ConversationState {
 
 final class ConversationLoaded extends ConversationState {
   final List<ConversationEntity> conversations;
+  final List<ConversationEntity> shopConversations;
   final ConversationPaginationEntity pagination;
   final int pageSize;
   final int pageNumber;
@@ -23,6 +24,7 @@ final class ConversationLoaded extends ConversationState {
 
   const ConversationLoaded(
       {required this.conversations,
+      required this.shopConversations,
       required this.pagination,
       this.pageSize = 10,
       this.pageNumber = 1,
@@ -30,6 +32,7 @@ final class ConversationLoaded extends ConversationState {
 
   ConversationLoaded copyWith({
     List<ConversationEntity>? conversations,
+    List<ConversationEntity>? shopConversations,
     int? pageSize,
     int? pageNumber,
     int? refreshKey,
@@ -37,6 +40,7 @@ final class ConversationLoaded extends ConversationState {
     return ConversationLoaded(
         pagination: pagination,
         conversations: conversations ?? this.conversations,
+        shopConversations: shopConversations ?? this.shopConversations,
         pageSize: pageSize ?? this.pageSize,
         pageNumber: pageNumber ?? this.pageNumber,
         refreshKey: refreshKey ?? this.refreshKey);
@@ -45,6 +49,7 @@ final class ConversationLoaded extends ConversationState {
   @override
   List<Object?> get props => [
         conversations,
+        shopConversations,
         pagination,
         pageSize,
         pageNumber,

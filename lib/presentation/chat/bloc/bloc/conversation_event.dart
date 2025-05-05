@@ -10,7 +10,6 @@ sealed class ConversationEvent extends Equatable {
 final class GetConversations extends ConversationEvent {
   final int pageNumber;
   final int pageSize;
-
   const GetConversations({
     this.pageNumber = 1,
     this.pageSize = 10,

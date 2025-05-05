@@ -358,4 +358,10 @@ class ApiUrl {
   static Uri urlGetConversationByGroupId(int groupId) {
     return Uri.parse("$portChat/api/conversations/$groupId/conversation");
   }
+
+  static Uri urlGetShopMessages(int entityId, Map<String, String>? params) {
+    return Uri.parse(
+            "$portChat/api/conversations/$entityId/shop-conversation/messages")
+        .replace(queryParameters: params);
+  }
 }

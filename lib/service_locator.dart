@@ -42,6 +42,7 @@ import 'package:tracio_fe/domain/auth/repositories/auth_repository.dart';
 import 'package:tracio_fe/domain/auth/usecases/change_role.dart';
 import 'package:tracio_fe/domain/auth/usecases/check_email_verified.dart';
 import 'package:tracio_fe/domain/blog/usecase/get_bookmark_blog.dart';
+import 'package:tracio_fe/domain/chat/usecases/get_shop_messages_usecase.dart';
 import 'package:tracio_fe/domain/shop/usecase/edit_shop.dart';
 import 'package:tracio_fe/domain/shop/usecase/get_review_booking.dart';
 import 'package:tracio_fe/domain/shop/usecase/get_shop_profile.dart';
@@ -333,4 +334,5 @@ Future<void> initializeDependencies() async {
   sl.registerFactory<ReplyReviewUseCase>(() => ReplyReviewUseCase());
   sl.registerFactory<RegisterShopUseCase>(() => RegisterShopUseCase());
   sl.registerFactory<EditShopUseCase>(() => EditShopUseCase());
+  sl.registerFactory<GetShopMessagesUsecase>(() => GetShopMessagesUsecase());
 }
