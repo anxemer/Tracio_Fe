@@ -31,11 +31,11 @@ class _GroupDetailActivityState extends State<GroupDetailActivity> {
                 children: [
                   if (!state.groupRouteDetailsError)
                     Text(
-                      state.groupRoutes.groupList.isNotEmpty
+                      state.groupRoutes.groupRouteList.isNotEmpty
                           ? "Upcoming Activities"
                           : "No upcoming activities",
                       style: TextStyle(
-                        color: state.groupRoutes.groupList.isNotEmpty
+                        color: state.groupRoutes.groupRouteList.isNotEmpty
                             ? AppColors.primary
                             : Colors.black54,
                       ),
@@ -64,20 +64,21 @@ class _GroupDetailActivityState extends State<GroupDetailActivity> {
                 ],
               ),
               const SizedBox(height: AppSize.apHorizontalPadding / 2),
-              if (state.groupRoutes.groupList.isNotEmpty)
+              if (state.groupRoutes.groupRouteList.isNotEmpty)
                 ListView.separated(
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),
-                  itemCount: state.groupRoutes.groupList.length,
+                  itemCount: state.groupRoutes.groupRouteList.length,
                   separatorBuilder: (_, __) => SizedBox(height: 12),
                   itemBuilder: (context, index) {
-                    final activity = state.groupRoutes.groupList[index];
+                    final activity = state.groupRoutes.groupRouteList[index];
                     return GroupActivityLoaded(
                       groupRoute: activity,
                     );
                   },
                 ),
-              if (state.groupRoutes.groupList.isEmpty && !state.groupRouteDetailsError)
+              if (state.groupRoutes.groupRouteList.isEmpty &&
+                  !state.groupRouteDetailsError)
                 EmptyGroupActivity(),
               if (state.groupRouteDetailsError)
                 SizedBox(

@@ -3,7 +3,7 @@ import 'package:tracio_fe/domain/groups/entities/group_route.dart';
 
 class GetGroupRouteListRep extends GroupRoutePaginationEntity {
   GetGroupRouteListRep({
-    required super.groupList,
+    required super.groupRouteList,
     required super.totalCount,
     required super.pageNumber,
     required super.pageSize,
@@ -14,7 +14,7 @@ class GetGroupRouteListRep extends GroupRoutePaginationEntity {
 
   factory GetGroupRouteListRep.fromMap(Map<String, dynamic> map) {
     return GetGroupRouteListRep(
-      groupList: List<GetGroupRouteRep>.from(
+      groupRouteList: List<GetGroupRouteRep>.from(
         (map['items'] as List).map(
           (x) => GetGroupRouteRep.fromMap(x as Map<String, dynamic>),
         ),

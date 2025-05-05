@@ -33,7 +33,7 @@ class _GroupActivityFeedState extends State<GroupActivityFeed> {
                 onRefresh: () async {
                   _onRefresh();
                 },
-                child: _buildActivityList(state.groupRoutes.groupList,
+                child: _buildActivityList(state.groupRoutes.groupRouteList,
                     isPrivate: !state.group.isPublic),
               );
             }

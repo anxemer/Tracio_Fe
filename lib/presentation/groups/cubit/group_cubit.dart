@@ -71,7 +71,7 @@ class GroupCubit extends Cubit<GroupState> {
       },
       (group) async {
         GroupRoutePaginationEntity groupRoutes = GroupRoutePaginationEntity(
-          groupList: [],
+          groupRouteList: [],
           totalCount: 0,
           pageNumber: 1,
           pageSize: 10,
@@ -143,8 +143,9 @@ class GroupCubit extends Cubit<GroupState> {
     return sl<GetParticipantListUsecase>().call(groupParticipantRequest);
   }
 
-  Future<void> getGroupRouteDetail(int groupRouteId,
-      {int pageNumber = 1, int pageSize = 5}) async {
+  Future<void> getGroupRouteDetail(
+      int groupRouteId, GetGroupDetailSuccess currentState,
+      {int pageNumber = 1, int pageSize = 10}) async {
     final result = await sl<GetGroupRouteDetailUsecase>().call(
       GetGroupRouteDetailUsecaseParams(
         groupRouteId: groupRouteId,
@@ -155,23 +156,15 @@ class GroupCubit extends Cubit<GroupState> {
 
     result.fold(
       (error) {
-        if (state is GetGroupDetailSuccess) {
-          var currentState = state as GetGroupDetailSuccess;
-          emit(currentState.copyWith(
-            groupRouteDetailsError: true,
-          ));
-        } else {
-          emit(GroupFailure(errorMessage: error.toString()));
-        }
+        emit(currentState.copyWith(
+          groupRouteDetailsError: true,
+        ));
       },
       (data) {
-        if (state is GetGroupDetailSuccess) {
-          var currentState = state as GetGroupDetailSuccess;
-          emit(currentState.copyWith(
-            groupRouteDetails: data.groupRouteDetails,
-            groupRouteDetailsError: false,
-          ));
-        }
+        emit(currentState.copyWith(
+          groupRouteDetails: data.groupRouteDetails,
+          groupRouteDetailsError: false,
+        ));
       },
     );
   }
