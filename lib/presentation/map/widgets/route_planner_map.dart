@@ -171,8 +171,8 @@ class _RoutePlannerMapState extends State<RoutePlannerMap> {
   Future<void> _setupPositionTracking() async {
     userPositionStream = await locationTracking.setupPositionTracking();
     geolocator.LocationSettings locationSettings = geolocator.LocationSettings(
-      accuracy: geolocator.LocationAccuracy.high,
-      distanceFilter: 100,
+      accuracy: geolocator.LocationAccuracy.bestForNavigation,
+      distanceFilter: 0,
     );
     userPositionStream?.cancel();
     userPositionStream = geolocator.Geolocator.getPositionStream(

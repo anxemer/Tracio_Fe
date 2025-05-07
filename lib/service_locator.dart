@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tracio_fe/core/network/network_infor.dart';
 import 'package:tracio_fe/core/services/signalR/implement/chat_hub_service.dart';
 import 'package:tracio_fe/core/services/signalR/implement/group_route_hub_service.dart';
+import 'package:tracio_fe/core/services/signalR/implement/matching_hub_service.dart';
 import 'package:tracio_fe/core/services/signalR/signalr_core_service.dart';
 import 'package:tracio_fe/core/signalr_service.dart';
 import 'package:tracio_fe/data/auth/repositories/auth_repositoty_impl.dart';
@@ -210,14 +211,16 @@ Future<void> initializeDependencies() async {
       () => ChallengeRepositoryImpl(remoteDataSource: sl()));
   // * gRPC & Hubs
   sl.registerLazySingleton(() => SignalRCoreService());
-
-  sl.registerLazySingleton<ITrackingGrpcService>(() => TrackingGrpcService());
+  sl.registerSingletonAsync<ITrackingGrpcService>(
+    () => TrackingGrpcService.init(),
+  );
   sl.registerLazySingleton<ITrackingHubService>(() => TrackingHubService());
 
   //when hub services is depended on SignalRCoreService
   sl.registerLazySingleton(
       () => GroupRouteHubService(sl<SignalRCoreService>()));
   sl.registerLazySingleton(() => ChatHubService(sl<SignalRCoreService>()));
+  sl.registerLazySingleton(() => MatchingHubService(sl<SignalRCoreService>()));
   // * USECASES--use registerFactory
   sl.registerFactory<GetBlogsUseCase>(() => GetBlogsUseCase());
   sl.registerFactory<GetBookmarkBlogsUseCase>(() => GetBookmarkBlogsUseCase());
@@ -335,4 +338,6 @@ Future<void> initializeDependencies() async {
   sl.registerFactory<RegisterShopUseCase>(() => RegisterShopUseCase());
   sl.registerFactory<EditShopUseCase>(() => EditShopUseCase());
   sl.registerFactory<GetShopMessagesUsecase>(() => GetShopMessagesUsecase());
+
+  await sl.allReady();
 }

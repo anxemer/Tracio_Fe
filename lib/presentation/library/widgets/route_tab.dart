@@ -38,7 +38,8 @@ class _RouteTabState extends State<RouteTab>
         BlocConsumer<RouteCubit, RouteState>(
             listener: (context, state) {},
             builder: (context, state) {
-              if (state is GetRouteLoaded && state.routes.isNotEmpty) {
+              if (state is GetRouteLoaded &&
+                  state.routes.where((route) => route.isPlanned).isNotEmpty) {
                 return Container(
                   width: double.infinity,
                   height: 50.h,

@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:tracio_fe/core/constants/api_url.dart';
 import 'package:tracio_fe/core/erorr/failure.dart';
 import 'package:tracio_fe/core/network/dio_client.dart';
+import 'package:tracio_fe/data/map/models/request/finish_tracking_req.dart';
 import 'package:tracio_fe/data/map/models/request/post_reply_req.dart';
 import 'package:tracio_fe/data/map/models/request/post_review_req.dart';
 import 'package:tracio_fe/data/map/models/response/get_route_blog_rep.dart';
@@ -13,6 +14,7 @@ import 'package:tracio_fe/data/map/models/request/mapbox_direction_req.dart';
 import 'package:tracio_fe/data/map/models/request/post_route_req.dart';
 import 'package:tracio_fe/data/map/models/response/get_route_reply_rep.dart';
 import 'package:tracio_fe/data/map/models/route_detail.dart';
+import 'package:tracio_fe/domain/map/entities/route_detail.dart';
 import 'package:tracio_fe/service_locator.dart';
 
 abstract class RouteApiService {
@@ -20,7 +22,8 @@ abstract class RouteApiService {
   Future<Either> postRoute(PostRouteReq request);
   Future<Either> getRouteUsingMapBox(MapboxDirectionsRequest request);
   Future<Either<Failure, dynamic>> startTracking(Map<String, dynamic> request);
-  Future<Either<Failure, dynamic>> finishTracking(Map<String, dynamic> request);
+  Future<Either<Failure, RouteDetailEntity>> finishTracking(
+      FinishTrackingReq request);
   Future<Either<Failure, RouteDetailModel>> getRouteDetail(int routeId);
   Future<Either<Failure, dynamic>> getRouteBlogList(Map<String, String> params);
   Future<Either<Failure, dynamic>> getRouteBlogReviews(int routeId,
@@ -95,14 +98,15 @@ class RouteApiServiceImpl extends RouteApiService {
   }
 
   @override
-  Future<Either<Failure, dynamic>> finishTracking(
-      Map<String, dynamic> request) async {
+  Future<Either<Failure, RouteDetailEntity>> finishTracking(
+      FinishTrackingReq request) async {
     try {
-      var response =
-          await sl<DioClient>().post(ApiUrl.finishTracking, data: request);
+      FormData formData = await request.toFormData();
+      var response = await sl<DioClient>().put(ApiUrl.finishTracking,
+          data: formData, options: Options(contentType: "multipart/form-data"));
 
-      if (response.statusCode == 201) {
-        return right(response.data);
+      if (response.statusCode == 200) {
+        return right(RouteDetailModel.fromMap(response.data["result"]));
       } else if (response.statusCode == 403) {
         return Left(AuthorizationFailure(
             'You do not have permission to perform this action.', 403));

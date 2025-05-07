@@ -3,10 +3,12 @@ import 'dart:async';
 import 'package:tracio_fe/core/constants/api_url.dart';
 import 'package:tracio_fe/core/logger/signalr_logger.dart';
 import 'package:tracio_fe/core/services/signalR/signalr_core_service.dart';
+import 'package:tracio_fe/data/auth/sources/auth_local_source/auth_local_source.dart';
 import 'package:tracio_fe/data/chat/models/conversation.dart';
 import 'package:tracio_fe/data/chat/models/message.dart';
 import 'package:tracio_fe/domain/chat/entities/conversation.dart';
 import 'package:tracio_fe/domain/chat/entities/message.dart';
+import 'package:tracio_fe/service_locator.dart';
 
 class ChatHubService {
   final SignalRCoreService _core;
@@ -20,9 +22,9 @@ class ChatHubService {
       _conversationUpdateStream.stream;
 
   ChatHubService(this._core);
-  String accessToken =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJPWmVUMUV1OUU4ZUt5dXo3UndqRXdiYkl5TlYyIiwianRpIjoiZGFmMjFkODgtZjkxZC00MmZkLTk3ZWYtNTg4YzlhZTI1Y2ZhIiwicm9sZSI6InVzZXIiLCJ1bmlxdWVfbmFtZSI6Ikzhu5ljIFRy4bqnbiBNaW5oIChTRTE3MTI0NikiLCJlbWFpbCI6InRybWlubG9jQGdtYWlsLmNvbSIsImN1c3RvbV9pZCI6IjY1IiwiYXZhdGFyIjoiaHR0cHM6Ly91c2VyYXZhdGFydHJhY2lvLnMzLmFtYXpvbmF3cy5jb20vN2ZjZDIzZmItNzQyYS00NmFmLTgyNDAtNWFkZmE1NGE0NTJjX2F2YXRhciUyMGZpbmFsLmpwZyIsImNvdW50X3JvbGUiOiIxIiwibmJmIjoxNzQ1ODIzNDAwLCJleHAiOjIwNjEzNTYyMDAsImlhdCI6MTc0NTgyMzQwMCwiaXNzIjoiVXNlciIsImF1ZCI6Imh0dHBzOi8vdXNlci50cmFjaW8uc3BhY2UifQ.9eDF8yY80eqaSrzTcCpRBFq-Ok6DFDnKUitVAqi-0k4";
+
   Future<void> connect() async {
+    String accessToken = await sl<AuthLocalSource>().getToken();
     signalrLogger
         .i('[ChatHubService] 🔌 Connecting to ${ApiUrl.chatHubUrl}...');
     await _core.init("${ApiUrl.chatHubUrl}?token=$accessToken");
@@ -39,6 +41,7 @@ class ChatHubService {
     signalrLogger
         .i('[ChatHubService] 📤 Joining conversation: $conversationId');
     try {
+      String accessToken = await sl<AuthLocalSource>().getToken();
       await _core.invoke('JoinConversation',
           args: [conversationId],
           hubUrl: "${ApiUrl.chatHubUrl}?token=$accessToken");
@@ -57,6 +60,7 @@ class ChatHubService {
     signalrLogger
         .i('[ChatHubService] 📤 Sending LeaveConversation($conversationId)');
     try {
+      String accessToken = await sl<AuthLocalSource>().getToken();
       if (_core.isConnected) {
         await _core.invoke('LeaveConversation',
             args: [conversationId],
@@ -101,9 +105,10 @@ class ChatHubService {
     }
   }
 
-  void _handleReconnect({String? connectionId}) {
+  void _handleReconnect({String? connectionId}) async {
     signalrLogger.i('🔄 Rejoining conversations after reconnect...');
 
+    String accessToken = await sl<AuthLocalSource>().getToken();
     for (final id in _joinedConversationIds) {
       _core
           .invoke('JoinConversation',

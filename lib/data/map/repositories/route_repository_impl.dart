@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:tracio_fe/core/erorr/failure.dart';
+import 'package:tracio_fe/data/map/models/request/finish_tracking_req.dart';
 import 'package:tracio_fe/data/map/models/request/post_reply_req.dart';
 import 'package:tracio_fe/data/map/models/request/post_review_req.dart';
 import 'package:tracio_fe/data/map/models/response/get_route_blog_rep.dart';
@@ -50,8 +51,8 @@ class RouteRepositoryImpl extends RouteRepository {
   }
 
   @override
-  Future<Either<Failure, dynamic>> finishTracking(
-      Map<String, dynamic> request) async {
+  Future<Either<Failure, RouteDetailEntity>> finishTracking(
+      FinishTrackingReq request) async {
     var returnedData = await sl<RouteApiService>().finishTracking(request);
     return returnedData.fold((error) {
       return left(error);

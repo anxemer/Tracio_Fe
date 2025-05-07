@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,7 +16,7 @@ import 'package:tracio_fe/presentation/map/bloc/map_state.dart';
 import 'package:tracio_fe/presentation/map/bloc/route_cubit.dart';
 import 'package:tracio_fe/presentation/map/pages/snapshot_display_page.dart';
 
-//TODO: Hover Build Metric session for more detai info
+//TODO: Hover Build Metric session for more detail info
 class RouteDetailPanel extends StatefulWidget {
   final ScrollController scrollController;
 
@@ -199,7 +197,8 @@ class _RouteDetailPanelState extends State<RouteDetailPanel> {
                           final request = PostRouteReq(
                             routeName: routeName ?? "New Route",
                             description: routeDescription,
-                            privacyLevel:routePrivacy== 0?"Private":"public",
+                            privacyLevel:
+                                routePrivacy == 0 ? "Private" : "public",
                             origin: origin,
                             destination: destination,
                             waypoints: waypoints,

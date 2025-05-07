@@ -181,7 +181,7 @@ class _RoutePlannerState extends State<RoutePlanner> {
               ),
 
               // Top action bar
-              Positioned( 
+              Positioned(
                 top: _initTopBarTopPosition,
                 left: 20,
                 right: 20,
@@ -227,7 +227,6 @@ class _RoutePlannerState extends State<RoutePlanner> {
             locationSettings: locationSettings)
         .then((geolocator.Position? position) {
       if (position != null) {
-        // Update camera position using MapCubit
         if (context.mounted) {
           BlocProvider.of<MapCubit>(context).animateCamera(
             mapbox.Position(position.longitude, position.latitude),

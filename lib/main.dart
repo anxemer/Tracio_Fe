@@ -19,12 +19,12 @@ import 'package:tracio_fe/presentation/groups/cubit/group_cubit.dart';
 import 'package:tracio_fe/presentation/library/bloc/reaction/bloc/reaction_bloc.dart';
 import 'package:tracio_fe/presentation/map/bloc/route_cubit.dart';
 import 'package:tracio_fe/presentation/blog/bloc/category/get_category_cubit.dart';
+import 'package:tracio_fe/presentation/map/bloc/tracking/bloc/tracking_bloc.dart';
 import 'package:tracio_fe/presentation/profile/bloc/user_profile_cubit.dart';
 import 'package:tracio_fe/presentation/service/bloc/bookingservice/reschedule_booking/cubit/reschedule_booking_cubit.dart';
 import 'package:tracio_fe/presentation/service/bloc/get_booking/get_booking_cubit.dart';
 import 'package:tracio_fe/presentation/service/bloc/service_bloc/get_service_cubit.dart';
 import 'package:tracio_fe/presentation/splash/page/splash.dart';
-import 'package:tracio_fe/presentation/map/bloc/tracking_location_bloc.dart';
 import 'package:tracio_fe/presentation/auth/bloc/authCubit/auth_cubit.dart';
 import 'package:tracio_fe/presentation/blog/bloc/comment/get_comment_cubit.dart';
 import 'package:tracio_fe/presentation/splash/bloc/splash_cubit.dart';
@@ -40,6 +40,8 @@ import 'presentation/service/bloc/service_bloc/review_service_cubit/get_reviewcu
 import 'presentation/shop_owner/bloc/resolve_booking/resolve_booking_cubit.dart';
 import 'presentation/shop_owner/bloc/service_management/service_management_cubit.dart';
 import 'service_locator.dart' as di;
+import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
+    as bg;
 
 final RouteObserver<ModalRoute<void>> routeObserver =
     RouteObserver<ModalRoute<void>>();
@@ -101,6 +103,18 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   // This widget is the root of your application.
+
+  @override
+  void initState() {
+    super.initState();
+    _initBackgroundGeolocationState();
+  }
+
+  void _initBackgroundGeolocationState() async {
+    bg.BackgroundGeolocation.stop();
+    await bg.BackgroundGeolocation.removeListeners();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
@@ -116,7 +130,7 @@ class _MyAppState extends State<MyApp> {
 
           BlocProvider(create: (context) => AuthCubit()),
           BlocProvider(create: (context) => GenericDataCubit()),
-          BlocProvider(create: (context) => LocationCubit()),
+          BlocProvider(create: (context) => TrackingBloc()),
           BlocProvider(create: (context) => RouteCubit()),
           BlocProvider(create: (context) => GroupCubit()),
           BlocProvider(create: (context) => ThemeCubit()),

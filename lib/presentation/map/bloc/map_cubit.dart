@@ -39,14 +39,13 @@ class MapCubit extends Cubit<MapCubitState> {
   final Map<String, PointAnnotationManager> _managers = {};
   final Map<String, Uint8List> _imageCache = {};
 
-  Future<void> initializeMap(
-    MapboxMap mapboxMap, {
-    LocationComponentSettings? locationSetting,
-    LogoSettings? logoSetting,
-    AttributionSettings? attributionSetting,
-    CompassSettings? compassSetting,
-    GesturesSettings? gesturesSetting,
-  }) async {
+  Future<void> initializeMap(MapboxMap mapboxMap,
+      {LocationComponentSettings? locationSetting,
+      LogoSettings? logoSetting,
+      AttributionSettings? attributionSetting,
+      CompassSettings? compassSetting,
+      GesturesSettings? gesturesSetting,
+      Snapshotter? snapshotterSetting}) async {
     this.mapboxMap = mapboxMap;
 
     // Location setting
@@ -157,9 +156,8 @@ class MapCubit extends Cubit<MapCubitState> {
       Color lineBorderColor = Colors.white,
       double lineBorderWidth = 1.0}) async {
     try {
-      polylineAnnotationManager ??= await mapboxMap?.annotations
-          .createPolylineAnnotationManager(
-              id: 'polyline-route', below: "symbol");
+      polylineAnnotationManager ??=
+          await mapboxMap?.annotations.createPolylineAnnotationManager();
 
       final polylineOptions = PolylineAnnotationOptions(
         geometry: lineString,
@@ -173,8 +171,7 @@ class MapCubit extends Cubit<MapCubitState> {
 
       await polylineAnnotationManager?.create(polylineOptions);
     } catch (e) {
-      print('Error adding polyline: $e');
-      // You may want to handle this error and show feedback to the user
+      debugPrint('Error adding polyline: $e');
     }
   }
 
@@ -285,7 +282,7 @@ class MapCubit extends Cubit<MapCubitState> {
     );
 
     final manager = await mapboxMap?.annotations
-        .createPointAnnotationManager(id: 'user_$id', below: "");
+        .createPointAnnotationManager(id: 'user_$id');
     final annotation = await manager?.create(
       PointAnnotationOptions(
         geometry: Point(coordinates: position),
@@ -303,13 +300,14 @@ class MapCubit extends Cubit<MapCubitState> {
     required Position newPosition,
   }) async {
     var checkLayer = await mapboxMap?.style.styleLayerExists("user_$id");
-    if (checkLayer == null) {
+    if (checkLayer != null && !checkLayer) {
       debugPrint("Layer not found for id: $id");
       addUserMarker(
         id: id,
-        imageUrl: imageUrl, // Replace with actual URL
+        imageUrl: imageUrl,
         position: newPosition,
       );
+      return;
     }
     if (!_userAnnotations.containsKey(id)) return;
     final marker = _userAnnotations[id]!;

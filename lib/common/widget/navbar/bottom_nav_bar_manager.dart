@@ -5,6 +5,7 @@ import 'package:tracio_fe/common/helper/is_dark_mode.dart';
 import 'package:tracio_fe/core/configs/theme/app_colors.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
 import 'package:tracio_fe/core/services/signalR/implement/chat_hub_service.dart';
+import 'package:tracio_fe/core/services/signalR/implement/group_route_hub_service.dart';
 import 'package:tracio_fe/presentation/exploration/page/exploration.dart';
 import 'package:tracio_fe/presentation/groups/pages/group.dart';
 import 'package:tracio_fe/presentation/home/pages/home.dart';
@@ -59,6 +60,7 @@ class BottomNavBarManagerState extends State<BottomNavBarManager> {
     _isNavVisible = widget.isNavVisible ?? true;
     Future.microtask(() async {
       await sl<ChatHubService>().connect();
+      await sl<GroupRouteHubService>().connect();
     });
     super.initState();
   }

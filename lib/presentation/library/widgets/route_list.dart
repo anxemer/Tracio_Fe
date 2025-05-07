@@ -19,9 +19,8 @@ class _RouteListState extends State<RouteList> {
   Future<void> _fetchRoutes() async {
     final GetRouteReq request = GetRouteReq(
       pageNumber: 1,
-      pageSize: 5,
+      pageSize: 10,
       sortAsc: false,
-      isPlanned: "true",
     );
     await context.read<RouteCubit>().getRoutes(request);
   }
@@ -54,12 +53,18 @@ class _RouteListState extends State<RouteList> {
             SliverList(
               delegate: SliverChildListDelegate(
                 [
-                  if (state is GetRouteLoaded && state.routes.isNotEmpty)
-                    ...state.routes.map((route) => Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: RouteItem(routeData: route),
-                        )),
-                  if ((state is GetRouteLoaded && state.routes.isEmpty) ||
+                  if (state is GetRouteLoaded &&
+                      state.routes.where((route) => route.isPlanned).isNotEmpty)
+                    ...state.routes
+                        .where((route) => route.isPlanned)
+                        .map((route) => Padding(
+                              padding: const EdgeInsets.only(bottom: 12),
+                              child: RouteItem(routeData: route),
+                            )),
+                  if ((state is GetRouteLoaded &&
+                          state.routes
+                              .where((route) => route.isPlanned)
+                              .isEmpty) ||
                       state is GetRouteFailure)
                     FeatureSection(
                       banner: Image.asset("assets/images/routes.png"),

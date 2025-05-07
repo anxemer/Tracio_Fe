@@ -4,18 +4,24 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
+import 'package:google_polyline_algorithm/google_polyline_algorithm.dart';
+import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' as mp;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tracio_fe/core/configs/theme/app_colors.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/core/services/notifications/notification_service.dart';
+import 'package:tracio_fe/core/services/signalR/implement/group_route_hub_service.dart';
+import 'package:tracio_fe/core/services/signalR/implement/matching_hub_service.dart';
+import 'package:tracio_fe/data/map/models/request/finish_tracking_req.dart';
 import 'package:tracio_fe/domain/map/usecase/finish_tracking_usecase.dart';
 import 'package:tracio_fe/domain/map/usecase/start_tracking_usecase.dart';
 import 'package:tracio_fe/presentation/map/bloc/get_direction_cubit.dart';
 import 'package:tracio_fe/presentation/map/bloc/get_location_cubit.dart';
 import 'package:tracio_fe/presentation/map/bloc/map_cubit.dart';
-import 'package:tracio_fe/presentation/map/bloc/tracking_location_bloc.dart';
-import 'package:tracio_fe/presentation/map/bloc/tracking_location_event.dart';
+import 'package:tracio_fe/presentation/map/bloc/match/cubit/match_request_cubit.dart';
+import 'package:tracio_fe/presentation/map/bloc/route_cubit.dart';
+import 'package:tracio_fe/presentation/map/bloc/tracking/bloc/tracking_bloc.dart';
+import 'package:tracio_fe/presentation/map/pages/cycling_snapshot_display.dart';
 import 'package:tracio_fe/presentation/map/widgets/cycling_lock_screen_button.dart';
 import 'package:tracio_fe/presentation/map/widgets/cycling_map_view.dart';
 import 'package:tracio_fe/presentation/map/widgets/cycling_metric_carousel.dart';
@@ -35,193 +41,194 @@ class _CyclingPageState extends State<CyclingPage> {
   final double _fabHeightStart = 150;
   final double _fabHeightTracking = 200;
   final double _fabHeightLocked = 180;
-  bool isPaused = false;
-  bool isRiding = false;
+
   bool showHoldOptions = false;
-  bool shouldStreamLocation = false;
-  late DateTime rideStartTime;
-  Timer? timer;
-  double odometerKm = 0.0;
-  double speed = 0.0;
-  double altitude = 0.0;
-  Duration duration = Duration.zero;
+  bool _isBgGeoInitialized = false;
+
   bool isLocked = false;
-  int? routeId;
-  int? groupRouteId;
   CarouselSliderController carouselController = CarouselSliderController();
+  bool isLoading = false;
+  void setLoading(bool value) {
+    setState(() {
+      isLoading = value;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
   }
 
   Future<void> _initializeBackgroundGeolocation() async {
-    bg.BackgroundGeolocation.onLocation(_streamLocationDataToBloc);
-    bg.BackgroundGeolocation.onMotionChange(_streamMotionDataToBloc);
+    if (_isBgGeoInitialized) return;
+    _isBgGeoInitialized = true;
+    bg.BackgroundGeolocation.onLocation((bg.Location location) {
+      final accuracy = location.coords.accuracy;
+
+      if (accuracy > 10.0) {
+        debugPrint("⛔️ Skipping due to low accuracy: $accuracy");
+        return;
+      }
+
+      context.read<TrackingBloc>().add(UpdateTrackingData(location));
+    });
+
     bg.BackgroundGeolocation.setOdometer(0.0);
     final state = await bg.BackgroundGeolocation.ready(bg.Config(
-        reset: false,
-        desiredAccuracy: bg.Config.DESIRED_ACCURACY_HIGH,
-        stopTimeout: 5,
-        logLevel: bg.Config.LOG_LEVEL_ERROR,
-        motionTriggerDelay: 5000));
+      reset: false,
+      // Logging & Debug
+      debug: true,
+      logLevel: bg.Config.LOG_LEVEL_VERBOSE,
+      // Geolocation options
+      desiredAccuracy: bg.Config.DESIRED_ACCURACY_NAVIGATION,
+      distanceFilter: 10.0,
+      locationUpdateInterval: 1000,
+      fastestLocationUpdateInterval: 500,
+      disableElasticity: true,
+      // Activity recognition options
+      stopTimeout: 5, disableMotionActivityUpdates: false,
+      desiredOdometerAccuracy: 10.0,
+      backgroundPermissionRationale: bg.PermissionRationale(
+          title:
+              "Allow Tracio to access this device's location even when the app is closed or not in use.",
+          message:
+              "This app collects location data to enable recording your trips to work and calculate distance-traveled.",
+          positiveAction: 'Change to "{backgroundPermissionOptionLabel}"',
+          negativeAction: 'Cancel'),
+      // HTTP & Persistence
+      autoSync: true,
+      persistMode: bg.Config.PERSIST_MODE_NONE,
+      // Application options
+      stopOnTerminate: false,
+      startOnBoot: true,
+      enableHeadless: true,
+      foregroundService: true,
+    ));
     if (!state.enabled) {
       await bg.BackgroundGeolocation.start();
     }
   }
 
   Future<void> _fetchStartTracking() async {
-    final state = context.read<LocationCubit>().state;
-
-    if (state is LocationUpdated) {
-      routeId = state.routeId;
-      groupRouteId = state.groupRouteId;
-    } else if (state is LocationInitial) {
-      routeId = state.routeId;
-      groupRouteId = state.groupRouteId;
-    }
-
     final origin = await bg.BackgroundGeolocation.getCurrentPosition(
         desiredAccuracy: bg.Config.DESIRED_ACCURACY_HIGH,
         samples: 1,
         timeout: 30);
-    final params = {
+    Map<String, dynamic> params = {
       'origin': {
         "latitude": origin.coords.latitude,
         "longitude": origin.coords.longitude,
         "altitude": origin.coords.altitude
       },
-      'groupRouteId': groupRouteId,
     };
+    final joinedGroupRoutes = sl<GroupRouteHubService>().joinedGroupRouteIds;
+    if (joinedGroupRoutes.isEmpty) {
+      debugPrint("❌ No joined group route ID available.");
+    } else {
+      final groupRouteId = joinedGroupRoutes.first;
+      params["groupRouteId"] = groupRouteId;
+    }
 
     final result = await sl<StartTrackingUsecase>().call(params);
     result.fold((error) {
       // Handle error
       debugPrint("Error starting tracking: $error");
-    }, (response) {
-      context
-          .read<LocationCubit>()
-          .updateRouteId(response["result"]["routeId"]);
-      setState(() {
-        routeId = response["result"]["routeId"];
-      });
+    }, (response) async {
+      final routeIdFromApi = response["result"]["routeId"];
+      context.read<TrackingBloc>().add(StartTracking(
+            routeId: routeIdFromApi,
+          ));
       debugPrint("Tracking started successfully: $response");
+
+      final matchingHubService = sl<MatchingHubService>();
+      await matchingHubService.connect();
+
+      _initializeBackgroundGeolocation();
     });
   }
 
   Future<void> _fetchFinishTracking() async {
-    final destination = await bg.BackgroundGeolocation.getCurrentPosition(
-        desiredAccuracy: bg.Config.DESIRED_ACCURACY_HIGH,
-        samples: 1,
-        timeout: 30);
-    final params = {
-      'destination': {
-        "latitude": destination.coords.latitude,
-        "longitude": destination.coords.longitude,
-        "altitude": destination.coords.altitude
-      },
-      "routeId": routeId,
-      "thumbnail": "string",
-    };
-    final result = await sl<FinishTrackingUsecase>().call(params);
-    result.fold((error) {
-      // Handle error
-      debugPrint("Error starting tracking: $error");
-    }, (response) {
+    final trackingState = context.read<TrackingBloc>().state;
+
+    if (trackingState is! TrackingInProgress || trackingState.routeId == null) {
+      debugPrint("Tracking not in progress or routeId is missing.");
+      return;
+    }
+
+    FinishTrackingReq request =
+        FinishTrackingReq(routeId: trackingState.routeId!);
+
+    final result = await sl<FinishTrackingUsecase>().call(request);
+    return result.fold((error) {
+      debugPrint("Error finishing tracking: $error");
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to finish tracking. Try again.")),
+      );
+
+      return;
+    }, (response) async {
       debugPrint("Tracking finished successfully: $response");
+      await bg.BackgroundGeolocation.stop();
+      context.read<TrackingBloc>().add(EndTracking());
+      final decodedPolyline = decodePolyline(response.polyline)
+          .map((coord) => mp.Position(coord[1], coord[0]))
+          .toList();
+      final lineString = mp.LineString(coordinates: decodedPolyline);
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => BlocProvider(
+                    create: (context) => MapCubit()
+                      ..getSnapshot(
+                          lineString,
+                          mp.Position(response.origin.longitude,
+                              response.origin.latitude),
+                          mp.Position(response.destination.longitude,
+                              response.destination.latitude)),
+                    child: BlocProvider.value(
+                      value: context.read<RouteCubit>(),
+                      child: CyclingSnapshotDisplay(route: response),
+                    ),
+                  )));
+      return;
     });
   }
 
-  Future<void> _startTracking() async {
-    // Start sending tracking notification
-    rideStartTime = DateTime.now();
+  void _onStartPressed() async {
+    setLoading(true);
     await _fetchStartTracking();
-    NotificationService.sendRideTrackingNotification(
-      'Starting...',
-      'Preparing GPS...',
-      rideStartTime,
-    );
-    final state = await bg.BackgroundGeolocation.state;
-    if (!state.enabled) {
-      setState(() {
-        isRiding = true;
-        isPaused = false;
-        shouldStreamLocation = true;
-      });
-    } else {
-      await bg.BackgroundGeolocation.changePace(true);
-      setState(() {
-        isRiding = true;
-        isPaused = false;
-        shouldStreamLocation = true;
-      });
-    }
+    setLoading(false);
   }
 
-  void _streamLocationDataToBloc(bg.Location location) {
-    if (!mounted || !shouldStreamLocation) return;
+  void _onPausePressed() async {
+    await bg.BackgroundGeolocation.changePace(false);
+    context.read<TrackingBloc>().add(PauseTracking());
+  }
 
-    EasyThrottle.throttle(
-      'location-cubit-throttle',
-      const Duration(milliseconds: 200),
-      () {
-        context
-            .read<LocationCubit>()
-            .updateLocation(location, location.coords.heading);
-      },
-    );
-    EasyThrottle.throttle(
-      'ride-notification-throttle',
-      const Duration(microseconds: 100),
-      () {
-        NotificationService.sendRideTrackingNotification(
-          'Recording',
-          'Duration: ${formatDuration(duration)}; Distance: $odometerKm km',
-          rideStartTime,
-        );
-      },
-    );
+  void _onResumePressed() {
+    //TODO:setOdometer
     setState(() {
-      odometerKm = location.odometer / 1000;
-      speed = location.coords.speed * 18 / 5;
-      altitude = location.coords.altitude;
-      duration = DateTime.now().difference(rideStartTime);
+      showHoldOptions = false;
     });
+    context.read<TrackingBloc>().add(ResumeTracking());
   }
 
-  void _streamMotionDataToBloc(bg.Location location) async {
-    try {
-      if (!location.isMoving) {
-        context.read<LocationCubit>().pauseTracking();
-        return;
-      }
-
-      final state = await bg.BackgroundGeolocation.state;
-      if (!state.enabled) {
-        debugPrint("Geolocation not enabled yet.");
-        return;
-      }
-    } catch (e, stackTrace) {
-      debugPrint("Error in _streamMotionDataToBloc: $e\n$stackTrace");
-    }
-  }
-
-  String formatDuration(Duration duration) {
-    int hours = duration.inHours;
-    int minutes = duration.inMinutes % 60;
-    int seconds = duration.inSeconds % 60;
-
-    return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+  void _onFinishPressed() async {
+    setLoading(true);
+    await _fetchFinishTracking();
+    setLoading(false);
   }
 
   @override
   void dispose() {
     super.dispose();
-    timer?.cancel();
+    bg.BackgroundGeolocation.setOdometer(0.0);
     bg.BackgroundGeolocation.stop();
+
     EasyThrottle.cancelAll();
   }
 
-  // Build Start button (when not riding)
   Widget _buildStartButton() {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
@@ -231,8 +238,7 @@ class _CyclingPageState extends State<CyclingPage> {
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(AppSize.buttonRadius))),
       onPressed: () async {
-        await _initializeBackgroundGeolocation();
-        await _startTracking();
+        _onStartPressed();
       },
       child: const Text(
         "Start tracking",
@@ -255,7 +261,7 @@ class _CyclingPageState extends State<CyclingPage> {
                   borderRadius: BorderRadius.circular(AppSize.buttonRadius),
                   side:
                       BorderSide(width: 1, color: AppColors.secondBackground))),
-          onPressed: () async {},
+          onPressed: _onResumePressed,
           child:
               const Text("Resume", style: TextStyle(color: AppColors.primary)),
         ),
@@ -267,17 +273,7 @@ class _CyclingPageState extends State<CyclingPage> {
               backgroundColor: AppColors.secondBackground,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(AppSize.buttonRadius))),
-          onPressed: () async {
-            // Finish tracking
-            await _fetchFinishTracking();
-            await bg.BackgroundGeolocation.stop();
-            setState(() {
-              isRiding = false;
-              isPaused = false;
-              shouldStreamLocation = false;
-              showHoldOptions = false;
-            });
-          },
+          onPressed: _onFinishPressed,
           child: const Text("Finish", style: TextStyle(color: Colors.white)),
         ),
       ],
@@ -290,10 +286,8 @@ class _CyclingPageState extends State<CyclingPage> {
       onLongPress: () async {
         setState(() {
           showHoldOptions = true;
-          isPaused = true;
-          shouldStreamLocation = false;
-        }); // Pause tracking
-        await bg.BackgroundGeolocation.changePace(false);
+        });
+        _onPausePressed();
       },
       child: Container(
         width: 70,
@@ -344,98 +338,124 @@ class _CyclingPageState extends State<CyclingPage> {
             BlocProvider(create: (context) => MapCubit()),
             BlocProvider(create: (context) => GetDirectionCubit()),
             BlocProvider(create: (context) => GetLocationCubit()),
+            BlocProvider(
+                create: (context) =>
+                    MatchRequestCubit(sl<MatchingHubService>()))
           ],
           child: Stack(
             children: [
               /// Map View
-              CyclingMapView(
-                routeId: routeId,
-              ),
+              CyclingMapView(),
 
               /// Cycling Top Bar
-              Positioned(
-                top: 10,
-                left: 0,
-                right: 0,
-                child: Align(
-                  alignment: Alignment.topCenter,
-                  child: CyclingTopActionBar(
-                    isRiding: isRiding || isLocked || isPaused,
-                  ),
-                ),
+              BlocBuilder<TrackingBloc, TrackingState>(
+                builder: (context, state) {
+                  if (state is! TrackingInProgress) {
+                    return Positioned(
+                      top: 10,
+                      left: 0,
+                      right: 0,
+                      child: Align(
+                        alignment: Alignment.topCenter,
+                        child: CyclingTopActionBar(
+                          isRiding: isLocked,
+                        ),
+                      ),
+                    );
+                  } else {
+                    return SizedBox.shrink();
+                  }
+                },
               ),
 
               //Show when tracking
-              if (isRiding)
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  child: Container(
-                    height: showHoldOptions
-                        ? _fabHeightStart.h
-                        : isLocked
-                            ? _fabHeightLocked.h
-                            : _fabHeightTracking.h,
-                    width: MediaQuery.of(context).size.width,
-                    decoration: BoxDecoration(color: Colors.white),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        // Show when Tracking
-                        if (isRiding && !showHoldOptions)
-                          CyclingMetricCarousel(
-                            odometerKm: odometerKm,
-                            speed: speed,
-                            altitude: altitude,
-                          ),
+              BlocBuilder<TrackingBloc, TrackingState>(
+                buildWhen: (previous, current) => previous != current,
+                builder: (context, state) {
+                  if (state is TrackingInProgress) {
+                    return Positioned(
+                      bottom: 0,
+                      left: 0,
+                      child: Container(
+                        height: showHoldOptions
+                            ? _fabHeightStart.h
+                            : isLocked
+                                ? _fabHeightLocked.h
+                                : _fabHeightTracking.h,
+                        width: MediaQuery.of(context).size.width,
+                        decoration: BoxDecoration(color: Colors.white),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            if (!showHoldOptions && !state.isPaused)
+                              CyclingMetricCarousel(
+                                odometerKm: state.odometerKm ?? 0,
+                                speed: state.speed ?? 0,
+                                elevationGain: state.elevationGain ?? 0,
+                                duration: state.duration,
+                                avgSpeed: state.avgSpeed ?? 0,
+                                batteryLevel: state.battery,
+                                altitude: state.altitude ?? 0,
+                                movingTime: state.movingTime,
+                              ),
 
-                        // Show when Tracking
-                        if (isRiding && !showHoldOptions && !isLocked)
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            mainAxisSize: MainAxisSize.max,
-                            children: [
-                              CyclingLockScreenButton(
-                                  onCallBack: () => setState(() {
-                                        isLocked = true;
-                                      })),
-                              _buildPauseButton(),
-                              CyclingTakePictureButton()
-                            ],
-                          ),
+                            if (!showHoldOptions &&
+                                !isLocked &&
+                                !state.isPaused)
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                mainAxisSize: MainAxisSize.max,
+                                children: [
+                                  CyclingLockScreenButton(
+                                      onCallBack: () => setState(() {
+                                            isLocked = true;
+                                          })),
+                                  _buildPauseButton(),
+                                  CyclingTakePictureButton()
+                                ],
+                              ),
 
-                        // Show when options for Resume/Finish
-                        if (showHoldOptions) _buildResumeFinishButtons(),
+                            // Show when options for Resume/Finish
+                            if (showHoldOptions && state.isPaused)
+                              _buildResumeFinishButtons(),
 
-                        //Show when lock
-                        if (isLocked)
-                          SizedBox(
-                            width: MediaQuery.of(context).size.width * .6,
-                            child: SlideToUnlock(
-                              onCallBack: () {
-                                setState(() {
-                                  isLocked = false;
-                                });
-                              },
-                            ),
-                          )
-                      ],
-                    ),
-                  ),
+                            //Show when lock
+                            if (isLocked)
+                              SizedBox(
+                                width: MediaQuery.of(context).size.width * .6,
+                                child: SlideToUnlock(
+                                  onCallBack: () {
+                                    setState(() {
+                                      isLocked = false;
+                                    });
+                                  },
+                                ),
+                              )
+                          ],
+                        ),
+                      ),
+                    );
+                  } else {
+                    return Positioned(
+                      bottom: 20,
+                      left: 0,
+                      right: 0,
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: _buildStartButton(),
+                      ),
+                    );
+                  }
+                },
+              ),
+              if (isLoading)
+                const Opacity(
+                  opacity: 0.6,
+                  child: ModalBarrier(dismissible: false, color: Colors.black),
                 ),
-
-              // Show when start
-              if (!isRiding)
-                Positioned(
-                  bottom: 20,
-                  left: 0,
-                  right: 0,
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: _buildStartButton(),
-                  ),
-                ),
+              if (isLoading) const Center(child: CircularProgressIndicator()),
             ],
           ),
         ),

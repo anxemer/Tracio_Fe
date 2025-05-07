@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tracio_fe/common/widget/appbar/app_bar.dart';
+import 'package:tracio_fe/common/widget/navbar/bottom_nav_bar_manager.dart';
 import 'package:tracio_fe/core/configs/theme/app_colors.dart';
 import 'package:tracio_fe/core/constants/app_size.dart';
+import 'package:tracio_fe/core/services/signalR/implement/group_route_hub_service.dart';
 import 'package:tracio_fe/domain/groups/entities/group_route.dart';
 import 'package:tracio_fe/domain/map/entities/route_blog.dart';
 import 'package:tracio_fe/presentation/groups/cubit/group_cubit.dart';
@@ -12,6 +14,8 @@ import 'package:tracio_fe/presentation/groups/cubit/group_state.dart';
 import 'package:tracio_fe/presentation/groups/widgets/activity/calendar_box.dart';
 import 'package:tracio_fe/presentation/library/pages/route_detail.dart';
 import 'package:tracio_fe/presentation/map/bloc/map_cubit.dart';
+import 'package:tracio_fe/presentation/map/bloc/tracking/bloc/tracking_bloc.dart';
+import 'package:tracio_fe/service_locator.dart';
 
 class GroupActivityDetail extends StatefulWidget {
   final int groupRouteId;
@@ -144,16 +148,40 @@ class _GroupActivityDetailState extends State<GroupActivityDetail> {
   }
 
   Widget _buildScheduleInfo(GroupRouteEntity groupRoute) {
+    bool isDisabled = isLessThan30MinutesFromNow(groupRoute.startDateTime) &&
+        isAlreadyInGroupTracking();
     return Padding(
       padding:
           const EdgeInsets.symmetric(horizontal: AppSize.apHorizontalPadding),
       child: Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Wrap(
+            spacing: 8.0,
+            runSpacing: 8.0,
             children: [
-              Text("${groupRoute.formattedDate} ${groupRoute.formattedTime}"),
-              Text(groupRoute.addressMeeting),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.calendar_today, size: 16, color: Colors.grey),
+                  SizedBox(width: 8.0),
+                  Text(
+                      "${groupRoute.formattedDate} ${groupRoute.formattedTime}"),
+                ],
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.location_on, size: 16, color: Colors.grey),
+                  SizedBox(width: 8.0),
+                  Flexible(
+                    child: Text(
+                      groupRoute.addressMeeting,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
           const SizedBox(height: AppSize.apSectionMargin),
@@ -167,9 +195,21 @@ class _GroupActivityDetailState extends State<GroupActivityDetail> {
               ),
             ),
           ),
-          _buildActionButton("Start Riding", Icons.start_sharp, () {
-            //TODO: Connect hub => navigate to cycling
-          }, outline: true, disabled: true),
+          _buildActionButton("Start Riding", Icons.start_sharp, () async {
+            await sl<GroupRouteHubService>()
+                .joinGroupRoute(widget.groupRouteId.toString())
+                .then((value) {
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return BlocProvider.value(
+                  value: context.read<TrackingBloc>(),
+                  child: BottomNavBarManager(
+                    selectedIndex: 2,
+                    isNavVisible: false,
+                  ),
+                );
+              }));
+            });
+          }, outline: true, disabled: isDisabled),
         ],
       ),
     );
@@ -214,9 +254,9 @@ class _GroupActivityDetailState extends State<GroupActivityDetail> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         _buildStatText("Distance:",
-                            "${groupRoute.ridingRoute!.totalDistance} km"),
+                            "${groupRoute.ridingRoute!.totalDistance.toStringAsFixed(1)} km"),
                         _buildStatText("Elev. Gain:",
-                            "${groupRoute.ridingRoute!.totalElevationGain} m"),
+                            "${groupRoute.ridingRoute!.totalElevationGain.toStringAsFixed(1)} m"),
                       ],
                     ),
                     const SizedBox(height: AppSize.apVerticalPadding),
@@ -511,6 +551,17 @@ class _GroupActivityDetailState extends State<GroupActivityDetail> {
         ],
       ),
     );
+  }
+
+  bool isLessThan30MinutesFromNow(DateTime startDateTime) {
+    final now = DateTime.now();
+    final difference = startDateTime.difference(now).inMinutes;
+    return difference >= 0 && difference < 30;
+  }
+
+  bool isAlreadyInGroupTracking() {
+    final joinedGroupRoutes = sl<GroupRouteHubService>().joinedGroupRouteIds;
+    return joinedGroupRoutes.isNotEmpty;
   }
 
   SizedBox _buildActionButton(

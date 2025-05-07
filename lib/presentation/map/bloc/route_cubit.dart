@@ -1,6 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tracio_fe/core/erorr/failure.dart';
 import 'package:tracio_fe/data/map/models/request/get_route_req.dart';
 import 'package:tracio_fe/data/map/models/request/post_route_req.dart';
+import 'package:tracio_fe/domain/map/entities/route.dart';
 import 'package:tracio_fe/domain/map/usecase/get_route_detail_usecase.dart';
 import 'package:tracio_fe/domain/map/usecase/route_blog/get_route_blog_list_usecase.dart';
 import 'package:tracio_fe/domain/map/usecase/route_blog/get_route_blog_reviews_usecase.dart';
@@ -28,16 +30,32 @@ class RouteCubit extends Cubit<RouteState> {
   Future<void> getRoutes(GetRouteReq request) async {
     emit(GetRouteLoading());
 
-    var data = await sl<GetRoutesUseCase>().call(request);
+    final allRoutes = <RouteEntity>[];
 
-    data.fold((error) {
-      emit(GetRouteFailure(failure: error));
-    }, (data) async {
-      emit(GetRouteLoaded(
-          routes: data.routes,
-          pageNum: data.pageNumber!,
-          pageSize: data.pageSize!));
-    });
+    // First request
+    final result1 = await sl<GetRoutesUseCase>().call(request);
+    if (result1.isLeft()) {
+      emit(GetRouteFailure(failure: ExceptionFailure('Unknown error')));
+      return;
+    }
+    final data1 = result1.getOrElse(() => throw Exception("Unexpected null"));
+    allRoutes.addAll(data1.routes);
+
+    // Second request: isPlanned = false
+    final updatedRequest = request.copyWith(isPlanned: "false");
+    final result2 = await sl<GetRoutesUseCase>().call(updatedRequest);
+    if (result2.isLeft()) {
+      emit(GetRouteFailure(failure: ExceptionFailure('Unknown error')));
+      return;
+    }
+    final data2 = result2.getOrElse(() => throw Exception("Unexpected null"));
+    allRoutes.addAll(data2.routes);
+
+    emit(GetRouteLoaded(
+      routes: allRoutes,
+      pageNum: data2.pageNumber!,
+      pageSize: data2.pageSize!,
+    ));
   }
 
   Future<void> getRouteDetail(int routeId) async {
