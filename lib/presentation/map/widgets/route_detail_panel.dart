@@ -15,16 +15,6 @@ import 'package:Tracio/presentation/map/bloc/map_cubit.dart';
 import 'package:Tracio/presentation/map/bloc/map_state.dart';
 import 'package:Tracio/presentation/map/bloc/route_cubit.dart';
 import 'package:Tracio/presentation/map/pages/snapshot_display_page.dart';
-import 'package:Tracio/common/widget/drag_handle/drag_handle.dart';
-import 'package:Tracio/core/configs/theme/app_colors.dart';
-import 'package:Tracio/core/configs/utils/color_utils.dart';
-import 'package:Tracio/data/map/models/request/post_route_req.dart';
-import 'package:Tracio/presentation/map/bloc/get_direction_cubit.dart';
-import 'package:Tracio/presentation/map/bloc/get_direction_state.dart';
-import 'package:Tracio/presentation/map/bloc/map_cubit.dart';
-import 'package:Tracio/presentation/map/bloc/map_state.dart';
-import 'package:Tracio/presentation/map/bloc/route_cubit.dart';
-import 'package:Tracio/presentation/map/pages/snapshot_display_page.dart';
 
 //TODO: Hover Build Metric session for more detail info
 class RouteDetailPanel extends StatefulWidget {
