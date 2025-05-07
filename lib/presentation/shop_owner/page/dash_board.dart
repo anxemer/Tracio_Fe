@@ -1,24 +1,25 @@
+import 'package:Tracio/common/widget/navbar/bottom_nav_bar_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:tracio_fe/common/helper/is_dark_mode.dart';
-import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
-import 'package:tracio_fe/common/helper/placeholder/service_card.dart';
-import 'package:tracio_fe/common/widget/appbar/app_bar.dart';
-import 'package:tracio_fe/common/widget/error.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/core/erorr/failure.dart';
-import 'package:tracio_fe/core/usecase/usecase.dart';
-import 'package:tracio_fe/data/shop/models/get_booking_req.dart';
-import 'package:tracio_fe/domain/auth/usecases/logout.dart';
-import 'package:tracio_fe/domain/shop/entities/response/shop_profile_entity.dart';
-import 'package:tracio_fe/presentation/auth/pages/login.dart';
-import 'package:tracio_fe/presentation/service/bloc/get_booking/get_booking_cubit.dart';
-import 'package:tracio_fe/presentation/shop_owner/bloc/shop_profile/shop_profile_cubit.dart';
-import 'package:tracio_fe/presentation/shop_owner/page/service_management.dart';
-import 'package:tracio_fe/presentation/shop_owner/page/shop_profile.dart';
-import 'package:tracio_fe/service_locator.dart';
+import 'package:Tracio/common/helper/is_dark_mode.dart';
+import 'package:Tracio/common/helper/navigator/app_navigator.dart';
+import 'package:Tracio/common/helper/placeholder/service_card.dart';
+import 'package:Tracio/common/widget/appbar/app_bar.dart';
+import 'package:Tracio/common/widget/error.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/core/erorr/failure.dart';
+import 'package:Tracio/core/usecase/usecase.dart';
+import 'package:Tracio/data/shop/models/get_booking_req.dart';
+import 'package:Tracio/domain/auth/usecases/logout.dart';
+import 'package:Tracio/domain/shop/entities/response/shop_profile_entity.dart';
+import 'package:Tracio/presentation/auth/pages/login.dart';
+import 'package:Tracio/presentation/service/bloc/get_booking/get_booking_cubit.dart';
+import 'package:Tracio/presentation/shop_owner/bloc/shop_profile/shop_profile_cubit.dart';
+import 'package:Tracio/presentation/shop_owner/page/service_management.dart';
+import 'package:Tracio/presentation/shop_owner/page/shop_profile.dart';
+import 'package:Tracio/service_locator.dart';
 
 import '../../../common/widget/picture/circle_picture.dart';
 import '../../../core/configs/theme/app_colors.dart';
@@ -26,6 +27,7 @@ import '../../../core/configs/theme/assets/app_images.dart';
 import '../../../data/auth/models/change_role_req.dart';
 import '../../../data/auth/sources/auth_local_source/auth_local_source.dart';
 import '../../auth/bloc/authCubit/auth_cubit.dart';
+import '../../auth/bloc/authCubit/auth_state.dart';
 import '../../chat/bloc/bloc/conversation_bloc.dart';
 import '../../chat/pages/conversation.dart';
 import '../../notifications/page/notifications.dart';
@@ -53,229 +55,246 @@ class _DashboardScreenState extends State<DashboardScreen> {
           BlocProvider(
               create: (context) => ShopProfileCubit()..getShopProfile()),
         ],
-        child: Scaffold(
-            appBar: BasicAppbar(
-              action: _buildActionIcons(),
-              hideBack: true,
-              title: Text(
-                'Dashboard',
-                style: TextStyle(
-                    fontSize: AppSize.textHeading,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white),
+        child: BlocListener<AuthCubit, AuthState>(
+          listener: (context, state) {
+            if (state is AuthChangeRole) {
+              Future.microtask(() {
+                AppNavigator.pushAndRemove(context, BottomNavBarManager());
+              });
+            }
+          },
+          child: Scaffold(
+              appBar: BasicAppbar(
+                action: _buildActionIcons(),
+                hideBack: true,
+                title: Text(
+                  'Dashboard',
+                  style: TextStyle(
+                      fontSize: AppSize.textHeading,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
+                ),
               ),
-            ),
-            body: BlocBuilder<ShopProfileCubit, ShopProfileState>(
-              builder: (context, state) {
-                if (state is ShopProfileLoaded) {
-                  return SingleChildScrollView(
-                    padding: EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        InkWell(
-                            onTap: () => AppNavigator.push(
-                                context,
-                                ShopOwnerProfileScreen(
-                                  shopProfile: state.shopPrifile,
-                                )),
-                            child:
-                                _buildShopInfoCard(isDark, state.shopPrifile)),
-                        SizedBox(height: 16.0),
-                        Text('Quick stats',
-                            style: TextStyle(
-                                fontSize: AppSize.textHeading,
-                                color: isDark ? Colors.white70 : Colors.black87,
-                                fontWeight: FontWeight.bold)),
-                        SizedBox(height: 16.0),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            _buildStatisticCard(
-                              ontap: () => AppNavigator.push(
-                                  context, BookingManagementScreen()),
-                              title: 'Pending Booking',
-                              value: state.shopPrifile.totalPendingBooking
-                                  .toString(),
-                              icon: Icons.event,
-                              color: Colors.blue,
-                            ),
-                            _buildStatisticCard(
-                              ontap: () => AppNavigator.push(
+              body: BlocBuilder<ShopProfileCubit, ShopProfileState>(
+                builder: (context, state) {
+                  if (state is ShopProfileLoaded) {
+                    return SingleChildScrollView(
+                      padding: EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          InkWell(
+                              onTap: () => AppNavigator.push(
                                   context,
-                                  ServiceManagementPage(
-                                      shopId: state.shopPrifile.shopId!)),
-                              title: 'Service',
-                              value: state.shopPrifile.totalService.toString(),
-                              icon: Icons.directions_bike,
-                              color: Colors.orange,
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 16.0),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            _buildStatisticCard(
-                              ontap: () => AppNavigator.push(
-                                  context,
-                                  BookingManagementScreen(
-                                    initialIndex: 4,
+                                  ShopOwnerProfileScreen(
+                                    shopProfile: state.shopPrifile,
                                   )),
-                              title: 'Completed booking',
-                              value: state.shopPrifile.totalBooking.toString(),
-                              icon: Icons.check_circle_outline,
-                              color: Colors.green,
-                            ),
+                              child: _buildShopInfoCard(
+                                  isDark, state.shopPrifile)),
+                          SizedBox(height: 16.0),
+                          Text('Quick stats',
+                              style: TextStyle(
+                                  fontSize: AppSize.textHeading,
+                                  color:
+                                      isDark ? Colors.white70 : Colors.black87,
+                                  fontWeight: FontWeight.bold)),
+                          SizedBox(height: 16.0),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              _buildStatisticCard(
+                                ontap: () => AppNavigator.push(
+                                    context, BookingManagementScreen()),
+                                title: 'Pending Booking',
+                                value: state.shopPrifile.totalPendingBooking
+                                    .toString(),
+                                icon: Icons.event,
+                                color: Colors.blue,
+                              ),
+                              _buildStatisticCard(
+                                ontap: () => AppNavigator.push(
+                                    context,
+                                    ServiceManagementPage(
+                                        shopId: state.shopPrifile.shopId!)),
+                                title: 'Service',
+                                value:
+                                    state.shopPrifile.totalService.toString(),
+                                icon: Icons.directions_bike,
+                                color: Colors.orange,
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 16.0),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              _buildStatisticCard(
+                                ontap: () => AppNavigator.push(
+                                    context,
+                                    BookingManagementScreen(
+                                      initialIndex: 4,
+                                    )),
+                                title: 'Completed booking',
+                                value:
+                                    state.shopPrifile.totalBooking.toString(),
+                                icon: Icons.check_circle_outline,
+                                color: Colors.green,
+                              ),
 
-                            // _buildStatisticCard(
-                            //   title: 'Doanh thu dự kiến hôm nay',
-                            //   value: _currencyFormat.format(_expectedRevenueToday),
-                            //   icon: Icons.attach_money,
-                            //   color: Colors.teal,
-                            // ),
-                          ],
-                        ),
-                        SizedBox(height: 10.h),
-                        Text('Recents Booking',
-                            style: TextStyle(
-                                fontSize: AppSize.textLarge,
-                                color: isDark ? Colors.white70 : Colors.black87,
-                                fontWeight: FontWeight.bold)),
-                        SizedBox(height: 8.0),
-                        BlocBuilder<GetBookingCubit, GetBookingState>(
-                          builder: (context, state) {
-                            if (state is GetBookingLoaded) {
-                              return ListView.separated(
-                                shrinkWrap: true,
-                                physics: NeverScrollableScrollPhysics(),
-                                itemCount: state.bookingList.length,
-                                separatorBuilder: (context, index) => Divider(),
-                                itemBuilder: (context, index) {
-                                  final booking = state.bookingList[index];
-                                  return ListTile(
-                                    leading: Icon(Icons.event),
-                                    title: Text(booking.cyclistName!),
-                                    subtitle: Text(
-                                        '${state.bookingList[index].serviceName}'),
-                                    trailing: _buildStatusChip(booking.status!),
+                              // _buildStatisticCard(
+                              //   title: 'Doanh thu dự kiến hôm nay',
+                              //   value: _currencyFormat.format(_expectedRevenueToday),
+                              //   icon: Icons.attach_money,
+                              //   color: Colors.teal,
+                              // ),
+                            ],
+                          ),
+                          SizedBox(height: 10.h),
+                          Text('Recents Booking',
+                              style: TextStyle(
+                                  fontSize: AppSize.textLarge,
+                                  color:
+                                      isDark ? Colors.white70 : Colors.black87,
+                                  fontWeight: FontWeight.bold)),
+                          SizedBox(height: 8.0),
+                          BlocBuilder<GetBookingCubit, GetBookingState>(
+                            builder: (context, state) {
+                              if (state is GetBookingLoaded) {
+                                return ListView.separated(
+                                  shrinkWrap: true,
+                                  physics: NeverScrollableScrollPhysics(),
+                                  itemCount: state.bookingList.length,
+                                  separatorBuilder: (context, index) =>
+                                      Divider(),
+                                  itemBuilder: (context, index) {
+                                    final booking = state.bookingList[index];
+                                    return ListTile(
+                                      leading: Icon(Icons.event),
+                                      title: Text(booking.cyclistName!),
+                                      subtitle: Text(
+                                          '${state.bookingList[index].serviceName}'),
+                                      trailing:
+                                          _buildStatusChip(booking.status!),
+                                      onTap: () {
+                                        AppNavigator.push(
+                                            context,
+                                            BookingDetailShopScreen(
+                                                bookingId: state
+                                                    .bookingList[index]
+                                                    .bookingDetailId!));
+                                      },
+                                    );
+                                  },
+                                );
+                              } else if (state is GetBookingLoading ||
+                                  state is GetBookingInitial) {
+                                ServiceCardPlaceHolder();
+                              } else if (state is GetBookingFailure) {
+                                if (state.failure is AuthenticationFailure) {
+                                  sl<LogoutUseCase>().call(NoParams());
+                                  WidgetsBinding.instance
+                                      .addPostFrameCallback((_) {
+                                    AppNavigator.pushReplacement(
+                                        context, LoginPage());
+                                  });
+                                }
+                              }
+                              return Center(
+                                  child: Column(
+                                children: [
+                                  Image.asset(
+                                    AppImages.error,
+                                    width: AppSize.imageLarge,
+                                  ),
+                                  Text('Can\'t load booking....'),
+                                  IconButton(
+                                      onPressed: () async {
+                                        // await context.read<GetBlogCubit>().getBlog(GetBlogReq());
+                                      },
+                                      icon: Icon(
+                                        Icons.refresh_outlined,
+                                        size: AppSize.iconLarge,
+                                      ))
+                                ],
+                              ));
+                            },
+                          ),
+                          SizedBox(height: 24.0),
+                          Text('Shortcut Key',
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.bold)),
+                          SizedBox(height: 16.0),
+                          Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  _buildQuickActionButton(
+                                    icon: Icons.book_online,
+                                    label: 'Booking Management',
+                                    onTap: () {
+                                      AppNavigator.push(
+                                          context, BookingManagementScreen());
+                                    },
+                                  ),
+                                  _buildQuickActionButton(
+                                    icon: Icons.directions_bike,
+                                    label: 'Service Management',
                                     onTap: () {
                                       AppNavigator.push(
                                           context,
-                                          BookingDetailShopScreen(
-                                              bookingId: state
-                                                  .bookingList[index]
-                                                  .bookingDetailId!));
-                                    },
-                                  );
-                                },
-                              );
-                            } else if (state is GetBookingLoading ||
-                                state is GetBookingInitial) {
-                              ServiceCardPlaceHolder();
-                            } else if (state is GetBookingFailure) {
-                              if (state.failure is AuthenticationFailure) {
-                                sl<LogoutUseCase>().call(NoParams());
-                                WidgetsBinding.instance
-                                    .addPostFrameCallback((_) {
-                                  AppNavigator.pushReplacement(
-                                      context, LoginPage());
-                                });
-                              }
-                            }
-                            return Center(
-                                child: Column(
-                              children: [
-                                Image.asset(
-                                  AppImages.error,
-                                  width: AppSize.imageLarge,
-                                ),
-                                Text('Can\'t load booking....'),
-                                IconButton(
-                                    onPressed: () async {
-                                      // await context.read<GetBlogCubit>().getBlog(GetBlogReq());
-                                    },
-                                    icon: Icon(
-                                      Icons.refresh_outlined,
-                                      size: AppSize.iconLarge,
-                                    ))
-                              ],
-                            ));
-                          },
-                        ),
-                        SizedBox(height: 24.0),
-                        Text('Shortcut Key',
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold)),
-                        SizedBox(height: 16.0),
-                        Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                _buildQuickActionButton(
-                                  icon: Icons.book_online,
-                                  label: 'Booking Management',
-                                  onTap: () {
-                                    AppNavigator.push(
-                                        context, BookingManagementScreen());
-                                  },
-                                ),
-                                _buildQuickActionButton(
-                                  icon: Icons.directions_bike,
-                                  label: 'Service Management',
-                                  onTap: () {
-                                    AppNavigator.push(
-                                        context,
-                                        ServiceManagementPage(
-                                          shopId: 7,
-                                        ));
+                                          ServiceManagementPage(
+                                            shopId: 7,
+                                          ));
 
-                                    // AppNavigator.push(
-                                    //     context,
-                                    //     BlocProvider.value(
-                                    //       value: context
-                                    //           .read<ServiceManagementCubit>(),
-                                    //       child: CreateEditServiceScreen(
-                                    //         shopId: 7,
-                                    //       ),
-                                    //     ));
-                                  },
-                                ),
-                              ],
-                            ),
-                            _buildQuickActionButton(
-                              icon: Icons.logout_rounded,
-                              label: 'Back To Tracio',
-                              onTap: () async {
-                                var refreshToken = await sl<AuthLocalSource>()
-                                    .getRefreshToken();
-                                context.read<AuthCubit>().changeRole(ChangeRoleReq(
-                                    refreshToken: refreshToken,
-                                    role:
-                                        'user')); // Đảm bảo bạn đã định nghĩa route này
-                              },
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  );
-                }
-                if (state is ShopProfileLoading) {
-                  return Center(
-                    child: LoadingAnimationWidget.fourRotatingDots(
-                      color: AppColors.secondBackground,
-                      size: AppSize.iconExtraLarge,
-                    ),
-                  );
-                }
-                if (state is ShopProfileFailure) {
-                  ErrorPage();
-                }
-                return SizedBox.shrink();
-              },
-            )));
+                                      // AppNavigator.push(
+                                      //     context,
+                                      //     BlocProvider.value(
+                                      //       value: context
+                                      //           .read<ServiceManagementCubit>(),
+                                      //       child: CreateEditServiceScreen(
+                                      //         shopId: 7,
+                                      //       ),
+                                      //     ));
+                                    },
+                                  ),
+                                ],
+                              ),
+                              _buildQuickActionButton(
+                                icon: Icons.logout_rounded,
+                                label: 'Back To Tracio',
+                                onTap: () async {
+                                  var refreshToken = await sl<AuthLocalSource>()
+                                      .getRefreshToken();
+                                  context.read<AuthCubit>().changeRole(
+                                      ChangeRoleReq(
+                                          refreshToken: refreshToken,
+                                          role:
+                                              'user')); // Đảm bảo bạn đã định nghĩa route này
+                                },
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                  if (state is ShopProfileLoading) {
+                    return Center(
+                      child: LoadingAnimationWidget.fourRotatingDots(
+                        color: AppColors.secondBackground,
+                        size: AppSize.iconExtraLarge,
+                      ),
+                    );
+                  }
+                  if (state is ShopProfileFailure) {
+                    ErrorPage();
+                  }
+                  return SizedBox.shrink();
+                },
+              )),
+        ));
   }
 
   Widget _buildActionIcons() {

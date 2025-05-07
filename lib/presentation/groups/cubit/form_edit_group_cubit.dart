@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tracio_fe/presentation/groups/cubit/form_edit_group_state.dart';
+import 'package:Tracio/presentation/groups/cubit/form_edit_group_state.dart';
 
 class FormEditGroupCubit extends Cubit<FormEditGroupState> {
   FormEditGroupCubit() : super(const FormEditGroupUpdate());

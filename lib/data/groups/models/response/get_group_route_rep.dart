@@ -1,5 +1,5 @@
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
-import 'package:tracio_fe/domain/groups/entities/group_route.dart';
+import 'package:Tracio/domain/groups/entities/group_route.dart';
 
 class GetGroupRouteRep extends GroupRouteEntity {
   GetGroupRouteRep(

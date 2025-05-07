@@ -1,6 +1,6 @@
-import 'package:tracio_fe/data/shop/models/booking_model.dart';
-import 'package:tracio_fe/data/shop/models/pagination_booking_data_model.dart';
-import 'package:tracio_fe/domain/shop/entities/response/booking_response_entity.dart';
+import 'package:Tracio/data/shop/models/booking_model.dart';
+import 'package:Tracio/data/shop/models/pagination_booking_data_model.dart';
+import 'package:Tracio/domain/shop/entities/response/booking_response_entity.dart';
 
 class BookingResponseModel extends BookingResponseEntity {
   BookingResponseModel(

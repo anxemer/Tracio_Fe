@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
+import 'package:Tracio/core/constants/app_size.dart';
 
 class CyclingLockScreenButton extends StatefulWidget {
   final VoidCallback onCallBack;
@@ -16,7 +16,7 @@ class _CyclingLockScreenButtonState extends State<CyclingLockScreenButton> {
     return IconButton(
       style: IconButton.styleFrom(
           minimumSize: Size(50, 50), backgroundColor: Colors.grey.shade200),
-      onPressed: (){
+      onPressed: () {
         widget.onCallBack();
       },
       icon: Icon(

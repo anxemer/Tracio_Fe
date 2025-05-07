@@ -1,8 +1,8 @@
 import 'package:dartz/dartz.dart';
-import 'package:tracio_fe/core/erorr/failure.dart';
-import 'package:tracio_fe/data/chat/models/request/post_message_req.dart';
-import 'package:tracio_fe/domain/chat/entities/conversation.dart';
-import 'package:tracio_fe/domain/chat/entities/message.dart';
+import 'package:Tracio/core/erorr/failure.dart';
+import 'package:Tracio/data/chat/models/request/post_message_req.dart';
+import 'package:Tracio/domain/chat/entities/conversation.dart';
+import 'package:Tracio/domain/chat/entities/message.dart';
 
 abstract class ChatRepository {
   Future<Either<Failure, List<ConversationEntity>>> getConversations(

@@ -8,13 +8,13 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:tracio_fe/common/widget/appbar/app_bar.dart';
-import 'package:tracio_fe/common/widget/button/loading.dart';
-import 'package:tracio_fe/common/widget/input_text_form_field.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
+import 'package:Tracio/common/widget/appbar/app_bar.dart';
+import 'package:Tracio/common/widget/button/loading.dart';
+import 'package:Tracio/common/widget/input_text_form_field.dart';
+import 'package:Tracio/core/constants/app_size.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' as mapbox;
-import 'package:tracio_fe/data/shop/models/create_shop_profile_req.dart';
-import 'package:tracio_fe/domain/shop/entities/response/shop_profile_entity.dart';
+import 'package:Tracio/data/shop/models/create_shop_profile_req.dart';
+import 'package:Tracio/domain/shop/entities/response/shop_profile_entity.dart';
 
 import '../../../domain/map/entities/place.dart';
 import '../../map/bloc/map_cubit.dart';
@@ -232,8 +232,7 @@ class _ShopProfileManagementScreenState
       final image = _pickedImageFile;
       final openTime = _openTimeController.text;
       final closeTime = _closeTimeController.text;
-      
-     
+
       if (widget.isEditing) {
         await context.read<ShopProfileManageCubit>().editShop(
             CreateShopProfileReq(
@@ -263,7 +262,6 @@ class _ShopProfileManagementScreenState
                 openTime: openTime,
                 closedTime: closeTime));
       }
-     
     } else {
       print("Form invalid");
     }
@@ -301,7 +299,7 @@ class _ShopProfileManagementScreenState
           body: SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
             child: Form(
-              key: _formKey, 
+              key: _formKey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

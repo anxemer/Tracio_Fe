@@ -41,3 +41,11 @@ final class JoinChallengeLoaded extends ChallengeState {
 }
 
 final class LeaveChallengeLoaded extends ChallengeState {}
+
+final class CreateChallengeLoaded extends ChallengeState {
+  final ChallengeEntity challenge;
+
+  const CreateChallengeLoaded(this.challenge);
+  @override
+  List<Object> get props => [challenge];
+}

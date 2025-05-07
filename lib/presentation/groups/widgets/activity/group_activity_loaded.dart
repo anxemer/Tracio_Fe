@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/domain/groups/entities/group_route.dart';
-import 'package:tracio_fe/presentation/groups/cubit/group_cubit.dart';
-import 'package:tracio_fe/presentation/groups/widgets/activity/calendar_box.dart';
-import 'package:tracio_fe/presentation/groups/widgets/activity/group_activity_detail.dart';
+import 'package:Tracio/common/helper/navigator/app_navigator.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/domain/groups/entities/group_route.dart';
+import 'package:Tracio/presentation/groups/cubit/group_cubit.dart';
+import 'package:Tracio/presentation/groups/widgets/activity/calendar_box.dart';
+import 'package:Tracio/presentation/groups/widgets/activity/group_activity_detail.dart';
 
 class GroupActivityLoaded extends StatelessWidget {
   final GroupRouteEntity groupRoute;

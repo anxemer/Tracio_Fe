@@ -12,6 +12,8 @@ class CartItemEntity {
     this.district,
     this.shopName,
     this.serviceName,
+    this.openTime,
+    this.closeTime,
     this.mediaUrl,
     this.price,
     this.createdAt,
@@ -26,6 +28,8 @@ class CartItemEntity {
   final String? district;
   final String? shopName;
   final String? serviceName;
+  final String? openTime;
+  final String? closeTime;
   final String? mediaUrl;
   final double? price;
   final DateTime? createdAt;

@@ -7,10 +7,10 @@ import 'interceptors.dart';
 
 class DioClient {
   late final Dio _dio;
-  DioClient()
+  DioClient({String? baseUrl})
       : _dio = Dio(
           BaseOptions(
-              // baseUrl: ApiUrl.baseURL,
+              baseUrl: baseUrl ?? ApiUrl.baseURL,
               headers: {'Content-Type': 'application/json; charset=UTF-8'},
               responseType: ResponseType.json,
               sendTimeout: const Duration(seconds: 120),

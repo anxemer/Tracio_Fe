@@ -2,16 +2,16 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/common/widget/appbar/app_bar.dart';
-import 'package:tracio_fe/core/configs/theme/app_colors.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/core/services/signalR/implement/chat_hub_service.dart';
-import 'package:tracio_fe/presentation/chat/bloc/bloc/conversation_bloc.dart';
-import 'package:tracio_fe/presentation/chat/widgets/conversation_list_item.dart';
-import 'package:tracio_fe/presentation/chat/widgets/conversation_search_box.dart';
-import 'package:tracio_fe/main.dart';
+import 'package:Tracio/common/widget/appbar/app_bar.dart';
+import 'package:Tracio/core/configs/theme/app_colors.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/core/services/signalR/implement/chat_hub_service.dart';
+import 'package:Tracio/presentation/chat/bloc/bloc/conversation_bloc.dart';
+import 'package:Tracio/presentation/chat/widgets/conversation_list_item.dart';
+import 'package:Tracio/presentation/chat/widgets/conversation_search_box.dart';
+import 'package:Tracio/main.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tracio_fe/service_locator.dart';
+import 'package:Tracio/service_locator.dart';
 
 class ConversationScreen extends StatefulWidget {
   const ConversationScreen({super.key});

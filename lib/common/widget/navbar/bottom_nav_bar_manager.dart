@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:tracio_fe/common/helper/is_dark_mode.dart';
-import 'package:tracio_fe/core/configs/theme/app_colors.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/core/services/signalR/implement/chat_hub_service.dart';
-import 'package:tracio_fe/presentation/exploration/page/exploration.dart';
-import 'package:tracio_fe/presentation/groups/pages/group.dart';
-import 'package:tracio_fe/presentation/home/pages/home.dart';
-import 'package:tracio_fe/presentation/map/pages/cycling.dart';
-import 'package:tracio_fe/presentation/more/page/more.dart';
-import 'package:tracio_fe/service_locator.dart';
+import 'package:Tracio/common/helper/is_dark_mode.dart';
+import 'package:Tracio/core/configs/theme/app_colors.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/core/services/signalR/implement/chat_hub_service.dart';
+import 'package:Tracio/presentation/exploration/page/exploration.dart';
+import 'package:Tracio/presentation/groups/pages/group.dart';
+import 'package:Tracio/presentation/home/pages/home.dart';
+import 'package:Tracio/presentation/map/pages/cycling.dart';
+import 'package:Tracio/presentation/more/page/more.dart';
+import 'package:Tracio/service_locator.dart';
 
 class BottomNavBarManager extends StatefulWidget {
   final int? selectedIndex;
@@ -27,7 +27,15 @@ class BottomNavBarManagerState extends State<BottomNavBarManager> {
   final double _navHeight = 60;
   bool _isNavVisible = true;
 
-  late List<Widget> _screens;
+  final List<Widget> _screens = [
+    HomePage(),
+    ExplorationPage(),
+    CyclingPage(),
+    GroupPage(
+      
+    ),
+    MorePage(),
+  ];
   void _onTabChanged(int index) {
     setState(() {
       _selectedIndex = index;
@@ -51,15 +59,7 @@ class BottomNavBarManagerState extends State<BottomNavBarManager> {
   void initState() {
     _selectedIndex = widget.selectedIndex ?? 0;
     _isNavVisible = widget.isNavVisible ?? true;
-    _screens = [
-      HomePage(),
-      ExplorationPage(),
-      CyclingPage(),
-      GroupPage(
-        initialIndex: _selectedIndex == 3 ? 1 : 2,
-      ),
-      MorePage(),
-    ];
+
     Future.microtask(() async {
       await sl<ChatHubService>().connect();
     });

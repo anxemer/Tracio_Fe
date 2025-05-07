@@ -2,7 +2,7 @@
 
 import 'package:intl/intl.dart';
 
-import 'package:tracio_fe/common/helper/media_file.dart';
+import 'package:Tracio/common/helper/media_file.dart';
 
 class ShopServiceEntity {
   final int? serviceId;

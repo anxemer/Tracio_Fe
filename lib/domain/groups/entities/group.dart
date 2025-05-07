@@ -1,4 +1,4 @@
-import 'package:tracio_fe/core/constants/membership_enum.dart';
+import 'package:Tracio/core/constants/membership_enum.dart';
 
 class Group {
   final int groupId;

@@ -1,9 +1,9 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
-import 'package:tracio_fe/core/constants/api_url.dart';
-import 'package:tracio_fe/core/erorr/failure.dart';
-import 'package:tracio_fe/core/network/dio_client.dart';
-import 'package:tracio_fe/service_locator.dart';
+import 'package:Tracio/core/constants/api_url.dart';
+import 'package:Tracio/core/erorr/failure.dart';
+import 'package:Tracio/core/network/dio_client.dart';
+import 'package:Tracio/service_locator.dart';
 
 abstract class ReactionApiService {
   Future<Either<Failure, dynamic>> getReactRoute(int routeId);

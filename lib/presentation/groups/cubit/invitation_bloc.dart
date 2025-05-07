@@ -1,12 +1,12 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tracio_fe/core/erorr/failure.dart';
-import 'package:tracio_fe/domain/groups/entities/invitation.dart';
-import 'package:tracio_fe/domain/groups/usecases/invitations/accept_group_invitation_usecase.dart';
-import 'package:tracio_fe/domain/groups/usecases/invitations/invite_user_usecase.dart';
-import 'package:tracio_fe/domain/groups/usecases/invitations/request_to_join_group_usecase.dart';
-import 'package:tracio_fe/domain/groups/usecases/invitations/response_join_group_request_usecase.dart';
-import 'package:tracio_fe/service_locator.dart';
+import 'package:Tracio/core/erorr/failure.dart';
+import 'package:Tracio/domain/groups/entities/invitation.dart';
+import 'package:Tracio/domain/groups/usecases/invitations/accept_group_invitation_usecase.dart';
+import 'package:Tracio/domain/groups/usecases/invitations/invite_user_usecase.dart';
+import 'package:Tracio/domain/groups/usecases/invitations/request_to_join_group_usecase.dart';
+import 'package:Tracio/domain/groups/usecases/invitations/response_join_group_request_usecase.dart';
+import 'package:Tracio/service_locator.dart';
 
 part 'invitation_event.dart';
 part 'invitation_state.dart';

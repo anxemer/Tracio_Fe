@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'package:tracio_fe/domain/shop/entities/response/pagination_service_data_entity.dart';
-import 'package:tracio_fe/domain/shop/entities/response/shop_entity.dart';
+import 'package:Tracio/domain/shop/entities/response/pagination_service_data_entity.dart';
+import 'package:Tracio/domain/shop/entities/response/shop_entity.dart';
 
 import '../../../../data/shop/models/get_service_req.dart';
 import '../../../../domain/shop/entities/response/shop_service_entity.dart';
@@ -34,7 +34,7 @@ final class GetServiceLoaded extends GetServiceState {
   const GetServiceLoaded(
       super.service, super.shop, super.metaData, super.params);
   @override
-  List<Object> get props => [service,shop];
+  List<Object> get props => [service, shop];
 }
 
 final class GetServiceFailure extends GetServiceState {
@@ -45,5 +45,3 @@ final class GetServiceFailure extends GetServiceState {
   @override
   List<Object> get props => [];
 }
-
-

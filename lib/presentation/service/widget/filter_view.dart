@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/common/bloc/filter_cubit.dart';
-import 'package:tracio_fe/common/helper/is_dark_mode.dart';
-import 'package:tracio_fe/presentation/blog/bloc/category/get_category_cubit.dart';
-import 'package:tracio_fe/presentation/blog/bloc/category/get_category_state.dart';
-import 'package:tracio_fe/presentation/service/bloc/service_bloc/get_service_cubit.dart';
+import 'package:Tracio/common/bloc/filter_cubit.dart';
+import 'package:Tracio/common/helper/is_dark_mode.dart';
+import 'package:Tracio/presentation/blog/bloc/category/get_category_cubit.dart';
+import 'package:Tracio/presentation/blog/bloc/category/get_category_state.dart';
+import 'package:Tracio/presentation/service/bloc/service_bloc/get_service_cubit.dart';
 
 import '../../../common/input_range_slider.dart';
 import '../../../core/configs/theme/app_colors.dart';

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tracio_fe/common/helper/is_dark_mode.dart';
-import 'package:tracio_fe/common/widget/appbar/app_bar.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/presentation/service/bloc/bookingservice/get_booking_detail_cubit/get_booking_detail_cubit.dart';
-import 'package:tracio_fe/presentation/service/bloc/bookingservice/resolve_overlap_service/cubit/resolve_overlap_service_cubit.dart';
-import 'package:tracio_fe/presentation/service/bloc/get_booking/get_booking_cubit.dart';
-import 'package:tracio_fe/presentation/service/widget/booking_status_tab.dart';
+import 'package:Tracio/common/helper/is_dark_mode.dart';
+import 'package:Tracio/common/widget/appbar/app_bar.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/presentation/service/bloc/bookingservice/get_booking_detail_cubit/get_booking_detail_cubit.dart';
+import 'package:Tracio/presentation/service/bloc/bookingservice/resolve_overlap_service/cubit/resolve_overlap_service_cubit.dart';
+import 'package:Tracio/presentation/service/bloc/get_booking/get_booking_cubit.dart';
+import 'package:Tracio/presentation/service/widget/booking_status_tab.dart';
 
 import '../../../core/configs/theme/app_colors.dart';
 
@@ -67,43 +67,12 @@ class _MyBookingPageState extends State<MyBookingPage>
       ],
       child: Scaffold(
           appBar: BasicAppbar(
-            backgroundColor: Colors.transparent,
             title: Text('My Booking',
                 style: TextStyle(
+                  color: Colors.white,
                   fontWeight: FontWeight.bold,
                   fontSize: AppSize.textHeading,
                 )),
-            // action: PlanServiceIcon(isActive: true,)
-            //  Padding(
-            //   padding: EdgeInsets.symmetric(
-            //     horizontal: AppSize.apHorizontalPadding.w,
-            //   ),
-            //   child:
-            //    Container(
-            //       height: 40.h,
-            //       width: 40.w,
-            //       decoration:
-            //        BoxDecoration(
-            //           boxShadow: [
-            //             BoxShadow(
-            //                 blurRadius: 5,
-            //                 color: context.isDarkMode
-            //                     ? Colors.transparent
-            //                     : Colors.grey.shade400,
-            //                 offset: Offset(0, 2))
-            //           ],
-            //           color: context.isDarkMode
-            //               ? AppColors.darkGrey
-            //               : Colors.grey.shade200,
-            //           borderRadius:
-            //               BorderRadius.circular(AppSize.borderRadiusLarge),
-            //           border: Border.all(color: Colors.grey.shade200)),
-            //       child: Icon(
-            //         Icons.edit_calendar_rounded,
-            //         color: Colors.black87,
-            //         size: AppSize.iconMedium,
-            //       )),
-            // ),
           ),
           body: DefaultTabController(
               length: 7,

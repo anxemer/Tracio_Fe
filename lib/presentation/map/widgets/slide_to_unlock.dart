@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:slide_to_act/slide_to_act.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
+import 'package:Tracio/core/constants/app_size.dart';
 
 class SlideToUnlock extends StatelessWidget {
   final VoidCallback onCallBack;

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tracio_fe/common/helper/is_dark_mode.dart';
-import 'package:tracio_fe/core/configs/theme/app_colors.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/data/shop/models/get_service_req.dart';
-import 'package:tracio_fe/domain/blog/entites/category.dart';
-import 'package:tracio_fe/presentation/service/bloc/service_bloc/get_service_cubit.dart';
+import 'package:Tracio/common/helper/is_dark_mode.dart';
+import 'package:Tracio/core/configs/theme/app_colors.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/data/shop/models/get_service_req.dart';
+import 'package:Tracio/domain/blog/entites/category.dart';
+import 'package:Tracio/presentation/service/bloc/service_bloc/get_service_cubit.dart';
 
 class CategoryService extends StatefulWidget {
   const CategoryService({super.key, required this.cateService});

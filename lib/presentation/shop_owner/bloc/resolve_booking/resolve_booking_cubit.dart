@@ -1,9 +1,9 @@
 import 'package:bloc/bloc.dart';
-import 'package:tracio_fe/data/shop/models/waiting_booking.dart';
-import 'package:tracio_fe/domain/shop/usecase/cancel_booking.dart';
-import 'package:tracio_fe/domain/shop/usecase/complete_booking.dart';
-import 'package:tracio_fe/domain/shop/usecase/confirm_booking.dart';
-import 'package:tracio_fe/domain/shop/usecase/process_booking.dart';
+import 'package:Tracio/data/shop/models/waiting_booking.dart';
+import 'package:Tracio/domain/shop/usecase/cancel_booking.dart';
+import 'package:Tracio/domain/shop/usecase/complete_booking.dart';
+import 'package:Tracio/domain/shop/usecase/confirm_booking.dart';
+import 'package:Tracio/domain/shop/usecase/process_booking.dart';
 
 import '../../../../service_locator.dart';
 import 'resolve_booking_state.dart'; // Import the new state class
@@ -57,8 +57,8 @@ class ResolveBookingShopCubit extends Cubit<ResolveBookingShopState> {
     });
   }
 
-  void cancelBooking(int bookingId) async {
-    var result = await sl<CancelBookingUseCase>().call(bookingId);
+  void cancelBooking(ConfirmBookingModel cancelBooking) async {
+    var result = await sl<CancelBookingUseCase>().call(cancelBooking);
     result.fold((error) {
       emit(ResolveBookingFailure(messgae: error.message));
     }, (data) {

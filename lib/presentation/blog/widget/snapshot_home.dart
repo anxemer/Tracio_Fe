@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
-import 'package:tracio_fe/common/helper/is_dark_mode.dart';
-import 'package:tracio_fe/core/constants/app_size.dart'; // For number formatting (optional but good)
+import 'package:Tracio/common/helper/is_dark_mode.dart';
+import 'package:Tracio/core/constants/app_size.dart'; // For number formatting (optional but good)
 
 class WeeklySnapshotCard extends StatelessWidget {
   final double totalDistance; // in kilometers, for example

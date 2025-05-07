@@ -1,20 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:tracio_fe/common/helper/is_dark_mode.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
+import 'package:Tracio/common/helper/is_dark_mode.dart';
+import 'package:Tracio/core/constants/app_size.dart';
 
-class DetailInformationChallenge extends StatelessWidget {
+class DetailInformationChallenge extends StatefulWidget {
   const DetailInformationChallenge(
       {super.key,
       required this.totalGoal,
       required this.startDate,
       required this.endate,
-      this.unit, required this.participants});
+      this.unit,
+      required this.participants,
+      this.create,
+      required this.isSystem,
+      required this.isPublic, required this.myChallenge});
   final String totalGoal;
   final String participants;
   final String startDate;
   final String endate;
   final String? unit;
+  final String? create;
+  final bool isSystem;
+  final bool isPublic;
+  final bool myChallenge;
+  @override
+  State<DetailInformationChallenge> createState() =>
+      _DetailInformationChallengeState();
+}
+
+class _DetailInformationChallengeState
+    extends State<DetailInformationChallenge> {
+  late bool _isPublic;
+  @override
+  void initState() {
+    _isPublic = widget.isPublic;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -22,9 +44,45 @@ class DetailInformationChallenge extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          _buildDetailRow('Total Goal', totalGoal, unit ?? '', context),
-          _buildDetailRow('Duration', '$startDate-$endate', '', context),
-          _buildDetailRow('Paricipants', participants, '', context),
+          _buildDetailRow(
+              'Total Goal', widget.totalGoal, widget.unit ?? '', context),
+          _buildDetailRow(
+              'Duration', '${widget.startDate}-${widget.endate}', '', context),
+          _buildDetailRow('Paricipants', widget.participants, '', context),
+          widget.isSystem
+              ? SizedBox.shrink()
+              : _buildDetailRow('create', widget.create ?? '', '', context),
+          
+      widget.    myChallenge ? 
+          Row(
+
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    _isPublic ? Icons.public : Icons.lock,
+                    color: Colors.grey[600],
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    _isPublic ? 'Public' : 'Privete',
+                    style: TextStyle(
+                        fontSize: AppSize.textLarge,
+                        color: Colors.grey.shade700),
+                  ),
+                ],
+              ),
+              Switch(
+                value: _isPublic,
+                onChanged: (newValue) {
+                  setState(() {
+                    _isPublic = newValue;
+                  });
+                },
+              ),
+            ],
+          ): SizedBox.shrink()
         ],
       ),
     );

@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:tracio_fe/domain/blog/entites/reaction_response_entity.dart';
+import 'package:Tracio/domain/blog/entites/reaction_response_entity.dart';
 
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 List<GetReactionBlogResponse> reactionBlogModelListFromRemoteJson(String str) =>
@@ -30,7 +30,6 @@ class GetReactionBlogResponse extends ReactionResponseEntity {
           map['cyclistName'] != null ? map['cyclistName'] as String : null,
       cyclistAvatar:
           map['cyclistAvatar'] != null ? map['cyclistAvatar'] as String : null,
-      
     );
   }
 

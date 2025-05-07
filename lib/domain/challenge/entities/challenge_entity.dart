@@ -1,6 +1,8 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:tracio_fe/domain/challenge/entities/challenge_reward.dart';
+
+import 'package:Tracio/domain/challenge/entities/challenge_reward.dart';
 
 class ChallengeEntity {
   ChallengeEntity({
@@ -10,7 +12,6 @@ class ChallengeEntity {
     required this.description,
     required this.challengeType,
     required this.goalValue,
-    this.totalParticipants, 
     required this.unit,
     required this.creatorId,
     required this.creatorName,
@@ -20,7 +21,9 @@ class ChallengeEntity {
     required this.status,
     required this.progress,
     required this.challengeRank,
+    this.totalParticipants,
     required this.isCompleted,
+    this.isCreator,
     required this.startDate,
     required this.endDate,
     required this.createdAt,
@@ -44,22 +47,26 @@ class ChallengeEntity {
   final int challengeRank;
   final int? totalParticipants;
   final bool? isCompleted;
+  final bool? isCreator;
   final DateTime? startDate;
   final DateTime? endDate;
   final DateTime? createdAt;
   final List<ChallengeRewardEntity> challengeRewardMappings;
 
-   String get timeLeftDisplay {
+  String get timeLeftDisplay {
     final now = DateTime.now();
     final currentStatus = status.toUpperCase();
 
-    if (currentStatus == 'ENDED' || currentStatus == 'COMPLETED' || currentStatus == 'CANCELLED' || currentStatus == 'FAILED') {
+    if (currentStatus == 'ENDED' ||
+        currentStatus == 'COMPLETED' ||
+        currentStatus == 'CANCELLED' ||
+        currentStatus == 'FAILED') {
       return "Finished";
     }
 
     if (endDate == null) {
-       if (currentStatus == 'ACTIVE') {
-         return "Ongoing";
+      if (currentStatus == 'ACTIVE') {
+        return "Ongoing";
       }
       return "No time limit";
     }
@@ -92,7 +99,8 @@ class ChallengeEntity {
       return "$daysRemaining days left";
     }
   }
-   String get startDateFormatted {
+
+  String get startDateFormatted {
     if (startDate == null) return '';
     return DateFormat('dd/MM').format(startDate!);
   }

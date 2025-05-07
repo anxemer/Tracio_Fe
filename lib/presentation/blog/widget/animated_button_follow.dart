@@ -3,58 +3,83 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/core/configs/theme/app_colors.dart';
+import 'package:Tracio/core/configs/theme/app_colors.dart';
 
 import '../../../common/widget/button/button.dart';
 import '../../../core/constants/app_size.dart';
 
 class AnimatedFollowButton extends StatefulWidget {
   final VoidCallback onFollow;
+  final VoidCallback? onUnfollow; // nullable
+  final bool initiallyFollowed;
+  final bool alwaysVisible;
 
-  // Thêm các tham số để tùy chỉnh giao diện nút Follow ban đầu nếu cần
   final Color initialFillColor;
   final Color initialBorderColor;
   final Color initialTextColor;
-  final double? width; // Cho phép tùy chỉnh kích thước
+  final double? width;
   final double? height;
 
   const AnimatedFollowButton({
     Key? key,
     required this.onFollow,
+    this.onUnfollow,
+    this.initiallyFollowed = false,
     this.initialFillColor = Colors.transparent,
     this.initialBorderColor = Colors.black,
     this.initialTextColor = Colors.black,
     this.width,
     this.height,
+    this.alwaysVisible = false,
   }) : super(key: key);
 
   @override
   _AnimatedFollowButtonState createState() => _AnimatedFollowButtonState();
 }
 
-// Enum để quản lý các trạng thái của nút
 enum FollowButtonState { idle, processing, done }
 
 class _AnimatedFollowButtonState extends State<AnimatedFollowButton> {
   FollowButtonState _currentState = FollowButtonState.idle;
   bool _isVisible = true;
+  late bool _isFollowed;
 
-  void _handleFollow() {
+  @override
+  void initState() {
+    super.initState();
+    _isFollowed = widget.initiallyFollowed;
+  }
+
+  void _handleToggleFollow() {
     if (_currentState == FollowButtonState.idle) {
-      widget.onFollow();
       setState(() {
         _currentState = FollowButtonState.processing;
       });
 
+      if (!_isFollowed) {
+        widget.onFollow();
+
+        if (!widget.alwaysVisible) {
+          _isVisible = false;
+        }
+      } else {
+        widget.onUnfollow!();
+
+        if (!widget.alwaysVisible) {
+          _isVisible = false;
+        }
+      }
       Timer(const Duration(milliseconds: 1200), () {
         if (mounted) {
           setState(() {
             _currentState = FollowButtonState.done;
+            _isFollowed = !_isFollowed; // đảo trạng thái follow
           });
+
           Timer(const Duration(milliseconds: 300), () {
             if (mounted) {
               setState(() {
-                _isVisible = false;
+                _currentState = FollowButtonState.idle;
               });
             }
           });
@@ -77,15 +102,13 @@ class _AnimatedFollowButtonState extends State<AnimatedFollowButton> {
         height: buttonHeight,
         child: AnimatedSwitcher(
           duration: const Duration(milliseconds: 300),
-          transitionBuilder: (Widget child, Animation<double> animation) {
-            return ScaleTransition(
-              scale: animation,
-              child: FadeTransition(
-                opacity: animation,
-                child: child,
-              ),
-            );
-          },
+          transitionBuilder: (child, animation) => ScaleTransition(
+            scale: animation,
+            child: FadeTransition(
+              opacity: animation,
+              child: child,
+            ),
+          ),
           child: _buildChild(buttonWidth, buttonHeight, fontSize),
         ),
       ),
@@ -95,17 +118,16 @@ class _AnimatedFollowButtonState extends State<AnimatedFollowButton> {
   Widget _buildChild(double width, double height, double fontSize) {
     switch (_currentState) {
       case FollowButtonState.idle:
-        // Sử dụng ButtonDesign của bạn ở đây
         return ButtonDesign(
-          key: const ValueKey('follow_button'),
+          key: ValueKey(_isFollowed ? 'unfollow_button' : 'follow_button'),
           width: width,
           height: height,
-          ontap: _handleFollow,
+          ontap: _handleToggleFollow,
           fillColor: widget.initialFillColor,
           borderColor: AppColors.secondBackground,
           textColor: widget.initialTextColor,
           fontSize: fontSize,
-          text: 'Follow',
+          text: _isFollowed ? 'Following' : 'Follow',
         );
       case FollowButtonState.processing:
       case FollowButtonState.done:
@@ -114,12 +136,13 @@ class _AnimatedFollowButtonState extends State<AnimatedFollowButton> {
           width: width,
           height: height,
           decoration: BoxDecoration(
-              color: AppColors.background,
-              borderRadius: BorderRadius.circular(AppSize.borderRadiusMedium),
-              border: Border.all(
-                color: AppColors.primary,
-                width: 1.5.w,
-              )),
+            color: AppColors.background,
+            borderRadius: BorderRadius.circular(AppSize.borderRadiusMedium),
+            border: Border.all(
+              color: AppColors.primary,
+              width: 1.5.w,
+            ),
+          ),
           child: Icon(
             Icons.check,
             color: Colors.white,

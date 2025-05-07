@@ -1,4 +1,4 @@
-import 'package:tracio_fe/domain/shop/entities/response/cart_item_entity.dart';
+import 'package:Tracio/domain/shop/entities/response/cart_item_entity.dart';
 
 class CartItemModel extends CartItemEntity {
   CartItemModel({
@@ -9,6 +9,8 @@ class CartItemModel extends CartItemEntity {
     super.city,
     super.district,
     required super.shopName,
+    required super.closeTime,
+    required super.openTime,
     required super.mediaUrl,
     required super.duration,
     required super.serviceName,
@@ -20,6 +22,8 @@ class CartItemModel extends CartItemEntity {
       itemId: json["itemId"],
       bookingQueueId: json["bookingQueueId"],
       serviceId: json["serviceId"],
+      openTime: json['openTime'] != null ? json['openTime'] as String : null,
+      closeTime: json['closeTime'] != null ? json['closeTime'] as String : null,
       shopId: json["shopId"],
       shopName: json["shopName"],
       serviceName: json["serviceName"],

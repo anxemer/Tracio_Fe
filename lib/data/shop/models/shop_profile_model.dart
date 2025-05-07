@@ -1,4 +1,4 @@
-import 'package:tracio_fe/domain/shop/entities/response/shop_profile_entity.dart';
+import 'package:Tracio/domain/shop/entities/response/shop_profile_entity.dart';
 
 class ShopProfileModel extends ShopProfileEntity {
   ShopProfileModel(

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/domain/groups/entities/group.dart';
-import 'package:tracio_fe/presentation/groups/cubit/invitation_bloc.dart';
-import 'package:tracio_fe/presentation/groups/pages/group_detail.dart';
-import 'package:tracio_fe/presentation/map/bloc/tracking_location_bloc.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/domain/groups/entities/group.dart';
+import 'package:Tracio/presentation/groups/cubit/invitation_bloc.dart';
+import 'package:Tracio/presentation/groups/pages/group_detail.dart';
+import 'package:Tracio/presentation/map/bloc/tracking_location_bloc.dart';
 
 class MyGroupItem extends StatefulWidget {
   final Group group;

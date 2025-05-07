@@ -1,9 +1,9 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/foundation.dart';
-import 'package:tracio_fe/common/helper/media_file.dart';
+import 'package:Tracio/common/helper/media_file.dart';
 
-import 'package:tracio_fe/common/widget/blog/comment/comment.dart';
-import 'package:tracio_fe/domain/map/entities/route_review.dart';
+import 'package:Tracio/common/widget/blog/comment/comment.dart';
+import 'package:Tracio/domain/map/entities/route_review.dart';
 
 class RouteReplyEntity extends BaseCommentEntity {
   int replyId;

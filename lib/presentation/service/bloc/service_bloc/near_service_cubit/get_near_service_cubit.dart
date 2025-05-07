@@ -1,3 +1,4 @@
+import 'package:Tracio/core/erorr/failure.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
@@ -29,15 +30,17 @@ class GetNearServiceCubit extends Cubit<GetNearServiceState> {
           state.service,
           error.toString(),
           state.shop,
+          error
         ));
       }, (data) {
         emit(GetNearServiceLoaded(data.service, data.shop));
       });
-    } catch (e) {
+    } on ExceptionFailure catch (e) {
       emit(GetNearServiceFailure(
         state.service,
         e.toString(),
         state.shop,
+        e
       ));
     }
   }

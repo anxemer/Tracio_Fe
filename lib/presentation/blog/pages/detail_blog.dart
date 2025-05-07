@@ -1,40 +1,43 @@
 import 'dart:io';
 
+import 'package:Tracio/domain/blog/entites/comment_blog.dart'
+    show CommentBlogEntity;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/common/helper/is_dark_mode.dart';
-import 'package:tracio_fe/core/configs/theme/app_colors.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/domain/blog/entites/blog_entity.dart';
-import 'package:tracio_fe/presentation/blog/pages/edit_blog.dart';
-import 'package:tracio_fe/presentation/blog/widget/post_blog.dart';
+import 'package:Tracio/common/helper/is_dark_mode.dart';
+import 'package:Tracio/core/configs/theme/app_colors.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/domain/blog/entites/blog_entity.dart';
+import 'package:Tracio/presentation/blog/pages/edit_blog.dart';
+import 'package:Tracio/presentation/blog/widget/post_blog.dart';
 
 import '../../../common/widget/appbar/app_bar.dart';
 import '../../../data/blog/models/request/comment_blog_req.dart';
-import '../../../data/blog/models/request/get_comment_req.dart';
 import '../../../data/blog/models/request/reply_comment_req.dart';
 import '../../../domain/blog/entites/comment_input_data.dart';
+import '../../../domain/blog/entites/reply_comment.dart';
 import '../../../domain/blog/usecase/comment_blog.dart';
 import '../../../domain/blog/usecase/rep_comment.dart';
 import '../../../service_locator.dart';
 import '../bloc/comment/comment_input_cubit.dart';
 import '../bloc/comment/comment_input_state.dart';
 import '../bloc/comment/get_comment_cubit.dart';
+import '../bloc/get_blog_cubit.dart';
 import '../widget/comment.dart';
 import '../widget/comment_input.dart';
 import '../widget/react_blog.dart';
 
-class DetailBlocPage extends StatefulWidget {
-  const DetailBlocPage({super.key, required this.blog, required this.userId});
+class DetailBlogPage extends StatefulWidget {
+  const DetailBlogPage({super.key, required this.blog, required this.userId});
   final BlogEntity blog;
   final int userId;
 
   @override
-  State<DetailBlocPage> createState() => _DetailBlocPageState();
+  State<DetailBlogPage> createState() => _DetailBlogPageState();
 }
 
-class _DetailBlocPageState extends State<DetailBlocPage> {
+class _DetailBlogPageState extends State<DetailBlogPage> {
   late CommentInputCubit _commentInputCubit;
   void _handleCommentSubmit(
       String content, List<File> files, CommentInputData inputData) async {
@@ -57,13 +60,28 @@ class _DetailBlocPageState extends State<DetailBlocPage> {
             );
           },
           (success) {
+            // Giả sử success là CommentBlogEntity hoặc một đối tượng chứa dữ liệu bình luận
+            final newComment = CommentBlogEntity(
+              commentId:
+                  success.commentId, // Dùng timestamp nếu API không trả id
+              content: content,
+              mediaFiles: success.mediaFiles,
+              replyCount: 0,
+              replyCommentPagination: success.replyCommentPagination,
+              cyclistId: success.cyclistId,
+              cyclistName: success.cyclistName,
+              cyclistAvatar: success.cyclistAvatar,
+              isReacted: success.isReacted,
+              createdAt: success.createdAt,
+              likeCount: success.likeCount,
+              mediaUrls: [],
+              tagUserNames: [],
+            );
+            context.read<GetCommentCubit>().addComment(newComment);
+            context
+                .read<GetBlogCubit>()
+                .incrementCommentCount(widget.blog.blogId);
             FocusScope.of(context).unfocus();
-            context.read<GetCommentCubit>().getCommentBlog(GetCommentReq(
-                  blogId: widget.blog.blogId,
-                  commentId: 0,
-                  pageNumber: 1,
-                  pageSize: 10,
-                ));
           },
         );
         break;
@@ -75,29 +93,39 @@ class _DetailBlocPageState extends State<DetailBlocPage> {
               commentId: inputData.commentId!,
               content: content,
               mediaFiles: files,
-              // replyId: 1,
             ),
           );
 
           result.fold(
             (error) {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('reply faile')),
+                SnackBar(content: Text('Reply failed')),
               );
             },
             (success) {
+              // Giả sử success là ReplyCommentEntity hoặc một đối tượng chứa dữ liệu trả lời
+              final newReply = ReplyCommentEntity(
+                  replyId: success.replyId,
+                  cyclistId: success.cyclistId,
+                  commentId: success.commentId,
+                  cyclistName: success.cyclistName,
+                  reReplyCyclistName: success.reReplyCyclistName,
+                  content: success.content,
+                  isReacted: success.isReacted,
+                  mediaFiles: success.mediaFiles,
+                  createdAt: success.createdAt,
+                  tagUserNames: [],
+                  mediaUrls: [],
+                  likeCount: success.likeCount,
+                  replyCount: 0);
+              context
+                  .read<GetCommentCubit>()
+                  .addReplyComment(inputData.commentId!, newReply);
+              context
+                  .read<GetBlogCubit>()
+                  .incrementCommentCount(widget.blog.blogId);
               _commentInputCubit.updateToDefault(widget.blog.blogId);
               FocusScope.of(context).unfocus();
-              // sl<GetReplyCommentUsecase>().call(GetReplyCommentReq(
-              //     commentId: inputData.commentId!,
-              //     pageSize: 10,
-              //     pageNumber: 1));
-              context.read<GetCommentCubit>().getCommentBlog(GetCommentReq(
-                    blogId: widget.blog.blogId,
-                    commentId: 0,
-                    pageNumber: 1,
-                    pageSize: 10,
-                  ));
             },
           );
         }
@@ -121,14 +149,29 @@ class _DetailBlocPageState extends State<DetailBlocPage> {
               );
             },
             (success) {
+              // Giả sử success là ReplyCommentEntity
+              final newReply = ReplyCommentEntity(
+                  replyId: success.replyId,
+                  cyclistId: success.cyclistId,
+                  commentId: success.commentId,
+                  cyclistName: success.cyclistName,
+                  reReplyCyclistName: success.reReplyCyclistName,
+                  content: success.content,
+                  isReacted: success.isReacted,
+                  mediaFiles: success.mediaFiles,
+                  createdAt: success.createdAt,
+                  tagUserNames: [],
+                  mediaUrls: [],
+                  likeCount: success.likeCount,
+                  replyCount: 0);
+              context
+                  .read<GetCommentCubit>()
+                  .addReplyComment(inputData.commentId!, newReply);
+              context
+                  .read<GetBlogCubit>()
+                  .incrementCommentCount(widget.blog.blogId);
               _commentInputCubit.updateToDefault(widget.blog.blogId);
               FocusScope.of(context).unfocus();
-              context.read<GetCommentCubit>().getCommentBlog(GetCommentReq(
-                    blogId: widget.blog.blogId,
-                    commentId: 0,
-                    pageNumber: 1,
-                    pageSize: 10,
-                  ));
             },
           );
         }
@@ -189,71 +232,95 @@ class _DetailBlocPageState extends State<DetailBlocPage> {
               )
             : SizedBox.shrink(),
       ),
-      body: CustomScrollView(
-          scrollDirection: Axis.vertical,
-          physics: AlwaysScrollableScrollPhysics(),
-          slivers: [
-            SliverAppBar(
-              expandedHeight: 300.h,
-              automaticallyImplyLeading: false,
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              pinned: false,
-              floating: false,
-              flexibleSpace: FlexibleSpaceBar(
-                background: PostBlog(
-                  blogEntity: widget.blog,
-                  // onLikeUpdated: () {},
-                ),
-              ),
-            ),
-            SliverAppBar(
-              expandedHeight: 50.h,
-              automaticallyImplyLeading: false,
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              pinned: false,
-              floating: false,
-              flexibleSpace: FlexibleSpaceBar(
-                background: ReactBlog(
-                  blogEntity: widget.blog,
-                  textReactionAction: () {},
-                  cmtAction: () {},
-                ),
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: SizedBox(
-                // width: 400.w,
-                // height: MediaQuery.of(context).size.height / .5,
-                child: BlocProvider.value(
-                  value: commentCubit,
-                  child: Comment(
-                    isDetail: true,
-                    blogId: widget.blog.blogId,
+      body: Column(
+        children: [
+          Expanded(
+            child: CustomScrollView(
+                scrollDirection: Axis.vertical,
+                physics: AlwaysScrollableScrollPhysics(),
+                slivers: [
+                  SliverAppBar(
+                    expandedHeight: 300.h,
+                    automaticallyImplyLeading: false,
+                    backgroundColor: Colors.transparent,
+                    elevation: 0,
+                    pinned: false,
+                    floating: false,
+                    flexibleSpace: FlexibleSpaceBar(
+                      background: PostBlog(
+                        blogEntity: widget.blog,
+                        // onLikeUpdated: () {},
+                      ),
+                    ),
                   ),
+                  SliverAppBar(
+                    expandedHeight: 50.h,
+                    automaticallyImplyLeading: false,
+                    backgroundColor: Colors.transparent,
+                    elevation: 0,
+                    pinned: false,
+                    floating: false,
+                    flexibleSpace: FlexibleSpaceBar(
+                      background: ReactBlog(
+                        blogEntity: widget.blog,
+                        textReactionAction: () {},
+                        cmtAction: () {},
+                      ),
+                    ),
+                  ),
+                  SliverToBoxAdapter(
+                    child: SizedBox(
+                      // width: 400.w,
+                      // height: MediaQuery.of(context).size.height / .5,
+                      child: BlocProvider.value(
+                        value: commentCubit,
+                        child: Comment(
+                          isDetail: true,
+                          blogId: widget.blog.blogId,
+                        ),
+                      ),
+                    ),
+                  ),
+                ]),
+          ),
+          BlocBuilder<CommentInputCubit, CommentInputState>(
+            builder: (context, inputState) {
+              return Padding(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom,
+                  left: 10,
+                  right: 10,
                 ),
-              ),
-            ),
-          ]),
-      bottomNavigationBar: Padding(
-        padding: EdgeInsets.only(
-          bottom: AppSize.apHorizontalPadding,
-          left: 10,
-          right: 10,
-        ),
-        child: BlocBuilder<CommentInputCubit, CommentInputState>(
-          builder: (context, inputState) {
-            return CommentInputWidget(
-              inputData: inputState.inputData,
-              onSubmit: _handleCommentSubmit,
-              onReset: () {
-                _commentInputCubit.updateToDefault(widget.blog.blogId);
-              },
-            );
-          },
-        ),
+                child: CommentInputWidget(
+                  inputData: inputState.inputData,
+                  onSubmit: _handleCommentSubmit,
+                  onReset: () {
+                    _commentInputCubit.updateToDefault(widget.blog.blogId);
+                  },
+                ),
+              );
+            },
+          ),
+        ],
       ),
+      // bottomNavigationBar: Padding(
+      //   padding: EdgeInsets.only(
+      //     bottom: AppSize.apHorizontalPadding,
+      //     left: 10,
+      //     right: 10,
+      //   ),
+      //   child: BlocBuilder<CommentInputCubit, CommentInputState>(
+      //     builder: (context, inputState) {
+      //       return CommentInputWidget(
+      //         inputData: inputState.inputData,
+      //         onSubmit: _handleCommentSubmit,
+      //         onReset: () {
+      //           _commentInputCubit.updateToDefault(widget.blog.blogId);
+      //         },
+      //       );
+      //     },
+      //   ),
+      // ),
     );
   }
 }

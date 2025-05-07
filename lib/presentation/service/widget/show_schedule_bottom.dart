@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tracio_fe/common/widget/button/text_button.dart';
-import 'package:tracio_fe/presentation/service/widget/choose_free_time.dart';
+import 'package:Tracio/common/widget/button/text_button.dart';
+import 'package:Tracio/presentation/service/widget/choose_free_time.dart';
 import '../bloc/bookingservice/booking_service_cubit.dart';
 import 'confirm_information_booking.dart';
 
 class ShowScheduleBottom extends StatefulWidget {
   const ShowScheduleBottom({
     super.key,
-    this.serviceId,  this.isPlan = false,
+    this.serviceId,
+    this.isPlan = false,
   });
   final int? serviceId;
   final bool isPlan;
@@ -27,7 +28,6 @@ class _ShowScheduleBottomState extends State<ShowScheduleBottom> {
         BasicTextButton(
           text: 'Choose Your Free Time',
           onPress: () {
-            
             ChooseFreeTime().showScheduleBottomSheet(context, widget.serviceId);
             // _showScheduleBottomSheet(context);
           },

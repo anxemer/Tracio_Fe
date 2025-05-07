@@ -1,11 +1,11 @@
 import 'package:bloc/bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
-import 'package:tracio_fe/core/erorr/exception.dart';
-import 'package:tracio_fe/core/erorr/failure.dart';
-import 'package:tracio_fe/domain/shop/usecase/edit_shop.dart';
-import 'package:tracio_fe/domain/shop/usecase/register_shop_profile.dart';
-import 'package:tracio_fe/service_locator.dart';
+import 'package:Tracio/core/erorr/exception.dart';
+import 'package:Tracio/core/erorr/failure.dart';
+import 'package:Tracio/domain/shop/usecase/edit_shop.dart';
+import 'package:Tracio/domain/shop/usecase/register_shop_profile.dart';
+import 'package:Tracio/service_locator.dart';
 
 import '../../../../../domain/map/entities/place.dart';
 

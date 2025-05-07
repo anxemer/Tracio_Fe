@@ -1,15 +1,21 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/common/helper/is_dark_mode.dart';
-import 'package:tracio_fe/common/widget/button/text_button.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/domain/blog/entites/blog_entity.dart';
-import 'package:tracio_fe/domain/blog/usecase/bookmark_blog.dart';
-import 'package:tracio_fe/domain/blog/usecase/unBookmark.dart';
-import 'package:tracio_fe/presentation/library/bloc/reaction/bloc/reaction_bloc.dart';
+import 'package:Tracio/common/helper/is_dark_mode.dart';
+import 'package:Tracio/common/widget/button/text_button.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/domain/blog/entites/blog_entity.dart';
+import 'package:Tracio/domain/blog/usecase/bookmark_blog.dart';
+import 'package:Tracio/domain/blog/usecase/unBookmark.dart';
+import 'package:Tracio/presentation/library/bloc/reaction/bloc/reaction_bloc.dart';
 
+import '../../../common/helper/notification/notification_model.dart';
+import '../../../core/services/notifications/i_notification_service.dart';
+import '../../../core/services/signalR/implement/notification_hub_service.dart';
 import '../../../service_locator.dart';
+import '../../notifications/page/notifications.dart';
 
 class ReactBlog extends StatefulWidget {
   ReactBlog(
@@ -32,12 +38,51 @@ class _ReactBlogState extends State<ReactBlog> {
     return !isReaction;
   }
 
+  late int likesCount;
+  late int commentsCount;
+  late bool isReacted;
+  late bool isBookmarked;
+  final _notiService = sl<NotificationHubService>();
+  late final StreamSubscription<NotificationModel> _messageSubscription;
+
   @override
   void initState() {
-    context
-        .read<ReactionBloc>()
-        .add(InitializeReactionBlog(blog: widget.blogEntity));
-    super.initState();
+    likesCount = widget.blogEntity.likesCount;
+    commentsCount = widget.blogEntity.commentsCount;
+    isReacted = widget.blogEntity.isReacted;
+    isBookmarked = widget.blogEntity.isBookmarked;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        print('ReactBlog not mounted, skipping initialization');
+        return;
+      }
+      Future.microtask(() async {
+        try {
+          await _notiService.connect();
+          if (!mounted) {
+            return;
+          }
+          _messageSubscription = _notiService.onMessageUpdate.listen((message) {
+            if (message!.entityType == 0 && mounted) {
+              setState(() {
+                commentsCount++;
+              });
+            }
+            if (message.entityType == 5 && mounted) {
+              setState(() {
+                likesCount++;
+              });
+            }
+          });
+        } catch (e) {
+          print('Error in ReactBlog initState: $e');
+        }
+      });
+
+      context
+          .read<ReactionBloc>()
+          .add(InitializeReactionBlog(blog: widget.blogEntity));
+    });
   }
 
   @override
@@ -54,8 +99,7 @@ class _ReactBlogState extends State<ReactBlog> {
                 children: [
                   BlocBuilder<ReactionBloc, ReactionState>(
                     builder: (context, state) {
-                     
-                          state.reactBlog.contains(widget.blogEntity.blogId);
+                      state.reactBlog.contains(widget.blogEntity.blogId);
                       return GestureDetector(
                           onTap: () async {
                             if (widget.blogEntity.isReacted) {

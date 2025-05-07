@@ -1,9 +1,9 @@
-import 'package:tracio_fe/core/erorr/failure.dart';
-import 'package:tracio_fe/domain/map/entities/route.dart';
-import 'package:tracio_fe/domain/map/entities/route_blog.dart';
-import 'package:tracio_fe/domain/map/entities/route_detail.dart';
-import 'package:tracio_fe/domain/map/entities/route_reply.dart';
-import 'package:tracio_fe/domain/map/entities/route_review.dart';
+import 'package:Tracio/core/erorr/failure.dart';
+import 'package:Tracio/domain/map/entities/route.dart';
+import 'package:Tracio/domain/map/entities/route_blog.dart';
+import 'package:Tracio/domain/map/entities/route_detail.dart';
+import 'package:Tracio/domain/map/entities/route_reply.dart';
+import 'package:Tracio/domain/map/entities/route_review.dart';
 
 abstract class RouteState {}
 

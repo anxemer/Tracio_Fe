@@ -3,7 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
-import 'package:tracio_fe/common/helper/is_dark_mode.dart';
+import 'package:Tracio/common/helper/is_dark_mode.dart';
 
 import '../../../common/helper/schedule_model.dart';
 import '../../../common/widget/blog/custom_bottomsheet.dart';
@@ -12,6 +12,7 @@ import '../../../core/constants/app_size.dart';
 import '../../../data/shop/models/booking_service_req.dart';
 import '../../../data/shop/models/reschedule_booking_model.dart';
 import '../bloc/bookingservice/booking_service_cubit.dart';
+import '../bloc/bookingservice/booking_service_state.dart';
 import '../bloc/bookingservice/reschedule_booking/cubit/reschedule_booking_cubit.dart';
 import 'custom_time_picker.dart';
 
@@ -27,7 +28,10 @@ class ChooseFreeTime {
   final List<ScheduleModel> _schedules = [];
   void showScheduleBottomSheet(BuildContext context, int? serviceId) {
     final bookingCubit = context.read<BookingServiceCubit>();
-
+    _schedules.clear();
+    if (bookingCubit.schedules != null) {
+      _schedules.addAll(bookingCubit.schedules!);
+    }
     // Reset các giá trị khi mở bottom sheet mới
     _timeFromCon = TextEditingController();
     _timeToCon = TextEditingController();
@@ -93,7 +97,7 @@ class ChooseFreeTime {
                             SizedBox(width: 8.w),
                             Expanded(
                               child: Text(
-                                errorMessage!,
+                                errorMessage,
                                 style: TextStyle(
                                   color: Colors.red,
                                   fontSize: AppSize.textSmall,
@@ -194,8 +198,8 @@ class ChooseFreeTime {
                                             await showCustomHourMinutePicker(
                                           context: context,
                                           initialTime: TimeOfDay.now(),
-                                          startHour: 9,
-                                          endHour: 20,
+                                          startHour: 7,
+                                          endHour: 17,
                                           minuteInterval: 15,
                                         );
 
@@ -370,9 +374,6 @@ class ChooseFreeTime {
 
                               bookingCubit.updateSchedules(_schedules);
                               // Thông báo ra bên ngoài nếu có callback
-                              // if (widget.onSchedulesChanged != null) {
-                              //   widget.onSchedulesChanged!(_schedules);
-                              // }
 
                               errorMessageNotifier.value =
                                   null; // Xóa lỗi nếu thành công
@@ -410,189 +411,172 @@ class ChooseFreeTime {
   }
 
   Widget scheduleList(BuildContext context, int? serviceId) {
-    var bookingCubit = context.read<BookingServiceCubit>();
     return Container(
       color: Colors.white,
       width: double.infinity,
       constraints:
           BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.7),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Padding(
-            padding: EdgeInsets.all(4),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: BlocBuilder<BookingServiceCubit, BookingServiceState>(
+        builder: (context, state) {
+          if (state is BookingServiceUpdated) {
+            final schedules = state.schedules ?? [];
+
+            return Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  'Your Schedules',
-                  style: TextStyle(
-                    fontSize: AppSize.textLarge,
-                    fontWeight: FontWeight.bold,
+                Padding(
+                  padding: EdgeInsets.all(4),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Your Schedules',
+                        style: TextStyle(
+                          fontSize: AppSize.textLarge,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.close),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ],
                   ),
                 ),
-                IconButton(
-                  icon: Icon(Icons.close),
-                  onPressed: () => Navigator.pop(context),
+                Divider(height: 1),
+                Expanded(
+                  child: schedules.isNotEmpty
+                      ? ListView.builder(
+                          itemCount: schedules.length,
+                          itemBuilder: (context, index) {
+                            final schedule = schedules[index];
+                            final DateFormat dateFormat =
+                                DateFormat('dd-MM-yyyy');
+                            return ListTile(
+                              title: Text(dateFormat.format(schedule.date!)),
+                              subtitle: Text(
+                                  '${schedule.timeFrom!.format(context)} - ${schedule.timeTo!.format(context)}'),
+                              trailing: IconButton(
+                                icon: Icon(Icons.delete_outline,
+                                    color: Colors.red),
+                                onPressed: () {
+                                  final updatedSchedules =
+                                      List<ScheduleModel>.from(schedules)
+                                        ..removeAt(index);
+                                  context
+                                      .read<BookingServiceCubit>()
+                                      .updateSchedules(updatedSchedules);
+                                  if (schedules.isEmpty) {
+                                    Navigator.pop(context);
+                                  }
+                                },
+                              ),
+                            );
+                          },
+                        )
+                      : Container(),
                 ),
-              ],
-            ),
-          ),
-
-          Divider(height: 1),
-
-          Expanded(
-            child: bookingCubit.schedules != null
-                ? ListView.builder(
-                    itemCount: bookingCubit.schedules!.length,
-                    // padding: EdgeInsets.symmetric(vertical: 8),
-                    itemBuilder: (context, index) {
-                      final schedule = bookingCubit.schedules![index];
-                      final DateFormat dateFormat = DateFormat('dd-MM-yyyy');
-
-                      return ListTile(
-                        title: Text(
-                          dateFormat.format(schedule.date!),
-                          style: TextStyle(fontWeight: FontWeight.w500),
+                Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      OutlinedButton(
+                        onPressed: () {
+                          context
+                              .read<BookingServiceCubit>()
+                              .updateSchedules([]);
+                          Navigator.pop(context);
+                        },
+                        child: Text('Clear All'),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: context.isDarkMode
+                              ? AppColors.primary
+                              : AppColors.secondBackground,
                         ),
-                        subtitle: Text(
-                          '${schedule.timeFrom!.format(context)} - ${schedule.timeTo!.format(context)}',
-                        ),
-                        trailing: IconButton(
-                          icon: Icon(Icons.delete_outline, color: Colors.red),
-                          onPressed: () {
-                            bookingCubit.schedules!.removeAt(index);
-
-                            // if (widget.onSchedulesChanged != null) {
-                            //   widget.onSchedulesChanged!(_schedules);
-                            // }
-                            // // Nếu xóa hết lịch thì đóng dialog
-                            if (bookingCubit.schedules!.isEmpty) {
-                              Navigator.pop(context);
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          try {
+                            final bookingCubit =
+                                context.read<BookingServiceCubit>();
+                            if (schedules.isEmpty) {
+                              throw Exception(
+                                  "You have not selected an appointment yet.");
                             }
+                            List<UserScheduleCreateDto> scheduleDtos =
+                                schedules.map((schedule) {
+                              if (schedule.timeFrom == null ||
+                                  schedule.timeTo == null) {
+                                throw Exception(
+                                    "Please select full start and end times.");
+                              }
+                              return UserScheduleCreateDto(
+                                date: schedule.date,
+                                timeFrom: _formatTime(schedule.timeFrom!),
+                                timeTo: _formatTime(schedule.timeTo!),
+                              );
+                            }).toList();
+
+                            if (bookingCubit.selectedServices.isNotEmpty) {
+                              List<BookingCartCreateDto> bookingCartDtos =
+                                  bookingCubit.selectedServices.map((item) {
+                                return BookingCartCreateDto(
+                                  bookingQueueId: item.itemId,
+                                  note: bookingCubit.serviceNotes[
+                                          item.itemId.toString()] ??
+                                      "",
+                                );
+                              }).toList();
+                              bookingCubit.bookingServie(BookingServiceReq(
+                                  bookingCreateDto: null,
+                                  bookingCartCreateDtos: bookingCartDtos,
+                                  userScheduleCreateDtos: scheduleDtos));
+                            } else if (serviceId != null) {
+                              BookingCreateDto bookingCreateDto =
+                                  BookingCreateDto(
+                                      serviceId: serviceId,
+                                      note: bookingCubit.serviceNotes[
+                                              serviceId.toString()] ??
+                                          "");
+                              bookingCubit.bookingServie(BookingServiceReq(
+                                  bookingCreateDto: bookingCreateDto,
+                                  bookingCartCreateDtos: null,
+                                  userScheduleCreateDtos: scheduleDtos));
+                            } else if (bookingCubit.reschedule.isNotEmpty) {
+                              context
+                                  .read<RescheduleBookingCubit>()
+                                  .rescheduleBooking(RescheduleBookingModel(
+                                      bookingIds: bookingCubit.reschedule,
+                                      userScheduleCreateDtos: scheduleDtos));
+                            } else {
+                              throw Exception("No valid booking data.");
+                            }
+
+                            bookingCubit.reschedule.clear();
+                            bookingCubit.updateSchedules([]);
+                            Navigator.pop(context);
+                          } catch (e) {
+                            errorMessageNotifier.value = e.toString();
                           }
-
-                          // widget.deleteSchedule
-
-                          ,
+                        },
+                        child: Text(
+                          'Confirm',
+                          style: TextStyle(
+                              fontSize: AppSize.textMedium,
+                              color: context.isDarkMode
+                                  ? Colors.grey.shade300
+                                  : Colors.black87),
                         ),
-                      );
-                    },
-                  )
-                : Container(),
-          ),
-          // Center(
-
-          Padding(
-            padding: EdgeInsets.all(8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                OutlinedButton(
-                  onPressed: () {
-                    // widget.clearAll;
-
-                    bookingCubit.schedules!.clear();
-
-                    // if (widget.onSchedulesChanged != null) {
-                    //   widget.onSchedulesChanged!(_schedules);
-                    // }
-                    Navigator.pop(context);
-                  },
-                  child: Text('Clear All'),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: context.isDarkMode
-                        ? AppColors.primary
-                        : AppColors.secondBackground,
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    try {
-                      if (bookingCubit.schedules == null ||
-                          bookingCubit.schedules!.isEmpty) {
-                        throw Exception(
-                            "You have not selected an appointment yet.");
-                      }
-                      if (bookingCubit.schedules!.isEmpty) {
-                        throw Exception(
-                            "You have not selected an service yet.");
-                      }
-                      List<UserScheduleCreateDto> scheduleDtos =
-                          bookingCubit.schedules!.map((schedule) {
-                        if (schedule.timeFrom == null ||
-                            schedule.timeTo == null) {
-                          throw Exception(
-                              "Please select full start and end times.");
-                        }
-                        return UserScheduleCreateDto(
-                          date: schedule.date,
-                          timeFrom: _formatTime(schedule.timeFrom!),
-                          timeTo: _formatTime(schedule.timeTo!),
-                        );
-                      }).toList();
-
-                      List<int> rescheduleBooking = bookingCubit.reschedule;
-
-                      if (bookingCubit.selectedServices.isNotEmpty) {
-                        List<BookingCartCreateDto> bookingCartDtos =
-                            bookingCubit.selectedServices.map((item) {
-                          return BookingCartCreateDto(
-                            bookingQueueId: item.itemId,
-                            note: bookingCubit
-                                    .serviceNotes[item.itemId.toString()] ??
-                                "",
-                          );
-                        }).toList();
-
-                        context.read<BookingServiceCubit>().bookingServie(
-                            BookingServiceReq(
-                                bookingCreateDto: null,
-                                bookingCartCreateDtos: bookingCartDtos,
-                                userScheduleCreateDtos: scheduleDtos));
-                      } else if (serviceId != null) {
-                        BookingCreateDto bookingCreateDto = BookingCreateDto(
-                            serviceId: serviceId,
-                            note: bookingCubit
-                                    .serviceNotes[serviceId.toString()] ??
-                                "");
-
-                        context.read<BookingServiceCubit>().bookingServie(
-                            BookingServiceReq(
-                                bookingCreateDto: bookingCreateDto,
-                                bookingCartCreateDtos: null,
-                                userScheduleCreateDtos: scheduleDtos));
-                      } else if (rescheduleBooking.isNotEmpty) {
-                        context
-                            .read<RescheduleBookingCubit>()
-                            .rescheduleBooking(RescheduleBookingModel(
-                                bookingIds: rescheduleBooking,
-                                userScheduleCreateDtos: scheduleDtos));
-                      } else {
-                        throw Exception("No valid booking data.");
-                      }
-
-                      bookingCubit.reschedule.clear();
-                      bookingCubit.schedules!.clear();
-                      Navigator.pop(context);
-                    } catch (e) {
-                      errorMessageNotifier.value = e.toString();
-                      // Show alert dialog hoặc snackbar
-                    }
-                  },
-                  child: Text(
-                    'Confirm',
-                    style: TextStyle(
-                        fontSize: AppSize.textMedium,
-                        color: context.isDarkMode
-                            ? Colors.grey.shade300
-                            : Colors.black87),
+                      ),
+                    ],
                   ),
                 ),
               ],
-            ),
-          ),
-        ],
+            );
+          }
+          return SizedBox.shrink();
+        },
       ),
     );
   }
@@ -627,7 +611,7 @@ class ChooseFreeTime {
       BuildContext context, List<ScheduleModel> currentSchedules) async {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-
+    final bookingCubit = context.read<BookingServiceCubit>();
     final pickedDate = await showDatePicker(
       context: context,
       firstDate: today,
@@ -647,7 +631,18 @@ class ChooseFreeTime {
             break;
           }
         }
-
+        if (!isAlreadySelected && bookingCubit.schedules != null) {
+          for (var schedule in bookingCubit.schedules!) {
+            final scheduleDate = DateTime(
+                schedule.date!.year, schedule.date!.month, schedule.date!.day);
+            if (scheduleDate.year == dayDate.year &&
+                scheduleDate.month == dayDate.month &&
+                scheduleDate.day == dayDate.day) {
+              isAlreadySelected = true;
+              break;
+            }
+          }
+        }
         return !isAlreadySelected && !dayDate.isBefore(today);
       },
     );

@@ -1,4 +1,4 @@
-import 'dart:typed_data';
+
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -7,16 +7,16 @@ import 'package:google_polyline_algorithm/google_polyline_algorithm.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:map_elevation/map_elevation.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
-import 'package:tracio_fe/common/widget/drag_handle/drag_handle.dart';
-import 'package:tracio_fe/core/configs/theme/app_colors.dart';
-import 'package:tracio_fe/core/configs/utils/color_utils.dart';
-import 'package:tracio_fe/data/map/models/request/post_route_req.dart';
-import 'package:tracio_fe/presentation/map/bloc/get_direction_cubit.dart';
-import 'package:tracio_fe/presentation/map/bloc/get_direction_state.dart';
-import 'package:tracio_fe/presentation/map/bloc/map_cubit.dart';
-import 'package:tracio_fe/presentation/map/bloc/map_state.dart';
-import 'package:tracio_fe/presentation/map/bloc/route_cubit.dart';
-import 'package:tracio_fe/presentation/map/pages/snapshot_display_page.dart';
+import 'package:Tracio/common/widget/drag_handle/drag_handle.dart';
+import 'package:Tracio/core/configs/theme/app_colors.dart';
+import 'package:Tracio/core/configs/utils/color_utils.dart';
+import 'package:Tracio/data/map/models/request/post_route_req.dart';
+import 'package:Tracio/presentation/map/bloc/get_direction_cubit.dart';
+import 'package:Tracio/presentation/map/bloc/get_direction_state.dart';
+import 'package:Tracio/presentation/map/bloc/map_cubit.dart';
+import 'package:Tracio/presentation/map/bloc/map_state.dart';
+import 'package:Tracio/presentation/map/bloc/route_cubit.dart';
+import 'package:Tracio/presentation/map/pages/snapshot_display_page.dart';
 
 //TODO: Hover Build Metric session for more detai info
 class RouteDetailPanel extends StatefulWidget {
@@ -199,7 +199,8 @@ class _RouteDetailPanelState extends State<RouteDetailPanel> {
                           final request = PostRouteReq(
                             routeName: routeName ?? "New Route",
                             description: routeDescription,
-                            privacyLevel:routePrivacy== 0?"Private":"public",
+                            privacyLevel:
+                                routePrivacy == 0 ? "Private" : "public",
                             origin: origin,
                             destination: destination,
                             waypoints: waypoints,

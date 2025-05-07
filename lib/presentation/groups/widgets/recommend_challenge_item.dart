@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/common/helper/is_dark_mode.dart';
-import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
-import 'package:tracio_fe/common/widget/picture/circle_picture.dart';
-import 'package:tracio_fe/core/configs/theme/app_colors.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/domain/challenge/entities/challenge_entity.dart';
-import 'package:tracio_fe/presentation/groups/cubit/challenge_cubit.dart';
-import 'package:tracio_fe/presentation/groups/widgets/challenge_progress.dart';
+import 'package:Tracio/common/helper/is_dark_mode.dart';
+import 'package:Tracio/common/helper/navigator/app_navigator.dart';
+import 'package:Tracio/common/widget/picture/circle_picture.dart';
+import 'package:Tracio/core/configs/theme/app_colors.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/domain/challenge/entities/challenge_entity.dart';
+import 'package:Tracio/presentation/groups/cubit/challenge_cubit.dart';
+import 'package:Tracio/presentation/groups/widgets/challenge_progress.dart';
 
 import 'challenge_detail.dart';
 
@@ -58,19 +58,9 @@ class RecommendChallengeItem extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Group Image
-              // ClipRRect(
-              //   borderRadius: BorderRadius.circular(8),
-              //   child: Image.network(
-              //     groupImageUrl,
-              //     width: AppSize.imageSmall.w,
-              //     height: AppSize.imageSmall.w,
-              //     fit: BoxFit.cover,
-              //   ),
-              // ),
               CirclePicture(
                   imageUrl: challenge.challengeThumbnail,
-                  imageSize: AppSize.imageSmall),
+                  imageSize: AppSize.imageSmall * .6.sp),
               const SizedBox(height: 8),
               // Group Info
               Text(

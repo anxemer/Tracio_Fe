@@ -1,4 +1,4 @@
-import 'package:tracio_fe/data/groups/models/response/get_group_route_rep.dart';
+import 'package:Tracio/data/groups/models/response/get_group_route_rep.dart';
 
 class GetGroupRouteListRep {
   final List<GetGroupRouteRep> groupList;

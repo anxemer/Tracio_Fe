@@ -1,8 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:tracio_fe/domain/shop/usecase/reschedule_booking.dart';
-import 'package:tracio_fe/domain/shop/usecase/confirm_booking.dart';
-import 'package:tracio_fe/service_locator.dart';
+import 'package:Tracio/domain/shop/usecase/reschedule_booking.dart';
+import 'package:Tracio/domain/shop/usecase/confirm_booking.dart';
+import 'package:Tracio/service_locator.dart';
 
 part 'reschedule_booking_state.dart';
 

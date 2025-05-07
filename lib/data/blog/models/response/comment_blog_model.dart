@@ -1,4 +1,4 @@
-import 'package:tracio_fe/domain/blog/entites/comment_blog.dart';
+import 'package:Tracio/domain/blog/entites/comment_blog.dart';
 
 import '../../../../common/helper/media_file.dart';
 
@@ -30,7 +30,7 @@ class CommentBlogModel extends CommentBlogEntity {
         createdAt: DateTime.parse(map["createdAt"]),
         likeCount: map['likeCount'] as int,
         replyCount: map['replyCount'] as int,
-        mediaUrls: map['mediaUrls'] ?? [],
+        mediaUrls: [],
         mediaFiles: map["mediaFiles"] == null
             ? []
             : List<MediaFile>.from(

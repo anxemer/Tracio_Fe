@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/common/widget/picture/circle_picture.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/domain/challenge/entities/challenge_reward.dart';
+import 'package:Tracio/common/widget/picture/circle_picture.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/domain/challenge/entities/challenge_reward.dart';
 
 class ChallengeReward extends StatelessWidget {
   const ChallengeReward({super.key, required this.reward});

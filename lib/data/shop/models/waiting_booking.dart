@@ -1,11 +1,11 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 class ConfirmBookingModel {
   ConfirmBookingModel({
-    required this.bookedDate,
-    required this.userNote,
-    required this.shopNote,
-    required this.reason,
-    required this.price,
+    this.bookedDate,
+    this.userNote,
+    this.shopNote,
+    this.reason,
+    this.price,
     this.adjustPriceReason,
     this.bookingId,
   });

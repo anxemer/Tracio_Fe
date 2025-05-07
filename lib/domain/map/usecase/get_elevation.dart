@@ -1,9 +1,9 @@
 import 'package:dartz/dartz.dart';
 import 'package:map_elevation/map_elevation.dart';
-import 'package:tracio_fe/core/erorr/failure.dart';
-import 'package:tracio_fe/core/usecase/usecase.dart';
-import 'package:tracio_fe/data/map/source/elevation_api_service.dart';
-import 'package:tracio_fe/service_locator.dart';
+import 'package:Tracio/core/erorr/failure.dart';
+import 'package:Tracio/core/usecase/usecase.dart';
+import 'package:Tracio/data/map/source/elevation_api_service.dart';
+import 'package:Tracio/service_locator.dart';
 
 class GetElevationUseCase extends Usecase<List<ElevationPoint>, String> {
   @override

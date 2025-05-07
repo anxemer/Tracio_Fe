@@ -1,28 +1,22 @@
 import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tracio_fe/domain/blog/entites/blog_entity.dart';
-import 'package:tracio_fe/domain/blog/entites/pagination_meta_data_entity.dart';
-import 'package:tracio_fe/domain/blog/usecase/get_blogs.dart';
-import 'package:tracio_fe/domain/blog/usecase/get_bookmark_blog.dart';
-import 'package:tracio_fe/presentation/blog/bloc/get_blog_state.dart';
+import 'package:Tracio/domain/blog/entites/blog_entity.dart';
+import 'package:Tracio/domain/blog/entites/pagination_meta_data_entity.dart';
+import 'package:Tracio/domain/blog/usecase/get_blogs.dart';
+import 'package:Tracio/domain/blog/usecase/get_bookmark_blog.dart';
+import 'package:Tracio/presentation/blog/bloc/get_blog_state.dart';
 
 import '../../../data/blog/models/request/get_blog_req.dart';
 import '../../../service_locator.dart';
 
 class GetBlogCubit extends Cubit<GetBlogState> {
-  StreamSubscription? _blogReactionSubscription;
-
   GetBlogCubit()
-      : 
-        super(GetBlogInitial(
+      : super(GetBlogInitial(
           blogs: [],
           metaData: PaginationMetaDataEntity(),
           params: GetBlogReq(pageSize: 2, pageNumber: 1),
         ));
-
-  
-  
 
   Future<void> getBlog(GetBlogReq param) async {
     try {
@@ -176,10 +170,21 @@ class GetBlogCubit extends Cubit<GetBlogState> {
     }
   }
 
-  // Đảm bảo hủy subscription khi cubit bị đóng
-  @override
-  Future<void> close() {
-    _blogReactionSubscription?.cancel();
-    return super.close();
+  void incrementCommentCount(int blogId) {
+    if (state is GetBlogLoaded) {
+      final currentState = state as GetBlogLoaded;
+      final updatedBlogs = currentState.blogs!.map((blog) {
+        if (blog.blogId == blogId) {
+          return blog.copyWith(commentsCount: blog.commentsCount + 1);
+        }
+        return blog;
+      }).toList();
+      emit(GetBlogLoaded(
+        blogs: updatedBlogs,
+        isLoading: false,
+        params: currentState.params,
+        metaData: currentState.metaData,
+      ));
+    }
   }
 }

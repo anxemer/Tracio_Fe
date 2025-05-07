@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/presentation/map/widgets/snapshot_edit_section.dart';
-import 'package:tracio_fe/presentation/map/widgets/snapshot_review_section.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/presentation/map/widgets/snapshot_edit_section.dart';
+import 'package:Tracio/presentation/map/widgets/snapshot_review_section.dart';
 
 class SnapshotDisplayPage extends StatefulWidget {
   final Uri snapshotImage;

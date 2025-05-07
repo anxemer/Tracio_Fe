@@ -1,9 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tracio_fe/core/usecase/usecase.dart';
-import 'package:tracio_fe/domain/blog/usecase/get_category.dart';
-import 'package:tracio_fe/domain/shop/usecase/get_cate_service.dart';
-import 'package:tracio_fe/presentation/blog/bloc/category/get_category_state.dart';
-import 'package:tracio_fe/service_locator.dart';
+import 'package:Tracio/core/usecase/usecase.dart';
+import 'package:Tracio/domain/blog/usecase/get_category.dart';
+import 'package:Tracio/domain/shop/usecase/get_cate_service.dart';
+import 'package:Tracio/presentation/blog/bloc/category/get_category_state.dart';
+import 'package:Tracio/service_locator.dart';
 
 class GetCategoryCubit extends Cubit<GetCategoryState> {
   GetCategoryCubit() : super(CategoryLoading());

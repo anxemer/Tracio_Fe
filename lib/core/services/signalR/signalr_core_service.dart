@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:signalr_netcore/hub_connection.dart';
 import 'package:signalr_netcore/signalr_client.dart';
 import 'package:signalr_netcore/json_hub_protocol.dart';
-import 'package:tracio_fe/core/logger/signalr_logger.dart';
+import 'package:Tracio/core/logger/signalr_logger.dart';
 
 class SignalRCoreService {
   late HubConnection _hub;
@@ -12,7 +12,6 @@ class SignalRCoreService {
   bool get isConnected => _isConnected;
 
   Future<void> init(String hubUrl) async {
-   
     _hub = HubConnectionBuilder()
         .withUrl(
           hubUrl,

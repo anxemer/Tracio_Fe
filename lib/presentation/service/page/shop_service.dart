@@ -1,18 +1,19 @@
+import 'package:Tracio/common/widget/button/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/common/helper/is_dark_mode.dart';
-import 'package:tracio_fe/common/widget/button/button.dart';
-import 'package:tracio_fe/common/widget/error.dart';
-import 'package:tracio_fe/common/widget/picture/circle_picture.dart';
-import 'package:tracio_fe/core/configs/theme/app_colors.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/data/shop/models/get_service_req.dart';
-import 'package:tracio_fe/domain/shop/entities/response/shop_entity.dart';
-import 'package:tracio_fe/domain/shop/entities/response/shop_service_entity.dart';
-import 'package:tracio_fe/presentation/service/bloc/service_bloc/get_service_cubit.dart';
-import 'package:tracio_fe/presentation/service/widget/plan_service_icon.dart';
-import 'package:tracio_fe/presentation/service/widget/search_text_field.dart';
+import 'package:Tracio/common/helper/is_dark_mode.dart';
+import 'package:Tracio/common/widget/button/button.dart';
+import 'package:Tracio/common/widget/error.dart';
+import 'package:Tracio/common/widget/picture/circle_picture.dart';
+import 'package:Tracio/core/configs/theme/app_colors.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/data/shop/models/get_service_req.dart';
+import 'package:Tracio/domain/shop/entities/response/shop_entity.dart';
+import 'package:Tracio/domain/shop/entities/response/shop_service_entity.dart';
+import 'package:Tracio/presentation/service/bloc/service_bloc/get_service_cubit.dart';
+import 'package:Tracio/presentation/service/widget/plan_service_icon.dart';
+import 'package:Tracio/presentation/service/widget/search_text_field.dart';
 
 import '../../../common/widget/button/text_button.dart';
 import '../bloc/service_bloc/get_service_state.dart';
@@ -30,54 +31,39 @@ class _ShopServicePageState extends State<ShopServicePage> {
   // bool isFilter = false;
   @override
   void initState() {
-    // context
-    //     .read<GetServiceCubit>()
-    //     .getService(GetServiceReq(shopId: widget.shopId));
+    context
+        .read<GetServiceCubit>()
+        .getService(GetServiceReq(shopId: widget.shopId));
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     var isDark = context.isDarkMode;
-    return BlocProvider(
-        create: (context) =>
-            GetServiceCubit()..getService(GetServiceReq(shopId: widget.shopId)),
-        child: BlocBuilder<GetServiceCubit, GetServiceState>(
-          builder: (context, state) {
-            if (state is GetServiceLoaded) {
-              return Scaffold(
-                body: CustomScrollView(
-                  slivers: [
-                    SliverToBoxAdapter(
-                      child: buildHeader(isDark, context, state.service[0]),
-                    ),
-                    buildGrid(state.service),
-                  ],
+    return BlocBuilder<GetServiceCubit, GetServiceState>(
+      builder: (context, state) {
+        if (state is GetServiceLoaded) {
+          return Scaffold(
+            body: CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(
+                  child: buildHeader(isDark, context, state.service[0]),
                 ),
-              );
-            } else if (state is GetServiceLoading) {
-              return Scaffold(
-                body: CustomScrollView(
-                  slivers: [
-                    SliverToBoxAdapter(
-                      child: Center(child: CircularProgressIndicator()),
-                    ),
-                  ],
-                ),
-              );
-            } else {
-              return Scaffold(
-                body: CustomScrollView(
-                  slivers: [
-                    SliverToBoxAdapter(
-                      child: ErrorPage(),
-                    ),
-                  ],
-                ),
-              );
-            }
-          },
-        ));
+                buildGrid(state.service),
+              ],
+            ),
+          );
+        } else if (state is GetServiceLoading) {
+          return Scaffold(
+            body: Center(child: LoadingButton()),
+          );
+        } else {
+          return Scaffold(
+            body: Center(child: ErrorPage()),
+          );
+        }
+      },
+    );
   }
 
   Padding buildHeader(

@@ -1,8 +1,8 @@
-import 'package:tracio_fe/data/blog/models/response/reply_comment_model.dart';
-import 'package:tracio_fe/data/shop/models/pagination_review_data_model.dart';
-import 'package:tracio_fe/data/shop/models/reply_review_model.dart';
-import 'package:tracio_fe/data/shop/models/review_service_model.dart';
-import 'package:tracio_fe/domain/shop/entities/response/review_service_response_entity.dart';
+import 'package:Tracio/data/blog/models/response/reply_comment_model.dart';
+import 'package:Tracio/data/shop/models/pagination_review_data_model.dart';
+import 'package:Tracio/data/shop/models/reply_review_model.dart';
+import 'package:Tracio/data/shop/models/review_service_model.dart';
+import 'package:Tracio/domain/shop/entities/response/review_service_response_entity.dart';
 
 class ReviewServiceResponseModel extends ReviewServiceResponseEntity {
   ReviewServiceResponseModel({

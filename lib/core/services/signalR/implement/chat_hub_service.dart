@@ -1,12 +1,12 @@
 import 'dart:async';
 
-import 'package:tracio_fe/core/constants/api_url.dart';
-import 'package:tracio_fe/core/logger/signalr_logger.dart';
-import 'package:tracio_fe/core/services/signalR/signalr_core_service.dart';
-import 'package:tracio_fe/data/chat/models/conversation.dart';
-import 'package:tracio_fe/data/chat/models/message.dart';
-import 'package:tracio_fe/domain/chat/entities/conversation.dart';
-import 'package:tracio_fe/domain/chat/entities/message.dart';
+import 'package:Tracio/core/constants/api_url.dart';
+import 'package:Tracio/core/logger/signalr_logger.dart';
+import 'package:Tracio/core/services/signalR/signalr_core_service.dart';
+import 'package:Tracio/data/chat/models/conversation.dart';
+import 'package:Tracio/data/chat/models/message.dart';
+import 'package:Tracio/domain/chat/entities/conversation.dart';
+import 'package:Tracio/domain/chat/entities/message.dart';
 
 class ChatHubService {
   final SignalRCoreService _core;

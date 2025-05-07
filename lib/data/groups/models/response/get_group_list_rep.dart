@@ -1,4 +1,4 @@
-import 'package:tracio_fe/data/groups/models/response/group_rep.dart';
+import 'package:Tracio/data/groups/models/response/group_rep.dart';
 
 class GetGroupListRep {
   List<GroupResponseModel> groupList;

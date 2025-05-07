@@ -3,11 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:tracio_fe/data/map/models/request/isochrone_req.dart';
-import 'package:tracio_fe/presentation/map/bloc/get_location_cubit.dart';
-import 'package:tracio_fe/presentation/map/bloc/get_location_state.dart';
-import 'package:tracio_fe/presentation/map/bloc/map_cubit.dart';
-import 'package:tracio_fe/presentation/map/bloc/map_state.dart';
+import 'package:Tracio/data/map/models/request/isochrone_req.dart';
+import 'package:Tracio/presentation/map/bloc/get_location_cubit.dart';
+import 'package:Tracio/presentation/map/bloc/get_location_state.dart';
+import 'package:Tracio/presentation/map/bloc/map_cubit.dart';
+import 'package:Tracio/presentation/map/bloc/map_state.dart';
 
 class SearchLocationOptions extends StatefulWidget {
   const SearchLocationOptions({super.key});

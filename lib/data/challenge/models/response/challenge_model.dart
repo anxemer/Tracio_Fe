@@ -1,5 +1,5 @@
-import 'package:tracio_fe/data/challenge/models/response/challenge_reward_model.dart';
-import 'package:tracio_fe/domain/challenge/entities/challenge_entity.dart';
+import 'package:Tracio/data/challenge/models/response/challenge_reward_model.dart';
+import 'package:Tracio/domain/challenge/entities/challenge_entity.dart';
 
 class ChallengeModel extends ChallengeEntity {
   ChallengeModel(
@@ -15,6 +15,7 @@ class ChallengeModel extends ChallengeEntity {
       required super.creatorAvatarUrl,
       required super.isSystem,
       required super.isPublic,
+      required super.isCreator,
       required super.status,
       required super.progress,
       required super.totalParticipants,
@@ -54,6 +55,7 @@ class ChallengeModel extends ChallengeEntity {
               .toList() ??
           [],
       totalParticipants: json["totalParticipants"] as int? ?? 0,
+      isCreator: json["isCreator"] as bool? ?? false,
     );
   }
 }

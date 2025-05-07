@@ -1,35 +1,31 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:dartz/dartz.dart';
 
-import 'package:tracio_fe/core/erorr/failure.dart';
-import 'package:tracio_fe/core/network/network_infor.dart';
-import 'package:tracio_fe/data/blog/models/request/comment_blog_req.dart';
-import 'package:tracio_fe/data/blog/models/request/create_blog_req.dart';
-import 'package:tracio_fe/data/blog/models/request/get_reply_comment_req.dart';
-import 'package:tracio_fe/data/blog/models/request/react_blog_req.dart';
-import 'package:tracio_fe/data/blog/models/request/reply_comment_req.dart';
-import 'package:tracio_fe/data/blog/models/response/blog_response.dart';
-import 'package:tracio_fe/data/blog/models/response/get_reaction_blog.dart';
-import 'package:tracio_fe/data/blog/source/blog_api_service.dart';
-import 'package:tracio_fe/domain/blog/entites/category.dart';
-import 'package:tracio_fe/domain/blog/entites/reaction_response_entity.dart';
-import 'package:tracio_fe/domain/blog/entites/reply_comment.dart';
-import 'package:tracio_fe/domain/blog/repositories/blog_repository.dart';
+import 'package:Tracio/core/erorr/failure.dart';
+import 'package:Tracio/core/network/network_infor.dart';
+import 'package:Tracio/data/blog/models/request/comment_blog_req.dart';
+import 'package:Tracio/data/blog/models/request/create_blog_req.dart';
+import 'package:Tracio/data/blog/models/request/get_reply_comment_req.dart';
+import 'package:Tracio/data/blog/models/request/react_blog_req.dart';
+import 'package:Tracio/data/blog/models/request/reply_comment_req.dart';
+import 'package:Tracio/data/blog/models/response/blog_response.dart';
+import 'package:Tracio/data/blog/source/blog_api_service.dart';
+import 'package:Tracio/domain/blog/entites/category.dart';
+import 'package:Tracio/domain/blog/entites/reaction_response_entity.dart';
+import 'package:Tracio/domain/blog/entites/reply_comment.dart';
+import 'package:Tracio/domain/blog/repositories/blog_repository.dart';
 
 import '../../../domain/blog/entites/comment_blog.dart';
 import '../../../domain/blog/usecase/un_react_blog.dart';
 import '../models/request/get_blog_req.dart';
 import '../models/request/get_comment_req.dart';
-import '../models/response/get_reply_comment_rep.dart';
 
 // typedef _ConcreteOrBlogChooser = Future<BlogResponse> Function();
 
 class BlogRepositoryImpl extends BlogRepository {
-  final NetworkInfor networkInfo;
   final BlogApiService remoteDataSource;
 
   BlogRepositoryImpl({
-    required this.networkInfo,
     required this.remoteDataSource,
   });
   @override
@@ -54,8 +50,7 @@ class BlogRepositoryImpl extends BlogRepository {
   }
 
   @override
-  Future<Either<Failure, bool>> reactBlogs(
-      ReactBlogReq react) async {
+  Future<Either<Failure, bool>> reactBlogs(ReactBlogReq react) async {
     var returnedData = await remoteDataSource.reactBlog(react);
     return returnedData.fold((error) {
       return left(ExceptionFailure(''));
@@ -94,13 +89,15 @@ class BlogRepositoryImpl extends BlogRepository {
   }
 
   @override
-  Future<Either<Failure, bool>> commentBlog(CommentBlogReq comment) async {
-    var response = await remoteDataSource.commentBlog(comment);
-    return response.fold((error) {
-      return Left(error);
-    }, (message) {
-      return Right(true);
-    });
+  Future<Either<Failure, CommentBlogEntity>> commentBlog(
+      CommentBlogReq comment) async {
+    try {
+      var response = await remoteDataSource.commentBlog(comment);
+
+      return Right(response);
+    } on Failure catch (e) {
+      return Left(e);
+    }
   }
 
   @override
@@ -133,13 +130,15 @@ class BlogRepositoryImpl extends BlogRepository {
   }
 
   @override
-  Future<Either<Failure, bool>> repCommentBlog(ReplyCommentReq comment) async {
-    var response = await remoteDataSource.repCommentBlog(comment);
-    return response.fold((error) {
-      return Left(error);
-    }, (message) {
-      return Right(true);
-    });
+  Future<Either<Failure, ReplyCommentEntity>> repCommentBlog(
+      ReplyCommentReq comment) async {
+    try {
+      var response = await remoteDataSource.repCommentBlog(comment);
+
+      return Right(response);
+    } on Failure catch (e) {
+      return Left(e);
+    }
   }
 
   @override

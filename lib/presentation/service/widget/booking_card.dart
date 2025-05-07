@@ -4,10 +4,10 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:tracio_fe/common/helper/is_dark_mode.dart';
-import 'package:tracio_fe/common/widget/list_cell_animation_view.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/domain/shop/entities/response/booking_card_view.dart';
+import 'package:Tracio/common/helper/is_dark_mode.dart';
+import 'package:Tracio/common/widget/list_cell_animation_view.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/domain/shop/entities/response/booking_card_view.dart';
 
 import '../../../core/configs/theme/app_colors.dart';
 

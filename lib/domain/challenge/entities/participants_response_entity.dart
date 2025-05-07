@@ -1,7 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
-import 'package:tracio_fe/domain/challenge/entities/participants_entity.dart';
+import 'package:Tracio/domain/challenge/entities/participants_entity.dart';
 
 class ParticipantsResponseEntity {
   final ParticipantsEntity currentUser;
@@ -10,7 +10,4 @@ class ParticipantsResponseEntity {
     required this.currentUser,
     required this.listParticipants,
   });
-
-  
-
 }

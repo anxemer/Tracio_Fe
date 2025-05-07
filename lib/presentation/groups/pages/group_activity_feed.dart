@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tracio_fe/domain/groups/entities/group_route.dart';
+import 'package:Tracio/domain/groups/entities/group_route.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 
 class GroupActivityFeed extends StatefulWidget {

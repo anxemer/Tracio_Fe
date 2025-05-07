@@ -1,11 +1,11 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:dartz/dartz.dart';
 
-import 'package:tracio_fe/core/erorr/failure.dart';
-import 'package:tracio_fe/core/usecase/usecase.dart';
-import 'package:tracio_fe/data/map/models/response/get_route_detail_rep.dart';
-import 'package:tracio_fe/domain/groups/repositories/group_repository.dart';
-import 'package:tracio_fe/service_locator.dart';
+import 'package:Tracio/core/erorr/failure.dart';
+import 'package:Tracio/core/usecase/usecase.dart';
+import 'package:Tracio/data/map/models/response/get_route_detail_rep.dart';
+import 'package:Tracio/domain/groups/repositories/group_repository.dart';
+import 'package:Tracio/service_locator.dart';
 
 class GetGroupRouteDetailUsecaseParams {
   int groupRouteId;

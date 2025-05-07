@@ -1,18 +1,18 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
-import 'package:tracio_fe/core/constants/api_url.dart';
-import 'package:tracio_fe/core/erorr/failure.dart';
-import 'package:tracio_fe/core/network/dio_client.dart';
-import 'package:tracio_fe/data/groups/models/request/get_group_list_req.dart';
-import 'package:tracio_fe/data/groups/models/request/post_group_req.dart';
-import 'package:tracio_fe/data/groups/models/request/post_group_route_req.dart';
-import 'package:tracio_fe/data/groups/models/response/get_group_list_rep.dart';
-import 'package:tracio_fe/data/groups/models/response/get_group_route_list_rep.dart';
-import 'package:tracio_fe/data/groups/models/response/get_participant_list_rep.dart';
-import 'package:tracio_fe/data/map/models/response/get_route_detail_rep.dart';
-import 'package:tracio_fe/data/groups/models/response/group_rep.dart';
-import 'package:tracio_fe/data/groups/models/response/post_group_route_rep.dart';
-import 'package:tracio_fe/service_locator.dart';
+import 'package:Tracio/core/constants/api_url.dart';
+import 'package:Tracio/core/erorr/failure.dart';
+import 'package:Tracio/core/network/dio_client.dart';
+import 'package:Tracio/data/groups/models/request/get_group_list_req.dart';
+import 'package:Tracio/data/groups/models/request/post_group_req.dart';
+import 'package:Tracio/data/groups/models/request/post_group_route_req.dart';
+import 'package:Tracio/data/groups/models/response/get_group_list_rep.dart';
+import 'package:Tracio/data/groups/models/response/get_group_route_list_rep.dart';
+import 'package:Tracio/data/groups/models/response/get_participant_list_rep.dart';
+import 'package:Tracio/data/map/models/response/get_route_detail_rep.dart';
+import 'package:Tracio/data/groups/models/response/group_rep.dart';
+import 'package:Tracio/data/groups/models/response/post_group_route_rep.dart';
+import 'package:Tracio/service_locator.dart';
 
 abstract class GroupApiService {
   Future<Either<Failure, dynamic>> createGroup(PostGroupReq request);

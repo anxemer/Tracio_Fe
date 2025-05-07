@@ -1,4 +1,4 @@
-import 'package:tracio_fe/domain/challenge/entities/challenge_reward.dart';
+import 'package:Tracio/domain/challenge/entities/challenge_reward.dart';
 
 class ChallengeRewardModel extends ChallengeRewardEntity {
   ChallengeRewardModel(

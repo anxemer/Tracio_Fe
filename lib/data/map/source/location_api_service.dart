@@ -1,12 +1,12 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:tracio_fe/core/constants/api_url.dart';
-import 'package:tracio_fe/core/erorr/failure.dart';
-import 'package:tracio_fe/core/network/dio_client.dart';
-import 'package:tracio_fe/data/map/models/response/get_place_rep.dart';
-import 'package:tracio_fe/data/map/models/request/get_place_req.dart';
-import 'package:tracio_fe/service_locator.dart';
+import 'package:Tracio/core/constants/api_url.dart';
+import 'package:Tracio/core/erorr/failure.dart';
+import 'package:Tracio/core/network/dio_client.dart';
+import 'package:Tracio/data/map/models/response/get_place_rep.dart';
+import 'package:Tracio/data/map/models/request/get_place_req.dart';
+import 'package:Tracio/service_locator.dart';
 
 abstract class LocationApiService {
   Future<Either<Failure, GetPlacesRep>> getPlacesAutocomplete(

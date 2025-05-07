@@ -7,11 +7,11 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:tracio_fe/common/widget/appbar/app_bar.dart';
-import 'package:tracio_fe/core/configs/theme/app_colors.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/data/shop/models/review_booking_req.dart';
-import 'package:tracio_fe/presentation/service/bloc/review_booking/cubit/review_booking_cubit.dart';
+import 'package:Tracio/common/widget/appbar/app_bar.dart';
+import 'package:Tracio/core/configs/theme/app_colors.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/data/shop/models/review_booking_req.dart';
+import 'package:Tracio/presentation/service/bloc/review_booking/cubit/review_booking_cubit.dart';
 
 class ReviewBookingScreen extends StatefulWidget {
   const ReviewBookingScreen({

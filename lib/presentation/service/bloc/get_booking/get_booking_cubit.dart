@@ -1,9 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tracio_fe/core/erorr/failure.dart';
-import 'package:tracio_fe/domain/shop/entities/response/pagination_booking_data_entity.dart';
-import 'package:tracio_fe/domain/shop/usecase/get_booking.dart';
-import 'package:tracio_fe/presentation/service/bloc/get_booking/get_booking_state.dart';
-import 'package:tracio_fe/service_locator.dart';
+import 'package:Tracio/core/erorr/failure.dart';
+import 'package:Tracio/domain/shop/entities/response/pagination_booking_data_entity.dart';
+import 'package:Tracio/domain/shop/usecase/get_booking.dart';
+import 'package:Tracio/presentation/service/bloc/get_booking/get_booking_state.dart';
+import 'package:Tracio/service_locator.dart';
 
 class GetBookingCubit extends Cubit<GetBookingState> {
   GetBookingCubit()

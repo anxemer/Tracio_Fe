@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:gal/gal.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
+import 'package:Tracio/core/constants/app_size.dart';
 
 class CyclingTakePictureButton extends StatelessWidget {
   const CyclingTakePictureButton({super.key});

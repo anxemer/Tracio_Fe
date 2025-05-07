@@ -1,4 +1,4 @@
-import 'package:tracio_fe/domain/map/entities/place.dart';
+import 'package:Tracio/domain/map/entities/place.dart';
 
 abstract class GetLocationState {}
 

@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
-import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/domain/chat/entities/conversation.dart';
-import 'package:tracio_fe/presentation/chat/bloc/bloc/conversation_bloc.dart';
-import 'package:tracio_fe/presentation/chat/pages/chat.dart';
+import 'package:Tracio/common/helper/navigator/app_navigator.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/domain/chat/entities/conversation.dart';
+import 'package:Tracio/presentation/chat/bloc/bloc/conversation_bloc.dart';
+import 'package:Tracio/presentation/chat/pages/chat.dart';
 
 class ConversationListItem extends StatelessWidget {
   final ConversationEntity conversation;

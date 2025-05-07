@@ -2,18 +2,18 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
-import 'package:tracio_fe/common/widget/button/loading.dart';
-import 'package:tracio_fe/common/widget/dialog_confirm.dart';
-import 'package:tracio_fe/common/widget/error.dart';
-import 'package:tracio_fe/common/widget/navbar/bottom_nav_bar_manager.dart';
-import 'package:tracio_fe/common/widget/picture/circle_picture.dart';
-import 'package:tracio_fe/core/configs/theme/app_colors.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/domain/challenge/entities/challenge_entity.dart';
-import 'package:tracio_fe/presentation/groups/widgets/detail_information_challenge.dart';
-import 'package:tracio_fe/presentation/groups/widgets/leader_boar.dart';
-import 'package:tracio_fe/presentation/map/widgets/challenge_reward.dart';
+import 'package:Tracio/common/helper/navigator/app_navigator.dart';
+import 'package:Tracio/common/widget/button/loading.dart';
+import 'package:Tracio/common/widget/dialog_confirm.dart';
+import 'package:Tracio/common/widget/error.dart';
+import 'package:Tracio/common/widget/navbar/bottom_nav_bar_manager.dart';
+import 'package:Tracio/common/widget/picture/circle_picture.dart';
+import 'package:Tracio/core/configs/theme/app_colors.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/domain/challenge/entities/challenge_entity.dart';
+import 'package:Tracio/presentation/groups/widgets/detail_information_challenge.dart';
+import 'package:Tracio/presentation/groups/widgets/leader_boar.dart';
+import 'package:Tracio/presentation/map/widgets/challenge_reward.dart';
 
 import '../cubit/challenge_cubit.dart';
 
@@ -41,11 +41,12 @@ class _ChallengeProgressScreenState extends State<ChallengeProgressScreen> {
     return BlocConsumer<ChallengeCubit, ChallengeState>(
       listener: (context, state) {
         if (state is LeaveChallengeLoaded) {
-          AppNavigator.pushReplacement(
-              context,
-              BottomNavBarManager(
-                selectedIndex: 3,
-              ));
+          Navigator.of(context).popUntil((route) => route.isFirst);
+          // AppNavigator.pushReplacement(
+          //     context,
+          //     BottomNavBarManager(
+          //       selectedIndex: 3,
+          //     ));
         }
       },
       builder: (context, state) {
@@ -55,8 +56,9 @@ class _ChallengeProgressScreenState extends State<ChallengeProgressScreen> {
               ? (challenge.progress! * challenge.goalValue!).round()
               : null;
           return Scaffold(
-              backgroundColor: Colors.white,
-              body: CustomScrollView(
+            backgroundColor: Colors.white,
+            body: Stack(children: [
+              CustomScrollView(
                 scrollDirection: Axis.vertical,
                 physics: AlwaysScrollableScrollPhysics(),
                 slivers: <Widget>[
@@ -67,11 +69,14 @@ class _ChallengeProgressScreenState extends State<ChallengeProgressScreen> {
                     leading: IconButton(
                         icon: Icon(Icons.arrow_back, color: AppColors.primary),
                         onPressed: () {
-                          AppNavigator.pushReplacement(
-                              context,
-                              BottomNavBarManager(
-                                selectedIndex: 3,
-                              ));
+                          Navigator.of(context)
+                              .popUntil((route) => route.isFirst);
+
+                          // AppNavigator.pushReplacement(
+                          //     context,
+                          //     BottomNavBarManager(
+                          //       selectedIndex: 3,
+                          //     ));
                         }),
                     // actions: [
                     //   IconButton(
@@ -157,7 +162,7 @@ class _ChallengeProgressScreenState extends State<ChallengeProgressScreen> {
                                 ),
                               ),
                               Opacity(
-                                  opacity: 0.15,
+                                  opacity: challenge.isCompleted! ? 1 : 0.15,
                                   child: CirclePicture(
                                       imageUrl: challenge.challengeThumbnail,
                                       imageSize: AppSize.iconMedium.sp)),
@@ -251,6 +256,10 @@ class _ChallengeProgressScreenState extends State<ChallengeProgressScreen> {
                           const SizedBox(height: 35),
 
                           DetailInformationChallenge(
+                            myChallenge: challenge.isCreator!,
+                            isPublic: challenge.isPublic!,
+                            isSystem: challenge.isSystem!,
+                            create: challenge.creatorName,
                             participants:
                                 challenge.totalParticipants.toString(),
                             totalGoal: challenge.goalValue.toString(),
@@ -258,6 +267,7 @@ class _ChallengeProgressScreenState extends State<ChallengeProgressScreen> {
                             endate: challenge.endDateFormatted,
                             unit: challenge.unit,
                           ),
+
                           // const SizedBox(height: 12),
                           // Text(
                           //   challenge.longDescription,
@@ -296,50 +306,52 @@ class _ChallengeProgressScreenState extends State<ChallengeProgressScreen> {
                   ),
                 ],
               ),
-              bottomNavigationBar: Container(
-                padding: const EdgeInsets.all(16.0),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.shade200,
-                      spreadRadius: 1,
-                      blurRadius: 5,
-                      offset: const Offset(0, -2),
-                    ),
-                  ],
-                ),
-                child: ElevatedButton(
-                  onPressed: () {
-                    DialogConfirm(
-                            btnLeft: () {
-                              context
-                                  .read<ChallengeCubit>()
-                                  .leaveChallenge(challenge.challengeId!);
-                            },
-                            btnRight: () {
-                              Navigator.pop(context);
-                            },
-                            notification: 'Are you sure you want to leave?')
-                        .showDialogConfirmation(context);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: Colors.white,
-                    padding: EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(AppSize.borderRadiusMedium),
-                    ),
-                    textStyle: TextStyle(
-                        fontSize: AppSize.textLarge,
-                        fontWeight: FontWeight.bold),
-                    minimumSize: const Size(
-                        double.infinity, 50), // Nút chiếm toàn bộ chiều rộn
-                  ),
-                  child: Text('Leave challenge'),
-                ),
-              ));
+              if (challenge.isCreator! || challenge.isCompleted!)
+                SizedBox.shrink()
+              else
+                Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                          vertical: AppSize.apVerticalPadding,
+                          horizontal: AppSize.apHorizontalPadding),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          DialogConfirm(
+                                  btnLeft: () {
+                                    context
+                                        .read<ChallengeCubit>()
+                                        .leaveChallenge(challenge.challengeId!);
+                                  },
+                                  btnRight: () {
+                                    Navigator.pop(context);
+                                  },
+                                  notification:
+                                      'Are you sure you want to leave?')
+                              .showDialogConfirmation(context);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          foregroundColor: Colors.white,
+                          padding: EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                AppSize.borderRadiusMedium),
+                          ),
+                          textStyle: TextStyle(
+                              fontSize: AppSize.textLarge,
+                              fontWeight: FontWeight.bold),
+                          minimumSize: const Size(double.infinity,
+                              50), // Nút chiếm toàn bộ chiều rộn
+                        ),
+                        child: Text('Leave challenge'),
+                      ),
+                    ))
+            ]),
+       
+          );
         }
         if (state is ChallengeLoading) {
           return LoadingButton();

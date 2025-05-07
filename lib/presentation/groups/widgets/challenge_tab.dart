@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:tracio_fe/common/helper/is_dark_mode.dart';
-import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/domain/challenge/entities/challenge_entity.dart';
-import 'package:tracio_fe/presentation/groups/cubit/challenge_cubit.dart';
-import 'package:tracio_fe/presentation/groups/widgets/active_challenge_item.dart';
-import 'package:tracio_fe/presentation/groups/widgets/challenge_progress.dart';
-import 'package:tracio_fe/presentation/groups/widgets/create_challenge.dart';
-import 'package:tracio_fe/presentation/groups/widgets/recommend_challenge_item.dart';
+import 'package:Tracio/common/helper/is_dark_mode.dart';
+import 'package:Tracio/common/helper/navigator/app_navigator.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/domain/challenge/entities/challenge_entity.dart';
+import 'package:Tracio/presentation/groups/cubit/challenge_cubit.dart';
+import 'package:Tracio/presentation/groups/widgets/active_challenge_item.dart';
+import 'package:Tracio/presentation/groups/widgets/challenge_progress.dart';
+import 'package:Tracio/presentation/groups/widgets/create_challenge.dart';
+import 'package:Tracio/presentation/groups/widgets/recommend_challenge_item.dart';
 
 import '../../../common/widget/button/button.dart';
 import '../../../core/configs/theme/app_colors.dart'; // For CircularProgressIndicator
@@ -64,14 +64,14 @@ class _ChallengeTabState extends State<ChallengeTab> {
                         border: Border(
                             bottom: BorderSide(
                                 width: 1, color: Colors.grey.shade300))),
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: [
-                        _buildFilterButton("Distance"),
-                        _buildFilterButton("Moving Time"),
-                        _buildFilterButton("Duration"),
-                      ],
-                    ),
+                    // child: ListView(
+                    //   scrollDirection: Axis.horizontal,
+                    //   children: [
+                    //     _buildFilterButton("Distance"),
+                    //     _buildFilterButton("Moving Time"),
+                    //     _buildFilterButton("Duration"),
+                    //   ],
+                    // ),
                   ),
                   SizedBox(
                     height: 10.h,
@@ -183,50 +183,46 @@ class _ChallengeTabState extends State<ChallengeTab> {
                     height: AppSize.apVerticalPadding,
                   ),
 
-                  const SizedBox(
-                    height: AppSize.apVerticalPadding,
-                  ),
-                  // Padding(
-                  //   padding: const EdgeInsets.symmetric(
-                  //       horizontal: AppSize.apHorizontalPadding),
-                  //   child: Column(
-                  //     children: [
-                  //       Row(
-                  //         mainAxisAlignment: MainAxisAlignment.start,
-                  //         spacing: AppSize.apHorizontalPadding / 2,
-                  //         children: [
-                  //           Icon(
-                  //             Icons.local_attraction_rounded,
-                  //             size: AppSize.iconMedium,
-                  //           ),
-                  //           Text("Joined Challenges",
-                  //               style: TextStyle(
-                  //                   fontSize: AppSize.textSmall.sp,
-                  //                   fontWeight: FontWeight.w600)),
-                  //         ],
-                  //       ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: AppSize.apHorizontalPadding),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          spacing: AppSize.apHorizontalPadding / 2,
+                          children: [
+                            Icon(
+                              Icons.done_outline_rounded,
+                              size: AppSize.iconMedium,
+                            ),
+                            Text("Previous Challenges",
+                                style: TextStyle(
+                                    fontSize: AppSize.textSmall.sp,
+                                    fontWeight: FontWeight.w600)),
+                          ],
+                        ),
 
-                  //       // List of recommended groups
-                  //       SizedBox(height: 16),
-                  //     ],
-                  //   ),
-                  // ),
-                  // Wrap(
-                  //   spacing: AppSize.apHorizontalPadding / 4,
-                  //   runSpacing: AppSize.apHorizontalPadding / 4,
-                  //   children: List.generate(
-                  //     3,
-                  //     (index) {
-                  //       return RecommendChallengeItem(
-                  //         challengeImageUrl:
-                  //             'https://www.eurobasket.com/logos/torr.png',
-                  //         challengeName: 'Group tên dài quá dài',
-                  //         goalValue: 'Hà nội, Hồ Chí Minh, Bình Định, Bình Dương',
-                  //         memberCount: 12126,
-                  //       );
-                  //     },
-                  //   ),
-                  // ),
+                        // List of recommended groups
+                        SizedBox(height: 16),
+                      ],
+                    ),
+                  ),
+                  state.challengeOverview.previousChallenges.isNotEmpty
+                      ? Wrap(
+                          spacing: AppSize.apHorizontalPadding / 4,
+                          runSpacing: AppSize.apHorizontalPadding / 4,
+                          children: List.generate(
+                            state.challengeOverview.previousChallenges.length,
+                            (index) {
+                              return RecommendChallengeItem(
+                                challenge: state.challengeOverview
+                                    .previousChallenges[index],
+                              );
+                            },
+                          ),
+                        )
+                      : SizedBox.shrink(),
 
                   const SizedBox(
                     height: AppSize.apVerticalPadding,

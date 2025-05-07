@@ -1,7 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
-import 'package:tracio_fe/domain/auth/entities/user.dart';
+import 'package:Tracio/domain/auth/entities/user.dart';
 
 class UserModel extends UserEntity {
   UserModel({
@@ -14,7 +14,7 @@ class UserModel extends UserEntity {
     // super.phoneNumber,
     super.profilePicture,
   });
-Map<String, dynamic> toMap() {
+  Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'userId': userId,
       'userName': userName,
@@ -32,11 +32,14 @@ Map<String, dynamic> toMap() {
       email: map['email'] != null ? map['email'] as String : null,
       role: map['role'] != null ? map['role'] as String : null,
       countRole: map['countRole'] != null ? map['countRole'] as String : null,
-      profilePicture: map['profilePicture'] != null ? map['profilePicture'] as String : null,
+      profilePicture: map['profilePicture'] != null
+          ? map['profilePicture'] as String
+          : null,
     );
   }
 
   String toJson() => json.encode(toMap());
 
-  factory UserModel.fromJson(String source) => UserModel.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory UserModel.fromJson(String source) =>
+      UserModel.fromMap(json.decode(source) as Map<String, dynamic>);
 }

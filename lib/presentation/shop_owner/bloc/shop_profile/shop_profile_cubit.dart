@@ -1,9 +1,9 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:tracio_fe/core/erorr/failure.dart';
-import 'package:tracio_fe/core/usecase/usecase.dart';
-import 'package:tracio_fe/domain/shop/entities/response/shop_profile_entity.dart';
-import 'package:tracio_fe/domain/shop/usecase/get_shop_profile.dart';
+import 'package:Tracio/core/erorr/failure.dart';
+import 'package:Tracio/core/usecase/usecase.dart';
+import 'package:Tracio/domain/shop/entities/response/shop_profile_entity.dart';
+import 'package:Tracio/domain/shop/usecase/get_shop_profile.dart';
 
 import '../../../../service_locator.dart';
 

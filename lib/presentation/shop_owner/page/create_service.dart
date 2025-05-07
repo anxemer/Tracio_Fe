@@ -6,16 +6,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:tracio_fe/common/helper/is_dark_mode.dart';
-import 'package:tracio_fe/common/widget/appbar/app_bar.dart';
-import 'package:tracio_fe/common/widget/input_text_form_field.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/data/blog/models/response/category_model.dart';
-import 'package:tracio_fe/data/shop/models/create_service_req.dart';
-import 'package:tracio_fe/domain/blog/entites/category.dart';
-import 'package:tracio_fe/domain/shop/entities/response/shop_service_entity.dart';
-import 'package:tracio_fe/presentation/blog/bloc/category/get_category_cubit.dart';
-import 'package:tracio_fe/presentation/shop_owner/bloc/service_management/service_management_cubit.dart';
+import 'package:Tracio/common/helper/is_dark_mode.dart';
+import 'package:Tracio/common/widget/appbar/app_bar.dart';
+import 'package:Tracio/common/widget/input_text_form_field.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/data/blog/models/response/category_model.dart';
+import 'package:Tracio/data/shop/models/create_service_req.dart';
+import 'package:Tracio/domain/blog/entites/category.dart';
+import 'package:Tracio/domain/shop/entities/response/shop_service_entity.dart';
+import 'package:Tracio/presentation/blog/bloc/category/get_category_cubit.dart';
+import 'package:Tracio/presentation/shop_owner/bloc/service_management/service_management_cubit.dart';
 
 import '../../../core/configs/theme/app_colors.dart';
 import '../../blog/bloc/category/get_category_state.dart';
@@ -134,7 +134,6 @@ class _CreateEditServiceScreenState extends State<CreateEditServiceScreen> {
       final duration = _durationController.text;
       final newImages = _selectedImageFiles;
 
-     
       if (!widget.isEditing) {
         context.read<ServiceManagementCubit>().createService(CreateServiceReq(
             shopId: widget.shopId,
@@ -145,7 +144,6 @@ class _CreateEditServiceScreenState extends State<CreateEditServiceScreen> {
             duration: duration,
             mediaFiles: newImages));
       }
-  
 
       // if (Navigator.canPop(context)) { Navigator.pop(context); }
     } else {

@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tracio_fe/domain/user/usecase/get_user_profile.dart';
-import 'package:tracio_fe/presentation/profile/bloc/user_profile_state.dart';
+import 'package:Tracio/domain/user/usecase/get_user_profile.dart';
+import 'package:Tracio/presentation/profile/bloc/user_profile_state.dart';
 
 import '../../../service_locator.dart';
 

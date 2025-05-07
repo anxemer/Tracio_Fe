@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/common/bloc/filter_cubit.dart';
-import 'package:tracio_fe/common/helper/is_dark_mode.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/data/shop/models/get_service_req.dart';
-import 'package:tracio_fe/domain/blog/entites/category.dart';
-import 'package:tracio_fe/presentation/blog/bloc/category/get_category_cubit.dart';
-import 'package:tracio_fe/presentation/service/widget/search_text_field.dart';
+import 'package:Tracio/common/bloc/filter_cubit.dart';
+import 'package:Tracio/common/helper/is_dark_mode.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/data/shop/models/get_service_req.dart';
+import 'package:Tracio/domain/blog/entites/category.dart';
+import 'package:Tracio/presentation/blog/bloc/category/get_category_cubit.dart';
+import 'package:Tracio/presentation/service/widget/search_text_field.dart';
 
 class CustomSearchBar extends StatefulWidget {
   const CustomSearchBar({super.key, this.isShopOwner = false});

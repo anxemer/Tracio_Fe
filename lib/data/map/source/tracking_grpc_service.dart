@@ -1,7 +1,7 @@
 import 'package:fixnum/fixnum.dart';
 import 'package:flutter/foundation.dart';
 import 'package:grpc/grpc.dart';
-import 'package:tracio_fe/core/generated/location.pbgrpc.dart';
+import 'package:Tracio/core/generated/location.pbgrpc.dart';
 
 abstract class ITrackingGrpcService {
   Future<LocationResponse> sendLocations({

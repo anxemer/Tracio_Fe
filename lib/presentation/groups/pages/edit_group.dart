@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tracio_fe/core/configs/theme/app_colors.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/domain/groups/entities/group.dart';
-import 'package:tracio_fe/presentation/groups/cubit/form_edit_group_cubit.dart';
-import 'package:tracio_fe/presentation/groups/cubit/form_edit_group_state.dart';
-import 'package:tracio_fe/core/configs/utils/validators/group_validator.dart';
+import 'package:Tracio/core/configs/theme/app_colors.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/domain/groups/entities/group.dart';
+import 'package:Tracio/presentation/groups/cubit/form_edit_group_cubit.dart';
+import 'package:Tracio/presentation/groups/cubit/form_edit_group_state.dart';
+import 'package:Tracio/core/configs/utils/validators/group_validator.dart';
 
 class EditGroupScreen extends StatefulWidget {
   final Group group;

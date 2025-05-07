@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/common/helper/is_dark_mode.dart';
-import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
-import 'package:tracio_fe/common/widget/button/button.dart';
-import 'package:tracio_fe/core/configs/theme/app_colors.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/data/shop/models/get_service_req.dart';
-import 'package:tracio_fe/presentation/shop_owner/page/create_service.dart';
+import 'package:Tracio/common/helper/is_dark_mode.dart';
+import 'package:Tracio/common/helper/navigator/app_navigator.dart';
+import 'package:Tracio/common/widget/button/button.dart';
+import 'package:Tracio/core/configs/theme/app_colors.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/data/shop/models/get_service_req.dart';
+import 'package:Tracio/presentation/shop_owner/page/create_service.dart';
 
 import '../../../common/helper/placeholder/service_card.dart';
 import '../../service/bloc/service_bloc/get_service_cubit.dart';
@@ -69,7 +69,7 @@ class _ServiceManagementPageState extends State<ServiceManagementPage> {
                     width: 100.w,
                     ontap: () {
                       AppNavigator.push(context,
-                        CreateEditServiceScreen(shopId: widget.shopId));
+                          CreateEditServiceScreen(shopId: widget.shopId));
                     },
                     fillColor: AppColors.primary,
                     borderColor: Colors.transparent,

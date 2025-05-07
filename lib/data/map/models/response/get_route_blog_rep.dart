@@ -1,4 +1,4 @@
-import 'package:tracio_fe/data/map/models/route_blog.dart';
+import 'package:Tracio/data/map/models/route_blog.dart';
 
 class GetRouteBlogRep {
   final List<RouteBlogModel> routeBlogs;

@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:tracio_fe/common/helper/is_dark_mode.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
+import 'package:Tracio/common/helper/is_dark_mode.dart';
+import 'package:Tracio/core/constants/app_size.dart';
 
 import '../../../common/widget/blog/pick_image.dart';
 import '../../../core/configs/theme/app_colors.dart';
@@ -123,27 +123,6 @@ class _CommentInputWidgetState extends State<CommentInputWidget> {
     );
   }
 
-  void _onImageToggle(File file, bool isSelected) {
-    setState(() {
-      if (isSelected) {
-        selectedFiles.add(file);
-        Navigator.pop(context);
-      } else {
-        selectedFiles.remove(file);
-      }
-    });
-  }
-
-  void _onImageCaptured(File file) {
-    setState(() {
-      selectedFiles.add(file);
-    });
-    _pageController.animateToPage(
-      selectedFiles.length - 1,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-    );
-  }
 
   void _onRemoveImage(int index) {
     setState(() {
@@ -158,23 +137,7 @@ class _CommentInputWidgetState extends State<CommentInputWidget> {
   Widget build(BuildContext context) {
     final inputData = widget.inputData;
 
-    // Color borderColor;
-    // Color sendIconColor;
-
-    // switch (inputData.mode) {
-    //   case CommentMode.blogComment:
-    //     borderColor = Colors.black45;
-    //     sendIconColor = AppColors.background;
-    //     break;
-    //   case CommentMode.replyComment:
-    //     borderColor = Colors.blue;
-    //     sendIconColor = Colors.blue;
-    //     break;
-    //   case CommentMode.replyToReply:
-    //     borderColor = Colors.purple;
-    //     sendIconColor = Colors.purple;
-    //     break;
-    // }
+  
 
     return Container(
       color: context.isDarkMode ? Color(0xFF1E1E1E) : Colors.white,
@@ -282,30 +245,6 @@ class _CommentInputWidgetState extends State<CommentInputWidget> {
                   ),
                   onPressed: () {
                     _showImageSourceDialog();
-                    // showModalBottomSheet(
-                    //   isDismissible: true,
-                    //   isScrollControlled: true,
-                    //   backgroundColor: Colors.transparent,
-                    //   context: context,
-                    //   builder: (context) {
-                    //     return Padding(
-                    //       padding: EdgeInsets.only(
-                    //         bottom: MediaQuery.of(context).viewInsets.bottom,
-                    //       ),
-                    //       child: DraggableScrollableSheet(
-                    //         maxChildSize: .5,
-                    //         initialChildSize: .5,
-                    //         minChildSize: 0.2,
-                    //         builder: (context, scrollController) =>
-                    //             ImagePickerGrid(
-                    //           onImageCaptured: _onImageCaptured,
-                    //           onImageToggle: _onImageToggle,
-                    //           selectedFiles: selectedFiles,
-                    //         ),
-                    //       ),
-                    //     );
-                    //   },
-                    // );
                   },
                 ),
 

@@ -1,6 +1,6 @@
-import 'package:tracio_fe/data/blog/models/response/blog_model.dart';
-import 'package:tracio_fe/data/blog/models/response/comment_blog_model.dart';
-import 'package:tracio_fe/domain/blog/entites/comment_blog.dart';
+import 'package:Tracio/data/blog/models/response/blog_model.dart';
+import 'package:Tracio/data/blog/models/response/comment_blog_model.dart';
+import 'package:Tracio/domain/blog/entites/comment_blog.dart';
 
 class GetCommentBlogRep extends CommentBlogPaginationEntity {
   GetCommentBlogRep(

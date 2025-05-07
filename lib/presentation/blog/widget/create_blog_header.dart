@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:path/path.dart';
 
 import '../../../common/helper/navigator/app_navigator.dart';
 import '../../../common/widget/picture/circle_picture.dart';
@@ -40,7 +39,11 @@ class _CreateBlogHeaderState extends State<CreateBlogHeader> {
             children: [
               InkWell(
                   onTap: () => AppNavigator.push(
-                      context, UserProfilePage(userId: user!.userId)),
+                      context,
+                      UserProfilePage(
+                        userId: user!.userId,
+                        myProfile: true,
+                      )),
                   child: SizedBox(
                     child: CirclePicture(
                         imageUrl: user!.profilePicture!,

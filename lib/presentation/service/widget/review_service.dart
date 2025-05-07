@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tracio_fe/domain/shop/entities/response/review_service_entity.dart';
-import 'package:tracio_fe/presentation/service/widget/review_service_card.dart';
+import 'package:Tracio/domain/shop/entities/response/review_service_entity.dart';
+import 'package:Tracio/presentation/service/widget/review_service_card.dart';
 import '../../../core/constants/app_size.dart';
 import '../../../data/shop/models/get_review_req.dart';
 import '../bloc/service_bloc/review_service_cubit/get_reviewcubit/get_review_cubit.dart';

@@ -1,23 +1,23 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
-import 'package:tracio_fe/data/shop/models/booking_detail_model.dart';
+import 'package:Tracio/data/shop/models/booking_detail_model.dart';
 
-import 'package:tracio_fe/data/shop/models/booking_response_model.dart';
-import 'package:tracio_fe/data/shop/models/booking_service_req.dart';
-import 'package:tracio_fe/data/shop/models/cart_item_models.dart';
-import 'package:tracio_fe/data/shop/models/create_service_req.dart';
-import 'package:tracio_fe/data/shop/models/create_shop_profile_req.dart';
-import 'package:tracio_fe/data/shop/models/detail_service_response_model.dart';
-import 'package:tracio_fe/data/shop/models/get_booking_req.dart';
-import 'package:tracio_fe/data/shop/models/get_review_req.dart';
-import 'package:tracio_fe/data/shop/models/get_service_req.dart';
-import 'package:tracio_fe/data/shop/models/reply_review_req.dart';
-import 'package:tracio_fe/data/shop/models/reschedule_booking_model.dart';
-import 'package:tracio_fe/data/shop/models/review_booking_req.dart';
-import 'package:tracio_fe/data/shop/models/review_service_response_model.dart';
-import 'package:tracio_fe/data/shop/models/service_response.dart';
-import 'package:tracio_fe/data/shop/models/shop_profile_model.dart';
-import 'package:tracio_fe/data/shop/models/waiting_booking.dart';
+import 'package:Tracio/data/shop/models/booking_response_model.dart';
+import 'package:Tracio/data/shop/models/booking_service_req.dart';
+import 'package:Tracio/data/shop/models/cart_item_models.dart';
+import 'package:Tracio/data/shop/models/create_service_req.dart';
+import 'package:Tracio/data/shop/models/create_shop_profile_req.dart';
+import 'package:Tracio/data/shop/models/detail_service_response_model.dart';
+import 'package:Tracio/data/shop/models/get_booking_req.dart';
+import 'package:Tracio/data/shop/models/get_review_req.dart';
+import 'package:Tracio/data/shop/models/get_service_req.dart';
+import 'package:Tracio/data/shop/models/reply_review_req.dart';
+import 'package:Tracio/data/shop/models/reschedule_booking_model.dart';
+import 'package:Tracio/data/shop/models/review_booking_req.dart';
+import 'package:Tracio/data/shop/models/review_service_response_model.dart';
+import 'package:Tracio/data/shop/models/service_response.dart';
+import 'package:Tracio/data/shop/models/shop_profile_model.dart';
+import 'package:Tracio/data/shop/models/waiting_booking.dart';
 
 import '../../../core/constants/api_url.dart';
 import '../../../core/erorr/failure.dart';
@@ -41,7 +41,7 @@ abstract class ShopApiService {
   Future<DetailServiceResponseModel> getServiceDetail(int serviceId);
   Future<Either> deleteCartItem(int itemId);
   Future<Either> processBooking(int bookingDetailId);
-  Future<Either> cancelBooking(int bookingDetailId);
+  Future<Either> cancelBooking(ConfirmBookingModel cancelBooking);
   Future<Either> completeBooking(int bookingDetailId);
   Future<Either> rescheduleBooking(RescheduleBookingModel reschedule);
   Future<Either> confirmBooking(ConfirmBookingModel waiting);
@@ -167,10 +167,11 @@ class ShopApiServiceImpl extends ShopApiService {
   }
 
   @override
-  Future<Either> cancelBooking(int bookingDetailId) async {
+  Future<Either> cancelBooking(ConfirmBookingModel cancelBooking) async {
     try {
-      await sl<DioClient>()
-          .put('${ApiUrl.portShop}/$bookingDetailId/cancelled-booking');
+      await sl<DioClient>().put(
+          '${ApiUrl.bookingService}/${cancelBooking.bookingId}/cancelled-booking',
+          data: cancelBooking.toJson());
 
       return Right(true);
     } on DioException catch (e) {
@@ -182,7 +183,7 @@ class ShopApiServiceImpl extends ShopApiService {
   Future<Either> completeBooking(int bookingDetailId) async {
     try {
       await sl<DioClient>()
-          .put('${ApiUrl.portShop}/$bookingDetailId/completed-booking');
+          .put('${ApiUrl.bookingService}/$bookingDetailId/completed-booking');
 
       return Right(true);
     } on DioException catch (e) {

@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-
 class CirclePicture extends StatelessWidget {
   const CirclePicture(
       {super.key, required this.imageUrl, required this.imageSize});
@@ -31,7 +30,7 @@ class CirclePicture extends StatelessWidget {
         backgroundColor: Colors.grey.shade300,
         radius: imageSize.w,
         child: Icon(
-          Icons.person,
+          Icons.image_outlined,
           size: imageSize.w,
         ),
       ),

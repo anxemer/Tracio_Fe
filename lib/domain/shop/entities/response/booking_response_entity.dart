@@ -1,7 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_firs
 
-import 'package:tracio_fe/domain/shop/entities/response/booking_entity.dart';
-import 'package:tracio_fe/domain/shop/entities/response/pagination_booking_data_entity.dart';
+import 'package:Tracio/domain/shop/entities/response/booking_entity.dart';
+import 'package:Tracio/domain/shop/entities/response/pagination_booking_data_entity.dart';
 
 class BookingResponseEntity {
   final List<BookingEntity> booking;
@@ -12,8 +12,4 @@ class BookingResponseEntity {
     required this.bookingOverlap,
     required this.pagination,
   });
-
-
-
-
 }

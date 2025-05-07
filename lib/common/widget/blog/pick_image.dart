@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:photo_manager/photo_manager.dart';
-import 'package:tracio_fe/core/configs/theme/app_colors.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
+import 'package:Tracio/core/configs/theme/app_colors.dart';
+import 'package:Tracio/core/constants/app_size.dart';
 
 /// Widget hiển thị lưới ảnh từ thư viện và cho phép chụp ảnh
 class ImagePickerGrid extends StatefulWidget {
@@ -309,7 +309,8 @@ class _SelectedImagesViewerState extends State<SelectedImagesViewer> {
                   children: [
                     Image.file(
                       widget.selectedFiles[index],
-                      width: widget.widgeImage ?? 400.w,
+                      width: double.infinity,
+                      height: double.infinity,
                       fit: BoxFit.cover,
                     ),
                     GestureDetector(
@@ -342,7 +343,7 @@ class _SelectedImagesViewerState extends State<SelectedImagesViewer> {
                             decoration: BoxDecoration(
                               color: _currentPage == index
                                   ? AppColors.background
-                                  : const Color.fromARGB(255, 255, 255, 255),
+                                  : Colors.grey.shade500,
                               borderRadius: BorderRadius.circular(4),
                             ),
                           );

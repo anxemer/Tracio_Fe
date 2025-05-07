@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/common/helper/is_dark_mode.dart';
-import 'package:tracio_fe/common/helper/rating_start.dart';
-import 'package:tracio_fe/common/widget/blog/header_information.dart';
-import 'package:tracio_fe/common/widget/blog/picture_card.dart';
-import 'package:tracio_fe/common/widget/picture/circle_picture.dart';
-import 'package:tracio_fe/domain/shop/entities/response/review_service_entity.dart';
+import 'package:Tracio/common/helper/is_dark_mode.dart';
+import 'package:Tracio/common/helper/rating_start.dart';
+import 'package:Tracio/common/widget/blog/header_information.dart';
+import 'package:Tracio/common/widget/blog/picture_card.dart';
+import 'package:Tracio/common/widget/picture/circle_picture.dart';
+import 'package:Tracio/domain/shop/entities/response/review_service_entity.dart';
 
 import '../../../core/constants/app_size.dart';
 import 'package:timeago/timeago.dart' as timeago;

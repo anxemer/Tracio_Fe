@@ -1,4 +1,4 @@
-import 'package:tracio_fe/domain/groups/entities/group_route_location_update.dart';
+import 'package:Tracio/domain/groups/entities/group_route_location_update.dart';
 
 class GroupRouteLocationUpdateModel extends GroupRouteLocationUpdateEntity {
   const GroupRouteLocationUpdateModel({

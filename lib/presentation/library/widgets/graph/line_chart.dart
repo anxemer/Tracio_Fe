@@ -2,7 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import 'package:tracio_fe/core/constants/app_size.dart';
+import 'package:Tracio/core/constants/app_size.dart';
 
 class LineChartWidget extends StatefulWidget {
   final Color gridLineColor;

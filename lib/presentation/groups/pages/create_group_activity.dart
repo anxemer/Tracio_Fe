@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/core/configs/theme/app_colors.dart';
-import 'package:tracio_fe/core/configs/utils/validators/group_validator.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/data/map/models/request/get_route_req.dart';
-import 'package:tracio_fe/domain/map/entities/route.dart';
-import 'package:tracio_fe/presentation/groups/cubit/form_group_activity_cubit.dart';
-import 'package:tracio_fe/presentation/groups/cubit/form_group_activity_state.dart';
-import 'package:tracio_fe/presentation/groups/widgets/activity/activity_route_selection.dart';
-import 'package:tracio_fe/presentation/groups/widgets/activity/activity_search_location.dart';
-import 'package:tracio_fe/presentation/map/bloc/get_location_cubit.dart';
-import 'package:tracio_fe/presentation/map/bloc/route_cubit.dart';
+import 'package:Tracio/core/configs/theme/app_colors.dart';
+import 'package:Tracio/core/configs/utils/validators/group_validator.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/data/map/models/request/get_route_req.dart';
+import 'package:Tracio/domain/map/entities/route.dart';
+import 'package:Tracio/presentation/groups/cubit/form_group_activity_cubit.dart';
+import 'package:Tracio/presentation/groups/cubit/form_group_activity_state.dart';
+import 'package:Tracio/presentation/groups/widgets/activity/activity_route_selection.dart';
+import 'package:Tracio/presentation/groups/widgets/activity/activity_search_location.dart';
+import 'package:Tracio/presentation/map/bloc/get_location_cubit.dart';
+import 'package:Tracio/presentation/map/bloc/route_cubit.dart';
 
 class CreateGroupActivity extends StatefulWidget {
   final int groupId;

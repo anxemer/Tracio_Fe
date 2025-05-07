@@ -1,10 +1,10 @@
 import 'dart:async';
 
-import 'package:tracio_fe/core/constants/api_url.dart';
-import 'package:tracio_fe/core/logger/signalr_logger.dart';
-import 'package:tracio_fe/core/services/signalR/signalr_core_service.dart';
-import 'package:tracio_fe/data/groups/models/response/group_route_location_update.dart';
-import 'package:tracio_fe/domain/groups/entities/group_route_location_update.dart';
+import 'package:Tracio/core/constants/api_url.dart';
+import 'package:Tracio/core/logger/signalr_logger.dart';
+import 'package:Tracio/core/services/signalR/signalr_core_service.dart';
+import 'package:Tracio/data/groups/models/response/group_route_location_update.dart';
+import 'package:Tracio/domain/groups/entities/group_route_location_update.dart';
 
 class GroupRouteHubService {
   final SignalRCoreService _core;
@@ -19,7 +19,7 @@ class GroupRouteHubService {
 
   GroupRouteHubService(this._core);
 
-  Future<void> connect() async {
+  Future<void> connect() async {  
     signalrLogger
         .i('[GroupRouteHub] 🔌 Connecting to ${ApiUrl.groupRouteHubUrl}...');
     await _core.init(ApiUrl.groupRouteHubUrl);

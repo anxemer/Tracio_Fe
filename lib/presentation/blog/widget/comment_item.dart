@@ -3,17 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/common/helper/is_dark_mode.dart';
-import 'package:tracio_fe/common/widget/blog/picture_card.dart';
-import 'package:tracio_fe/domain/blog/entites/comment_blog.dart';
-import 'package:tracio_fe/domain/blog/entites/reply_comment.dart';
-import 'package:tracio_fe/presentation/blog/bloc/comment/get_comment_cubit.dart';
-import 'package:tracio_fe/presentation/blog/widget/comment.dart';
-import 'package:tracio_fe/presentation/library/bloc/reaction/bloc/reaction_bloc.dart';
+import 'package:Tracio/common/widget/blog/picture_card.dart';
+import 'package:Tracio/domain/blog/entites/comment_blog.dart';
+import 'package:Tracio/domain/blog/entites/reply_comment.dart';
+import 'package:Tracio/presentation/blog/bloc/comment/get_comment_cubit.dart';
+import 'package:Tracio/presentation/library/bloc/reaction/bloc/reaction_bloc.dart';
 
 import '../../../common/widget/blog/comment/comment.dart';
 import '../../../common/widget/blog/comment/comment_tree_widget.dart';
-import '../../../core/configs/theme/app_colors.dart';
 import '../../../core/constants/app_size.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -52,7 +49,12 @@ class _CommentItemState extends State<CommentItem> {
     await widget.onReply();
   }
 
-  void handleReactComment() async {}
+  @override
+  void initState() {
+    timeago.setLocaleMessages('en_short', timeago.EnShortMessages());
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -127,9 +129,10 @@ class _CommentItemState extends State<CommentItem> {
 
               final isReacted = reply!.isReacted;
               final likeCount = reply.likeCount;
-
+              List<String> mediaUrls =
+                  reply.mediaFiles.map((file) => file.mediaUrl ?? "").toList();
               return _buildComment(
-                reply.mediaUrls,
+                mediaUrls,
                 reply,
                 isReacted: isReacted,
                 likeCount: likeCount,
@@ -253,7 +256,7 @@ class _CommentItemState extends State<CommentItem> {
         Row(
           children: [
             Text(
-              timeago.format(comment.createdAt),
+              timeago.format(comment.createdAt, locale: 'en_short'),
               style: TextStyle(color: Colors.grey.shade500),
             ),
             InkWell(
@@ -280,321 +283,4 @@ class _CommentItemState extends State<CommentItem> {
       ],
     );
   }
-
-  //   BlocBuilder<GenericDataCubit, GenericDataState>(
-  //     builder: (context, state) {
-  //       return Column(
-  //         children: [
-  //           Container(
-  //             height: 2.h,
-  //             color: context.isDarkMode ? Colors.white : Colors.black45,
-  //           ),
-  //           Padding(
-  //             padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 8.w),
-  //             child: Row(
-  //               crossAxisAlignment: CrossAxisAlignment.start,
-  //               children: [
-  //                 // Phần avatar và thanh dọc
-  //                 Column(
-  //                   children: [
-  //                     // Avatar
-  //                     ClipOval(
-  //                       child: SizedBox(
-  //                           // width: AppSize.imageSmall.w,
-  //                           // height: AppSize.imageSmall.h,
-  //                           child: CachedNetworkImage(
-  //                         imageUrl: widget.comment.avatar??'',
-  //                         fit: BoxFit.cover,
-  //                         imageBuilder: (context, imageProvider) =>
-  //                             CircleAvatar(
-  //                           // radius: 30.sp,
-  //                           backgroundImage: imageProvider,
-  //                         ),
-  //                         errorWidget: (context, url, error) => CircleAvatar(
-  //                           backgroundColor: Colors.transparent,
-  //                           radius: AppSize.imageSmall / 2.4.w,
-  //                           child: Icon(
-  //                             Icons.person,
-  //                             size: AppSize.imageSmall / 2.w,
-  //                           ),
-  //                         ),
-  //                       )),
-  //                     ),
-  //                     Container(
-  //                       width: 2.w,
-  //                       height:
-  //                           _showReplies && widget.comment.repliesCount != 0
-  //                               ? (120 + widget.comment.repliesCount * 120).h
-  //                               : 40.h, // Điều chỉnh chiều cao của thanh dọc
-  //                       color: Colors.grey.shade300,
-  //                     ),
-  //                   ],
-  //                 ),
-  //                 SizedBox(width: 8.w),
-  //                 Expanded(
-  //                   child: Column(
-  //                     crossAxisAlignment: CrossAxisAlignment.start,
-  //                     children: [
-  //                       Row(
-  //                         children: [
-  //                           Text(
-  //                             widget.comment.userName.toString(),
-  //                             style: TextStyle(
-  //                               fontSize: AppSize.textMedium.sp,
-  //                               fontWeight: FontWeight.bold,
-  //                               color: context.isDarkMode
-  //                                   ? Colors.white
-  //                                   : Colors.black,
-  //                             ),
-  //                           ),
-  //                           SizedBox(width: 20.w),
-  //                           Text(
-  //                             timeago.format(
-  //                               widget.comment.createdAt!,
-  //                             ),
-  //                             style:
-  //                                 TextStyle(fontSize: AppSize.textMedium.sp),
-  //                           ),
-  //                         ],
-  //                       ),
-  //                       SizedBox(height: 4.h),
-  //                       Text(
-  //                         widget.comment.content.toString(),
-  //                         style: TextStyle(
-  //                           fontSize: AppSize.textLarge.sp,
-  //                           color: context.isDarkMode
-  //                               ? Colors.white
-  //                               : Colors.black,
-  //                         ),
-  //                       ),
-  //                       SizedBox(height: 6.h),
-  //                       mediaUrls.isEmpty
-  //                           ? SizedBox()
-  //                           : SizedBox(
-  //                               height: AppSize.imageLarge.h,
-  //                               width: AppSize.imageLarge.w,
-  //                               child: Container(
-  //                                   decoration: BoxDecoration(
-  //                                     color: Colors.grey.shade100,
-  //                                   ),
-  //                                   width: MediaQuery.of(context).size.width,
-  //                                   margin:
-  //                                       EdgeInsets.symmetric(horizontal: 4.0),
-  //                                   child: ClipRRect(
-  //                                     borderRadius: BorderRadius.circular(10),
-  //                                     child: Image.network(mediaUrls[0],
-  //                                         fit: BoxFit.cover,
-  //                                         errorBuilder: (context, url,
-  //                                                 error) =>
-  //                                             Icon(
-  //                                               Icons.error,
-  //                                               color: context.isDarkMode
-  //                                                   ? AppColors.primary
-  //                                                   : AppColors.background,
-  //                                             ),
-  //                                         loadingBuilder: (context, child,
-  //                                             loadingProgress) {
-  //                                           if (loadingProgress == null)
-  //                                             return child;
-  //                                           return Center(
-  //                                             child:
-  //                                                 CircularProgressIndicator(),
-  //                                           );
-  //                                         }),
-  //                                   )),
-  //                             ),
-  //                       SizedBox(
-  //                         height: 6.h,
-  //                       ),
-  //                       Row(
-  //                         children: [
-  //                           GestureDetector(
-  //                               onTap: () async {
-  //                                 if (widget.comment.isReacted == true) {
-  //                                   await sl<UnReactBlogUseCase>().call(
-  //                                       UnReactionParam(
-  //                                           id: widget.comment.commentId!,
-  //                                           type: 'comment'));
-  //                                   setState(() {
-  //                                     if (widget.comment.likesCount > 0) {
-  //                                       widget.comment.likesCount--;
-  //                                     }
-
-  //                                     widget.comment.isReacted = false;
-  //                                   });
-  //                                 } else {
-  //                                   var result = await sl<ReactBlogUseCase>()
-  //                                       .call(ReactBlogReq(
-  //                                           entityId:
-  //                                               widget.comment.commentId,
-  //                                           entityType: "comment"));
-  //                                   result.fold((error) {
-  //                                     error;
-  //                                   }, (data) {
-  //                                     bool isReact = toogleIsReaction(
-  //                                         widget.comment.isReacted);
-
-  //                                     setState(() {
-  //                                       widget.comment.likesCount++;
-  //                                       widget.comment.isReacted = isReact;
-  //                                     });
-  //                                   });
-  //                                 }
-  //                               },
-  //                               child: Row(
-  //                                 children: [
-  //                                   Icon(
-  //                                     widget.comment.isReacted
-  //                                         ? Icons.favorite
-  //                                         : Icons.favorite_border_outlined,
-  //                                     color: widget.comment.isReacted
-  //                                         ? Colors.red
-  //                                         : context.isDarkMode
-  //                                             ? Colors.white
-  //                                             : Colors.black,
-  //                                     size: AppSize.iconSmall.sp,
-  //                                   ),
-  //                                   BasicTextButton(
-  //                                       text: widget.comment.likesCount
-  //                                           .toString(),
-  //                                       onPress: () {})
-  //                                 ],
-  //                               )),
-  //                           SizedBox(width: 10.w),
-  //                           Row(
-  //                             children: [
-  //                               GestureDetector(
-  //                                 onTap: () {
-  //                                   widget.onReplyTap();
-  //                                   commentInputCubit
-  //                                       .updateToReplyComment(widget.comment);
-  //                                   if (!_showReplies &&
-  //                                       widget.comment.repliesCount > 0) {
-  //                                     setState(() {
-  //                                       _showReplies = true;
-  //                                     });
-  //                                     context
-  //                                         .read<GenericDataCubit>()
-  //                                         .getData<List<ReplyCommentEntity>>(
-  //                                             sl<GetReplyCommentUsecase>(),
-  //                                             params: GetReplyCommentReq(
-  //                                                 commentId: widget
-  //                                                     .comment.commentId!,
-  //                                                 replyId: 0,
-  //                                                 pageSize: 10,
-  //                                                 pageNumber: 1));
-  //                                   }
-  //                                 },
-  //                                 child: Image.asset(
-  //                                   AppImages.reply,
-  //                                   width: AppSize.iconSmall.w,
-  //                                   color: context.isDarkMode
-  //                                       ? Colors.white
-  //                                       : Colors.black,
-  //                                 ),
-  //                               ),
-  //                               SizedBox(width: 10.w),
-  //                               BasicTextButton(
-  //                                   text: widget.comment.repliesCount
-  //                                       .toString(),
-  //                                   onPress: () {}),
-  //                             ],
-  //                           ),
-  //                         ],
-  //                       ),
-  //                       SizedBox(height: 4.h),
-  //                       if (widget.comment.repliesCount > 0)
-  //                         GestureDetector(
-  //                           onTap: () async {
-  //                             setState(() {
-  //                               _showReplies = !_showReplies;
-  //                             });
-  //                             if (_showReplies) {
-  //                               context
-  //                                   .read<GenericDataCubit>()
-  //                                   .getData<List<ReplyCommentEntity>>(
-  //                                       sl<GetReplyCommentUsecase>(),
-  //                                       params: GetReplyCommentReq(
-  //                                           commentId:
-  //                                               widget.comment.commentId!,
-  //                                           replyId: 0,
-  //                                           pageSize: 10,
-  //                                           pageNumber: 1));
-  //                             }
-  //                           },
-  //                           child: Text(
-  //                             _showReplies
-  //                                 ? "Hide ${widget.comment.repliesCount} reply"
-  //                                 : "Show ${widget.comment.repliesCount} reply",
-  //                             style: TextStyle(
-  //                               color: context.isDarkMode
-  //                                   ? Colors.white
-  //                                   : Colors.grey,
-  //                               fontSize: AppSize.textMedium.sp,
-  //                             ),
-  //                           ),
-  //                         ),
-  //                       if (_showReplies)
-  //                         Builder(
-  //                           builder: (context) {
-  //                             if (state is DataLoading) {
-  //                               return Padding(
-  //                                 padding:
-  //                                     EdgeInsets.symmetric(vertical: 8.h),
-  //                                 child: Center(
-  //                                     child: CircularProgressIndicator()),
-  //                               );
-  //                             } else if (state is DataLoaded) {
-  //                               final double itemHeight =
-  //                                   AppSize.cardHeight.h;
-  //                               final double padding =
-  //                                   AppSize.apHorizontalPadding.h;
-  //                               final double totalHeight =
-  //                                   (itemHeight + padding) *
-  //                                       state.data.length;
-
-  //                               final double minHeight = 200.h;
-  //                               final double maxHeight =
-  //                                   MediaQuery.of(context).size.height;
-  //                               final double dynamicHeight =
-  //                                   totalHeight.clamp(minHeight, maxHeight);
-  //                               return SizedBox(
-  //                                 width: double.infinity,
-  //                                 height: dynamicHeight,
-  //                                 child: Column(
-  //                                   children: List.generate(state.data.length,
-  //                                       (index) {
-  //                                     return Padding(
-  //                                       padding: EdgeInsets.symmetric(
-  //                                           horizontal: 6.h, vertical: 2.h),
-  //                                       child: ReplyCommentItem(
-  //                                           reply: state.data[index]),
-  //                                     );
-  //                                   }),
-  //                                 ),
-  //                               );
-  //                             } else if (state is FailureLoadData) {
-  //                               return Padding(
-  //                                 padding:
-  //                                     EdgeInsets.symmetric(vertical: 16.h),
-  //                                 child: Text(
-  //                                   "Can't load Reply! Try Again",
-  //                                   style: TextStyle(color: Colors.red),
-  //                                 ),
-  //                               );
-  //                             }
-  //                             return Container();
-  //                           },
-  //                         ),
-  //                     ],
-  //                   ),
-  //                 ),
-  //               ],
-  //             ),
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   ),
-  // );
 }

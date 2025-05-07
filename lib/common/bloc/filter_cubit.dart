@@ -2,8 +2,8 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
-import 'package:tracio_fe/data/shop/models/get_service_req.dart';
-import 'package:tracio_fe/domain/blog/entites/category.dart';
+import 'package:Tracio/data/shop/models/get_service_req.dart';
+import 'package:Tracio/domain/blog/entites/category.dart';
 
 class FilterCubit extends Cubit<GetServiceReq> {
   final TextEditingController searchController = TextEditingController();

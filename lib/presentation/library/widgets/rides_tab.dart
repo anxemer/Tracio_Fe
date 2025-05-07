@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:tracio_fe/presentation/map/pages/cycling.dart';
-import 'package:tracio_fe/presentation/library/widgets/feature_section.dart';
+import 'package:Tracio/presentation/map/pages/cycling.dart';
+import 'package:Tracio/presentation/library/widgets/feature_section.dart';
 
 class RidesTab extends StatefulWidget {
   const RidesTab({super.key});

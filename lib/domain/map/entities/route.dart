@@ -1,5 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:tracio_fe/data/map/models/route.dart';
+import 'package:Tracio/data/map/models/route.dart';
 
 class RouteEntity {
   int routeId;

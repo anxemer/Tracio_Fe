@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/common/helper/is_dark_mode.dart';
+import 'package:Tracio/common/helper/is_dark_mode.dart';
 
 import '../../../core/configs/theme/app_colors.dart';
 import '../../../core/constants/app_size.dart';

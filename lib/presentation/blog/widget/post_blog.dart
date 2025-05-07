@@ -1,22 +1,21 @@
+import 'package:Tracio/presentation/profile/pages/user_profile.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/common/helper/is_dark_mode.dart';
-import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
-import 'package:tracio_fe/common/widget/blog/animation_react.dart';
-import 'package:tracio_fe/common/widget/blog/header_information.dart';
-import 'package:tracio_fe/common/widget/blog/picture_card.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/data/blog/models/request/react_blog_req.dart';
-import 'package:tracio_fe/domain/blog/entites/blog_entity.dart';
-import 'package:tracio_fe/domain/blog/usecase/react_blog.dart';
-import 'package:tracio_fe/domain/user/usecase/follow_user.dart';
-import 'package:tracio_fe/presentation/blog/bloc/comment/comment_input_cubit.dart';
-import 'package:tracio_fe/presentation/blog/pages/detail_blog.dart';
+import 'package:Tracio/common/helper/is_dark_mode.dart';
+import 'package:Tracio/common/helper/navigator/app_navigator.dart';
+import 'package:Tracio/common/widget/blog/animation_react.dart';
+import 'package:Tracio/common/widget/blog/header_information.dart';
+import 'package:Tracio/common/widget/blog/picture_card.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/domain/blog/entites/blog_entity.dart';
+import 'package:Tracio/domain/user/usecase/follow_user.dart';
+import 'package:Tracio/presentation/blog/bloc/comment/comment_input_cubit.dart';
+import 'package:Tracio/presentation/blog/pages/detail_blog.dart';
 import 'package:timeago/timeago.dart' as timeago;
-import 'package:tracio_fe/presentation/blog/widget/animated_button_follow.dart';
+import 'package:Tracio/presentation/blog/widget/animated_button_follow.dart';
 
 import '../../../domain/auth/entities/user.dart';
 import '../../../service_locator.dart';
@@ -76,16 +75,23 @@ class _PostBlogState extends State<PostBlog> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         HeaderInformation(
-            title: Text(
-              widget.blogEntity.userName,
-              style: TextStyle(
-                  fontWeight: FontWeight.bold, fontSize: AppSize.textLarge.sp),
-            ),
-            subtitle: Text(
-              timeago.format(widget.blogEntity.createdAt!),
-              style: TextStyle(fontSize: AppSize.textSmall.sp),
-            ),
-            imageUrl: CachedNetworkImage(
+          title: Text(
+            widget.blogEntity.userName,
+            style: TextStyle(
+                fontWeight: FontWeight.bold, fontSize: AppSize.textLarge.sp),
+          ),
+          subtitle: Text(
+            timeago.format(widget.blogEntity.createdAt!),
+            style: TextStyle(fontSize: AppSize.textSmall.sp),
+          ),
+          imageUrl: InkWell(
+            onTap: () => AppNavigator.push(
+                context,
+                UserProfilePage(
+                  myProfile: user!.userId == widget.blogEntity.userId,
+                  userId: widget.blogEntity.userId,
+                )),
+            child: CachedNetworkImage(
               imageUrl: widget.blogEntity.avatar,
               fit: BoxFit.cover,
               imageBuilder: (context, imageProvider) => CircleAvatar(
@@ -101,69 +107,83 @@ class _PostBlogState extends State<PostBlog> {
                 ),
               ),
             ),
-            trailling: widget.isPersonal
-                ? PopupMenuButton<int>(
-                    icon:
-                        Icon(Icons.more_vert), // hoặc bất kỳ icon nào bạn muốn
-                    onSelected: (int result) {
-                      if (result == 0) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => EditBlogPostScreen(
-                                    imageUrl: widget.blogEntity.mediaFiles,
-                                    blogId: widget.blogEntity.blogId,
-                                    initialContent: widget.blogEntity.content,
-                                    initialIsPublic: widget.blogEntity.isPublic,
-                                  )),
-                        );
-                      } else if (result == 1) {
-                        // handle delete
-                      }
-                    },
-                    itemBuilder: (BuildContext context) =>
-                        <PopupMenuEntry<int>>[
-                      PopupMenuItem<int>(
-                        value: 0,
-                        child: Row(
-                          children: [
-                            Icon(Icons.edit, color: Colors.black),
-                            SizedBox(width: 8),
-                            Text('Edit'),
-                          ],
+          ),
+          trailling: () {
+            if (widget.isPersonal) {
+              // Nếu là blog của chính người dùng
+              return PopupMenuButton<int>(
+                icon: const Icon(Icons.more_vert),
+                onSelected: (int result) {
+                  if (result == 0) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EditBlogPostScreen(
+                          imageUrl: widget.blogEntity.mediaFiles,
+                          blogId: widget.blogEntity.blogId,
+                          initialContent: widget.blogEntity.content,
+                          initialIsPublic: widget.blogEntity.isPublic,
                         ),
                       ),
-                      PopupMenuItem<int>(
-                        value: 1,
-                        child: Row(
-                          children: [
-                            Icon(Icons.delete, color: Colors.red),
-                            SizedBox(width: 8),
-                            Text('Delete'),
-                          ],
-                        ),
+                    );
+                  } else if (result == 1) {
+                    // handle delete
+                  }
+                },
+                itemBuilder: (BuildContext context) => <PopupMenuEntry<int>>[
+                  PopupMenuItem<int>(
+                    value: 0,
+                    child: Row(
+                      children: const [
+                        Icon(Icons.edit, color: Colors.black),
+                        SizedBox(width: 8),
+                        Text('Edit'),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem<int>(
+                    value: 1,
+                    child: Row(
+                      children: const [
+                        Icon(Icons.delete, color: Colors.red),
+                        SizedBox(width: 8),
+                        Text('Delete'),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            }
+
+            final isOwner = user?.userId == widget.blogEntity.userId;
+
+            if (!isOwner) {
+              if (widget.blogEntity.isFollowed) {
+                return const SizedBox.shrink();
+              } else {
+                return Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (!isAlreadyFollowed && _showFollowButton)
+                      AnimatedFollowButton(
+                        onUnfollow: () {},
+                        initiallyFollowed: false,
+                        initialFillColor: Colors.transparent,
+                        onFollow: _handleFollowLogic,
+                        initialTextColor:
+                            !isDark ? Colors.black87 : Colors.white,
+                        width: 80.w,
+                        height: 30.h,
                       ),
-                    ],
-                  )
-                : user?.userId != widget.blogEntity.userId
-                    ? Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          if (!isAlreadyFollowed && _showFollowButton)
-                            AnimatedFollowButton(
-                              initialFillColor: Colors.transparent,
-                              onFollow: _handleFollowLogic,
-                              initialTextColor:
-                                  !isDark ? Colors.black87 : Colors.white,
-                              width: 80.w,
-                              height: 30.h,
-                            )
-                          // else if (isAlreadyFollowed)
-                          //   const Text(
-                          //       "Followed") // Hoặc ButtonDesign với trạng thái "Unfollow"
-                        ],
-                      )
-                    : SizedBox.shrink()),
+                  ],
+                );
+              }
+            }
+
+            return const SizedBox
+                .shrink(); // Trường hợp là chủ sở hữu, không hiển thị gì thêm
+          }(),
+        ),
         SizedBox(
           height: 10.h,
         ),
@@ -188,7 +208,7 @@ class _PostBlogState extends State<PostBlog> {
                       CommentInputCubit(widget.blogEntity.blogId),
                   child: BlocProvider.value(
                     value: context.read<GetCommentCubit>(),
-                    child: DetailBlocPage(
+                    child: DetailBlogPage(
                       userId: user!.userId!,
                       blog: widget.blogEntity,
                     ),

@@ -1,4 +1,4 @@
-import 'package:tracio_fe/domain/map/entities/route_reply.dart';
+import 'package:Tracio/domain/map/entities/route_reply.dart';
 
 class RouteReplyModel extends RouteReplyEntity {
   RouteReplyModel(

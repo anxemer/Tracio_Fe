@@ -1,4 +1,4 @@
-import 'package:tracio_fe/domain/map/entities/route.dart';
+import 'package:Tracio/domain/map/entities/route.dart';
 
 class GetRouteResponseEntity {
   final List<RouteEntity> routes;

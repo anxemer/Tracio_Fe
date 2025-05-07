@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:tracio_fe/data/map/models/route.dart';
-import 'package:tracio_fe/domain/map/entities/route.dart';
+import 'package:Tracio/data/map/models/route.dart';
+import 'package:Tracio/domain/map/entities/route.dart';
 
 class GetRouteRepModel {
   final List<RouteEntity> routes;

@@ -1,4 +1,4 @@
-import 'package:tracio_fe/domain/shop/entities/response/pagination_service_data_entity.dart';
+import 'package:Tracio/domain/shop/entities/response/pagination_service_data_entity.dart';
 
 class PaginationServiceDataModel extends PaginationServiceDataEntity {
   PaginationServiceDataModel(
@@ -9,28 +9,23 @@ class PaginationServiceDataModel extends PaginationServiceDataEntity {
       required super.pageSizeShop,
       required super.pageNumberShop});
 
-    
+  factory PaginationServiceDataModel.fromJson(Map<String, dynamic> json) {
+    return PaginationServiceDataModel(
+      totalShops: json["totalShops"],
+      totalServices: json["totalServices"],
+      pageSizeService: json["pageSizeService"],
+      pageNumberService: json["pageNumberService"],
+      pageSizeShop: json["pageSizeShop"],
+      pageNumberShop: json["pageNumberShop"],
+    );
+  }
 
-    factory PaginationServiceDataModel.fromJson(Map<String, dynamic> json){ 
-        return PaginationServiceDataModel(
-            totalShops: json["totalShops"],
-            totalServices: json["totalServices"],
-            pageSizeService: json["pageSizeService"],
-            pageNumberService: json["pageNumberService"],
-            pageSizeShop: json["pageSizeShop"],
-            pageNumberShop: json["pageNumberShop"],
-        );
-    }
-
-    Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() => {
         "totalShops": totalShops,
         "totalServices": totalServices,
         "pageSizeService": pageSizeService,
         "pageNumberService": pageNumberService,
         "pageSizeShop": pageSizeShop,
         "pageNumberShop": pageNumberShop,
-    };
-
+      };
 }
-
-

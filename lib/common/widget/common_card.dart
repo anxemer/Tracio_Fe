@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tracio_fe/common/helper/is_dark_mode.dart';
+import 'package:Tracio/common/helper/is_dark_mode.dart';
 
 import '../../core/configs/theme/app_theme.dart';
 
