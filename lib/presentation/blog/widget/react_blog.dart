@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/common/helper/is_dark_mode.dart';
-import 'package:tracio_fe/common/widget/button/text_button.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/domain/blog/entites/blog_entity.dart';
-import 'package:tracio_fe/domain/blog/usecase/bookmark_blog.dart';
-import 'package:tracio_fe/domain/blog/usecase/unBookmark.dart';
-import 'package:tracio_fe/presentation/library/bloc/reaction/bloc/reaction_bloc.dart';
+import 'package:Tracio/common/helper/is_dark_mode.dart';
+import 'package:Tracio/common/widget/button/text_button.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/domain/blog/entites/blog_entity.dart';
+import 'package:Tracio/domain/blog/usecase/bookmark_blog.dart';
+import 'package:Tracio/domain/blog/usecase/unBookmark.dart';
+import 'package:Tracio/presentation/library/bloc/reaction/bloc/reaction_bloc.dart';
 
 import '../../../data/blog/models/request/react_blog_req.dart';
 import '../../../domain/blog/usecase/react_blog.dart';

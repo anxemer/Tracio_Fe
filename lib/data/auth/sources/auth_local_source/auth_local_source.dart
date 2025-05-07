@@ -1,6 +1,6 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tracio_fe/data/auth/models/user_model.dart';
+import 'package:Tracio/data/auth/models/user_model.dart';
 
 import '../../../../core/erorr/exception.dart';
 import '../../../../domain/auth/entities/user.dart';

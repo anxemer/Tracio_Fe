@@ -1,9 +1,9 @@
 import 'dart:async'; // Cần cho Timer
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
-import 'package:tracio_fe/domain/challenge/entities/challenge_entity.dart';
-import 'package:tracio_fe/presentation/groups/widgets/challenge_progress.dart';
+import 'package:Tracio/common/helper/navigator/app_navigator.dart';
+import 'package:Tracio/domain/challenge/entities/challenge_entity.dart';
+import 'package:Tracio/presentation/groups/widgets/challenge_progress.dart';
 
 class ChallengeJoiningLoadingScreen extends StatefulWidget {
   // Thêm tham số để nhận dữ liệu challenge nếu cần chuyển sang màn hình tiếp theo

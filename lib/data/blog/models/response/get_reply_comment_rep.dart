@@ -1,6 +1,6 @@
-import 'package:tracio_fe/data/blog/models/response/comment_blog_model.dart';
-import 'package:tracio_fe/data/blog/models/response/reply_comment_model.dart';
-import 'package:tracio_fe/domain/blog/entites/reply_comment.dart';
+import 'package:Tracio/data/blog/models/response/comment_blog_model.dart';
+import 'package:Tracio/data/blog/models/response/reply_comment_model.dart';
+import 'package:Tracio/domain/blog/entites/reply_comment.dart';
 
 class GetReplyCommentRepMode extends ReplyCommentBlogPaginationEntity {
   GetReplyCommentRepMode(

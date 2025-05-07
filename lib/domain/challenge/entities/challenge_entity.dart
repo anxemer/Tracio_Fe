@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:tracio_fe/domain/challenge/entities/challenge_reward.dart';
+import 'package:Tracio/domain/challenge/entities/challenge_reward.dart';
 
 class ChallengeEntity {
   ChallengeEntity({

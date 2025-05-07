@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/common/helper/is_dark_mode.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/presentation/service/bloc/service_bloc/near_service_cubit/get_near_service_cubit.dart';
+import 'package:Tracio/common/helper/is_dark_mode.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/presentation/service/bloc/service_bloc/near_service_cubit/get_near_service_cubit.dart';
 
 import '../../../common/widget/picture/picture.dart';
 import '../../../core/configs/theme/app_colors.dart';

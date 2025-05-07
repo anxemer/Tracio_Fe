@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
-import 'package:tracio_fe/data/groups/models/request/post_group_route_req.dart';
-import 'package:tracio_fe/domain/groups/usecases/post_group_route_usecase.dart';
-import 'package:tracio_fe/domain/map/entities/route.dart';
-import 'package:tracio_fe/presentation/groups/cubit/form_group_activity_state.dart';
-import 'package:tracio_fe/service_locator.dart';
+import 'package:Tracio/data/groups/models/request/post_group_route_req.dart';
+import 'package:Tracio/domain/groups/usecases/post_group_route_usecase.dart';
+import 'package:Tracio/domain/map/entities/route.dart';
+import 'package:Tracio/presentation/groups/cubit/form_group_activity_state.dart';
+import 'package:Tracio/service_locator.dart';
 
 class FormGroupActivityCubit extends Cubit<FormGroupActivityState> {
   FormGroupActivityCubit()

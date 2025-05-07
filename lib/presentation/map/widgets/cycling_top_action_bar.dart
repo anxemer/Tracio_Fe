@@ -6,14 +6,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
-import 'package:tracio_fe/common/widget/navbar/bottom_nav_bar_manager.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/data/map/models/request/mapbox_direction_req.dart';
-import 'package:tracio_fe/domain/map/entities/place.dart';
-import 'package:tracio_fe/presentation/map/bloc/get_direction_cubit.dart';
-import 'package:tracio_fe/presentation/map/bloc/map_cubit.dart';
-import 'package:tracio_fe/presentation/map/bloc/map_state.dart';
-import 'package:tracio_fe/presentation/map/pages/search_location.dart';
+import 'package:Tracio/common/widget/navbar/bottom_nav_bar_manager.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/data/map/models/request/mapbox_direction_req.dart';
+import 'package:Tracio/domain/map/entities/place.dart';
+import 'package:Tracio/presentation/map/bloc/get_direction_cubit.dart';
+import 'package:Tracio/presentation/map/bloc/map_cubit.dart';
+import 'package:Tracio/presentation/map/bloc/map_state.dart';
+import 'package:Tracio/presentation/map/pages/search_location.dart';
 
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;

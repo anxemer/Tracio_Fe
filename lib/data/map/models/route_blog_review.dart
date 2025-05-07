@@ -1,4 +1,4 @@
-import 'package:tracio_fe/domain/map/entities/route_review.dart';
+import 'package:Tracio/domain/map/entities/route_review.dart';
 
 class RouteBlogReviewModel extends RouteReviewEntity {
   RouteBlogReviewModel(

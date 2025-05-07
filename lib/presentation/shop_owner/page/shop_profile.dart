@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/common/helper/is_dark_mode.dart';
-import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
-import 'package:tracio_fe/common/widget/appbar/app_bar.dart';
-import 'package:tracio_fe/common/widget/picture/circle_picture.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/domain/shop/entities/response/shop_profile_entity.dart';
-import 'package:tracio_fe/presentation/map/bloc/map_cubit.dart';
-import 'package:tracio_fe/presentation/shop_owner/bloc/shop_profile/shop_profile_manage/shop_profile_manage_cubit.dart';
-import 'package:tracio_fe/presentation/shop_owner/page/shop_profile_management.dart';
+import 'package:Tracio/common/helper/is_dark_mode.dart';
+import 'package:Tracio/common/helper/navigator/app_navigator.dart';
+import 'package:Tracio/common/widget/appbar/app_bar.dart';
+import 'package:Tracio/common/widget/picture/circle_picture.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/domain/shop/entities/response/shop_profile_entity.dart';
+import 'package:Tracio/presentation/map/bloc/map_cubit.dart';
+import 'package:Tracio/presentation/shop_owner/bloc/shop_profile/shop_profile_manage/shop_profile_manage_cubit.dart';
+import 'package:Tracio/presentation/shop_owner/page/shop_profile_management.dart';
 
 import '../../../core/configs/theme/app_colors.dart';
 import '../../auth/bloc/authCubit/auth_cubit.dart';

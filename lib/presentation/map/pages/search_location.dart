@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tracio_fe/presentation/map/bloc/get_location_cubit.dart';
-import 'package:tracio_fe/presentation/map/bloc/map_cubit.dart';
-import 'package:tracio_fe/presentation/map/widgets/search_location_input.dart';
-import 'package:tracio_fe/presentation/map/widgets/search_location_options.dart';
-import 'package:tracio_fe/presentation/map/widgets/search_location_result.dart';
+import 'package:Tracio/presentation/map/bloc/get_location_cubit.dart';
+import 'package:Tracio/presentation/map/bloc/map_cubit.dart';
+import 'package:Tracio/presentation/map/widgets/search_location_input.dart';
+import 'package:Tracio/presentation/map/widgets/search_location_options.dart';
+import 'package:Tracio/presentation/map/widgets/search_location_result.dart';
 
 class SearchLocationPage extends StatefulWidget {
   const SearchLocationPage({super.key, this.shopProfile = false});

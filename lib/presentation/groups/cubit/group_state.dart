@@ -1,5 +1,5 @@
-import 'package:tracio_fe/domain/groups/entities/group.dart';
-import 'package:tracio_fe/domain/groups/entities/group_route.dart';
+import 'package:Tracio/domain/groups/entities/group.dart';
+import 'package:Tracio/domain/groups/entities/group_route.dart';
 
 abstract class GroupState {}
 

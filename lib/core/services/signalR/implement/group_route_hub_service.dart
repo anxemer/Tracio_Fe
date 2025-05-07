@@ -1,12 +1,12 @@
 import 'dart:async';
 
-import 'package:tracio_fe/core/constants/api_url.dart';
-import 'package:tracio_fe/core/logger/signalr_logger.dart';
-import 'package:tracio_fe/core/services/signalR/signalr_core_service.dart';
-import 'package:tracio_fe/data/auth/sources/auth_local_source/auth_local_source.dart';
-import 'package:tracio_fe/data/groups/models/response/group_route_location_update.dart';
-import 'package:tracio_fe/domain/groups/entities/group_route_location_update.dart';
-import 'package:tracio_fe/service_locator.dart';
+import 'package:Tracio/core/constants/api_url.dart';
+import 'package:Tracio/core/logger/signalr_logger.dart';
+import 'package:Tracio/core/services/signalR/signalr_core_service.dart';
+import 'package:Tracio/data/auth/sources/auth_local_source/auth_local_source.dart';
+import 'package:Tracio/data/groups/models/response/group_route_location_update.dart';
+import 'package:Tracio/domain/groups/entities/group_route_location_update.dart';
+import 'package:Tracio/service_locator.dart';
 
 class GroupRouteHubService {
   final SignalRCoreService _core;

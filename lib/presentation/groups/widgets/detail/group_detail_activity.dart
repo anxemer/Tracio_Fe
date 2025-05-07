@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
-import 'package:tracio_fe/core/configs/theme/app_colors.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/core/constants/membership_enum.dart';
-import 'package:tracio_fe/presentation/groups/cubit/form_group_activity_cubit.dart';
-import 'package:tracio_fe/presentation/groups/cubit/group_cubit.dart';
-import 'package:tracio_fe/presentation/groups/cubit/group_state.dart';
-import 'package:tracio_fe/presentation/groups/pages/create_group_activity.dart';
-import 'package:tracio_fe/presentation/groups/widgets/detail/empty_group_activity.dart';
-import 'package:tracio_fe/presentation/groups/widgets/activity/group_activity_loaded.dart';
+import 'package:Tracio/common/helper/navigator/app_navigator.dart';
+import 'package:Tracio/core/configs/theme/app_colors.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/core/constants/membership_enum.dart';
+import 'package:Tracio/presentation/groups/cubit/form_group_activity_cubit.dart';
+import 'package:Tracio/presentation/groups/cubit/group_cubit.dart';
+import 'package:Tracio/presentation/groups/cubit/group_state.dart';
+import 'package:Tracio/presentation/groups/pages/create_group_activity.dart';
+import 'package:Tracio/presentation/groups/widgets/detail/empty_group_activity.dart';
+import 'package:Tracio/presentation/groups/widgets/activity/group_activity_loaded.dart';
 
 class GroupDetailActivity extends StatefulWidget {
   const GroupDetailActivity({super.key});

@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tracio_fe/core/configs/utils/validators/group_validator.dart';
-import 'package:tracio_fe/data/groups/models/request/post_group_req.dart';
-import 'package:tracio_fe/domain/groups/entities/group_req.dart';
+import 'package:Tracio/core/configs/utils/validators/group_validator.dart';
+import 'package:Tracio/data/groups/models/request/post_group_req.dart';
+import 'package:Tracio/domain/groups/entities/group_req.dart';
 
 part 'form_group_state.dart';
 

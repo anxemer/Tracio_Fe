@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/presentation/groups/cubit/form_group_cubit.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/presentation/groups/cubit/form_group_cubit.dart';
 
 class GroupPrivacyStep extends StatefulWidget {
   const GroupPrivacyStep({super.key});

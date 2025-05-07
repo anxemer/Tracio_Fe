@@ -3,15 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:tracio_fe/common/helper/is_dark_mode.dart';
-import 'package:tracio_fe/common/helper/placeholder/service_card.dart';
-import 'package:tracio_fe/data/shop/models/get_service_req.dart';
-import 'package:tracio_fe/presentation/service/bloc/service_bloc/near_service_cubit/get_near_service_cubit.dart';
-import 'package:tracio_fe/presentation/service/bloc/service_bloc/get_service_cubit.dart';
-import 'package:tracio_fe/presentation/service/bloc/service_bloc/get_service_state.dart';
-import 'package:tracio_fe/presentation/service/bloc/service_bloc/review_service_cubit/get_reviewcubit/get_review_cubit.dart';
-import 'package:tracio_fe/presentation/service/widget/custom_search_bar.dart';
-import 'package:tracio_fe/presentation/service/widget/service_grid.dart'
+import 'package:Tracio/common/helper/is_dark_mode.dart';
+import 'package:Tracio/common/helper/placeholder/service_card.dart';
+import 'package:Tracio/data/shop/models/get_service_req.dart';
+import 'package:Tracio/presentation/service/bloc/service_bloc/near_service_cubit/get_near_service_cubit.dart';
+import 'package:Tracio/presentation/service/bloc/service_bloc/get_service_cubit.dart';
+import 'package:Tracio/presentation/service/bloc/service_bloc/get_service_state.dart';
+import 'package:Tracio/presentation/service/bloc/service_bloc/review_service_cubit/get_reviewcubit/get_review_cubit.dart';
+import 'package:Tracio/presentation/service/widget/custom_search_bar.dart';
+import 'package:Tracio/presentation/service/widget/service_grid.dart'
     show ServiceGrid;
 
 import '../bloc/bookingservice/get_booking_detail_cubit/get_booking_detail_cubit.dart';

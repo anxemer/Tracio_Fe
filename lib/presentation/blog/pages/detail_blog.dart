@@ -3,12 +3,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/common/helper/is_dark_mode.dart';
-import 'package:tracio_fe/core/configs/theme/app_colors.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/domain/blog/entites/blog_entity.dart';
-import 'package:tracio_fe/presentation/blog/pages/edit_blog.dart';
-import 'package:tracio_fe/presentation/blog/widget/post_blog.dart';
+import 'package:Tracio/common/helper/is_dark_mode.dart';
+import 'package:Tracio/core/configs/theme/app_colors.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/domain/blog/entites/blog_entity.dart';
+import 'package:Tracio/presentation/blog/pages/edit_blog.dart';
+import 'package:Tracio/presentation/blog/widget/post_blog.dart';
 
 import '../../../common/widget/appbar/app_bar.dart';
 import '../../../data/blog/models/request/comment_blog_req.dart';

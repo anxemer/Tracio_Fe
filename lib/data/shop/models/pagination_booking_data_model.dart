@@ -1,4 +1,4 @@
-import 'package:tracio_fe/domain/shop/entities/response/pagination_booking_data_entity.dart';
+import 'package:Tracio/domain/shop/entities/response/pagination_booking_data_entity.dart';
 
 class PaginationBookingDataModel extends PaginationBookingDataEntity {
   PaginationBookingDataModel({

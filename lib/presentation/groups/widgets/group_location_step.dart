@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/common/bloc/generic_data_cubit.dart';
-import 'package:tracio_fe/common/bloc/generic_data_state.dart';
-import 'package:tracio_fe/core/configs/theme/app_colors.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/data/groups/models/response/vietnam_city_model.dart';
-import 'package:tracio_fe/domain/groups/usecases/get_city_usecase.dart';
-import 'package:tracio_fe/presentation/groups/cubit/form_group_cubit.dart';
-import 'package:tracio_fe/presentation/groups/widgets/group_location_select.dart';
-import 'package:tracio_fe/service_locator.dart';
+import 'package:Tracio/common/bloc/generic_data_cubit.dart';
+import 'package:Tracio/common/bloc/generic_data_state.dart';
+import 'package:Tracio/core/configs/theme/app_colors.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/data/groups/models/response/vietnam_city_model.dart';
+import 'package:Tracio/domain/groups/usecases/get_city_usecase.dart';
+import 'package:Tracio/presentation/groups/cubit/form_group_cubit.dart';
+import 'package:Tracio/presentation/groups/widgets/group_location_select.dart';
+import 'package:Tracio/service_locator.dart';
 
 class GroupLocationStep extends StatefulWidget {
   const GroupLocationStep({super.key});

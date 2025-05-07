@@ -1,4 +1,4 @@
-import 'package:tracio_fe/domain/map/entities/matched_user.dart';
+import 'package:Tracio/domain/map/entities/matched_user.dart';
 
 class MatchedUserModel extends MatchedUserEntity {
   MatchedUserModel({

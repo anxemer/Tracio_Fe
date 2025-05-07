@@ -1,4 +1,4 @@
-import 'package:tracio_fe/domain/map/entities/route_blog.dart';
+import 'package:Tracio/domain/map/entities/route_blog.dart';
 
 class RouteBlogModel extends RouteBlogEntity {
   RouteBlogModel(

@@ -1,7 +1,7 @@
-import 'package:tracio_fe/core/constants/message_enum.dart';
-import 'package:tracio_fe/domain/chat/entities/attachment.dart';
-import 'package:tracio_fe/domain/chat/entities/conversation.dart';
-import 'package:tracio_fe/domain/chat/entities/shared_content.dart';
+import 'package:Tracio/core/constants/message_enum.dart';
+import 'package:Tracio/domain/chat/entities/attachment.dart';
+import 'package:Tracio/domain/chat/entities/conversation.dart';
+import 'package:Tracio/domain/chat/entities/shared_content.dart';
 
 class MessageStatusEntity {
   final int userId;

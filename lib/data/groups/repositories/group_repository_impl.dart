@@ -1,17 +1,17 @@
 import 'package:dartz/dartz.dart';
-import 'package:tracio_fe/core/erorr/failure.dart';
-import 'package:tracio_fe/data/groups/models/request/get_group_list_req.dart';
-import 'package:tracio_fe/data/groups/models/request/post_group_req.dart';
-import 'package:tracio_fe/data/groups/models/request/post_group_route_req.dart';
-import 'package:tracio_fe/data/groups/models/response/get_group_list_rep.dart';
-import 'package:tracio_fe/data/groups/models/response/get_group_route_list_rep.dart';
-import 'package:tracio_fe/data/groups/models/response/get_participant_list_rep.dart';
-import 'package:tracio_fe/data/map/models/response/get_route_detail_rep.dart';
-import 'package:tracio_fe/data/groups/models/response/group_rep.dart';
-import 'package:tracio_fe/data/groups/models/response/post_group_route_rep.dart';
-import 'package:tracio_fe/data/groups/source/group_api_service.dart';
-import 'package:tracio_fe/domain/groups/repositories/group_repository.dart';
-import 'package:tracio_fe/service_locator.dart';
+import 'package:Tracio/core/erorr/failure.dart';
+import 'package:Tracio/data/groups/models/request/get_group_list_req.dart';
+import 'package:Tracio/data/groups/models/request/post_group_req.dart';
+import 'package:Tracio/data/groups/models/request/post_group_route_req.dart';
+import 'package:Tracio/data/groups/models/response/get_group_list_rep.dart';
+import 'package:Tracio/data/groups/models/response/get_group_route_list_rep.dart';
+import 'package:Tracio/data/groups/models/response/get_participant_list_rep.dart';
+import 'package:Tracio/data/map/models/response/get_route_detail_rep.dart';
+import 'package:Tracio/data/groups/models/response/group_rep.dart';
+import 'package:Tracio/data/groups/models/response/post_group_route_rep.dart';
+import 'package:Tracio/data/groups/source/group_api_service.dart';
+import 'package:Tracio/domain/groups/repositories/group_repository.dart';
+import 'package:Tracio/service_locator.dart';
 
 class GroupRepositoryImpl extends GroupRepository {
   @override

@@ -1,11 +1,11 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:dartz/dartz.dart';
 
-import 'package:tracio_fe/core/erorr/failure.dart';
-import 'package:tracio_fe/data/challenge/source/challenge_api_service.dart';
-import 'package:tracio_fe/domain/challenge/entities/challenge_entity.dart';
-import 'package:tracio_fe/domain/challenge/entities/challenge_overview_response_entity.dart';
-import 'package:tracio_fe/domain/challenge/repository/challenge_repositories.dart';
+import 'package:Tracio/core/erorr/failure.dart';
+import 'package:Tracio/data/challenge/source/challenge_api_service.dart';
+import 'package:Tracio/domain/challenge/entities/challenge_entity.dart';
+import 'package:Tracio/domain/challenge/entities/challenge_overview_response_entity.dart';
+import 'package:Tracio/domain/challenge/repository/challenge_repositories.dart';
 
 import '../../../domain/challenge/entities/participants_response_entity.dart';
 

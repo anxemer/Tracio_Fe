@@ -1,8 +1,8 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 
-import 'package:tracio_fe/common/widget/blog/comment/comment_widget.dart';
-import 'package:tracio_fe/common/widget/blog/comment/first_respondent_widget.dart';
+import 'package:Tracio/common/widget/blog/comment/comment_widget.dart';
+import 'package:Tracio/common/widget/blog/comment/first_respondent_widget.dart';
 
 typedef AvatarWidgetBuilder<T> = PreferredSize Function(
   BuildContext context,

@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/domain/blog/entites/comment_blog.dart';
-import 'package:tracio_fe/domain/blog/entites/reply_comment.dart';
-import 'package:tracio_fe/presentation/blog/bloc/comment/get_comment_cubit.dart';
-import 'package:tracio_fe/presentation/library/bloc/reaction/bloc/reaction_bloc.dart';
+import 'package:Tracio/domain/blog/entites/comment_blog.dart';
+import 'package:Tracio/domain/blog/entites/reply_comment.dart';
+import 'package:Tracio/presentation/blog/bloc/comment/get_comment_cubit.dart';
+import 'package:Tracio/presentation/library/bloc/reaction/bloc/reaction_bloc.dart';
 
 import '../../../common/widget/blog/comment/comment.dart';
 import '../../../common/widget/blog/comment/comment_tree_widget.dart';

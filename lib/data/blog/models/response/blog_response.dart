@@ -1,9 +1,9 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
-import 'package:tracio_fe/data/blog/models/response/blog_model.dart';
-import 'package:tracio_fe/common/helper/pagination_meta_data.dart';
-import 'package:tracio_fe/domain/blog/entites/blog_response.dart';
+import 'package:Tracio/data/blog/models/response/blog_model.dart';
+import 'package:Tracio/common/helper/pagination_meta_data.dart';
+import 'package:Tracio/domain/blog/entites/blog_response.dart';
 
 import '../../../../domain/blog/entites/blog_entity.dart';
 import '../../../../domain/blog/entites/pagination_meta_data_entity.dart';

@@ -1,7 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
-import 'package:tracio_fe/common/widget/blog/comment/comment.dart';
-import 'package:tracio_fe/domain/blog/entites/comment_blog.dart';
+import 'package:Tracio/common/widget/blog/comment/comment.dart';
+import 'package:Tracio/domain/blog/entites/comment_blog.dart';
 
 import '../../../common/helper/media_file.dart';
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:tracio_fe/common/widget/appbar/app_bar.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
+import 'package:Tracio/common/widget/appbar/app_bar.dart';
+import 'package:Tracio/core/constants/app_size.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 // Define a model for Notification

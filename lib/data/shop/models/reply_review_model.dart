@@ -1,4 +1,4 @@
-import 'package:tracio_fe/domain/shop/entities/response/reply_review_entity.dart';
+import 'package:Tracio/domain/shop/entities/response/reply_review_entity.dart';
 
 class ReplyReviewModel extends ReplyReviewEntity {
   ReplyReviewModel(

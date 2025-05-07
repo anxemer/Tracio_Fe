@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:tracio_fe/domain/shop/usecase/create_service.dart';
-import 'package:tracio_fe/domain/shop/usecase/delete_service.dart';
+import 'package:Tracio/domain/shop/usecase/create_service.dart';
+import 'package:Tracio/domain/shop/usecase/delete_service.dart';
 
 import '../../../../core/erorr/failure.dart';
 import '../../../../service_locator.dart';

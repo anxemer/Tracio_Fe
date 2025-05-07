@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/data/map/models/request/get_route_req.dart';
-import 'package:tracio_fe/presentation/library/widgets/rides_list.dart';
-import 'package:tracio_fe/presentation/library/widgets/route_filter_widget.dart';
-import 'package:tracio_fe/presentation/map/bloc/route_cubit.dart';
-import 'package:tracio_fe/presentation/map/bloc/route_state.dart';
+import 'package:Tracio/data/map/models/request/get_route_req.dart';
+import 'package:Tracio/presentation/library/widgets/rides_list.dart';
+import 'package:Tracio/presentation/library/widgets/route_filter_widget.dart';
+import 'package:Tracio/presentation/map/bloc/route_cubit.dart';
+import 'package:Tracio/presentation/map/bloc/route_state.dart';
 
 class RidesTab extends StatefulWidget {
   const RidesTab({super.key});

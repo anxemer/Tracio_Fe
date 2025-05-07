@@ -1,9 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tracio_fe/core/usecase/usecase.dart';
-import 'package:tracio_fe/data/auth/sources/auth_local_source/auth_local_source.dart';
-import 'package:tracio_fe/domain/auth/usecases/is_logged_in.dart';
-import 'package:tracio_fe/presentation/splash/bloc/splash_state.dart';
-import 'package:tracio_fe/service_locator.dart';
+import 'package:Tracio/core/usecase/usecase.dart';
+import 'package:Tracio/data/auth/sources/auth_local_source/auth_local_source.dart';
+import 'package:Tracio/domain/auth/usecases/is_logged_in.dart';
+import 'package:Tracio/presentation/splash/bloc/splash_state.dart';
+import 'package:Tracio/service_locator.dart';
 
 import '../../../domain/auth/usecases/get_cacher_user.dart';
 

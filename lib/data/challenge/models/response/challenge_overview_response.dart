@@ -1,5 +1,5 @@
-import 'package:tracio_fe/data/challenge/models/response/challenge_model.dart';
-import 'package:tracio_fe/domain/challenge/entities/challenge_overview_response_entity.dart';
+import 'package:Tracio/data/challenge/models/response/challenge_model.dart';
+import 'package:Tracio/domain/challenge/entities/challenge_overview_response_entity.dart';
 
 class ChallengeOverviewResponseModel extends ChallengeOverviewResponseEntity {
   ChallengeOverviewResponseModel(

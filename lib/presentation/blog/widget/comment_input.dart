@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/common/helper/is_dark_mode.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
+import 'package:Tracio/common/helper/is_dark_mode.dart';
+import 'package:Tracio/core/constants/app_size.dart';
 
 import '../../../common/widget/blog/pick_image.dart';
 import '../../../core/configs/theme/app_colors.dart';

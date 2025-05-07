@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:tracio_fe/core/configs/theme/app_colors.dart';
-import 'package:tracio_fe/domain/chat/entities/shared_content.dart';
+import 'package:Tracio/core/configs/theme/app_colors.dart';
+import 'package:Tracio/domain/chat/entities/shared_content.dart';
 
 class SharedMessageWidget extends StatelessWidget {
   final SharedContentEntity content;

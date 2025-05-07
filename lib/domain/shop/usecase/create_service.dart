@@ -1,9 +1,9 @@
 import 'package:dartz/dartz.dart';
-import 'package:tracio_fe/core/erorr/failure.dart';
-import 'package:tracio_fe/core/usecase/usecase.dart';
-import 'package:tracio_fe/data/shop/models/create_service_req.dart';
-import 'package:tracio_fe/data/shop/repositories/shop_service_repository_impl.dart';
-import 'package:tracio_fe/service_locator.dart';
+import 'package:Tracio/core/erorr/failure.dart';
+import 'package:Tracio/core/usecase/usecase.dart';
+import 'package:Tracio/data/shop/models/create_service_req.dart';
+import 'package:Tracio/data/shop/repositories/shop_service_repository_impl.dart';
+import 'package:Tracio/service_locator.dart';
 
 import '../repositories/shop_service_repository.dart';
 

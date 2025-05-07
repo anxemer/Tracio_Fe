@@ -1,8 +1,8 @@
 import 'package:dartz/dartz.dart';
-import 'package:tracio_fe/core/erorr/exception.dart';
-import 'package:tracio_fe/data/user/source/user_api_source.dart';
-import 'package:tracio_fe/domain/user/entities/user_profile_entity.dart';
-import 'package:tracio_fe/domain/user/repositories/user_profile_repository.dart';
+import 'package:Tracio/core/erorr/exception.dart';
+import 'package:Tracio/data/user/source/user_api_source.dart';
+import 'package:Tracio/domain/user/entities/user_profile_entity.dart';
+import 'package:Tracio/domain/user/repositories/user_profile_repository.dart';
 
 import '../../../core/erorr/failure.dart';
 

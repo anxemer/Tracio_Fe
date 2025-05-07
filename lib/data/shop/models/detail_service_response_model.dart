@@ -1,6 +1,6 @@
-import 'package:tracio_fe/data/shop/models/review_service_model.dart';
-import 'package:tracio_fe/data/shop/models/shop_service_model.dart';
-import 'package:tracio_fe/domain/shop/entities/response/detail_service_response_entity.dart';
+import 'package:Tracio/data/shop/models/review_service_model.dart';
+import 'package:Tracio/data/shop/models/shop_service_model.dart';
+import 'package:Tracio/domain/shop/entities/response/detail_service_response_entity.dart';
 
 class DetailServiceResponseModel extends DetailServiceResponseEntity {
   DetailServiceResponseModel(

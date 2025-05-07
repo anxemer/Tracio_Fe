@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/core/configs/theme/app_colors.dart';
+import 'package:Tracio/core/configs/theme/app_colors.dart';
 
 import '../../../common/widget/button/button.dart';
 import '../../../core/constants/app_size.dart';

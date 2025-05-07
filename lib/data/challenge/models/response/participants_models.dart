@@ -1,4 +1,4 @@
-import 'package:tracio_fe/domain/challenge/entities/participants_entity.dart';
+import 'package:Tracio/domain/challenge/entities/participants_entity.dart';
 
 class ParticipantsModels extends ParticipantsEntity {
   ParticipantsModels({

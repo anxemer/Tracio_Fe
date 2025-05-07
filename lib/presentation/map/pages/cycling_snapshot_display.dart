@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:tracio_fe/domain/map/entities/route.dart';
-import 'package:tracio_fe/presentation/map/bloc/map_cubit.dart';
-import 'package:tracio_fe/presentation/map/bloc/map_state.dart';
+import 'package:Tracio/domain/map/entities/route.dart';
+import 'package:Tracio/presentation/map/bloc/map_cubit.dart';
+import 'package:Tracio/presentation/map/bloc/map_state.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:tracio_fe/presentation/map/widgets/mood_selector.dart';
+import 'package:Tracio/presentation/map/widgets/mood_selector.dart';
 
 class CyclingSnapshotDisplay extends StatefulWidget {
   final RouteEntity route;

@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
-import 'package:tracio_fe/core/constants/api_url.dart';
-import 'package:tracio_fe/core/network/dio_client.dart';
-import 'package:tracio_fe/data/user/models/user_profile_model.dart';
+import 'package:Tracio/core/constants/api_url.dart';
+import 'package:Tracio/core/network/dio_client.dart';
+import 'package:Tracio/data/user/models/user_profile_model.dart';
 
 import '../../../core/erorr/exception.dart';
 import '../../../service_locator.dart';

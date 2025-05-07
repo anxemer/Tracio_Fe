@@ -1,8 +1,8 @@
 import 'package:dartz/dartz.dart';
-import 'package:tracio_fe/core/erorr/failure.dart';
-import 'package:tracio_fe/core/usecase/usecase.dart';
-import 'package:tracio_fe/domain/groups/repositories/invitation_repository.dart';
-import 'package:tracio_fe/service_locator.dart';
+import 'package:Tracio/core/erorr/failure.dart';
+import 'package:Tracio/core/usecase/usecase.dart';
+import 'package:Tracio/domain/groups/repositories/invitation_repository.dart';
+import 'package:Tracio/service_locator.dart';
 
 class RequestToJoinGroupUsecase extends Usecase<dynamic, int> {
   @override

@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'package:tracio_fe/domain/shop/entities/response/pagination_service_data_entity.dart';
-import 'package:tracio_fe/domain/shop/entities/response/shop_entity.dart';
+import 'package:Tracio/domain/shop/entities/response/pagination_service_data_entity.dart';
+import 'package:Tracio/domain/shop/entities/response/shop_entity.dart';
 
 import '../../../../data/shop/models/get_service_req.dart';
 import '../../../../domain/shop/entities/response/shop_service_entity.dart';

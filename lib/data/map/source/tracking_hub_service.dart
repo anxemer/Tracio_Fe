@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:signalr_netcore/json_hub_protocol.dart';
 import 'package:signalr_netcore/signalr_client.dart';
-import 'package:tracio_fe/core/constants/api_url.dart';
+import 'package:Tracio/core/constants/api_url.dart';
 
 abstract class ITrackingHubService {
   Future<bool> connect();

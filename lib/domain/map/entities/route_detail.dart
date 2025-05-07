@@ -1,5 +1,5 @@
-import 'package:tracio_fe/data/map/models/route.dart';
-import 'package:tracio_fe/domain/map/entities/route.dart';
+import 'package:Tracio/data/map/models/route.dart';
+import 'package:Tracio/domain/map/entities/route.dart';
 
 class RouteDetailEntity extends RouteEntity {
   final List<double> speeds;

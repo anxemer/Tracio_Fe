@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/common/widget/blog/comment/comment.dart';
-import 'package:tracio_fe/common/widget/blog/comment/comment_tree_widget.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/domain/map/entities/route_reply.dart';
-import 'package:tracio_fe/domain/map/entities/route_review.dart';
-import 'package:tracio_fe/presentation/map/bloc/route_cubit.dart';
-import 'package:tracio_fe/presentation/map/bloc/route_state.dart';
+import 'package:Tracio/common/widget/blog/comment/comment.dart';
+import 'package:Tracio/common/widget/blog/comment/comment_tree_widget.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/domain/map/entities/route_reply.dart';
+import 'package:Tracio/domain/map/entities/route_review.dart';
+import 'package:Tracio/presentation/map/bloc/route_cubit.dart';
+import 'package:Tracio/presentation/map/bloc/route_state.dart';
 
 class RouteBlogReviewItem extends StatefulWidget {
   final RouteReviewEntity review;

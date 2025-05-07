@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/common/helper/is_dark_mode.dart';
-import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
-import 'package:tracio_fe/common/widget/appbar/app_bar.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/data/blog/models/request/get_blog_req.dart';
-import 'package:tracio_fe/presentation/blog/bloc/get_blog_cubit.dart';
-import 'package:tracio_fe/presentation/profile/bloc/user_profile_cubit.dart';
-import 'package:tracio_fe/presentation/profile/bloc/user_profile_state.dart';
-import 'package:tracio_fe/presentation/profile/pages/edit_profile.dart';
-import 'package:tracio_fe/presentation/profile/widgets/UserInformation.dart';
-import 'package:tracio_fe/presentation/profile/widgets/user_blog_list.dart';
+import 'package:Tracio/common/helper/is_dark_mode.dart';
+import 'package:Tracio/common/helper/navigator/app_navigator.dart';
+import 'package:Tracio/common/widget/appbar/app_bar.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/data/blog/models/request/get_blog_req.dart';
+import 'package:Tracio/presentation/blog/bloc/get_blog_cubit.dart';
+import 'package:Tracio/presentation/profile/bloc/user_profile_cubit.dart';
+import 'package:Tracio/presentation/profile/bloc/user_profile_state.dart';
+import 'package:Tracio/presentation/profile/pages/edit_profile.dart';
+import 'package:Tracio/presentation/profile/widgets/UserInformation.dart';
+import 'package:Tracio/presentation/profile/widgets/user_blog_list.dart';
 
 import '../../../domain/user/entities/user_profile_entity.dart';
 

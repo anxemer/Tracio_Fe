@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:tracio_fe/core/configs/theme/app_colors.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/presentation/groups/cubit/challenge_cubit.dart';
-import 'package:tracio_fe/presentation/groups/widgets/detail_information_challenge.dart';
-import 'package:tracio_fe/presentation/map/widgets/challenge_reward.dart';
+import 'package:Tracio/core/configs/theme/app_colors.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/presentation/groups/cubit/challenge_cubit.dart';
+import 'package:Tracio/presentation/groups/widgets/detail_information_challenge.dart';
+import 'package:Tracio/presentation/map/widgets/challenge_reward.dart';
 
 class ChallengeDetailScreen extends StatelessWidget {
   const ChallengeDetailScreen({

@@ -1,8 +1,8 @@
 import 'package:fixnum/fixnum.dart';
 import 'package:flutter/foundation.dart';
 import 'package:grpc/grpc.dart';
-import 'package:tracio_fe/core/generated/location.pbgrpc.dart';
-import 'package:tracio_fe/data/auth/sources/auth_local_source/auth_local_source.dart';
+import 'package:Tracio/core/generated/location.pbgrpc.dart';
+import 'package:Tracio/data/auth/sources/auth_local_source/auth_local_source.dart';
 import '../../../service_locator.dart';
 
 abstract class ITrackingGrpcService {
@@ -20,10 +20,12 @@ class TrackingGrpcService implements ITrackingGrpcService {
 
   TrackingGrpcService._();
 
-  static Future<TrackingGrpcService> init() async {
+  static TrackingGrpcService init() {
     final service = TrackingGrpcService._();
-    final token = await sl<AuthLocalSource>().getToken();
-
+    String token = "";
+    Future.delayed(Duration(seconds: 2), () async {
+      token = await sl<AuthLocalSource>().getToken();
+    });
     service._channel = ClientChannel(
       '103.28.33.123',
       port: 6009,

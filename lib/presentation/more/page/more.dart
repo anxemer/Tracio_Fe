@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
-import 'package:tracio_fe/common/widget/appbar/app_bar.dart';
-import 'package:tracio_fe/common/widget/picture/circle_picture.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
+import 'package:Tracio/common/helper/navigator/app_navigator.dart';
+import 'package:Tracio/common/widget/appbar/app_bar.dart';
+import 'package:Tracio/common/widget/picture/circle_picture.dart';
+import 'package:Tracio/core/constants/app_size.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/presentation/library/pages/library.dart';
-import 'package:tracio_fe/presentation/auth/pages/login.dart';
-import 'package:tracio_fe/presentation/map/pages/route_planner.dart';
+import 'package:Tracio/presentation/library/pages/library.dart';
+import 'package:Tracio/presentation/auth/pages/login.dart';
+import 'package:Tracio/presentation/map/pages/route_planner.dart';
 
 import '../../../common/helper/placeholder/service_card.dart';
 import '../../auth/bloc/authCubit/auth_cubit.dart';

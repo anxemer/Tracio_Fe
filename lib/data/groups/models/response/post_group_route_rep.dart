@@ -1,6 +1,6 @@
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
-import 'package:tracio_fe/data/map/models/route_blog.dart';
-import 'package:tracio_fe/domain/groups/entities/group_route.dart';
+import 'package:Tracio/data/map/models/route_blog.dart';
+import 'package:Tracio/domain/groups/entities/group_route.dart';
 
 class PostGroupRouteRep extends GroupRouteEntity {
   PostGroupRouteRep(

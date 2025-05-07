@@ -1,5 +1,5 @@
-import 'package:tracio_fe/data/challenge/models/response/participants_models.dart';
-import 'package:tracio_fe/domain/challenge/entities/participants_response_entity.dart';
+import 'package:Tracio/data/challenge/models/response/participants_models.dart';
+import 'package:Tracio/domain/challenge/entities/participants_response_entity.dart';
 
 class ParticipantsResponseModel extends ParticipantsResponseEntity {
   ParticipantsResponseModel(

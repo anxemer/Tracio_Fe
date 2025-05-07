@@ -1,5 +1,5 @@
-import 'package:tracio_fe/data/shop/models/reply_review_model.dart';
-import 'package:tracio_fe/domain/shop/entities/response/review_service_entity.dart';
+import 'package:Tracio/data/shop/models/reply_review_model.dart';
+import 'package:Tracio/domain/shop/entities/response/review_service_entity.dart';
 
 import '../../../common/helper/media_file.dart';
 import '../../../domain/shop/entities/response/reply_review_entity.dart';

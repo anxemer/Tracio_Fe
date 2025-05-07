@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:tracio_fe/common/widget/appbar/app_bar.dart';
-import 'package:tracio_fe/core/configs/theme/app_colors.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
+import 'package:Tracio/common/widget/appbar/app_bar.dart';
+import 'package:Tracio/core/configs/theme/app_colors.dart';
+import 'package:Tracio/core/constants/app_size.dart';
 
 class ChallengesTabScreen extends StatelessWidget {
   const ChallengesTabScreen({Key? key}) : super(key: key);

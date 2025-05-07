@@ -1,11 +1,11 @@
 import 'package:dartz/dartz.dart';
-import 'package:tracio_fe/core/erorr/failure.dart';
-import 'package:tracio_fe/data/chat/models/request/post_message_req.dart';
-import 'package:tracio_fe/data/chat/source/chat_api_service.dart';
-import 'package:tracio_fe/domain/chat/entities/conversation.dart';
-import 'package:tracio_fe/domain/chat/entities/message.dart';
-import 'package:tracio_fe/domain/chat/repositories/chat_repository.dart';
-import 'package:tracio_fe/service_locator.dart';
+import 'package:Tracio/core/erorr/failure.dart';
+import 'package:Tracio/data/chat/models/request/post_message_req.dart';
+import 'package:Tracio/data/chat/source/chat_api_service.dart';
+import 'package:Tracio/domain/chat/entities/conversation.dart';
+import 'package:Tracio/domain/chat/entities/message.dart';
+import 'package:Tracio/domain/chat/repositories/chat_repository.dart';
+import 'package:Tracio/service_locator.dart';
 
 class ChatRepositoryImpl extends ChatRepository {
   @override

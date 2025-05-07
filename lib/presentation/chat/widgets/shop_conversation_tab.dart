@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/presentation/chat/bloc/bloc/conversation_bloc.dart';
-import 'package:tracio_fe/presentation/chat/widgets/conversation_list_item.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/presentation/chat/bloc/bloc/conversation_bloc.dart';
+import 'package:Tracio/presentation/chat/widgets/conversation_list_item.dart';
 
 class ShopConversationTab extends StatefulWidget {
   const ShopConversationTab({super.key});

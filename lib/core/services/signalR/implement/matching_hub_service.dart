@@ -1,12 +1,12 @@
 import 'dart:async';
 
-import 'package:tracio_fe/core/constants/api_url.dart';
-import 'package:tracio_fe/core/logger/signalr_logger.dart';
-import 'package:tracio_fe/core/services/signalR/signalr_core_service.dart';
-import 'package:tracio_fe/data/auth/sources/auth_local_source/auth_local_source.dart';
-import 'package:tracio_fe/data/map/models/matched_user.dart';
-import 'package:tracio_fe/domain/map/entities/matched_user.dart';
-import 'package:tracio_fe/service_locator.dart';
+import 'package:Tracio/core/constants/api_url.dart';
+import 'package:Tracio/core/logger/signalr_logger.dart';
+import 'package:Tracio/core/services/signalR/signalr_core_service.dart';
+import 'package:Tracio/data/auth/sources/auth_local_source/auth_local_source.dart';
+import 'package:Tracio/data/map/models/matched_user.dart';
+import 'package:Tracio/domain/map/entities/matched_user.dart';
+import 'package:Tracio/service_locator.dart';
 
 class MatchingHubService {
   final SignalRCoreService _core;

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:tracio_fe/common/helper/is_dark_mode.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
+import 'package:Tracio/common/helper/is_dark_mode.dart';
+import 'package:Tracio/core/constants/app_size.dart';
 
 class DetailInformationChallenge extends StatelessWidget {
   const DetailInformationChallenge(

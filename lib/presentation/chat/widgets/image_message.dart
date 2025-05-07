@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:tracio_fe/common/widget/picture/full_screen_image_view.dart';
+import 'package:Tracio/common/widget/picture/full_screen_image_view.dart';
 
 class ImageMessage extends StatelessWidget {
   final String? imageUrl;

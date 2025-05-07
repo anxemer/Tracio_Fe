@@ -3,7 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
-import 'package:tracio_fe/common/helper/is_dark_mode.dart';
+import 'package:Tracio/common/helper/is_dark_mode.dart';
 
 import '../../../common/helper/schedule_model.dart';
 import '../../../common/widget/blog/custom_bottomsheet.dart';

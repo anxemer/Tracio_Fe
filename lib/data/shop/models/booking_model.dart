@@ -1,4 +1,4 @@
-import 'package:tracio_fe/domain/shop/entities/response/booking_entity.dart';
+import 'package:Tracio/domain/shop/entities/response/booking_entity.dart';
 
 class BookingModel extends BookingEntity {
   BookingModel({

@@ -1,4 +1,4 @@
-import 'package:tracio_fe/domain/chat/entities/conversation.dart';
+import 'package:Tracio/domain/chat/entities/conversation.dart';
 
 class ConversationModel extends ConversationEntity {
   ConversationModel(

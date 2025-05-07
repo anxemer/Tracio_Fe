@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/presentation/blog/pages/add_title_blog.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/presentation/blog/pages/add_title_blog.dart';
 
 import '../../../common/widget/blog/pick_image.dart';
 

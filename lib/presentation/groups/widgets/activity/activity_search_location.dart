@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
-import 'package:tracio_fe/common/widget/drag_handle/drag_handle.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/presentation/groups/cubit/form_group_activity_cubit.dart';
-import 'package:tracio_fe/presentation/groups/cubit/form_group_activity_state.dart';
-import 'package:tracio_fe/presentation/map/bloc/get_location_cubit.dart';
-import 'package:tracio_fe/presentation/map/bloc/get_location_state.dart';
-import 'package:tracio_fe/presentation/map/widgets/search_location_input.dart';
-import 'package:tracio_fe/presentation/map/widgets/search_location_result.dart';
+import 'package:Tracio/common/widget/drag_handle/drag_handle.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/presentation/groups/cubit/form_group_activity_cubit.dart';
+import 'package:Tracio/presentation/groups/cubit/form_group_activity_state.dart';
+import 'package:Tracio/presentation/map/bloc/get_location_cubit.dart';
+import 'package:Tracio/presentation/map/bloc/get_location_state.dart';
+import 'package:Tracio/presentation/map/widgets/search_location_input.dart';
+import 'package:Tracio/presentation/map/widgets/search_location_result.dart';
 
 class ActivitySearchLocation extends StatefulWidget {
   final BuildContext bottomSheetContext;

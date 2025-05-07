@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
-import 'package:tracio_fe/domain/map/entities/route.dart';
+import 'package:Tracio/domain/map/entities/route.dart';
 
 @immutable
 abstract class FormGroupActivityState {

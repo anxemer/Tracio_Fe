@@ -1,6 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:tracio_fe/core/erorr/failure.dart';
-import 'package:tracio_fe/domain/auth/entities/user.dart';
+import 'package:Tracio/core/erorr/failure.dart';
+import 'package:Tracio/domain/auth/entities/user.dart';
 
 
 abstract class AuthState {}

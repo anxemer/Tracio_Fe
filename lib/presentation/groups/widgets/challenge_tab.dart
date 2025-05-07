@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:tracio_fe/common/helper/is_dark_mode.dart';
-import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/domain/challenge/entities/challenge_entity.dart';
-import 'package:tracio_fe/presentation/groups/cubit/challenge_cubit.dart';
-import 'package:tracio_fe/presentation/groups/widgets/active_challenge_item.dart';
-import 'package:tracio_fe/presentation/groups/widgets/challenge_progress.dart';
-import 'package:tracio_fe/presentation/groups/widgets/create_challenge.dart';
-import 'package:tracio_fe/presentation/groups/widgets/recommend_challenge_item.dart';
+import 'package:Tracio/common/helper/is_dark_mode.dart';
+import 'package:Tracio/common/helper/navigator/app_navigator.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/domain/challenge/entities/challenge_entity.dart';
+import 'package:Tracio/presentation/groups/cubit/challenge_cubit.dart';
+import 'package:Tracio/presentation/groups/widgets/active_challenge_item.dart';
+import 'package:Tracio/presentation/groups/widgets/challenge_progress.dart';
+import 'package:Tracio/presentation/groups/widgets/create_challenge.dart';
+import 'package:Tracio/presentation/groups/widgets/recommend_challenge_item.dart';
 
 import '../../../common/widget/button/button.dart';
 import '../../../core/configs/theme/app_colors.dart'; // For CircularProgressIndicator

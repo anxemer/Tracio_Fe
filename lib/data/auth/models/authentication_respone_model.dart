@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:tracio_fe/domain/auth/entities/authentication_response_entity.dart';
+import 'package:Tracio/domain/auth/entities/authentication_response_entity.dart';
 
 class AuthenticationResponseModel extends AuthenticationResponseEntity {
   AuthenticationResponseModel({

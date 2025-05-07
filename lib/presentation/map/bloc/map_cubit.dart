@@ -7,13 +7,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_polyline_algorithm/google_polyline_algorithm.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:tracio_fe/core/configs/utils/color_utils.dart';
-import 'package:tracio_fe/core/constants/api_url.dart';
-import 'package:tracio_fe/core/constants/app_urls.dart';
-import 'package:tracio_fe/core/network/dio_client.dart';
-import 'package:tracio_fe/domain/map/usecase/get_image_url_usecase.dart';
-import 'package:tracio_fe/presentation/map/bloc/map_state.dart';
-import 'package:tracio_fe/service_locator.dart';
+import 'package:Tracio/core/configs/utils/color_utils.dart';
+import 'package:Tracio/core/constants/api_url.dart';
+import 'package:Tracio/core/constants/app_urls.dart';
+import 'package:Tracio/core/network/dio_client.dart';
+import 'package:Tracio/domain/map/usecase/get_image_url_usecase.dart';
+import 'package:Tracio/presentation/map/bloc/map_state.dart';
+import 'package:Tracio/service_locator.dart';
 
 class MapCubit extends Cubit<MapCubitState> {
   MapCubit() : super(MapCubitInitial());

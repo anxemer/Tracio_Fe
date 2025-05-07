@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
-import 'package:tracio_fe/common/widget/appbar/app_bar.dart';
-import 'package:tracio_fe/core/configs/theme/app_colors.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/data/groups/models/request/post_group_req.dart';
-import 'package:tracio_fe/presentation/groups/cubit/form_group_cubit.dart';
-import 'package:tracio_fe/presentation/groups/cubit/group_cubit.dart';
-import 'package:tracio_fe/presentation/groups/cubit/group_state.dart';
-import 'package:tracio_fe/presentation/groups/cubit/invitation_bloc.dart';
-import 'package:tracio_fe/presentation/groups/pages/group_detail.dart';
-import 'package:tracio_fe/presentation/groups/widgets/group_info_step.dart';
-import 'package:tracio_fe/presentation/groups/widgets/group_location_step.dart';
-import 'package:tracio_fe/presentation/groups/widgets/group_privacy_step.dart';
+import 'package:Tracio/common/helper/navigator/app_navigator.dart';
+import 'package:Tracio/common/widget/appbar/app_bar.dart';
+import 'package:Tracio/core/configs/theme/app_colors.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/data/groups/models/request/post_group_req.dart';
+import 'package:Tracio/presentation/groups/cubit/form_group_cubit.dart';
+import 'package:Tracio/presentation/groups/cubit/group_cubit.dart';
+import 'package:Tracio/presentation/groups/cubit/group_state.dart';
+import 'package:Tracio/presentation/groups/cubit/invitation_bloc.dart';
+import 'package:Tracio/presentation/groups/pages/group_detail.dart';
+import 'package:Tracio/presentation/groups/widgets/group_info_step.dart';
+import 'package:Tracio/presentation/groups/widgets/group_location_step.dart';
+import 'package:Tracio/presentation/groups/widgets/group_privacy_step.dart';
 
 class CreateGroupScreen extends StatefulWidget {
   const CreateGroupScreen({super.key});

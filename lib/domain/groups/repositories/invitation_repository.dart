@@ -1,5 +1,5 @@
 import 'package:dartz/dartz.dart';
-import 'package:tracio_fe/core/erorr/failure.dart';
+import 'package:Tracio/core/erorr/failure.dart';
 
 abstract class InvitationRepository {
   Future<Either<Failure, dynamic>> inviteUser(

@@ -2,15 +2,15 @@ import 'dart:async';
 
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
-import 'package:tracio_fe/core/constants/api_url.dart';
-import 'package:tracio_fe/core/erorr/exception.dart';
-import 'package:tracio_fe/core/erorr/failure.dart';
-import 'package:tracio_fe/core/network/dio_client.dart';
-import 'package:tracio_fe/data/auth/models/change_role_req.dart';
-import 'package:tracio_fe/data/auth/models/login_req.dart';
-import 'package:tracio_fe/data/auth/models/register_req.dart';
-import 'package:tracio_fe/data/auth/sources/auth_remote_source/auth_firebase_service.dart';
-import 'package:tracio_fe/service_locator.dart';
+import 'package:Tracio/core/constants/api_url.dart';
+import 'package:Tracio/core/erorr/exception.dart';
+import 'package:Tracio/core/erorr/failure.dart';
+import 'package:Tracio/core/network/dio_client.dart';
+import 'package:Tracio/data/auth/models/change_role_req.dart';
+import 'package:Tracio/data/auth/models/login_req.dart';
+import 'package:Tracio/data/auth/models/register_req.dart';
+import 'package:Tracio/data/auth/sources/auth_remote_source/auth_firebase_service.dart';
+import 'package:Tracio/service_locator.dart';
 
 import '../../models/authentication_respone_model.dart';
 

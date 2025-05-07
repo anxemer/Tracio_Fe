@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
-import 'package:tracio_fe/core/configs/theme/app_colors.dart';
-import 'package:tracio_fe/core/extension/string_extension.dart';
-import 'package:tracio_fe/data/auth/models/register_req.dart';
-import 'package:tracio_fe/domain/auth/usecases/register_with_ep.dart';
-import 'package:tracio_fe/presentation/auth/pages/login.dart';
-import 'package:tracio_fe/presentation/auth/pages/login_phone.dart';
-import 'package:tracio_fe/service_locator.dart';
+import 'package:Tracio/common/helper/navigator/app_navigator.dart';
+import 'package:Tracio/core/configs/theme/app_colors.dart';
+import 'package:Tracio/core/extension/string_extension.dart';
+import 'package:Tracio/data/auth/models/register_req.dart';
+import 'package:Tracio/domain/auth/usecases/register_with_ep.dart';
+import 'package:Tracio/presentation/auth/pages/login.dart';
+import 'package:Tracio/presentation/auth/pages/login_phone.dart';
+import 'package:Tracio/service_locator.dart';
 
 import '../../../common/widget/button/button.dart';
 import '../../../common/widget/input_text_form_field.dart';

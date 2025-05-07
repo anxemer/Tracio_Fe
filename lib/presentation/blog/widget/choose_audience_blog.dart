@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/common/widget/appbar/app_bar.dart';
-import 'package:tracio_fe/core/configs/theme/assets/app_images.dart';
+import 'package:Tracio/common/widget/appbar/app_bar.dart';
+import 'package:Tracio/core/configs/theme/assets/app_images.dart';
 
 class ChooseAudienceBlog extends StatefulWidget {
   ChooseAudienceBlog({super.key, required this.selectedIndex});

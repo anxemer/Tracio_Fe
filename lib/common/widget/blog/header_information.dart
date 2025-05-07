@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
+import 'package:Tracio/core/constants/app_size.dart';
 
 class HeaderInformation extends StatelessWidget {
   const HeaderInformation(

@@ -3,10 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/common/helper/is_dark_mode.dart';
-import 'package:tracio_fe/presentation/blog/bloc/get_blog_cubit.dart';
-import 'package:tracio_fe/presentation/profile/widgets/blog_tab.dart';
-import 'package:tracio_fe/presentation/profile/widgets/bookmark_blog.dart';
+import 'package:Tracio/common/helper/is_dark_mode.dart';
+import 'package:Tracio/presentation/blog/bloc/get_blog_cubit.dart';
+import 'package:Tracio/presentation/profile/widgets/blog_tab.dart';
+import 'package:Tracio/presentation/profile/widgets/bookmark_blog.dart';
 
 import '../../../common/widget/appbar/app_bar.dart';
 import '../../../core/configs/theme/app_colors.dart';

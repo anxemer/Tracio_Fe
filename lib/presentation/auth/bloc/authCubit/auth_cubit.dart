@@ -1,14 +1,14 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tracio_fe/core/erorr/failure.dart';
-import 'package:tracio_fe/core/usecase/usecase.dart';
-import 'package:tracio_fe/data/auth/models/change_role_req.dart';
-import 'package:tracio_fe/data/auth/models/login_req.dart';
-import 'package:tracio_fe/domain/auth/usecases/change_role.dart';
-import 'package:tracio_fe/domain/auth/usecases/get_cacher_user.dart';
-import 'package:tracio_fe/domain/auth/usecases/login.dart';
-import 'package:tracio_fe/domain/auth/usecases/login_google.dart';
-import 'package:tracio_fe/domain/auth/usecases/logout.dart';
-import 'package:tracio_fe/presentation/auth/bloc/authCubit/auth_state.dart';
+import 'package:Tracio/core/erorr/failure.dart';
+import 'package:Tracio/core/usecase/usecase.dart';
+import 'package:Tracio/data/auth/models/change_role_req.dart';
+import 'package:Tracio/data/auth/models/login_req.dart';
+import 'package:Tracio/domain/auth/usecases/change_role.dart';
+import 'package:Tracio/domain/auth/usecases/get_cacher_user.dart';
+import 'package:Tracio/domain/auth/usecases/login.dart';
+import 'package:Tracio/domain/auth/usecases/login_google.dart';
+import 'package:Tracio/domain/auth/usecases/logout.dart';
+import 'package:Tracio/presentation/auth/bloc/authCubit/auth_state.dart';
 
 import '../../../../service_locator.dart';
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/domain/map/entities/route.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/domain/map/entities/route.dart';
 
 class EditRoutePlannedScreen extends StatefulWidget {
   final RouteEntity routeData;

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/presentation/service/bloc/get_booking/get_booking_cubit.dart';
+import 'package:Tracio/presentation/service/bloc/get_booking/get_booking_cubit.dart';
 
 import '../../../common/helper/navigator/app_navigator.dart';
 import '../../../core/constants/app_size.dart';

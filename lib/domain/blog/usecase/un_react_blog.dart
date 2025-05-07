@@ -1,8 +1,8 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:dartz/dartz.dart';
 
-import 'package:tracio_fe/core/erorr/failure.dart';
-import 'package:tracio_fe/core/usecase/usecase.dart';
+import 'package:Tracio/core/erorr/failure.dart';
+import 'package:Tracio/core/usecase/usecase.dart';
 
 import '../../../service_locator.dart';
 import '../repositories/blog_repository.dart';

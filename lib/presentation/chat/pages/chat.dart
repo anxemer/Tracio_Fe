@@ -3,16 +3,16 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:tracio_fe/core/services/signalR/implement/chat_hub_service.dart';
-import 'package:tracio_fe/data/auth/sources/auth_local_source/auth_local_source.dart';
-import 'package:tracio_fe/domain/auth/entities/user.dart';
-import 'package:tracio_fe/domain/chat/entities/conversation.dart';
-import 'package:tracio_fe/domain/chat/entities/message.dart';
-import 'package:tracio_fe/presentation/chat/bloc/bloc/conversation_bloc.dart';
-import 'package:tracio_fe/presentation/chat/widgets/chat_appbar.dart';
-import 'package:tracio_fe/presentation/chat/widgets/chat_bubble.dart';
-import 'package:tracio_fe/presentation/chat/widgets/chat_text_box.dart';
-import 'package:tracio_fe/service_locator.dart';
+import 'package:Tracio/core/services/signalR/implement/chat_hub_service.dart';
+import 'package:Tracio/data/auth/sources/auth_local_source/auth_local_source.dart';
+import 'package:Tracio/domain/auth/entities/user.dart';
+import 'package:Tracio/domain/chat/entities/conversation.dart';
+import 'package:Tracio/domain/chat/entities/message.dart';
+import 'package:Tracio/presentation/chat/bloc/bloc/conversation_bloc.dart';
+import 'package:Tracio/presentation/chat/widgets/chat_appbar.dart';
+import 'package:Tracio/presentation/chat/widgets/chat_bubble.dart';
+import 'package:Tracio/presentation/chat/widgets/chat_text_box.dart';
+import 'package:Tracio/service_locator.dart';
 
 class ChatPage extends StatefulWidget {
   final String conversationId;

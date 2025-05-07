@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
-import 'package:tracio_fe/common/widget/appbar/app_bar.dart';
-import 'package:tracio_fe/common/widget/navbar/bottom_nav_bar_manager.dart';
-import 'package:tracio_fe/core/configs/theme/app_colors.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/data/groups/models/request/get_group_list_req.dart';
-import 'package:tracio_fe/domain/auth/entities/user.dart';
-import 'package:tracio_fe/presentation/groups/cubit/group_cubit.dart';
-import 'package:tracio_fe/presentation/groups/cubit/group_state.dart';
-import 'package:tracio_fe/presentation/groups/widgets/detail/group_detail_loaded.dart';
-import 'package:tracio_fe/presentation/groups/widgets/detail/group_detail_skeleton.dart';
+import 'package:Tracio/common/helper/navigator/app_navigator.dart';
+import 'package:Tracio/common/widget/appbar/app_bar.dart';
+import 'package:Tracio/common/widget/navbar/bottom_nav_bar_manager.dart';
+import 'package:Tracio/core/configs/theme/app_colors.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/data/groups/models/request/get_group_list_req.dart';
+import 'package:Tracio/domain/auth/entities/user.dart';
+import 'package:Tracio/presentation/groups/cubit/group_cubit.dart';
+import 'package:Tracio/presentation/groups/cubit/group_state.dart';
+import 'package:Tracio/presentation/groups/widgets/detail/group_detail_loaded.dart';
+import 'package:Tracio/presentation/groups/widgets/detail/group_detail_skeleton.dart';
 
 class GroupDetailScreen extends StatefulWidget {
   final int groupId;

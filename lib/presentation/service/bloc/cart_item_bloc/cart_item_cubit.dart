@@ -1,10 +1,10 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tracio_fe/core/usecase/usecase.dart';
-import 'package:tracio_fe/domain/shop/entities/response/cart_item_entity.dart';
-import 'package:tracio_fe/domain/shop/usecase/add_to_cart.dart';
-import 'package:tracio_fe/domain/shop/usecase/delete_cart_item.dart';
-import 'package:tracio_fe/domain/shop/usecase/get_cart_item.dart';
-import 'package:tracio_fe/presentation/service/bloc/cart_item_bloc/cart_item_state.dart';
+import 'package:Tracio/core/usecase/usecase.dart';
+import 'package:Tracio/domain/shop/entities/response/cart_item_entity.dart';
+import 'package:Tracio/domain/shop/usecase/add_to_cart.dart';
+import 'package:Tracio/domain/shop/usecase/delete_cart_item.dart';
+import 'package:Tracio/domain/shop/usecase/get_cart_item.dart';
+import 'package:Tracio/presentation/service/bloc/cart_item_bloc/cart_item_state.dart';
 
 import '../../../../service_locator.dart';
 

@@ -1,5 +1,5 @@
-import 'package:tracio_fe/data/challenge/models/response/challenge_reward_model.dart';
-import 'package:tracio_fe/domain/challenge/entities/challenge_entity.dart';
+import 'package:Tracio/data/challenge/models/response/challenge_reward_model.dart';
+import 'package:Tracio/domain/challenge/entities/challenge_entity.dart';
 
 class ChallengeModel extends ChallengeEntity {
   ChallengeModel(

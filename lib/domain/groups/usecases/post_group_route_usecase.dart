@@ -1,11 +1,11 @@
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
-import 'package:tracio_fe/core/erorr/failure.dart';
-import 'package:tracio_fe/core/usecase/usecase.dart';
-import 'package:tracio_fe/data/groups/models/request/post_group_route_req.dart';
-import 'package:tracio_fe/data/groups/models/response/post_group_route_rep.dart';
-import 'package:tracio_fe/domain/groups/repositories/group_repository.dart';
-import 'package:tracio_fe/service_locator.dart';
+import 'package:Tracio/core/erorr/failure.dart';
+import 'package:Tracio/core/usecase/usecase.dart';
+import 'package:Tracio/data/groups/models/request/post_group_route_req.dart';
+import 'package:Tracio/data/groups/models/response/post_group_route_rep.dart';
+import 'package:Tracio/domain/groups/repositories/group_repository.dart';
+import 'package:Tracio/service_locator.dart';
 
 class PostGroupRouteParams extends Equatable {
   final int groupId;

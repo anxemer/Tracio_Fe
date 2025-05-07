@@ -1,7 +1,7 @@
-import 'package:tracio_fe/common/helper/media_file.dart';
-import 'package:tracio_fe/common/widget/blog/comment/comment.dart';
-import 'package:tracio_fe/domain/blog/entites/blog_entity.dart';
-import 'package:tracio_fe/domain/blog/entites/reply_comment.dart';
+import 'package:Tracio/common/helper/media_file.dart';
+import 'package:Tracio/common/widget/blog/comment/comment.dart';
+import 'package:Tracio/domain/blog/entites/blog_entity.dart';
+import 'package:Tracio/domain/blog/entites/reply_comment.dart';
 
 class CommentBlogEntity extends BaseCommentEntity {
   int cyclistId;

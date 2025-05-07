@@ -1,4 +1,4 @@
-package com.example.tracio_fe
+package com.tracio.app
 
 import io.flutter.embedding.android.FlutterActivity
 

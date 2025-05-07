@@ -1,13 +1,13 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tracio_fe/core/erorr/failure.dart';
-import 'package:tracio_fe/core/usecase/usecase.dart';
-import 'package:tracio_fe/domain/challenge/entities/challenge_entity.dart';
-import 'package:tracio_fe/domain/challenge/entities/challenge_overview_response_entity.dart';
-import 'package:tracio_fe/domain/challenge/usecase/get_challenge_detail.dart';
-import 'package:tracio_fe/domain/challenge/usecase/get_challenge_overview.dart';
-import 'package:tracio_fe/domain/challenge/usecase/join_challenge.dart';
-import 'package:tracio_fe/service_locator.dart';
+import 'package:Tracio/core/erorr/failure.dart';
+import 'package:Tracio/core/usecase/usecase.dart';
+import 'package:Tracio/domain/challenge/entities/challenge_entity.dart';
+import 'package:Tracio/domain/challenge/entities/challenge_overview_response_entity.dart';
+import 'package:Tracio/domain/challenge/usecase/get_challenge_detail.dart';
+import 'package:Tracio/domain/challenge/usecase/get_challenge_overview.dart';
+import 'package:Tracio/domain/challenge/usecase/join_challenge.dart';
+import 'package:Tracio/service_locator.dart';
 
 part 'challenge_state.dart';
 

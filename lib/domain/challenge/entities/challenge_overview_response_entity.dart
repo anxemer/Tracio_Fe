@@ -1,4 +1,4 @@
-import 'package:tracio_fe/domain/challenge/entities/challenge_entity.dart';
+import 'package:Tracio/domain/challenge/entities/challenge_entity.dart';
 
 class ChallengeOverviewResponseEntity {
   final List<ChallengeEntity> activeChallenges;

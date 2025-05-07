@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tracio_fe/domain/blog/entites/blog_entity.dart';
-import 'package:tracio_fe/domain/blog/entites/pagination_meta_data_entity.dart';
-import 'package:tracio_fe/domain/blog/usecase/get_blogs.dart';
-import 'package:tracio_fe/domain/blog/usecase/get_bookmark_blog.dart';
-import 'package:tracio_fe/presentation/blog/bloc/get_blog_state.dart';
+import 'package:Tracio/domain/blog/entites/blog_entity.dart';
+import 'package:Tracio/domain/blog/entites/pagination_meta_data_entity.dart';
+import 'package:Tracio/domain/blog/usecase/get_blogs.dart';
+import 'package:Tracio/domain/blog/usecase/get_bookmark_blog.dart';
+import 'package:Tracio/presentation/blog/bloc/get_blog_state.dart';
 
 import '../../../core/signalr_service.dart';
 import '../../../data/blog/models/request/get_blog_req.dart';

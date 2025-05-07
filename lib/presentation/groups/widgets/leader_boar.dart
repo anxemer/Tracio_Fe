@@ -4,15 +4,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart'
     show LoadingAnimationWidget;
-import 'package:tracio_fe/common/bloc/generic_data_cubit.dart';
-import 'package:tracio_fe/common/bloc/generic_data_state.dart';
-import 'package:tracio_fe/common/widget/appbar/app_bar.dart';
-import 'package:tracio_fe/common/widget/picture/circle_picture.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/domain/challenge/entities/participants_entity.dart';
-import 'package:tracio_fe/domain/challenge/entities/participants_response_entity.dart';
-import 'package:tracio_fe/domain/challenge/usecase/get_participants.dart';
-import 'package:tracio_fe/service_locator.dart';
+import 'package:Tracio/common/bloc/generic_data_cubit.dart';
+import 'package:Tracio/common/bloc/generic_data_state.dart';
+import 'package:Tracio/common/widget/appbar/app_bar.dart';
+import 'package:Tracio/common/widget/picture/circle_picture.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/domain/challenge/entities/participants_entity.dart';
+import 'package:Tracio/domain/challenge/entities/participants_response_entity.dart';
+import 'package:Tracio/domain/challenge/usecase/get_participants.dart';
+import 'package:Tracio/service_locator.dart';
 
 import '../../../core/configs/theme/app_colors.dart';
 import '../../../core/configs/theme/assets/app_images.dart'; // Cần cho định dạng số

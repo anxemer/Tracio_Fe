@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
-import 'package:tracio_fe/common/widget/input_text_form_field.dart';
-import 'package:tracio_fe/core/configs/theme/app_colors.dart';
-import 'package:tracio_fe/presentation/shop_owner/bloc/resolve_booking/resolve_booking_cubit.dart';
-import 'package:tracio_fe/presentation/shop_owner/bloc/resolve_booking/resolve_booking_state.dart';
+import 'package:Tracio/common/widget/input_text_form_field.dart';
+import 'package:Tracio/core/configs/theme/app_colors.dart';
+import 'package:Tracio/presentation/shop_owner/bloc/resolve_booking/resolve_booking_cubit.dart';
+import 'package:Tracio/presentation/shop_owner/bloc/resolve_booking/resolve_booking_state.dart';
 
 import '../../../core/constants/app_size.dart';
 

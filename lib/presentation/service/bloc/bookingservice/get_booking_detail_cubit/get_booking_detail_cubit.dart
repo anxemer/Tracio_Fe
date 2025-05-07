@@ -1,9 +1,9 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:tracio_fe/core/erorr/failure.dart';
-import 'package:tracio_fe/domain/shop/entities/response/booking_detail_entity.dart';
-import 'package:tracio_fe/domain/shop/usecase/get_booking_detail.dart';
-import 'package:tracio_fe/service_locator.dart';
+import 'package:Tracio/core/erorr/failure.dart';
+import 'package:Tracio/domain/shop/entities/response/booking_detail_entity.dart';
+import 'package:Tracio/domain/shop/usecase/get_booking_detail.dart';
+import 'package:Tracio/service_locator.dart';
 
 part 'get_booking_detail_state.dart';
 

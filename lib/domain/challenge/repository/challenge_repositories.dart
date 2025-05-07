@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
-import 'package:tracio_fe/core/erorr/failure.dart';
-import 'package:tracio_fe/domain/challenge/entities/challenge_entity.dart';
-import 'package:tracio_fe/domain/challenge/entities/participants_response_entity.dart';
+import 'package:Tracio/core/erorr/failure.dart';
+import 'package:Tracio/domain/challenge/entities/challenge_entity.dart';
+import 'package:Tracio/domain/challenge/entities/participants_response_entity.dart';
 
 import '../entities/challenge_overview_response_entity.dart';
 

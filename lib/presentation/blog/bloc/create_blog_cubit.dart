@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tracio_fe/data/blog/models/request/create_blog_req.dart';
-import 'package:tracio_fe/domain/blog/usecase/craete_blog.dart';
-import 'package:tracio_fe/presentation/blog/bloc/create_blog_state.dart';
+import 'package:Tracio/data/blog/models/request/create_blog_req.dart';
+import 'package:Tracio/domain/blog/usecase/craete_blog.dart';
+import 'package:Tracio/presentation/blog/bloc/create_blog_state.dart';
 
 import '../../../service_locator.dart';
 

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tracio_fe/common/helper/is_dark_mode.dart';
-import 'package:tracio_fe/common/widget/appbar/app_bar.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/presentation/service/bloc/bookingservice/get_booking_detail_cubit/get_booking_detail_cubit.dart';
-import 'package:tracio_fe/presentation/service/bloc/bookingservice/resolve_overlap_service/cubit/resolve_overlap_service_cubit.dart';
-import 'package:tracio_fe/presentation/service/bloc/get_booking/get_booking_cubit.dart';
-import 'package:tracio_fe/presentation/service/widget/booking_status_tab.dart';
+import 'package:Tracio/common/helper/is_dark_mode.dart';
+import 'package:Tracio/common/widget/appbar/app_bar.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/presentation/service/bloc/bookingservice/get_booking_detail_cubit/get_booking_detail_cubit.dart';
+import 'package:Tracio/presentation/service/bloc/bookingservice/resolve_overlap_service/cubit/resolve_overlap_service_cubit.dart';
+import 'package:Tracio/presentation/service/bloc/get_booking/get_booking_cubit.dart';
+import 'package:Tracio/presentation/service/widget/booking_status_tab.dart';
 
 import '../../../core/configs/theme/app_colors.dart';
 

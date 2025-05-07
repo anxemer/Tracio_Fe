@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/common/helper/is_dark_mode.dart';
-import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
-import 'package:tracio_fe/common/helper/placeholder/booking_detail_holder.dart';
-import 'package:tracio_fe/common/widget/appbar/app_bar.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/presentation/service/bloc/bookingservice/get_booking_detail_cubit/get_booking_detail_cubit.dart';
-import 'package:tracio_fe/presentation/service/widget/all_review_service.dart';
-import 'package:tracio_fe/presentation/service/widget/review_service.dart';
-import 'package:tracio_fe/presentation/shop_owner/bloc/resolve_booking/resolve_booking_cubit.dart';
-import 'package:tracio_fe/presentation/shop_owner/widget/list_schedule.dart';
+import 'package:Tracio/common/helper/is_dark_mode.dart';
+import 'package:Tracio/common/helper/navigator/app_navigator.dart';
+import 'package:Tracio/common/helper/placeholder/booking_detail_holder.dart';
+import 'package:Tracio/common/widget/appbar/app_bar.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/presentation/service/bloc/bookingservice/get_booking_detail_cubit/get_booking_detail_cubit.dart';
+import 'package:Tracio/presentation/service/widget/all_review_service.dart';
+import 'package:Tracio/presentation/service/widget/review_service.dart';
+import 'package:Tracio/presentation/shop_owner/bloc/resolve_booking/resolve_booking_cubit.dart';
+import 'package:Tracio/presentation/shop_owner/widget/list_schedule.dart';
 
 import '../../../common/widget/button/button.dart';
 import '../../../common/widget/dialog_confirm.dart';

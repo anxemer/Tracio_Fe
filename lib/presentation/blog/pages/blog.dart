@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/data/blog/models/request/get_blog_req.dart';
-import 'package:tracio_fe/presentation/blog/bloc/get_blog_cubit.dart';
-import 'package:tracio_fe/presentation/blog/widget/blog_list_view.dart';
-import 'package:tracio_fe/presentation/blog/widget/create_blog_header.dart';
-import 'package:tracio_fe/presentation/blog/widget/shortcut_key.dart';
-import 'package:tracio_fe/presentation/blog/widget/snapshot_home.dart';
+import 'package:Tracio/data/blog/models/request/get_blog_req.dart';
+import 'package:Tracio/presentation/blog/bloc/get_blog_cubit.dart';
+import 'package:Tracio/presentation/blog/widget/blog_list_view.dart';
+import 'package:Tracio/presentation/blog/widget/create_blog_header.dart';
+import 'package:Tracio/presentation/blog/widget/shortcut_key.dart';
+import 'package:Tracio/presentation/blog/widget/snapshot_home.dart';
 
 import '../bloc/get_blog_state.dart';
 

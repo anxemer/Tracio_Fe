@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tracio_fe/common/helper/is_dark_mode.dart';
-import 'package:tracio_fe/presentation/service/bloc/cart_item_bloc/cart_item_cubit.dart';
+import 'package:Tracio/common/helper/is_dark_mode.dart';
+import 'package:Tracio/presentation/service/bloc/cart_item_bloc/cart_item_cubit.dart';
 
 import '../../../common/helper/navigator/app_navigator.dart';
 import '../../../core/configs/theme/app_colors.dart';

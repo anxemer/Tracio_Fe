@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/common/helper/is_dark_mode.dart';
-import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
-import 'package:tracio_fe/common/widget/appbar/app_bar.dart';
-import 'package:tracio_fe/core/configs/theme/app_colors.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/core/services/signalR/implement/group_route_hub_service.dart';
-import 'package:tracio_fe/presentation/chat/pages/conversation.dart';
-import 'package:tracio_fe/presentation/groups/cubit/invitation_bloc.dart';
-import 'package:tracio_fe/presentation/groups/widgets/active_challenge_tab.dart';
-import 'package:tracio_fe/presentation/groups/widgets/challenge_tab.dart';
-import 'package:tracio_fe/presentation/groups/widgets/group_tab.dart';
-import 'package:tracio_fe/presentation/notifications/page/notifications.dart';
-import 'package:tracio_fe/service_locator.dart';
+import 'package:Tracio/common/helper/is_dark_mode.dart';
+import 'package:Tracio/common/helper/navigator/app_navigator.dart';
+import 'package:Tracio/common/widget/appbar/app_bar.dart';
+import 'package:Tracio/core/configs/theme/app_colors.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/core/services/signalR/implement/group_route_hub_service.dart';
+import 'package:Tracio/presentation/chat/pages/conversation.dart';
+import 'package:Tracio/presentation/groups/cubit/invitation_bloc.dart';
+import 'package:Tracio/presentation/groups/widgets/active_challenge_tab.dart';
+import 'package:Tracio/presentation/groups/widgets/challenge_tab.dart';
+import 'package:Tracio/presentation/groups/widgets/group_tab.dart';
+import 'package:Tracio/presentation/notifications/page/notifications.dart';
+import 'package:Tracio/service_locator.dart';
 
 class GroupPage extends StatefulWidget {
   const GroupPage({super.key, this.initialIndex = 2});

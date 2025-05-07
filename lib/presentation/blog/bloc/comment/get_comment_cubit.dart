@@ -1,9 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tracio_fe/data/blog/models/request/get_comment_req.dart';
-import 'package:tracio_fe/data/blog/models/request/get_reply_comment_req.dart';
-import 'package:tracio_fe/domain/blog/usecase/get_comment_blog.dart';
-import 'package:tracio_fe/domain/blog/usecase/get_reply_comment.dart';
-import 'package:tracio_fe/presentation/blog/bloc/comment/get_comment_state.dart';
+import 'package:Tracio/data/blog/models/request/get_comment_req.dart';
+import 'package:Tracio/data/blog/models/request/get_reply_comment_req.dart';
+import 'package:Tracio/domain/blog/usecase/get_comment_blog.dart';
+import 'package:Tracio/domain/blog/usecase/get_reply_comment.dart';
+import 'package:Tracio/presentation/blog/bloc/comment/get_comment_state.dart';
 
 import '../../../../service_locator.dart';
 

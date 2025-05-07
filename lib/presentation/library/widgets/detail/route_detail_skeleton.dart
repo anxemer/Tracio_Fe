@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:tracio_fe/common/widget/drag_handle/drag_handle.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
+import 'package:Tracio/common/widget/drag_handle/drag_handle.dart';
+import 'package:Tracio/core/constants/app_size.dart';
 
 class RouteDetailSkeletonWidget extends StatelessWidget {
   const RouteDetailSkeletonWidget({super.key});

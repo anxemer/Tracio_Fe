@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tracio_fe/domain/groups/entities/group_route.dart';
-import 'package:tracio_fe/presentation/groups/cubit/group_cubit.dart';
-import 'package:tracio_fe/presentation/groups/cubit/group_state.dart';
+import 'package:Tracio/domain/groups/entities/group_route.dart';
+import 'package:Tracio/presentation/groups/cubit/group_cubit.dart';
+import 'package:Tracio/presentation/groups/cubit/group_state.dart';
 
 class GroupActivityFeed extends StatefulWidget {
   final int groupId;

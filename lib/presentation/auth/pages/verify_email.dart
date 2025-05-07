@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/core/extension/string_extension.dart';
-import 'package:tracio_fe/presentation/auth/bloc/verify_email/verify_email_cubit.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/core/extension/string_extension.dart';
+import 'package:Tracio/presentation/auth/bloc/verify_email/verify_email_cubit.dart';
 
 import '../../../common/helper/navigator/app_navigator.dart';
 import '../../../common/widget/input_text_form_field.dart';

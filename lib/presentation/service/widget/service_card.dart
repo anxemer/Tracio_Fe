@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/common/helper/is_dark_mode.dart';
-import 'package:tracio_fe/common/widget/picture/picture.dart';
-import 'package:tracio_fe/core/configs/theme/app_colors.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/domain/shop/entities/response/shop_service_entity.dart';
-import 'package:tracio_fe/presentation/shop_owner/bloc/service_management/service_management_cubit.dart';
+import 'package:Tracio/common/helper/is_dark_mode.dart';
+import 'package:Tracio/common/widget/picture/picture.dart';
+import 'package:Tracio/core/configs/theme/app_colors.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/domain/shop/entities/response/shop_service_entity.dart';
+import 'package:Tracio/presentation/shop_owner/bloc/service_management/service_management_cubit.dart';
 
 import '../../../common/helper/navigator/app_navigator.dart';
 import '../../shop_owner/page/create_service.dart';

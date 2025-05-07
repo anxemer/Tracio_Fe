@@ -1,9 +1,9 @@
 import 'package:dartz/dartz.dart';
-import 'package:tracio_fe/core/erorr/failure.dart';
-import 'package:tracio_fe/core/usecase/usecase.dart';
-import 'package:tracio_fe/domain/map/entities/route_detail.dart';
-import 'package:tracio_fe/domain/map/repositories/route_repository.dart';
-import 'package:tracio_fe/service_locator.dart';
+import 'package:Tracio/core/erorr/failure.dart';
+import 'package:Tracio/core/usecase/usecase.dart';
+import 'package:Tracio/domain/map/entities/route_detail.dart';
+import 'package:Tracio/domain/map/repositories/route_repository.dart';
+import 'package:Tracio/service_locator.dart';
 
 class GetRouteDetailUsecase extends Usecase<dynamic, int> {
   @override

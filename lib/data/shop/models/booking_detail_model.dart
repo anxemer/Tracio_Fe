@@ -1,4 +1,4 @@
-import 'package:tracio_fe/domain/shop/entities/response/booking_detail_entity.dart';
+import 'package:Tracio/domain/shop/entities/response/booking_detail_entity.dart';
 
 import '../../../common/helper/schedule_model.dart';
 

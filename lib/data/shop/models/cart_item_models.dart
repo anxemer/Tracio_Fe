@@ -1,4 +1,4 @@
-import 'package:tracio_fe/domain/shop/entities/response/cart_item_entity.dart';
+import 'package:Tracio/domain/shop/entities/response/cart_item_entity.dart';
 
 class CartItemModel extends CartItemEntity {
   CartItemModel({

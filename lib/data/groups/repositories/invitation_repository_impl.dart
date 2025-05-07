@@ -1,8 +1,8 @@
 import 'package:dartz/dartz.dart';
-import 'package:tracio_fe/core/erorr/failure.dart';
-import 'package:tracio_fe/data/groups/source/invitation_api_service.dart';
-import 'package:tracio_fe/domain/groups/repositories/invitation_repository.dart';
-import 'package:tracio_fe/service_locator.dart';
+import 'package:Tracio/core/erorr/failure.dart';
+import 'package:Tracio/data/groups/source/invitation_api_service.dart';
+import 'package:Tracio/domain/groups/repositories/invitation_repository.dart';
+import 'package:Tracio/service_locator.dart';
 
 class InvitationRepositoryImpl extends InvitationRepository {
   @override

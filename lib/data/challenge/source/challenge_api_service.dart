@@ -1,9 +1,9 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
-import 'package:tracio_fe/core/erorr/failure.dart';
-import 'package:tracio_fe/data/challenge/models/response/challenge_model.dart';
-import 'package:tracio_fe/data/challenge/models/response/challenge_overview_response.dart';
-import 'package:tracio_fe/data/challenge/models/response/participants_response_model.dart';
+import 'package:Tracio/core/erorr/failure.dart';
+import 'package:Tracio/data/challenge/models/response/challenge_model.dart';
+import 'package:Tracio/data/challenge/models/response/challenge_overview_response.dart';
+import 'package:Tracio/data/challenge/models/response/participants_response_model.dart';
 
 import '../../../core/constants/api_url.dart';
 import '../../../core/network/dio_client.dart';

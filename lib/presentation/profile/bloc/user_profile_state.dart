@@ -1,4 +1,4 @@
-import 'package:tracio_fe/domain/user/entities/user_profile_entity.dart';
+import 'package:Tracio/domain/user/entities/user_profile_entity.dart';
 
 abstract class UserProfileState {}
 

@@ -1,8 +1,8 @@
 import 'package:dartz/dartz.dart';
-import 'package:tracio_fe/core/erorr/failure.dart';
-import 'package:tracio_fe/data/map/source/reaction_api_service.dart';
-import 'package:tracio_fe/domain/map/repositories/reaction_repository.dart';
-import 'package:tracio_fe/service_locator.dart';
+import 'package:Tracio/core/erorr/failure.dart';
+import 'package:Tracio/data/map/source/reaction_api_service.dart';
+import 'package:Tracio/domain/map/repositories/reaction_repository.dart';
+import 'package:Tracio/service_locator.dart';
 
 class ReactionRepositoryImpl extends ReactionRepository {
   @override

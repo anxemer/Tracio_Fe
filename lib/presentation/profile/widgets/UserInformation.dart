@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import 'package:tracio_fe/common/widget/picture/circle_picture.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/domain/user/entities/user_profile_entity.dart';
-import 'package:tracio_fe/presentation/profile/widgets/vital_tile.dart';
+import 'package:Tracio/common/widget/picture/circle_picture.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/domain/user/entities/user_profile_entity.dart';
+import 'package:Tracio/presentation/profile/widgets/vital_tile.dart';
 
 class Userinformation extends StatelessWidget {
   const Userinformation({super.key, required this.user});

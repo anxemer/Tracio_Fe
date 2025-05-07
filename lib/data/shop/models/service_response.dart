@@ -1,8 +1,8 @@
-import 'package:tracio_fe/data/shop/models/pagination_service_data_model.dart';
-import 'package:tracio_fe/data/shop/models/shop_model.dart';
-import 'package:tracio_fe/data/shop/models/shop_service_model.dart';
-import 'package:tracio_fe/domain/shop/entities/response/pagination_service_data_entity.dart';
-import 'package:tracio_fe/domain/shop/entities/response/service_response_entity.dart';
+import 'package:Tracio/data/shop/models/pagination_service_data_model.dart';
+import 'package:Tracio/data/shop/models/shop_model.dart';
+import 'package:Tracio/data/shop/models/shop_service_model.dart';
+import 'package:Tracio/domain/shop/entities/response/pagination_service_data_entity.dart';
+import 'package:Tracio/domain/shop/entities/response/service_response_entity.dart';
 
 import '../../../domain/shop/entities/response/shop_entity.dart';
 import '../../../domain/shop/entities/response/shop_service_entity.dart';

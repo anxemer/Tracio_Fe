@@ -1,6 +1,6 @@
-import 'package:tracio_fe/data/map/models/route_blog_review.dart';
-import 'package:tracio_fe/data/map/models/route_reply.dart';
-import 'package:tracio_fe/domain/map/entities/route_reply.dart';
+import 'package:Tracio/data/map/models/route_blog_review.dart';
+import 'package:Tracio/data/map/models/route_reply.dart';
+import 'package:Tracio/domain/map/entities/route_reply.dart';
 
 class GetRouteReplyRep extends RouteReplyPaginationEntity {
   GetRouteReplyRep(

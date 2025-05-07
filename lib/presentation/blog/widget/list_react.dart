@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/common/bloc/generic_data_cubit.dart';
-import 'package:tracio_fe/common/widget/picture/circle_picture.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/domain/blog/entites/reaction_response_entity.dart';
+import 'package:Tracio/common/bloc/generic_data_cubit.dart';
+import 'package:Tracio/common/widget/picture/circle_picture.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/domain/blog/entites/reaction_response_entity.dart';
 
 import '../../../common/bloc/generic_data_state.dart';
 import '../../../common/widget/drag_handle/drag_handle.dart';

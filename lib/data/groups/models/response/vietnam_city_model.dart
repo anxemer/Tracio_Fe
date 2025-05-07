@@ -3,7 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 
-import 'package:tracio_fe/data/groups/models/response/vietnam_district_model.dart';
+import 'package:Tracio/data/groups/models/response/vietnam_district_model.dart';
 
 class VietnamCityModel {
   String name;

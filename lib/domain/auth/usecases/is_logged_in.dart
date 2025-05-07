@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
-import 'package:tracio_fe/core/usecase/usecase.dart';
-import 'package:tracio_fe/domain/auth/repositories/auth_repository.dart';
-import 'package:tracio_fe/service_locator.dart';
+import 'package:Tracio/core/usecase/usecase.dart';
+import 'package:Tracio/domain/auth/repositories/auth_repository.dart';
+import 'package:Tracio/service_locator.dart';
 
 import '../../../core/erorr/failure.dart';
 

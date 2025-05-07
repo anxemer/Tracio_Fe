@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:tracio_fe/common/helper/media_file.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
+import 'package:Tracio/common/helper/media_file.dart';
+import 'package:Tracio/core/constants/app_size.dart';
 
 import '../../../common/widget/blog/picture_card.dart';
 

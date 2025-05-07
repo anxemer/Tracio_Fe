@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/presentation/library/widgets/graph/line_chart.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/presentation/library/widgets/graph/line_chart.dart';
 
 class ElevationGraphWidget extends StatelessWidget {
   final List<double> elevationGains;

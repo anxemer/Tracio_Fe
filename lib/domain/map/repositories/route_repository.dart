@@ -1,17 +1,17 @@
 import 'package:dartz/dartz.dart';
-import 'package:tracio_fe/core/erorr/failure.dart';
-import 'package:tracio_fe/data/map/models/request/finish_tracking_req.dart';
-import 'package:tracio_fe/data/map/models/request/post_reply_req.dart';
-import 'package:tracio_fe/data/map/models/request/post_review_req.dart';
-import 'package:tracio_fe/data/map/models/response/get_route_blog_rep.dart';
-import 'package:tracio_fe/data/map/models/response/get_route_blog_review_rep.dart';
-import 'package:tracio_fe/data/map/models/response/get_route_rep.dart';
-import 'package:tracio_fe/data/map/models/request/get_route_req.dart';
-import 'package:tracio_fe/data/map/models/response/get_route_reply_rep.dart';
-import 'package:tracio_fe/data/map/models/request/mapbox_direction_req.dart';
-import 'package:tracio_fe/data/map/models/request/post_route_req.dart';
-import 'package:tracio_fe/domain/map/entities/mapbox_direction_rep.dart';
-import 'package:tracio_fe/domain/map/entities/route_detail.dart';
+import 'package:Tracio/core/erorr/failure.dart';
+import 'package:Tracio/data/map/models/request/finish_tracking_req.dart';
+import 'package:Tracio/data/map/models/request/post_reply_req.dart';
+import 'package:Tracio/data/map/models/request/post_review_req.dart';
+import 'package:Tracio/data/map/models/response/get_route_blog_rep.dart';
+import 'package:Tracio/data/map/models/response/get_route_blog_review_rep.dart';
+import 'package:Tracio/data/map/models/response/get_route_rep.dart';
+import 'package:Tracio/data/map/models/request/get_route_req.dart';
+import 'package:Tracio/data/map/models/response/get_route_reply_rep.dart';
+import 'package:Tracio/data/map/models/request/mapbox_direction_req.dart';
+import 'package:Tracio/data/map/models/request/post_route_req.dart';
+import 'package:Tracio/domain/map/entities/mapbox_direction_rep.dart';
+import 'package:Tracio/domain/map/entities/route_detail.dart';
 
 abstract class RouteRepository {
   Future<Either<Failure, GetRouteRepModel>> getRoutes(GetRouteReq request);

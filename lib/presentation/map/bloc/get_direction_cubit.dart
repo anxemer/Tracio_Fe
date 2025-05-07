@@ -1,9 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tracio_fe/data/map/models/request/mapbox_direction_req.dart';
-import 'package:tracio_fe/domain/map/usecase/get_direction_using_mapbox.dart';
-import 'package:tracio_fe/domain/map/usecase/get_elevation.dart';
-import 'package:tracio_fe/presentation/map/bloc/get_direction_state.dart';
-import 'package:tracio_fe/service_locator.dart';
+import 'package:Tracio/data/map/models/request/mapbox_direction_req.dart';
+import 'package:Tracio/domain/map/usecase/get_direction_using_mapbox.dart';
+import 'package:Tracio/domain/map/usecase/get_elevation.dart';
+import 'package:Tracio/presentation/map/bloc/get_direction_state.dart';
+import 'package:Tracio/service_locator.dart';
 import "package:turf/turf.dart";
 
 class GetDirectionCubit extends Cubit<GetDirectionState> {

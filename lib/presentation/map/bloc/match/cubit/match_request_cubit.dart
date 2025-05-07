@@ -3,8 +3,8 @@ import 'dart:collection';
 
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tracio_fe/core/services/signalR/implement/matching_hub_service.dart';
-import 'package:tracio_fe/data/map/models/matched_user.dart';
+import 'package:Tracio/core/services/signalR/implement/matching_hub_service.dart';
+import 'package:Tracio/data/map/models/matched_user.dart';
 
 part 'match_request_state.dart';
 

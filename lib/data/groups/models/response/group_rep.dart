@@ -1,5 +1,5 @@
-import 'package:tracio_fe/core/constants/membership_enum.dart';
-import 'package:tracio_fe/domain/groups/entities/group.dart';
+import 'package:Tracio/core/constants/membership_enum.dart';
+import 'package:Tracio/domain/groups/entities/group.dart';
 
 class GroupResponseModel extends Group {
   GroupResponseModel(

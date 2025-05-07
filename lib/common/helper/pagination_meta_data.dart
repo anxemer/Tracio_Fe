@@ -1,4 +1,4 @@
-import 'package:tracio_fe/domain/blog/entites/pagination_meta_data_entity.dart';
+import 'package:Tracio/domain/blog/entites/pagination_meta_data_entity.dart';
 
 class PaginationMetaData extends PaginationMetaDataEntity {
   PaginationMetaData({

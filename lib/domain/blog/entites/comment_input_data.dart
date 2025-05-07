@@ -1,5 +1,5 @@
-import 'package:tracio_fe/domain/blog/entites/comment_blog.dart';
-import 'package:tracio_fe/domain/blog/entites/reply_comment.dart';
+import 'package:Tracio/domain/blog/entites/comment_blog.dart';
+import 'package:Tracio/domain/blog/entites/reply_comment.dart';
 
 enum CommentMode {
   blogComment,

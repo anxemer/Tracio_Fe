@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/common/helper/is_dark_mode.dart';
-import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
-import 'package:tracio_fe/domain/shop/entities/response/shop_service_entity.dart';
-import 'package:tracio_fe/presentation/service/page/filter_service.dart';
-import 'package:tracio_fe/presentation/service/widget/near_location.dart';
-import 'package:tracio_fe/presentation/service/widget/service_card.dart';
+import 'package:Tracio/common/helper/is_dark_mode.dart';
+import 'package:Tracio/common/helper/navigator/app_navigator.dart';
+import 'package:Tracio/domain/shop/entities/response/shop_service_entity.dart';
+import 'package:Tracio/presentation/service/page/filter_service.dart';
+import 'package:Tracio/presentation/service/widget/near_location.dart';
+import 'package:Tracio/presentation/service/widget/service_card.dart';
 
 import '../../../core/constants/app_size.dart';
 

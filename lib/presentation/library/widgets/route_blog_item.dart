@@ -2,14 +2,14 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
-import 'package:tracio_fe/core/constants/app_size.dart';
-import 'package:tracio_fe/domain/map/entities/route_blog.dart';
-import 'package:tracio_fe/presentation/library/bloc/reaction/bloc/reaction_bloc.dart';
-import 'package:tracio_fe/presentation/library/pages/route_detail.dart';
-import 'package:tracio_fe/presentation/library/widgets/detail/route_blog_reviews.dart';
-import 'package:tracio_fe/presentation/map/bloc/map_cubit.dart';
-import 'package:tracio_fe/presentation/map/bloc/route_cubit.dart';
+import 'package:Tracio/common/helper/navigator/app_navigator.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/domain/map/entities/route_blog.dart';
+import 'package:Tracio/presentation/library/bloc/reaction/bloc/reaction_bloc.dart';
+import 'package:Tracio/presentation/library/pages/route_detail.dart';
+import 'package:Tracio/presentation/library/widgets/detail/route_blog_reviews.dart';
+import 'package:Tracio/presentation/map/bloc/map_cubit.dart';
+import 'package:Tracio/presentation/map/bloc/route_cubit.dart';
 
 class RouteBlogItem extends StatefulWidget {
   final int routeId;

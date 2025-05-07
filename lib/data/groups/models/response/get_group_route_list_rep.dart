@@ -1,5 +1,5 @@
-import 'package:tracio_fe/data/groups/models/response/get_group_route_rep.dart';
-import 'package:tracio_fe/domain/groups/entities/group_route.dart';
+import 'package:Tracio/data/groups/models/response/get_group_route_rep.dart';
+import 'package:Tracio/domain/groups/entities/group_route.dart';
 
 class GetGroupRouteListRep extends GroupRoutePaginationEntity {
   GetGroupRouteListRep({

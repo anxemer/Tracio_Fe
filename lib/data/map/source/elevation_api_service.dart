@@ -1,10 +1,10 @@
 import 'package:dartz/dartz.dart';
 import 'package:google_polyline_algorithm/google_polyline_algorithm.dart';
 import 'package:map_elevation/map_elevation.dart';
-import 'package:tracio_fe/core/constants/api_url.dart';
-import 'package:tracio_fe/core/erorr/failure.dart';
-import 'package:tracio_fe/core/network/dio_client.dart';
-import 'package:tracio_fe/service_locator.dart';
+import 'package:Tracio/core/constants/api_url.dart';
+import 'package:Tracio/core/erorr/failure.dart';
+import 'package:Tracio/core/network/dio_client.dart';
+import 'package:Tracio/service_locator.dart';
 
 abstract class ElevationApiService {
   Future<Either<Failure, List<ElevationPoint>>> postElevationFromPolyline(

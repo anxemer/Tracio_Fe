@@ -1,7 +1,7 @@
-import 'package:tracio_fe/data/map/models/request/get_place_req.dart';
-import 'package:tracio_fe/data/map/models/request/get_route_req.dart';
-import 'package:tracio_fe/data/map/models/request/isochrone_req.dart';
-import 'package:tracio_fe/data/map/models/request/mapbox_direction_req.dart';
+import 'package:Tracio/data/map/models/request/get_place_req.dart';
+import 'package:Tracio/data/map/models/request/get_route_req.dart';
+import 'package:Tracio/data/map/models/request/isochrone_req.dart';
+import 'package:Tracio/data/map/models/request/mapbox_direction_req.dart';
 
 class ApiUrl {
   //base Url

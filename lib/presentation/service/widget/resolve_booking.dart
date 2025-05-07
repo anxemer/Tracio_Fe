@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/common/helper/is_dark_mode.dart';
-import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
-import 'package:tracio_fe/domain/shop/usecase/cancel_booking.dart';
-import 'package:tracio_fe/presentation/service/page/review_booking.dart';
-import 'package:tracio_fe/presentation/service/widget/cancel_reason.dart';
-import 'package:tracio_fe/presentation/service/widget/review_service.dart';
+import 'package:Tracio/common/helper/is_dark_mode.dart';
+import 'package:Tracio/common/helper/navigator/app_navigator.dart';
+import 'package:Tracio/domain/shop/usecase/cancel_booking.dart';
+import 'package:Tracio/presentation/service/page/review_booking.dart';
+import 'package:Tracio/presentation/service/widget/cancel_reason.dart';
+import 'package:Tracio/presentation/service/widget/review_service.dart';
 
 import '../../../common/widget/button/button.dart';
 import '../../../core/configs/theme/app_colors.dart';

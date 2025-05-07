@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/presentation/map/bloc/get_location_cubit.dart';
-import 'package:tracio_fe/presentation/map/bloc/get_location_state.dart';
+import 'package:Tracio/presentation/map/bloc/get_location_cubit.dart';
+import 'package:Tracio/presentation/map/bloc/get_location_state.dart';
 
 class SearchLocationResult extends StatelessWidget {
   final BuildContext? parentContext;

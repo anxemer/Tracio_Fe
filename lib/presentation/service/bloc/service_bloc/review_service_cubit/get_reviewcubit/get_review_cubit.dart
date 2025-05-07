@@ -1,11 +1,11 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:tracio_fe/data/shop/models/get_review_req.dart';
-import 'package:tracio_fe/domain/shop/entities/request/pagination_review_data_entity.dart';
-import 'package:tracio_fe/domain/shop/entities/response/review_service_entity.dart';
-import 'package:tracio_fe/domain/shop/usecase/get_review_booking.dart';
-import 'package:tracio_fe/domain/shop/usecase/get_review_service.dart';
-import 'package:tracio_fe/service_locator.dart';
+import 'package:Tracio/data/shop/models/get_review_req.dart';
+import 'package:Tracio/domain/shop/entities/request/pagination_review_data_entity.dart';
+import 'package:Tracio/domain/shop/entities/response/review_service_entity.dart';
+import 'package:Tracio/domain/shop/usecase/get_review_booking.dart';
+import 'package:Tracio/domain/shop/usecase/get_review_service.dart';
+import 'package:Tracio/service_locator.dart';
 
 part 'get_review_state.dart';
 

@@ -1,5 +1,5 @@
-import 'package:tracio_fe/common/widget/blog/comment/comment.dart';
-import 'package:tracio_fe/domain/map/entities/route_reply.dart';
+import 'package:Tracio/common/widget/blog/comment/comment.dart';
+import 'package:Tracio/domain/map/entities/route_reply.dart';
 
 class RouteReviewEntity extends BaseCommentEntity {
   int reviewId;
