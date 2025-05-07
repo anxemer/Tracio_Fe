@@ -46,8 +46,6 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
         if (!didPop && Navigator.canPop(context)) {
           GetGroupListReq request =
               GetGroupListReq(pageNumber: 1, pageSize: 10, getMyGroups: true);
-          GetGroupListReq request =
-              GetGroupListReq(pageNumber: 1, pageSize: 10, getMyGroups: true);
           context.read<GroupCubit>().getGroupList(request);
           AppNavigator.pushAndRemove(
               context,

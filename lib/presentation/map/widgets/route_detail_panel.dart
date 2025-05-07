@@ -209,8 +209,6 @@ class _RouteDetailPanelState extends State<RouteDetailPanel> {
                             description: routeDescription,
                             privacyLevel:
                                 routePrivacy == 0 ? "Private" : "public",
-                            privacyLevel:
-                                routePrivacy == 0 ? "Private" : "public",
                             origin: origin,
                             destination: destination,
                             waypoints: waypoints,

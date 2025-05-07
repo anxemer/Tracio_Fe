@@ -225,6 +225,7 @@ Future<void> initializeDependencies() async {
       () => GroupRouteHubService(sl<SignalRCoreService>()));
   sl.registerLazySingleton(() => ChatHubService(sl<SignalRCoreService>()));
   sl.registerLazySingleton(() => MatchingHubService(sl<SignalRCoreService>()));
+  sl.registerLazySingleton(() => NotificationHubService(sl<SignalRCoreService>()));
   // * USECASES--use registerFactory
   sl.registerFactory<GetBlogsUseCase>(() => GetBlogsUseCase());
   sl.registerFactory<GetBookmarkBlogsUseCase>(() => GetBookmarkBlogsUseCase());
