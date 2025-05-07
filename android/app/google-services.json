@@ -7,12 +7,28 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:985147212411:android:adef72010af0e5246658de",
+        "mobilesdk_app_id": "1:985147212411:android:49dfb39bd065063e6658de",
         "android_client_info": {
-          "package_name": "com.example.tracio_fe"
+          "package_name": "com.tracio.app"
         }
       },
       "oauth_client": [
+        {
+          "client_id": "985147212411-8k2ti9om4h1o0c1jvcaloqjvu51iq9pe.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tracio.app",
+            "certificate_hash": "5890256ca7bf4542b70a2e24220004c4d15d045f"
+          }
+        },
+        {
+          "client_id": "985147212411-f1qt831m2ubta7biitt1npabfpu7tenm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tracio.app",
+            "certificate_hash": "eb27f6fb3be685b4b671c3573dcf3fb6a17f502d"
+          }
+        },
         {
           "client_id": "985147212411-30st42smddrbdqp7j75c88eddl0gbpir.apps.googleusercontent.com",
           "client_type": 3
@@ -29,6 +45,13 @@
             {
               "client_id": "985147212411-30st42smddrbdqp7j75c88eddl0gbpir.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "985147212411-b8j93sdlenkithu3fcv13gh8ffpr5rhe.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.tracio.app"
+              }
             }
           ]
         }
