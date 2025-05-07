@@ -32,7 +32,9 @@ class BottomNavBarManagerState extends State<BottomNavBarManager> {
     HomePage(),
     ExplorationPage(),
     CyclingPage(),
-    GroupPage(),
+    GroupPage(
+      
+    ),
     MorePage(),
   ];
   void _onTabChanged(int index) {
@@ -58,6 +60,7 @@ class BottomNavBarManagerState extends State<BottomNavBarManager> {
   void initState() {
     _selectedIndex = widget.selectedIndex ?? 0;
     _isNavVisible = widget.isNavVisible ?? true;
+
     Future.microtask(() async {
       await sl<ChatHubService>().connect();
       await sl<GroupRouteHubService>().connect();

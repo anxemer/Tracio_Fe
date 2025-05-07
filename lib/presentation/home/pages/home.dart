@@ -26,24 +26,11 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // final ScrollController _scrollController = ScrollController();
-  // @override
-  // void initState() {
-  //   super.initState();
-  // }
-
-  // @override
-  // void dispose() {
-  //   _scrollController.dispose();
-  //   super.dispose();
-  // }
-
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => GenericDataCubit()),
-        BlocProvider(create: (context) => AuthCubit()..checkUser()),
         BlocProvider(
             create: (context) => GetBlogCubit()..getBlog(GetBlogReq())),
         BlocProvider(create: (context) => CreateBlogCubit()),

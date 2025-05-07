@@ -23,21 +23,21 @@ class ActiveChallengeItem extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         SizedBox(
-          width: 40,
-          height: 40,
+          width: 40.w,
+          height: 40.h,
           child: Stack(
             alignment: Alignment.center,
             children: [
               CircularProgressIndicator(
                 value: progression,
-                strokeWidth: 3,
+                strokeWidth: 14.sp,
                 strokeCap: StrokeCap.round,
                 backgroundColor: Colors.grey[300],
                 valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
               ),
               ClipOval(
                 child: CirclePicture(
-                    imageUrl: imageUrl, imageSize: AppSize.iconMedium),
+                    imageUrl: imageUrl, imageSize: AppSize.iconMedium.sp),
                 // Image.network(
                 //   imageUrl,
                 //   width: 30,

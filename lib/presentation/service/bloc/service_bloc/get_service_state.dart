@@ -34,7 +34,7 @@ final class GetServiceLoaded extends GetServiceState {
   const GetServiceLoaded(
       super.service, super.shop, super.metaData, super.params);
   @override
-  List<Object> get props => [service,shop];
+  List<Object> get props => [service, shop];
 }
 
 final class GetServiceFailure extends GetServiceState {
@@ -45,5 +45,3 @@ final class GetServiceFailure extends GetServiceState {
   @override
   List<Object> get props => [];
 }
-
-

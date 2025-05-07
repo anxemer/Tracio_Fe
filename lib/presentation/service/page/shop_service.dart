@@ -1,3 +1,4 @@
+import 'package:Tracio/common/widget/button/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -30,54 +31,39 @@ class _ShopServicePageState extends State<ShopServicePage> {
   // bool isFilter = false;
   @override
   void initState() {
-    // context
-    //     .read<GetServiceCubit>()
-    //     .getService(GetServiceReq(shopId: widget.shopId));
+    context
+        .read<GetServiceCubit>()
+        .getService(GetServiceReq(shopId: widget.shopId));
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     var isDark = context.isDarkMode;
-    return BlocProvider(
-        create: (context) =>
-            GetServiceCubit()..getService(GetServiceReq(shopId: widget.shopId)),
-        child: BlocBuilder<GetServiceCubit, GetServiceState>(
-          builder: (context, state) {
-            if (state is GetServiceLoaded) {
-              return Scaffold(
-                body: CustomScrollView(
-                  slivers: [
-                    SliverToBoxAdapter(
-                      child: buildHeader(isDark, context, state.service[0]),
-                    ),
-                    buildGrid(state.service),
-                  ],
+    return BlocBuilder<GetServiceCubit, GetServiceState>(
+      builder: (context, state) {
+        if (state is GetServiceLoaded) {
+          return Scaffold(
+            body: CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(
+                  child: buildHeader(isDark, context, state.service[0]),
                 ),
-              );
-            } else if (state is GetServiceLoading) {
-              return Scaffold(
-                body: CustomScrollView(
-                  slivers: [
-                    SliverToBoxAdapter(
-                      child: Center(child: CircularProgressIndicator()),
-                    ),
-                  ],
-                ),
-              );
-            } else {
-              return Scaffold(
-                body: CustomScrollView(
-                  slivers: [
-                    SliverToBoxAdapter(
-                      child: ErrorPage(),
-                    ),
-                  ],
-                ),
-              );
-            }
-          },
-        ));
+                buildGrid(state.service),
+              ],
+            ),
+          );
+        } else if (state is GetServiceLoading) {
+          return Scaffold(
+            body: Center(child: LoadingButton()),
+          );
+        } else {
+          return Scaffold(
+            body: Center(child: ErrorPage()),
+          );
+        }
+      },
+    );
   }
 
   Padding buildHeader(

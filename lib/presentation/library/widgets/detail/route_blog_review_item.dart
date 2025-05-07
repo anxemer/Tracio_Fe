@@ -73,6 +73,7 @@ class _RouteBlogReviewItemState extends State<RouteBlogReviewItem> {
                       )
                     : SizedBox.shrink(),
               ),
+              
               commentContent: (context, comment) => _buildComment(comment),
               replyContent: (context, reply) => !isReplyOpened
                   ? _buildReplyCount(widget.review.replyCount)

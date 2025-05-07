@@ -30,7 +30,6 @@ class GetReactionBlogResponse extends ReactionResponseEntity {
           map['cyclistName'] != null ? map['cyclistName'] as String : null,
       cyclistAvatar:
           map['cyclistAvatar'] != null ? map['cyclistAvatar'] as String : null,
-      
     );
   }
 

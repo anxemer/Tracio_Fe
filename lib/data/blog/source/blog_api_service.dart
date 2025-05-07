@@ -15,10 +15,11 @@ import 'package:Tracio/data/blog/models/response/category_model.dart';
 import 'package:Tracio/data/blog/models/response/get_comment_blog_rep.dart';
 import 'package:Tracio/data/blog/models/response/get_reaction_blog.dart';
 import 'package:Tracio/data/blog/models/response/get_reply_comment_rep.dart';
-import 'package:Tracio/data/blog/models/response/reply_comment_model.dart';
 import 'package:Tracio/service_locator.dart';
 
 import '../../../domain/blog/usecase/un_react_blog.dart';
+import '../models/response/comment_blog_model.dart';
+import '../models/response/reply_comment_model.dart';
 
 abstract class BlogApiService {
   Future<BlogResponse> getBlogs(GetBlogReq getBlog);
@@ -30,10 +31,10 @@ abstract class BlogApiService {
   Future<List<CategoryModel>> getCategoryBlog();
   Future<Either> unReactBlog(UnReactionParam params);
   Future<List<GetReactionBlogResponse>> getReactBlog(int reactId);
-  Future<Either> commentBlog(CommentBlogReq comment);
+  Future<CommentBlogModel> commentBlog(CommentBlogReq comment);
   Future<GetCommentBlogRep> getCommentBlog(GetCommentReq comment);
   Future<GetReplyCommentRepMode> getRepCommentBlog(GetReplyCommentReq comment);
-  Future<Either> repCommentBlog(ReplyCommentReq comment);
+  Future<ReplyCommentModel> repCommentBlog(ReplyCommentReq comment);
 }
 
 class BlogApiServiceImpl extends BlogApiService {
@@ -62,8 +63,7 @@ class BlogApiServiceImpl extends BlogApiService {
   @override
   Future<Either> reactBlog(ReactBlogReq react) async {
     try {
-      
-          await sl<DioClient>().post(ApiUrl.reactBlog, data: react.toJson());
+      await sl<DioClient>().post(ApiUrl.reactBlog, data: react.toJson());
       return right(true);
     } on DioException catch (e) {
       return left(e.response!.data['message']);
@@ -130,22 +130,22 @@ class BlogApiServiceImpl extends BlogApiService {
   }
 
   @override
-  Future<Either> commentBlog(CommentBlogReq comment) async {
+  Future<CommentBlogModel> commentBlog(CommentBlogReq comment) async {
     try {
       FormData form = await comment.toFormData();
 
       var response = await sl<DioClient>()
           .post(ApiUrl.commentBlog, isMultipart: true, data: form);
-      return Right(response.data['message']);
+      return CommentBlogModel.fromMap(response.data['result']);
     } on DioException catch (e) {
       if (e.response != null) {
-        return Left(ServerFailure(
+        throw (ServerFailure(
             e.response?.data['message'] ?? "Lỗi server: ${e.message}"));
       } else {
-        return Left(NetworkFailure("Không có kết nối mạng: ${e.message}"));
+        throw (NetworkFailure("Không có kết nối mạng: ${e.message}"));
       }
-    } catch (e) {
-      return Left(ExceptionFailure("Lỗi không xác định: $e"));
+    } on AuthenticationFailure catch (e) {
+      throw (AuthenticationFailure("Lỗi không xác định: $e"));
     }
   }
 
@@ -197,7 +197,7 @@ class BlogApiServiceImpl extends BlogApiService {
   }
 
   @override
-  Future<Either> repCommentBlog(ReplyCommentReq comment) async {
+  Future<ReplyCommentModel> repCommentBlog(ReplyCommentReq comment) async {
     try {
       FormData formData = await comment.toFormData();
 
@@ -206,14 +206,14 @@ class BlogApiServiceImpl extends BlogApiService {
               data: formData);
 
       if (response.statusCode == 400) {
-        print('Error');
+        throw AuthenticationFailure('');
       }
-      return Right(response.data);
+      return ReplyCommentModel.fromJson(response.data['result']);
     } catch (e) {
       if (e is DioException) {
-        return Left(ServerFailure(e.message ?? "Serve Error"));
+        throw (ServerFailure(e.message ?? "Serve Error"));
       }
-      return Left(ServerFailure("Have some problem"));
+      throw (ServerFailure("Have some problem"));
     }
   }
 

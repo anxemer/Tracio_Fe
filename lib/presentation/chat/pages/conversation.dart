@@ -10,8 +10,6 @@ import 'package:Tracio/presentation/chat/bloc/bloc/conversation_bloc.dart';
 import 'package:Tracio/presentation/chat/widgets/conversation_search_box.dart';
 import 'package:Tracio/main.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:Tracio/presentation/chat/widgets/shop_conversation_tab.dart';
-import 'package:Tracio/presentation/chat/widgets/user_conversation_tab.dart';
 import 'package:Tracio/service_locator.dart';
 
 class ConversationScreen extends StatefulWidget {

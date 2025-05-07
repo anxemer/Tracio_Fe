@@ -66,7 +66,8 @@ class _BlogPageState extends State<BlogPage> with TickerProviderStateMixin {
             ),
             SliverAppBar(
               toolbarHeight: 120.h,
-              flexibleSpace: WeeklySnapshotCard(
+              flexibleSpace: 
+              WeeklySnapshotCard(
                 totalDistance: 100,
                 totalDuration: 500,
                 totalElevationGain: 10,
@@ -101,8 +102,7 @@ class _BlogPageState extends State<BlogPage> with TickerProviderStateMixin {
             children: [
               // Tab 1: Blogs
               BlocProvider(
-                create: (_) =>
-                    GetBlogCubit()..getBlog(GetBlogReq()),
+                create: (_) => GetBlogCubit()..getBlog(GetBlogReq()),
                 child: const BlogListView(),
               ),
               // Tab 2: Routes

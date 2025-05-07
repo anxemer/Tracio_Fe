@@ -2,7 +2,6 @@
 import 'package:Tracio/core/erorr/failure.dart';
 import 'package:Tracio/domain/auth/entities/user.dart';
 
-
 abstract class AuthState {}
 
 class AuthInitial extends AuthState {}
@@ -16,10 +15,12 @@ class AuthLoaded extends AuthState {
 }
 
 class AuthLoggedOut extends AuthState {}
+
 class AuthGoogleLoginUrlReceived extends AuthState {
   final String loginUrl;
   AuthGoogleLoginUrlReceived(this.loginUrl);
 }
+
 class AuthChangeRole extends AuthState {
   final UserEntity? user;
   AuthChangeRole({

@@ -95,7 +95,7 @@ class _EditBlogPostScreenState extends State<EditBlogPostScreen> {
             widget.imageUrl.isNotEmpty
                 ? PictureCard(listImageUrl: mediaUrls)
                 : Container(),
-            Expanded( 
+            Expanded(
               child: TextField(
                 controller: _contentController,
                 maxLines: null,

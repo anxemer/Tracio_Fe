@@ -82,13 +82,14 @@ class AuthRepositotyImpl extends AuthRepository {
     } on Exception catch (e) {
       return Left(CacheFailure(e.toString()));
     }
-    // final SharedPreferences sharedPreferences =
-    //     await SharedPreferences.getInstance();
   }
 
   @override
   Future<Either<Failure, NoParams>> logout() async {
     try {
+      final googleSignIn = GoogleSignIn(scopes: ['email', 'profile']);
+      googleSignIn.currentUser?.clearAuthCache();
+      googleSignIn.signOut();
       await sl<AuthLocalSource>().clearCache();
       return Right(NoParams());
     } on CacheFailure {

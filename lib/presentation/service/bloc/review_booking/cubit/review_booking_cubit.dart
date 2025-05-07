@@ -23,7 +23,7 @@ class ReviewBookingCubit extends Cubit<ReviewBookingState> {
     }
   }
 
-   void replyReview(params) async {
+  void replyReview(params) async {
     try {
       emit(ReviewBookingLoading());
       var result = await sl<ReplyReviewUseCase>().call(params);

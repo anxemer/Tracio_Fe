@@ -19,6 +19,7 @@ class GetDirectionFailure extends GetDirectionState {
 
   GetDirectionFailure({required this.errorMessage});
 }
+
 class GetElevationLoading extends GetDirectionState {}
 
 class GetElevationLoaded extends GetDirectionState {

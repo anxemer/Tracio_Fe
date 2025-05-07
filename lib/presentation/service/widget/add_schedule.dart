@@ -20,6 +20,7 @@ class AddSchedule extends StatefulWidget {
   });
   // final List<BookingCardViewModel> bookingModel;
   final int? serviceId;
+ 
   final Function(List<ScheduleModel>)? onSchedulesChanged;
 
   @override
@@ -48,6 +49,7 @@ class _AddScheduleState extends State<AddSchedule> {
         // mainAxisSize: MainAxisSize.min, // Đảm bảo chỉ chiếm không gian cần thiết
         children: [
           ShowScheduleBottom(
+         
             serviceId: widget.serviceId,
           ),
         ],

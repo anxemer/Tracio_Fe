@@ -1,3 +1,5 @@
+import 'package:Tracio/common/helper/navigator/app_navigator.dart';
+import 'package:Tracio/presentation/service/page/shop_service.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -51,14 +53,14 @@ class NearLocation extends StatelessWidget {
                         color: isDark ? Colors.white : Colors.black,
                       ),
                     ),
-                    Text(
-                      'See All',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: AppSize.textMedium.sp,
-                        color: isDark ? Colors.white : Colors.black,
-                      ),
-                    ),
+                    // Text(
+                    //   'See All',
+                    //   style: TextStyle(
+                    //     fontWeight: FontWeight.bold,
+                    //     fontSize: AppSize.textMedium.sp,
+                    //     color: isDark ? Colors.white : Colors.black,
+                    //   ),
+                    // ),
                   ],
                 ),
               ),
@@ -75,81 +77,85 @@ class NearLocation extends StatelessWidget {
                   physics: const BouncingScrollPhysics(),
                   padding: const EdgeInsets.only(right: 16),
                   itemBuilder: (context, index) {
-                    return Container(
-                      width: AppSize.cardWidth,
-                      margin: EdgeInsets.symmetric(horizontal: 8),
-                      decoration: BoxDecoration(
-                          color: Theme.of(context).cardColor,
-                          borderRadius: BorderRadius.circular(20.r),
-                          boxShadow: [
-                            BoxShadow(
-                                color: isDark
-                                    ? Colors.black.withValues(alpha: .3)
-                                    : Colors.grey.withValues(alpha: .3),
-                                blurRadius: 5,
-                                offset: Offset(0, 2))
-                          ]),
-                      child: Column(
-                        children: [
-                          Expanded(
-                            child: ClipRRect(
-                                borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(20.r),
-                                  topRight: Radius.circular(20.r),
-                                ),
-                                child: PictureCustom(
-                                  width: AppSize.imageExtraLarge * 1.4.w,
-                                  imageUrl: state.shop[index].profilePicture!,
-                                  height: AppSize.imageMedium.h,
-                                )),
-                          ),
-                          SizedBox(
-                            height: AppSize.apVerticalPadding * 0.6.h,
-                          ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.storefront_outlined,
-                                  size: AppSize.iconMedium,
+                    return InkWell(
+                      onTap: () => AppNavigator.push(context,
+                          ShopServicePage(shopId: state.shop[index].shopId!)),
+                      child: Container(
+                        width: AppSize.cardWidth,
+                        margin: EdgeInsets.symmetric(horizontal: 8),
+                        decoration: BoxDecoration(
+                            color: Theme.of(context).cardColor,
+                            borderRadius: BorderRadius.circular(20.r),
+                            boxShadow: [
+                              BoxShadow(
                                   color: isDark
-                                      ? AppColors.secondBackground
-                                      : AppColors.background,
-                                ),
-                                SizedBox(width: 10),
-                                Text(
-                                  state.shop[index].shopName!,
-                                  style: TextStyle(
-                                      fontSize: AppSize.textMedium,
-                                      color: isDark
-                                          ? Colors.grey.shade200
-                                          : Colors.black87),
-                                ),
-                                SizedBox(
-                                  width: 20.w,
-                                ),
-                                Icon(
-                                  Icons.location_on_outlined,
-                                  size: AppSize.iconMedium,
-                                  color: isDark
-                                      ? AppColors.secondBackground
-                                      : AppColors.background,
-                                ),
-                                SizedBox(width: 4),
-                                Text(
-                                  '2 KM',
-                                  style: TextStyle(
-                                      fontSize: AppSize.textMedium,
-                                      color: isDark
-                                          ? Colors.grey.shade200
-                                          : Colors.black87),
-                                ),
-                              ],
+                                      ? Colors.black.withValues(alpha: .3)
+                                      : Colors.grey.withValues(alpha: .3),
+                                  blurRadius: 5,
+                                  offset: Offset(0, 2))
+                            ]),
+                        child: Column(
+                          children: [
+                            Expanded(
+                              child: ClipRRect(
+                                  borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(20.r),
+                                    topRight: Radius.circular(20.r),
+                                  ),
+                                  child: PictureCustom(
+                                    width: AppSize.imageExtraLarge * 1.4.w,
+                                    imageUrl: state.shop[index].profilePicture!,
+                                    height: AppSize.imageMedium.h,
+                                  )),
                             ),
-                          ),
-                        ],
+                            SizedBox(
+                              height: AppSize.apVerticalPadding * 0.6.h,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 4),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.storefront_outlined,
+                                    size: AppSize.iconMedium,
+                                    color: isDark
+                                        ? AppColors.secondBackground
+                                        : AppColors.background,
+                                  ),
+                                  SizedBox(width: 10),
+                                  Text(
+                                    state.shop[index].shopName!,
+                                    style: TextStyle(
+                                        fontSize: AppSize.textMedium,
+                                        color: isDark
+                                            ? Colors.grey.shade200
+                                            : Colors.black87),
+                                  ),
+                                  SizedBox(
+                                    width: 20.w,
+                                  ),
+                                  Icon(
+                                    Icons.location_on_outlined,
+                                    size: AppSize.iconMedium,
+                                    color: isDark
+                                        ? AppColors.secondBackground
+                                        : AppColors.background,
+                                  ),
+                                  SizedBox(width: 4),
+                                  Text(
+                                    state.shop[index].formattedDistance,
+                                    style: TextStyle(
+                                        fontSize: AppSize.textMedium,
+                                        color: isDark
+                                            ? Colors.grey.shade200
+                                            : Colors.black87),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     );
                   },

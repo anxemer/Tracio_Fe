@@ -169,8 +169,8 @@ class _BookingStatusTabState extends State<BookingStatusTab> {
                   ontap: () => AppNavigator.push(
                       context,
                       BookingDetailScreen(
-                          bookingId: bookings[index].bookingDetailId!,
-                          animationController: widget.animationController)),
+                        bookingId: bookings[index].bookingDetailId!,
+                      )),
                   service: BookingCardViewModel(
                     imageUrl: bookings[index].serviceMediaFile,
                     shopName: bookings[index].shopName,

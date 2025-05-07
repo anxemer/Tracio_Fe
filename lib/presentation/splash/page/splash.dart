@@ -3,12 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:Tracio/common/helper/navigator/app_navigator.dart';
 import 'package:Tracio/core/configs/theme/assets/app_images.dart';
 import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/presentation/auth/bloc/authCubit/auth_cubit.dart';
 import 'package:Tracio/presentation/auth/pages/login.dart';
 import 'package:Tracio/presentation/shop_owner/page/dash_board.dart';
-import 'package:Tracio/presentation/splash/bloc/splash_cubit.dart';
 import 'package:Tracio/common/widget/navbar/bottom_nav_bar_manager.dart';
 
-import '../bloc/splash_state.dart';
+import '../../auth/bloc/authCubit/auth_state.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -20,22 +20,22 @@ class SplashPage extends StatefulWidget {
 class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
-    context.read<SplashCubit>().checkUser();
+    context.read<AuthCubit>().refreshToken();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocListener<SplashCubit, SplashState>(
+      body: BlocListener<AuthCubit, AuthState>(
         listener: (context, state) {
-          if (state is UnAuthenticated) {
+          if (state is AuthLoggedOut || state is AuthFailure) {
             AppNavigator.pushReplacement(context, LoginPage());
           }
-          if (state is Authenticated) {
-            if (state.role == 'user') {
+          if (state is AuthLoaded) {
+            if (state.user?.role == 'user') {
               AppNavigator.pushReplacement(context, BottomNavBarManager());
-            } else if (state.role == 'shop_owner') {
+            } else if (state.user?.role == 'shop_owner') {
               AppNavigator.pushReplacement(context, DashboardScreen());
             }
           }

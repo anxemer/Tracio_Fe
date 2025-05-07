@@ -14,7 +14,7 @@ import 'list_react.dart';
 
 class NewFeeds extends StatelessWidget {
   const NewFeeds({super.key, required this.blogs, this.isPersonal = false});
-  // final GetBlogReq getBlogReq;
+
   final BlogEntity blogs;
   final bool isPersonal;
   @override
@@ -25,7 +25,8 @@ class NewFeeds extends StatelessWidget {
       children: [
         PostBlog(
           isPersonal: isPersonal,
-          blogEntity: blogs, onLikeUpdated: () => blogs.likesCount++,
+          blogEntity: blogs,
+          //  onLikeUpdated: () => blogs.likesCount++,
           // morewdget: _comment(),
         ),
         const SizedBox(height: 10),

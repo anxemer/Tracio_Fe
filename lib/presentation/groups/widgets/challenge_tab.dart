@@ -22,27 +22,31 @@ class ChallengeTab extends StatefulWidget {
   State<ChallengeTab> createState() => _ChallengeTabState();
 }
 
-class _ChallengeTabState extends State<ChallengeTab>
-    with AutomaticKeepAliveClientMixin {
+class _ChallengeTabState extends State<ChallengeTab> {
   @override
-  bool get wantKeepAlive => true;
+  void initState() {
+    if (context.read<ChallengeCubit>().state is! ChallengeLoaded) {
+      context.read<ChallengeCubit>().getChallengeOverview();
+    }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     var isDark = context.isDarkMode;
-    super.build(context);
-    return BlocBuilder<ChallengeCubit, ChallengeState>(
-      builder: (context, state) {
-        if (state is ChallengeLoaded) {
-          List<ChallengeEntity> activeChallenge =
-              state.challengeOverview.activeChallenges;
-          List<ChallengeEntity> recommendChallenge =
-              state.challengeOverview.suggestedChallenges;
-          return RefreshIndicator(
-            onRefresh: () async {
-              context.read<ChallengeCubit>().getChallengeOverview();
-            },
-            child: SingleChildScrollView(
+
+    return RefreshIndicator(
+      onRefresh: () async {
+        context.read<ChallengeCubit>().getChallengeOverview();
+      },
+      child: BlocBuilder<ChallengeCubit, ChallengeState>(
+        builder: (context, state) {
+          if (state is ChallengeLoaded) {
+            List<ChallengeEntity> activeChallenge =
+                state.challengeOverview.activeChallenges;
+            List<ChallengeEntity> recommendChallenge =
+                state.challengeOverview.suggestedChallenges;
+            return SingleChildScrollView(
               scrollDirection: Axis.vertical,
               physics: AlwaysScrollableScrollPhysics(),
               child: Column(
@@ -60,14 +64,14 @@ class _ChallengeTabState extends State<ChallengeTab>
                         border: Border(
                             bottom: BorderSide(
                                 width: 1, color: Colors.grey.shade300))),
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: [
-                        _buildFilterButton("Distance"),
-                        _buildFilterButton("Moving Time"),
-                        _buildFilterButton("Duration"),
-                      ],
-                    ),
+                    // child: ListView(
+                    //   scrollDirection: Axis.horizontal,
+                    //   children: [
+                    //     _buildFilterButton("Distance"),
+                    //     _buildFilterButton("Moving Time"),
+                    //     _buildFilterButton("Duration"),
+                    //   ],
+                    // ),
                   ),
                   SizedBox(
                     height: 10.h,
@@ -117,11 +121,15 @@ class _ChallengeTabState extends State<ChallengeTab>
                                     itemCount: activeChallenge.length,
                                     itemBuilder: (context, index) {
                                       return InkWell(
-                                        onTap: () => AppNavigator.push(
-                                            context,
-                                            ChallengeProgressScreen(
-                                                challenge:
-                                                    activeChallenge[index])),
+                                        onTap: () {
+                                          AppNavigator.push(
+                                              context,
+                                              ChallengeProgressScreen(
+                                                challengeId:
+                                                    activeChallenge[index]
+                                                        .challengeId!,
+                                              ));
+                                        },
                                         child: _buildActiveChallengeItem(
                                             activeChallenge[index].title!,
                                             activeChallenge[index]
@@ -175,72 +183,68 @@ class _ChallengeTabState extends State<ChallengeTab>
                     height: AppSize.apVerticalPadding,
                   ),
 
-                  const SizedBox(
-                    height: AppSize.apVerticalPadding,
-                  ),
-                  // Padding(
-                  //   padding: const EdgeInsets.symmetric(
-                  //       horizontal: AppSize.apHorizontalPadding),
-                  //   child: Column(
-                  //     children: [
-                  //       Row(
-                  //         mainAxisAlignment: MainAxisAlignment.start,
-                  //         spacing: AppSize.apHorizontalPadding / 2,
-                  //         children: [
-                  //           Icon(
-                  //             Icons.local_attraction_rounded,
-                  //             size: AppSize.iconMedium,
-                  //           ),
-                  //           Text("Joined Challenges",
-                  //               style: TextStyle(
-                  //                   fontSize: AppSize.textSmall.sp,
-                  //                   fontWeight: FontWeight.w600)),
-                  //         ],
-                  //       ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: AppSize.apHorizontalPadding),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          spacing: AppSize.apHorizontalPadding / 2,
+                          children: [
+                            Icon(
+                              Icons.done_outline_rounded,
+                              size: AppSize.iconMedium,
+                            ),
+                            Text("Previous Challenges",
+                                style: TextStyle(
+                                    fontSize: AppSize.textSmall.sp,
+                                    fontWeight: FontWeight.w600)),
+                          ],
+                        ),
 
-                  //       // List of recommended groups
-                  //       SizedBox(height: 16),
-                  //     ],
-                  //   ),
-                  // ),
-                  // Wrap(
-                  //   spacing: AppSize.apHorizontalPadding / 4,
-                  //   runSpacing: AppSize.apHorizontalPadding / 4,
-                  //   children: List.generate(
-                  //     3,
-                  //     (index) {
-                  //       return RecommendChallengeItem(
-                  //         challengeImageUrl:
-                  //             'https://www.eurobasket.com/logos/torr.png',
-                  //         challengeName: 'Group tên dài quá dài',
-                  //         goalValue: 'Hà nội, Hồ Chí Minh, Bình Định, Bình Dương',
-                  //         memberCount: 12126,
-                  //       );
-                  //     },
-                  //   ),
-                  // ),
+                        // List of recommended groups
+                        SizedBox(height: 16),
+                      ],
+                    ),
+                  ),
+                  state.challengeOverview.previousChallenges.isNotEmpty
+                      ? Wrap(
+                          spacing: AppSize.apHorizontalPadding / 4,
+                          runSpacing: AppSize.apHorizontalPadding / 4,
+                          children: List.generate(
+                            state.challengeOverview.previousChallenges.length,
+                            (index) {
+                              return RecommendChallengeItem(
+                                challenge: state.challengeOverview
+                                    .previousChallenges[index],
+                              );
+                            },
+                          ),
+                        )
+                      : SizedBox.shrink(),
 
                   const SizedBox(
                     height: AppSize.apVerticalPadding,
                   ),
                 ],
               ),
-            ),
-          );
-        }
-        if (state is ChallengeLoading) {
-          return Center(
-            child: LoadingAnimationWidget.fourRotatingDots(
-              color: AppColors.secondBackground,
-              size: AppSize.iconExtraLarge,
-            ),
-          );
-        }
-        if (state is ChallengeFailure) {
+            );
+          }
+          if (state is ChallengeLoading) {
+            return Center(
+              child: LoadingAnimationWidget.fourRotatingDots(
+                color: AppColors.secondBackground,
+                size: AppSize.iconExtraLarge,
+              ),
+            );
+          }
+          if (state is ChallengeFailure) {
+            return Container();
+          }
           return Container();
-        }
-        return Container();
-      },
+        },
+      ),
     );
   }
 

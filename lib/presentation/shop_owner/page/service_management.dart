@@ -69,7 +69,7 @@ class _ServiceManagementPageState extends State<ServiceManagementPage> {
                     width: 100.w,
                     ontap: () {
                       AppNavigator.push(context,
-                        CreateEditServiceScreen(shopId: widget.shopId));
+                          CreateEditServiceScreen(shopId: widget.shopId));
                     },
                     fillColor: AppColors.primary,
                     borderColor: Colors.transparent,

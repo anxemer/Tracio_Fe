@@ -12,8 +12,4 @@ class BookingResponseEntity {
     required this.bookingOverlap,
     required this.pagination,
   });
-
-
-
-
 }

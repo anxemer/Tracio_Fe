@@ -12,7 +12,7 @@ class CreateBlogCubit extends Cubit<CreateBlogState> {
     try {
       emit(CreateBlogLoading());
 
-      final result = await sl<CreateBlogUseCase>().call( param);
+      final result = await sl<CreateBlogUseCase>().call(param);
       result.fold((erorr) {
         emit(CreateBlogFail(error: erorr.message));
       }, (data) {

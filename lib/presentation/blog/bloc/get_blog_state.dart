@@ -55,6 +55,19 @@ class GetBlogLoaded extends GetBlogState {
   // TODO: implement props
   List<Object?> get props => [blogs];
 }
+class GetBlogBookmarkLoaded extends GetBlogState {
+  // final List<BlogEntity> listBlog;
+
+  GetBlogBookmarkLoaded(
+      {required super.blogs,
+      required super.metaData,
+      required super.params,
+      required super.isLoading});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [blogs];
+}
 
 class GetBlogFailure extends GetBlogState {
   final String errorMessage;

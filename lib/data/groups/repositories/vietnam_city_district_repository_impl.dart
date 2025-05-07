@@ -21,7 +21,7 @@ class VietnamCityDistrictRepositoryImpl
       int cityCode) async {
     var returnedData =
         await sl<VietnamCityDistrictService>().getDistrictsByCity(cityCode);
-    return returnedData.fold((error) {  
+    return returnedData.fold((error) {
       return left(error);
     }, (data) {
       return right(data);

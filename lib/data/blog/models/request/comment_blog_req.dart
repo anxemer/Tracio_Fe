@@ -15,14 +15,14 @@ class CommentBlogReq {
   final List<File>? mediaFiles;
 
   Future<FormData> toFormData() async {
-    List<MultipartFile> files = [];
     final Map<String, dynamic> data = {
       'BlogId': blogId.toString(),
       'Content': content,
-      'files': files,
     };
+
     if (mediaFiles != null && mediaFiles!.isNotEmpty) {
-      // List<MultipartFile> files = [];
+      List<MultipartFile> files = []; 
+
       for (var file in mediaFiles!) {
         if (await file.exists()) {
           final image =
@@ -38,7 +38,7 @@ class CommentBlogReq {
       }
 
       if (files.isNotEmpty) {
-        data['ProfilePicture'] = files;
+        data['files'] = files;
       }
     }
 

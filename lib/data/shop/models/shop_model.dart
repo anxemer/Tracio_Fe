@@ -6,6 +6,7 @@ class ShopModel extends ShopEntity {
       required super.shopName,
       required super.profilePicture,
       required super.city,
+      required super.distance,
       required super.district,
       required super.address});
 
@@ -16,7 +17,7 @@ class ShopModel extends ShopEntity {
       profilePicture: json["profilePicture"],
       city: json["city"],
       district: json["district"],
-      address: json["address"],
+      address: json["address"], distance: json["distance"],
     );
   }
   Map<String, dynamic> toJson() => {

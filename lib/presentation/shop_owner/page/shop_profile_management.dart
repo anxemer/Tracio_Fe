@@ -232,8 +232,7 @@ class _ShopProfileManagementScreenState
       final image = _pickedImageFile;
       final openTime = _openTimeController.text;
       final closeTime = _closeTimeController.text;
-      
-     
+
       if (widget.isEditing) {
         await context.read<ShopProfileManageCubit>().editShop(
             CreateShopProfileReq(
@@ -263,7 +262,6 @@ class _ShopProfileManagementScreenState
                 openTime: openTime,
                 closedTime: closeTime));
       }
-     
     } else {
       print("Form invalid");
     }
@@ -301,7 +299,7 @@ class _ShopProfileManagementScreenState
           body: SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
             child: Form(
-              key: _formKey, 
+              key: _formKey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

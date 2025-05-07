@@ -15,6 +15,7 @@ class ChallengeModel extends ChallengeEntity {
       required super.creatorAvatarUrl,
       required super.isSystem,
       required super.isPublic,
+      required super.isCreator,
       required super.status,
       required super.progress,
       required super.totalParticipants,
@@ -54,6 +55,7 @@ class ChallengeModel extends ChallengeEntity {
               .toList() ??
           [],
       totalParticipants: json["totalParticipants"] as int? ?? 0,
+      isCreator: json["isCreator"] as bool? ?? false,
     );
   }
 }

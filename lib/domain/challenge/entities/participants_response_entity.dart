@@ -10,7 +10,4 @@ class ParticipantsResponseEntity {
     required this.currentUser,
     required this.listParticipants,
   });
-
-  
-
 }

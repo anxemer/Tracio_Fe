@@ -7,7 +7,7 @@ import 'package:Tracio/presentation/service/bloc/bookingservice/booking_service_
 import '../../../../common/helper/schedule_model.dart';
 import '../../../../service_locator.dart';
 
-class  BookingServiceCubit extends Cubit<BookingServiceState> {
+class BookingServiceCubit extends Cubit<BookingServiceState> {
   BookingServiceCubit() : super(BookingServiceInitital());
   List<CartItemEntity> selectedServices = [];
   List<int> reschedule = [];

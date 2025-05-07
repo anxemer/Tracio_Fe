@@ -67,43 +67,12 @@ class _MyBookingPageState extends State<MyBookingPage>
       ],
       child: Scaffold(
           appBar: BasicAppbar(
-            backgroundColor: Colors.transparent,
             title: Text('My Booking',
                 style: TextStyle(
+                  color: Colors.white,
                   fontWeight: FontWeight.bold,
                   fontSize: AppSize.textHeading,
                 )),
-            // action: PlanServiceIcon(isActive: true,)
-            //  Padding(
-            //   padding: EdgeInsets.symmetric(
-            //     horizontal: AppSize.apHorizontalPadding.w,
-            //   ),
-            //   child:
-            //    Container(
-            //       height: 40.h,
-            //       width: 40.w,
-            //       decoration:
-            //        BoxDecoration(
-            //           boxShadow: [
-            //             BoxShadow(
-            //                 blurRadius: 5,
-            //                 color: context.isDarkMode
-            //                     ? Colors.transparent
-            //                     : Colors.grey.shade400,
-            //                 offset: Offset(0, 2))
-            //           ],
-            //           color: context.isDarkMode
-            //               ? AppColors.darkGrey
-            //               : Colors.grey.shade200,
-            //           borderRadius:
-            //               BorderRadius.circular(AppSize.borderRadiusLarge),
-            //           border: Border.all(color: Colors.grey.shade200)),
-            //       child: Icon(
-            //         Icons.edit_calendar_rounded,
-            //         color: Colors.black87,
-            //         size: AppSize.iconMedium,
-            //       )),
-            // ),
           ),
           body: DefaultTabController(
               length: 7,

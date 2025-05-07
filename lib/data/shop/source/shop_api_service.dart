@@ -41,7 +41,7 @@ abstract class ShopApiService {
   Future<DetailServiceResponseModel> getServiceDetail(int serviceId);
   Future<Either> deleteCartItem(int itemId);
   Future<Either> processBooking(int bookingDetailId);
-  Future<Either> cancelBooking(int bookingDetailId);
+  Future<Either> cancelBooking(ConfirmBookingModel cancelBooking);
   Future<Either> completeBooking(int bookingDetailId);
   Future<Either> rescheduleBooking(RescheduleBookingModel reschedule);
   Future<Either> confirmBooking(ConfirmBookingModel waiting);
@@ -167,10 +167,11 @@ class ShopApiServiceImpl extends ShopApiService {
   }
 
   @override
-  Future<Either> cancelBooking(int bookingDetailId) async {
+  Future<Either> cancelBooking(ConfirmBookingModel cancelBooking) async {
     try {
-      await sl<DioClient>()
-          .put('${ApiUrl.portShop}/$bookingDetailId/cancelled-booking');
+      await sl<DioClient>().put(
+          '${ApiUrl.bookingService}/${cancelBooking.bookingId}/cancelled-booking',
+          data: cancelBooking.toJson());
 
       return Right(true);
     } on DioException catch (e) {
@@ -182,7 +183,7 @@ class ShopApiServiceImpl extends ShopApiService {
   Future<Either> completeBooking(int bookingDetailId) async {
     try {
       await sl<DioClient>()
-          .put('${ApiUrl.portShop}/$bookingDetailId/completed-booking');
+          .put('${ApiUrl.bookingService}/$bookingDetailId/completed-booking');
 
       return Right(true);
     } on DioException catch (e) {

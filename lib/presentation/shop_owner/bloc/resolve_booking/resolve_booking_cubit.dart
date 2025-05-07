@@ -57,8 +57,8 @@ class ResolveBookingShopCubit extends Cubit<ResolveBookingShopState> {
     });
   }
 
-  void cancelBooking(int bookingId) async {
-    var result = await sl<CancelBookingUseCase>().call(bookingId);
+  void cancelBooking(ConfirmBookingModel cancelBooking) async {
+    var result = await sl<CancelBookingUseCase>().call(cancelBooking);
     result.fold((error) {
       emit(ResolveBookingFailure(messgae: error.message));
     }, (data) {

@@ -6,7 +6,8 @@ import 'package:Tracio/domain/auth/entities/authentication_response_entity.dart'
 import 'package:Tracio/domain/auth/repositories/auth_repository.dart';
 import 'package:Tracio/service_locator.dart';
 
-class ChangeRoleUseCase extends Usecase<AuthenticationResponseEntity, ChangeRoleReq> {
+class ChangeRoleUseCase
+    extends Usecase<AuthenticationResponseEntity, ChangeRoleReq> {
   @override
   Future<Either<Failure, AuthenticationResponseEntity>> call(params) async {
     return await sl<AuthRepository>().changeRole(params);

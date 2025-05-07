@@ -327,12 +327,12 @@ class _AddTitleBlogPageState extends State<AddTitleBlogPage> {
   Widget _textAudience(int index) {
     if (index == 0) {
       return Text(
-        'Public',
+        'Private',
         style: TextStyle(color: Colors.grey.shade500),
       );
     } else {
       return Text(
-        'Private',
+        'Public',
         style: TextStyle(color: Colors.grey.shade500),
       );
     }

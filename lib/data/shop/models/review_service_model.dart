@@ -84,7 +84,7 @@ class ReviewServiceModel extends ReviewServiceEntity {
         "reply": reply,
       };
 
-    factory ReviewServiceModel.empty() {
+  factory ReviewServiceModel.empty() {
     return ReviewServiceModel(
       reviewId: 0,
       cyclistId: 0,

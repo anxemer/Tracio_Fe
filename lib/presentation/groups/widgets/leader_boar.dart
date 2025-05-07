@@ -123,7 +123,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
               );
             }
             if (state is FailureLoadData) {
-              return SizedBox(  
+              return SizedBox(
                 child: Center(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,

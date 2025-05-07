@@ -223,8 +223,8 @@ class ShopOwnerProfileScreen extends StatelessWidget {
               child: _buildActionTile(
                 icon: Icons.logout,
                 title: 'Logout',
-                iconColor: colorScheme.error, 
-                textColor: colorScheme.error, 
+                iconColor: colorScheme.error,
+                textColor: colorScheme.error,
                 context: context,
                 onTap: () {
                   context.read<AuthCubit>().logout();

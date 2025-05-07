@@ -15,7 +15,7 @@ class TrackingHubService extends ITrackingHubService {
       .withUrl(ApiUrl.locationHubUrl,
           options:
               HttpConnectionOptions(transport: HttpTransportType.WebSockets))
-              .withHubProtocol(JsonHubProtocol())
+      .withHubProtocol(JsonHubProtocol())
       .withAutomaticReconnect(
           retryDelays: [2000, 5000, 10000, 20000, 30000]).build();
 

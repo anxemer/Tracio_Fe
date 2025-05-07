@@ -1,3 +1,9 @@
+import 'dart:async';
+import 'dart:convert';
+
+import 'package:Tracio/core/services/signalR/implement/notification_hub_service.dart';
+import 'package:Tracio/presentation/notifications/bloc/notification_bloc.dart';
+import 'package:Tracio/presentation/notifications/page/notifications.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -31,7 +37,10 @@ import 'package:Tracio/presentation/splash/bloc/splash_cubit.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' as mp;
 import 'package:Tracio/presentation/theme/bloc/theme_cubit.dart';
-import 'data/auth/sources/auth_local_source/auth_local_source.dart';
+import 'common/helper/notification/notification_model.dart';
+import 'core/services/notifications/firebase_message_service.dart';
+import 'core/services/notifications/i_notification_service.dart'
+    show INotificationService, NotificationType, getNotificationType;
 import 'presentation/groups/cubit/challenge_cubit.dart';
 import 'presentation/service/bloc/bookingservice/booking_service_cubit.dart';
 import 'presentation/service/bloc/cart_item_bloc/cart_item_cubit.dart';
@@ -42,6 +51,7 @@ import 'presentation/shop_owner/bloc/service_management/service_management_cubit
 import 'service_locator.dart' as di;
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
+import 'service_locator.dart';
 
 final RouteObserver<ModalRoute<void>> routeObserver =
     RouteObserver<ModalRoute<void>>();
@@ -71,8 +81,8 @@ Future<void> main() async {
 
   await _requestPermissions();
 
-  await NotificationService.init();
-
+  await INotificationService.init();
+  await FirebaseMessagingService.init();
   HydratedBloc.storage = await HydratedStorage.build(
     storageDirectory: kIsWeb
         ? HydratedStorage.webStorageDirectory
@@ -102,13 +112,97 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  // This widget is the root of your application.
+  final _notiService = sl<NotificationHubService>();
+  late final StreamSubscription<NotificationModel> _messageSubscription;
 
+  static final GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey<NavigatorState>();
   @override
   void initState() {
     super.initState();
+
     _initBackgroundGeolocationState();
+    Future.microtask(() async {
+      await _notiService.connect();
+      _messageSubscription = _notiService.onMessageUpdate.listen((message) {
+        final notificationType = getNotificationType(message.entityType);
+        final payload = jsonEncode({
+          'entityId': message.entityId,
+          'entityType': message.entityType,
+          'notificationId': message.notificationId,
+        });
+
+        INotificationService.showNotification(
+          id: message.entityType * 1000 + message.entityId, // ID duy nhất
+          type: notificationType,
+          title: _getNotificationTitle(message, notificationType),
+          body: message.message,
+          payload: payload,
+        );
+      });
+      setState(() {});
+    });
   }
+
+  String _getNotificationTitle(
+      NotificationModel message, NotificationType type) {
+    switch (type) {
+      case NotificationType.commentBlog:
+        return 'New Blog Comment';
+      case NotificationType.blogReplyReReply:
+        return 'Reply to Your Comment';
+      case NotificationType.blogReplyComment:
+        return 'Reply to Blog Comment';
+      case NotificationType.reactionComment:
+        return 'Comment Reaction';
+      case NotificationType.reactionBlog:
+        return 'Blog Reaction';
+      case NotificationType.blogReactionReply:
+        return 'Reply Reaction';
+      case NotificationType.reviewService:
+        return 'Service Review';
+      case NotificationType.replyReview:
+        return 'Reply to Review';
+      case NotificationType.bookingService:
+        return 'Booking Update';
+      case NotificationType.reviewRoute:
+        return 'Route Review';
+      case NotificationType.routeReactionRoute:
+        return 'Route Reaction';
+      case NotificationType.routeReplyReview:
+        return 'Reply to Route Review';
+      case NotificationType.routeReplyReReply:
+        return 'Reply to Route Comment';
+      case NotificationType.reactionReview:
+        return 'Review Reaction';
+      case NotificationType.routeReactionReply:
+        return 'Route Reply Reaction';
+      case NotificationType.message:
+        return 'New Message';
+      case NotificationType.subscription:
+        return 'System Update';
+      case NotificationType.route:
+        return 'Route Update';
+      case NotificationType.user:
+        return 'User Action';
+      case NotificationType.challenge:
+        return 'New Challenge';
+      case NotificationType.groupInvitation:
+        return 'Group Invitation';
+      case NotificationType.group:
+        return 'Group Update';
+      default:
+        return 'New Notification';
+    }
+  }
+
+  @override
+  void dispose() {
+    _messageSubscription.cancel();
+    super.dispose();
+  }
+
+  // This widget is the root of your application
 
   void _initBackgroundGeolocationState() async {
     bg.BackgroundGeolocation.stop();
@@ -122,13 +216,16 @@ class _MyAppState extends State<MyApp> {
           BlocProvider(
             create: (context) => UserProfileCubit(),
           ),
+          BlocProvider(
+            create: (context) => NotificationBloc(),
+          ),
           BlocProvider(create: (context) => SplashCubit()..appStarted()),
           BlocProvider(
             create: (context) => ReviewBookingCubit(),
           ),
           BlocProvider(create: (context) => GetReviewCubit()),
 
-          BlocProvider(create: (context) => AuthCubit()),
+          BlocProvider(create: (context) => AuthCubit()..checkUser()),
           BlocProvider(create: (context) => GenericDataCubit()),
           BlocProvider(create: (context) => TrackingBloc()),
           BlocProvider(create: (context) => RouteCubit()),
@@ -170,6 +267,26 @@ class _MyAppState extends State<MyApp> {
               minTextAdapt: true,
               splitScreenMode: true,
               builder: (context, child) => MaterialApp(
+                navigatorKey: navigatorKey,
+                // routes: {
+                //   '/': (context) => HomePage(),
+                //   '/blog_detail': (context) => DetailBlogPage(),
+                //   '/service_detail': (context) => ServiceDetailScreen(),
+                // '/booking_detail': (context) {
+                //   final args = ModalRoute.of(context)!.settings.arguments
+                //       as Map<String, dynamic>?;
+                //   return BookingDetailScreen(
+                //       bookingId: args?['bookingId'] as int? ?? 0);
+                // }
+                //   '/route_detail': (context) => RouteDetailScreen(),
+                //   '/chat': (context) => ChatScreen(),
+                //   '/settings': (context) => SettingsScreen(),
+                //   '/user_profile': (context) => UserProfileScreen(),
+                //   '/challenge_detail': (context) => ChallengeDetailScreen(),
+                //   '/group_detail': (context) => GroupDetailScreen(),
+                //   '/notifications': (context) =>
+                //       NotificationsScreen(notifications: []),
+                // },
                 theme: AppTheme.appLightTheme,
                 darkTheme: AppTheme.appDarkTheme,
                 themeMode: state,

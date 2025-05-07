@@ -32,4 +32,16 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
       throw AuthenticationFailure('UnAuthentication');
     }
   }
+
+  @override
+  Future<Either<Failure, bool>> unFollowUser(int userId) async {
+    try {
+      await dataSource.unFollowUser(userId);
+      return Right(true);
+    } on ServerException {
+      return Left(ServerFailure('Get User profile failure'));
+    } on AuthenticationFailure {
+      throw AuthenticationFailure('UnAuthentication');
+    }
+  }
 }

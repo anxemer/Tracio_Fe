@@ -1,3 +1,9 @@
+import 'package:Tracio/core/services/signalR/implement/notification_hub_service.dart';
+import 'package:Tracio/data/blog/repositories/blog_repository_impl.dart';
+import 'package:Tracio/data/challenge/models/request/create_challenge_req.dart';
+import 'package:Tracio/domain/challenge/usecase/create_challenge.dart';
+import 'package:Tracio/domain/challenge/usecase/get_user_reward.dart';
+import 'package:Tracio/domain/user/usecase/unfollow_user..dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
@@ -68,7 +74,7 @@ import 'package:Tracio/domain/chat/repositories/chat_repository.dart';
 import 'package:Tracio/domain/chat/usecases/get_conversations_usecase.dart';
 import 'package:Tracio/domain/chat/usecases/get_messages_usecase.dart';
 import 'package:Tracio/domain/chat/usecases/post_message_usecase.dart';
-import 'package:Tracio/domain/challenge/repository/challenge_repositories.dart';
+import 'package:Tracio/domain/challenge/repository/challenge_repository.dart';
 import 'package:Tracio/domain/challenge/usecase/get_challenge_detail.dart';
 import 'package:Tracio/domain/challenge/usecase/get_challenge_overview.dart';
 import 'package:Tracio/domain/challenge/usecase/get_participants.dart';
@@ -169,7 +175,6 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton<AuthApiService>(() => AuthApiServiceImpl());
   sl.registerLazySingleton<BlogApiService>(() => BlogApiServiceImpl());
   sl.registerLazySingleton<AuthLocalSource>(() => AuthLocalSourceImp());
-  sl.registerLazySingleton<SignalRService>(() => SignalRService());
   sl.registerLazySingleton<UserApiSource>(() => UserApiSourceImpl());
   sl.registerLazySingleton<RouteApiService>(() => RouteApiServiceImpl());
   sl.registerLazySingleton<ElevationApiService>(
@@ -190,11 +195,10 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton<ChatApiService>(() => ChatApiServiceImpl());
   // * REPOSITORIES
   sl.registerLazySingleton<AuthRepository>(() => AuthRepositotyImpl());
+  sl.registerLazySingleton<BlogRepository>(
+      () => BlogRepositoryImpl(remoteDataSource: sl()));
   sl.registerLazySingleton<UserProfileRepository>(
       () => UserProfileRepositoryImpl(dataSource: sl()));
-
-  sl.registerLazySingleton<BlogRepository>(() => BlogRepositoryImpl(
-      networkInfo: sl(), remoteDataSource: sl(), signalRService: sl()));
   sl.registerLazySingleton<RouteRepository>(() => RouteRepositoryImpl());
   sl.registerLazySingleton<ElevationRepository>(
       () => ElevationRepositoryImpl());
@@ -207,7 +211,7 @@ Future<void> initializeDependencies() async {
       () => InvitationRepositoryImpl());
   sl.registerLazySingleton<ReactionRepository>(() => ReactionRepositoryImpl());
   sl.registerLazySingleton<ChatRepository>(() => ChatRepositoryImpl());
-  sl.registerLazySingleton<ChallengeRepositories>(
+  sl.registerLazySingleton<ChallengeRepository>(
       () => ChallengeRepositoryImpl(remoteDataSource: sl()));
   // * gRPC & Hubs
   sl.registerLazySingleton(() => SignalRCoreService());
@@ -333,6 +337,7 @@ Future<void> initializeDependencies() async {
   sl.registerFactory<GetParticipantsUseCase>(() => GetParticipantsUseCase());
   sl.registerFactory<LoginGoogleUseCase>(() => LoginGoogleUseCase());
   sl.registerFactory<FollowUserUseCase>(() => FollowUserUseCase());
+  sl.registerFactory<UnFollowUserUseCase>(() => UnFollowUserUseCase());
   sl.registerFactory<GetReviewBookingUseCase>(() => GetReviewBookingUseCase());
   sl.registerFactory<ReplyReviewUseCase>(() => ReplyReviewUseCase());
   sl.registerFactory<RegisterShopUseCase>(() => RegisterShopUseCase());

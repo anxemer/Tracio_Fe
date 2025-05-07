@@ -309,7 +309,8 @@ class _SelectedImagesViewerState extends State<SelectedImagesViewer> {
                   children: [
                     Image.file(
                       widget.selectedFiles[index],
-                      width: widget.widgeImage ?? 400.w,
+                      width: double.infinity,
+                      height: double.infinity,
                       fit: BoxFit.cover,
                     ),
                     GestureDetector(
@@ -342,7 +343,7 @@ class _SelectedImagesViewerState extends State<SelectedImagesViewer> {
                             decoration: BoxDecoration(
                               color: _currentPage == index
                                   ? AppColors.background
-                                  : const Color.fromARGB(255, 255, 255, 255),
+                                  : Colors.grey.shade500,
                               borderRadius: BorderRadius.circular(4),
                             ),
                           );

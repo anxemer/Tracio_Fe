@@ -140,8 +140,8 @@ class _ReplyCommentItemState extends State<ReplyCommentItem> {
                             await sl<UnReactBlogUseCase>().call(UnReactionParam(
                                 id: widget.reply.commentId, type: 'reply'));
                             setState(() {
-                              if (widget.reply.likesCount > 0) {
-                                widget.reply.likesCount--;
+                              if (widget.reply.likeCount > 0) {
+                                widget.reply.likeCount--;
                               }
 
                               widget.reply.isReacted = false;
@@ -158,7 +158,7 @@ class _ReplyCommentItemState extends State<ReplyCommentItem> {
                                   toogleIsReaction(widget.reply.isReacted);
 
                               setState(() {
-                                widget.reply.likesCount++;
+                                widget.reply.likeCount++;
                                 widget.reply.isReacted = isReact;
                               });
                             });
@@ -176,7 +176,7 @@ class _ReplyCommentItemState extends State<ReplyCommentItem> {
                               size: AppSize.iconSmall.sp,
                             ),
                             BasicTextButton(
-                                text: widget.reply.likesCount.toString(),
+                                text: widget.reply.likeCount.toString(),
                                 onPress: () {}),
                             SizedBox(
                               width: 10.w,

@@ -8,7 +8,7 @@ import '../../../service_locator.dart';
 
 class RegisterWithEmailAndPassUseCase extends Usecase<bool, RegisterReq> {
   @override
-  Future<Either<Failure,bool>> call(RegisterReq? params) async {
+  Future<Either<Failure, bool>> call(RegisterReq? params) async {
     return await sl<AuthRepository>().registerWithEmailAndPassword(params!);
   }
 }

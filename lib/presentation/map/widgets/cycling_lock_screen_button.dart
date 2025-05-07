@@ -16,7 +16,7 @@ class _CyclingLockScreenButtonState extends State<CyclingLockScreenButton> {
     return IconButton(
       style: IconButton.styleFrom(
           minimumSize: Size(50, 50), backgroundColor: Colors.grey.shade200),
-      onPressed: (){
+      onPressed: () {
         widget.onCallBack();
       },
       icon: Icon(

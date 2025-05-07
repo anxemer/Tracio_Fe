@@ -7,7 +7,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:Tracio/common/helper/is_dark_mode.dart';
-import 'package:Tracio/common/helper/navigator/app_navigator.dart';
 import 'package:Tracio/common/widget/appbar/app_bar.dart';
 import 'package:Tracio/common/widget/input_text_form_field.dart';
 import 'package:Tracio/core/constants/app_size.dart';
@@ -17,7 +16,6 @@ import 'package:Tracio/domain/blog/entites/category.dart';
 import 'package:Tracio/domain/shop/entities/response/shop_service_entity.dart';
 import 'package:Tracio/presentation/blog/bloc/category/get_category_cubit.dart';
 import 'package:Tracio/presentation/shop_owner/bloc/service_management/service_management_cubit.dart';
-import 'package:Tracio/presentation/shop_owner/page/dash_board.dart';
 
 import '../../../core/configs/theme/app_colors.dart';
 import '../../blog/bloc/category/get_category_state.dart';
@@ -31,7 +29,7 @@ class CreateEditServiceScreen extends StatefulWidget {
     super.key,
     this.initialData,
     this.isEditing = false,
-    required this.shopId, // Bắt buộc phải có shopId
+    required this.shopId, 
   });
 
   @override
@@ -136,7 +134,6 @@ class _CreateEditServiceScreenState extends State<CreateEditServiceScreen> {
       final duration = _durationController.text;
       final newImages = _selectedImageFiles;
 
-     
       if (!widget.isEditing) {
         context.read<ServiceManagementCubit>().createService(CreateServiceReq(
             shopId: widget.shopId,
@@ -147,7 +144,6 @@ class _CreateEditServiceScreenState extends State<CreateEditServiceScreen> {
             duration: duration,
             mediaFiles: newImages));
       }
-  
 
       // if (Navigator.canPop(context)) { Navigator.pop(context); }
     } else {
@@ -157,7 +153,6 @@ class _CreateEditServiceScreenState extends State<CreateEditServiceScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var isDark = context.isDarkMode;
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
     final colorScheme = theme.colorScheme;
@@ -229,7 +224,7 @@ class _CreateEditServiceScreenState extends State<CreateEditServiceScreen> {
                         labelText: 'Category Service *',
                         hintText: 'Choose Category',
                         validator: (value) =>
-                            value == null ? 'Plesae choose category' : null,
+                            value == null ? 'Please choose category' : null,
                       );
                     }
                     return LoadingAnimationWidget.fourRotatingDots(
@@ -254,7 +249,7 @@ class _CreateEditServiceScreenState extends State<CreateEditServiceScreen> {
                 InputTextFormField(
                   controller: _descriptionController,
                   labelText: 'Description',
-                  hint: 'Enter Desciption for this service',
+                  hint: 'Enter Description for this service',
                   prefixIcon: Icon(Icons.notes_outlined),
                   maxLine: 3,
                   // validator: optional
@@ -306,7 +301,7 @@ class _CreateEditServiceScreenState extends State<CreateEditServiceScreen> {
                 ),
 
                 const SizedBox(height: 20.0),
-                Text("Servie picture", style: textTheme.titleMedium),
+                Text("Service picture", style: textTheme.titleMedium),
                 const SizedBox(height: 12.0),
 
                 // --- Image Picker Button ---
@@ -325,7 +320,7 @@ class _CreateEditServiceScreenState extends State<CreateEditServiceScreen> {
                 const SizedBox(height: 16.0),
 
                 // --- Image Preview Section ---
-                _buildImagePreview(), // Widget hiển thị ảnh đã chọn
+                _buildImagePreview(),
 
                 const SizedBox(height: 32.0),
 
@@ -379,10 +374,6 @@ class _CreateEditServiceScreenState extends State<CreateEditServiceScreen> {
         spacing: 10.0,
         runSpacing: 10.0,
         children: [
-          // ..._existedImage.map((url) => _buildImageThumbnail(
-          //       imageProvider: NetworkImage(url), // Dùng NetworkImage
-          //       onRemove: () => _removeExistingImage(url),
-          //     )),
           ..._selectedImageFiles.asMap().entries.map((entry) {
             int index = entry.key;
             File file = entry.value;

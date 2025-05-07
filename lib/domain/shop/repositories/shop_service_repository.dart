@@ -44,7 +44,7 @@ abstract class ShopServiceRepository {
       int serviceId);
   Future<Either<Failure, bool>> delelteCartItem(int itemId);
   Future<Either<Failure, bool>> processBooking(int bookingDetailId);
-  Future<Either<Failure, bool>> cancelBooking(int bookingDetailId);
+  Future<Either<Failure, bool>> cancelBooking(ConfirmBookingModel cancelBooking);
   Future<Either<Failure, bool>> completeBooking(int bookingDetailId);
   Future<Either<Failure, bool>> reviewBooking(ReviewBookingReq review);
   Future<Either<Failure, bool>> replyReview(ReplyReviewReq reply);

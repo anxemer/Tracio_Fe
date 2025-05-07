@@ -1,8 +1,15 @@
+import 'package:Tracio/domain/shop/usecase/cancel_booking.dart';
+import 'package:Tracio/presentation/service/widget/resolve_booking.dart';
+import 'package:Tracio/presentation/shop_owner/bloc/resolve_booking/resolve_booking_cubit.dart';
+import 'package:Tracio/service_locator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../data/shop/models/waiting_booking.dart';
 
 class CancelReasonScreen extends StatefulWidget {
-  const CancelReasonScreen({super.key});
-
+  const CancelReasonScreen({super.key, required this.bookingDetailId});
+  final int bookingDetailId;
   @override
   State<CancelReasonScreen> createState() => _CancelReasonScreenState();
 }
@@ -122,8 +129,11 @@ class _CancelReasonScreenState extends State<CancelReasonScreen> {
                         backgroundColor: Colors.green,
                       ),
                     );
-                    // Add actual cancellation logic here
-                    // Example: Navigator.pop(context, reasonToSubmit);
+                    context.read<ResolveBookingShopCubit>().cancelBooking(
+                        ConfirmBookingModel(
+                            bookingId: widget.bookingDetailId,
+                            reason: reasonToSubmit));
+                    Navigator.of(context).pop();
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(

@@ -260,6 +260,7 @@ class _PlanServicePageState extends State<PlanServicePage>
                                     : Colors.grey.shade200,
                               ),
                               child: AddSchedule(
+                              
                                   // cartItem: bookingCubit.selectedServices,
                                   // bookingModel: bookingModel,
                                   ),

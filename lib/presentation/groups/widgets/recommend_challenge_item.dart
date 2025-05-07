@@ -8,7 +8,7 @@ import 'package:Tracio/core/configs/theme/app_colors.dart';
 import 'package:Tracio/core/constants/app_size.dart';
 import 'package:Tracio/domain/challenge/entities/challenge_entity.dart';
 import 'package:Tracio/presentation/groups/cubit/challenge_cubit.dart';
-import 'package:Tracio/presentation/groups/pages/challenge_loading.dart';
+import 'package:Tracio/presentation/groups/widgets/challenge_progress.dart';
 
 import 'challenge_detail.dart';
 
@@ -23,18 +23,27 @@ class RecommendChallengeItem extends StatelessWidget {
   Widget build(BuildContext context) {
     var isDark = context.isDarkMode;
     return BlocListener<ChallengeCubit, ChallengeState>(
+      listenWhen: (previous, current) {
+        return current is JoinChallengeLoaded;
+      },
       listener: (context, state) {
-        if (state is JoinChallengeLoaded) {
-          AppNavigator.push(context,
-              ChallengeJoiningLoadingScreen(challengeEntity: challenge));
+        if (state is JoinChallengeLoaded &&
+            state.challengeId == challenge.challengeId) {
+          AppNavigator.push(
+            context,
+            ChallengeProgressScreen(challengeId: challenge.challengeId!),
+          );
         }
       },
       child: InkWell(
-        onTap: () => AppNavigator.push(
+        onTap: () async {
+          AppNavigator.push(
             context,
             ChallengeDetailScreen(
               challengeId: challenge.challengeId!,
-            )),
+            ),
+          );
+        },
         child: Container(
           padding: const EdgeInsets.all(AppSize.apHorizontalPadding * 0.7),
           // width: MediaQuery.of(context).size.width * 0.4,
@@ -49,19 +58,9 @@ class RecommendChallengeItem extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Group Image
-              // ClipRRect(
-              //   borderRadius: BorderRadius.circular(8),
-              //   child: Image.network(
-              //     groupImageUrl,
-              //     width: AppSize.imageSmall.w,
-              //     height: AppSize.imageSmall.w,
-              //     fit: BoxFit.cover,
-              //   ),
-              // ),
               CirclePicture(
                   imageUrl: challenge.challengeThumbnail,
-                  imageSize: AppSize.imageSmall),
+                  imageSize: AppSize.imageSmall * .6.sp),
               const SizedBox(height: 8),
               // Group Info
               Text(

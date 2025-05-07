@@ -1,3 +1,4 @@
+import 'package:Tracio/core/services/notifications/firebase_message_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -6,9 +7,9 @@ import 'package:Tracio/common/helper/navigator/app_navigator.dart';
 import 'package:Tracio/common/helper/placeholder/booking_detail_holder.dart';
 import 'package:Tracio/common/widget/appbar/app_bar.dart';
 import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/core/services/notifications/i_notification_service.dart';
 import 'package:Tracio/presentation/service/bloc/bookingservice/get_booking_detail_cubit/get_booking_detail_cubit.dart';
 import 'package:Tracio/presentation/service/widget/all_review_service.dart';
-import 'package:Tracio/presentation/service/widget/review_service.dart';
 import 'package:Tracio/presentation/shop_owner/bloc/resolve_booking/resolve_booking_cubit.dart';
 import 'package:Tracio/presentation/shop_owner/widget/list_schedule.dart';
 
@@ -18,8 +19,6 @@ import '../../../common/widget/picture/picture.dart';
 import '../../../core/configs/theme/app_colors.dart';
 import '../../../core/configs/theme/assets/app_images.dart';
 import '../../../domain/shop/entities/response/booking_detail_entity.dart';
-import '../../../domain/shop/usecase/cancel_booking.dart';
-import '../../../service_locator.dart';
 import '../../service/widget/booking_status_tab.dart';
 import '../../service/widget/cancel_reason.dart';
 import '../bloc/resolve_booking/resolve_booking_state.dart';
@@ -308,7 +307,7 @@ class _BookingDetailShopScreenState extends State<BookingDetailShopScreen> {
               DialogConfirm(
                       btnLeft: () => Navigator.pop(context),
                       btnRight: () =>
-                          AppNavigator.push(context, CancelReasonScreen()),
+                          AppNavigator.push(context, CancelReasonScreen(bookingDetailId:booking.bookingDetailId! ,)),
                       notification:
                           'Are you sure you want to cancel this Booking?')
                   .showDialogConfirmation(context);
@@ -324,6 +323,9 @@ class _BookingDetailShopScreenState extends State<BookingDetailShopScreen> {
             width: 140.w,
             height: 40.h,
             ontap: () {
+              // INotificationService.sendBookingServiceNotification(
+              //     'Update Booking',
+              //     '${booking.shopName} has confirmed your booking with ${booking.serviceName}');
               setState(() {});
               context.read<ResolveBookingShopCubit>().resolvePendingBooking(
                   booking.formattedDuration, booking.bookingDetailId!);
@@ -357,7 +359,7 @@ class _BookingDetailShopScreenState extends State<BookingDetailShopScreen> {
                       onTap: () {
                         DialogConfirm(
                           btnLeft: () =>
-                              AppNavigator.push(context, CancelReasonScreen()),
+                              AppNavigator.push(context, CancelReasonScreen(bookingDetailId:booking.bookingDetailId! ,)),
                           btnRight: () => Navigator.pop(context),
                           notification:
                               'Are you sure you want to cancel this Booking?',

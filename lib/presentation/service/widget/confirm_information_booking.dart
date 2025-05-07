@@ -76,102 +76,7 @@ class _ConfirmInformationBookingState extends State<ConfirmInformationBooking> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Padding(
-              //   padding: EdgeInsets.all(8),
-              //   child: Row(
-              //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //     children: [
-              //       Text(
-              //         'Your Services',
-              //         style: TextStyle(
-              //           fontSize: AppSize.textLarge,
-              //           fontWeight: FontWeight.bold,
-              //           color: context.isDarkMode
-              //               ? Colors.grey.shade300
-              //               : Colors.black87,
-              //         ),
-              //       ),
-              //     ],
-              //   ),
-              // ),
-
-              // SizedBox(
-              //   height: AppSize.cardHeight.h,
-              //   child: ListView.builder(
-              //     itemCount: bookingCubit.selectedServices.length,
-              //     itemBuilder: (context, index) {
-              //       return Container(
-              //         padding: EdgeInsets.all(4),
-              //         margin: EdgeInsets.all(4),
-              //         // height: 80,
-              //         decoration: BoxDecoration(
-              //             color: Colors.black12,
-              //             borderRadius: BorderRadius.circular(
-              //                 AppSize.borderRadiusMedium)),
-              //         child: Row(
-              //           children: [
-              //             ClipRRect(
-              //               borderRadius: BorderRadius.circular(8),
-              //               child: Image.asset(
-              //                 AppImages.picture,
-              //                 width: AppSize.imageSmall.w,
-              //                 height: AppSize.imageSmall.h * .8,
-              //                 fit: BoxFit.cover,
-              //               ),
-              //             ),
-              //             SizedBox(
-              //               width: 4.w,
-              //             ),
-              //             Expanded(
-              //               child: Column(
-              //                 children: [
-              //                   Row(
-              //                     mainAxisAlignment:
-              //                         MainAxisAlignment.spaceBetween,
-              //                     children: [
-              //                       Text(
-              //                         bookingCubit
-              //                             .selectedServices[index].serviceName!,
-              //                         style: TextStyle(
-              //                           fontWeight: FontWeight.bold,
-              //                           fontSize: AppSize.textMedium.sp,
-              //                           color: isDark
-              //                               ? Colors.grey.shade300
-              //                               : Colors.black87,
-              //                         ),
-              //                       ),
-              //                       Row(
-              //                         children: [
-              //                           Icon(
-              //                             Icons.attach_money_outlined,
-              //                             size: AppSize.iconSmall,
-              //                             color: isDark
-              //                                 ? AppColors.secondBackground
-              //                                 : AppColors.background,
-              //                           ),
-              //                           Text(
-              //                             bookingCubit
-              //                                 .selectedServices[index].price
-              //                                 .toString(),
-              //                             style: TextStyle(
-              //                                 fontSize: AppSize.textSmall,
-              //                                 color: isDark
-              //                                     ? Colors.grey.shade300
-              //                                     : Colors.black87),
-              //                           )
-              //                         ],
-              //                       )
-              //                     ],
-              //                   ),
-              //                 ],
-              //               ),
-              //             )
-              //           ],
-              //         ),
-              //       );
-              //     },
-              //   ),
-              // ),
+       
 
               Padding(
                 padding: EdgeInsets.all(4),
@@ -234,22 +139,7 @@ class _ConfirmInformationBookingState extends State<ConfirmInformationBooking> {
                   },
                 ),
               ),
-              // Center(
-              //     child: BasicTextButton(
-              //   text: 'Add more schedule',
-              //   onPress: () {
-              //     // Navigator.pop(context);
-              //     ShowScheduleBottom();
-              //     // if (widget.onSchedulesChanged != null) {
-              //     //   widget.onSchedulesChanged!(_schedules);
-              //     // }
-              //     // if (_schedules.isNotEmpty) {
-              //     //   _showScheduleListDialog(context);
-              //     // }
-              //   },
-              //   borderColor: Colors.white,
-              // )),
-              // Phần nút bấm
+          
               Padding(
                 padding: EdgeInsets.all(8),
                 child: Row(

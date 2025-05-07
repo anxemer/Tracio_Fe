@@ -2,7 +2,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import 'package:Tracio/core/constants/app_size.dart';
+import '../../core/constants/app_size.dart';
+
+
 
 class DialogConfirm {
   VoidCallback btnLeft;

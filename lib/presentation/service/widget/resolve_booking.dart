@@ -115,7 +115,7 @@ class _ResolveBookingState extends State<ResolveBooking> {
             : ButtonDesign(
                 width: 120.w,
                 height: 32.h,
-                ontap: () async {
+                ontap: () {
                   // AppNavigator.push(context, ReviewBookingScreen());
                   showDialogConfirmation(widget.booking);
                 },
@@ -131,12 +131,9 @@ class _ResolveBookingState extends State<ResolveBooking> {
   }
 
   void showDialogConfirmation(BookingCardViewModel service) async {
-    final result = await showDialog(
+    await showDialog(
       context: context,
       builder: (context) {
-        var animation = Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(
-            parent: widget.animationController!,
-            curve: Interval(0.0, 1.0, curve: Curves.fastOutSlowIn)));
         return SimpleDialog(
           contentPadding: const EdgeInsets.all(20),
           children: [
@@ -166,18 +163,13 @@ class _ResolveBookingState extends State<ResolveBooking> {
                 Expanded(
                   child: FilledButton(
                     onPressed: () {
-                      AppNavigator.push(context, CancelReasonScreen());
-                      // sl<CancelBookingUseCase>().call(service.bookingDetailId!);
-                      // showDialogConfirmation(service
-                      // BookingCardViewModel(
-                      //   bookingDetailId: service.bookingDetailId,
-                      //   bookedDate: service.bookedDate,
-                      //   shopName: se.shopName,
-                      //   nameService: booking.serviceName,
-                      // ),
-                      // );
+                      Navigator.pop(context);
 
-                      Navigator.pop(context, 'yes');
+                      AppNavigator.push(
+                          context,
+                          CancelReasonScreen(
+                            bookingDetailId: service.bookingDetailId!,
+                          ));
                     },
                     style: ButtonStyle(
                       backgroundColor: const WidgetStatePropertyAll(Colors.red),

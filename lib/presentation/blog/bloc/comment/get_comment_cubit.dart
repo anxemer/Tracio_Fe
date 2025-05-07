@@ -1,22 +1,15 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:Tracio/data/blog/models/request/get_comment_req.dart';
 import 'package:Tracio/data/blog/models/request/get_reply_comment_req.dart';
+import 'package:Tracio/domain/blog/entites/comment_blog.dart';
+import 'package:Tracio/domain/blog/entites/reply_comment.dart';
 import 'package:Tracio/domain/blog/usecase/get_comment_blog.dart';
 import 'package:Tracio/domain/blog/usecase/get_reply_comment.dart';
 import 'package:Tracio/presentation/blog/bloc/comment/get_comment_state.dart';
-
-import '../../../../service_locator.dart';
+import 'package:Tracio/service_locator.dart';
 
 class GetCommentCubit extends Cubit<GetCommentState> {
   GetCommentCubit() : super(GetCommentInitial());
-
-  // Future<void> getCommentBlog(GetCommentReq comment) async {
-  //   emit(GetCommentLoading());
-  //   var result = await sl<GetCommentBlogUseCase>().call(comment);
-  //   result.fold((error) => emit(GetCommentFailure(error)),
-  //       (data) => emit(GetCommentLoaded(listComment: data.comments)));
-
-  // }
 
   Future<void> getCommentBlog(GetCommentReq comment) async {
     GetCommentLoaded? currentState;
@@ -43,13 +36,13 @@ class GetCommentCubit extends Cubit<GetCommentState> {
       } else {
         emit(GetCommentLoaded(
           listComment: reviewsData.comments,
-          totalCount: 0,
+          totalCount: reviewsData.totalCount ?? 0,
           commentBlogPaginationEntity: reviewsData,
-          pageNumber: 1,
-          pageSize: 5,
-          totalPages: 1,
-          hasPreviousPage: false,
-          hasNextPage: false,
+          pageNumber: comment.pageNumber ?? 1,
+          pageSize: comment.pageSize ?? 5,
+          totalPages: reviewsData.totalPage ?? 1,
+          hasPreviousPage: reviewsData.hasPreviousPage ?? false,
+          hasNextPage: reviewsData.hasNextPage ?? false,
         ));
       }
     });
@@ -97,5 +90,77 @@ class GetCommentCubit extends Cubit<GetCommentState> {
         ));
       }
     });
+  }
+
+  void addComment(CommentBlogEntity newComment) {
+    if (state is GetCommentLoaded) {
+      final currentState = state as GetCommentLoaded;
+      final updatedComments = [newComment, ...currentState.listComment];
+      emit(currentState.copyWith(
+        listComment: updatedComments,
+        totalCount: currentState.totalCount + 1,
+        // Cập nhật commentBlogPaginationEntity nếu cần
+        commentBlogPaginationEntity:
+            currentState.commentBlogPaginationEntity?.copyWith(
+          comments: updatedComments,
+          totalCount: currentState.totalCount + 1,
+        ),
+      ));
+    } else {
+      emit(GetCommentLoaded(
+        listComment: [newComment],
+        totalCount: 1,
+        commentBlogPaginationEntity: null,
+        pageNumber: 1,
+        pageSize: 5,
+        totalPages: 1,
+        hasPreviousPage: false,
+        hasNextPage: false,
+      ));
+    }
+  }
+
+  void addReplyComment(int commentId, ReplyCommentEntity newReply) {
+    if (state is GetCommentLoaded) {
+      final currentState = state as GetCommentLoaded;
+      final updatedComments = currentState.listComment.map((comment) {
+        if (comment.commentId == commentId) {
+          // Chỉ định kiểu List<ReplyCommentEntity> cho danh sách rỗng
+          final updatedReplies = <ReplyCommentEntity>[
+            newReply,
+            ...(comment.replyCommentPagination?.replies ??
+                <ReplyCommentEntity>[])
+          ];
+          return comment.copyWith(
+            replyCommentPagination: comment.replyCommentPagination?.copyWith(
+                  replies: updatedReplies,
+                  totalCount:
+                      (comment.replyCommentPagination?.totalCount ?? 0) + 1,
+                ) ??
+                ReplyCommentBlogPaginationEntity(
+                  comment: comment,
+                  replies: updatedReplies,
+                  totalCount: 1,
+                  pageNumber: 1,
+                  pageSize: 5,
+                  totalPage: 1,
+                  hasPreviousPage: false,
+                  hasNextPage: false,
+                ),
+            replyCount: (comment.replyCount ?? 0) + 1,
+          );
+        }
+        return comment;
+      }).toList();
+      emit(currentState.copyWith(
+        listComment: updatedComments,
+        totalCount: currentState.totalCount + 1,
+        commentBlogPaginationEntity:
+            currentState.commentBlogPaginationEntity?.copyWith(
+          comments: updatedComments,
+          totalCount: currentState.totalCount + 1,
+        ),
+      ));
+    }
   }
 }

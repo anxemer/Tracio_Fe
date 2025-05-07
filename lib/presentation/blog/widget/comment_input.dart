@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:Tracio/common/helper/is_dark_mode.dart';
 import 'package:Tracio/core/constants/app_size.dart';
 
@@ -28,6 +29,8 @@ class CommentInputWidget extends StatefulWidget {
 }
 
 class _CommentInputWidgetState extends State<CommentInputWidget> {
+  final ImagePicker _picker = ImagePicker();
+
   final TextEditingController _textController = TextEditingController();
   final List<File> selectedFiles = [];
   late PageController _pageController;
@@ -56,27 +59,70 @@ class _CommentInputWidgetState extends State<CommentInputWidget> {
     super.dispose();
   }
 
-  void _onImageToggle(File file, bool isSelected) {
-    setState(() {
-      if (isSelected) {
-        selectedFiles.add(file);
-        Navigator.pop(context);
-      } else {
-        selectedFiles.remove(file);
+  Future<void> _pickImages(ImageSource source) async {
+    try {
+      if (source == ImageSource.gallery) {
+        final pickedFile = await _picker.pickImage(
+          source: source,
+          maxWidth: 800, // Giới hạn kích thước ảnh để tối ưu
+          imageQuality: 85, // Giảm chất lượng ảnh một chút
+        );
+
+        if (pickedFile != null) {
+          setState(() {
+            selectedFiles.add(File(pickedFile.path));
+          });
+        }
+      } else if (source == ImageSource.camera) {
+        final XFile? pickedFile = await _picker.pickImage(
+          source: ImageSource.camera,
+          maxWidth: 1024,
+          imageQuality: 85,
+        );
+
+        if (pickedFile != null) {
+          setState(() {
+            selectedFiles.add(File(pickedFile.path));
+          });
+        }
       }
-    });
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('Can\'t pick picture! please check permission')),
+        );
+      }
+    }
   }
 
-  void _onImageCaptured(File file) {
-    setState(() {
-      selectedFiles.add(file);
-    });
-    _pageController.animateToPage(
-      selectedFiles.length - 1,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
+  void _showImageSourceDialog() {
+    showModalBottomSheet(
+      context: context,
+      builder: (ctx) => SafeArea(
+        child: Wrap(
+          children: <Widget>[
+            ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: const Text('select from library'),
+                onTap: () {
+                  _pickImages(ImageSource.gallery);
+                  Navigator.of(ctx).pop();
+                }),
+            ListTile(
+              leading: const Icon(Icons.photo_camera),
+              title: const Text('Take a new photo'),
+              onTap: () {
+                _pickImages(ImageSource.camera);
+                Navigator.of(ctx).pop();
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
+
 
   void _onRemoveImage(int index) {
     setState(() {
@@ -91,23 +137,7 @@ class _CommentInputWidgetState extends State<CommentInputWidget> {
   Widget build(BuildContext context) {
     final inputData = widget.inputData;
 
-    // Color borderColor;
-    // Color sendIconColor;
-
-    // switch (inputData.mode) {
-    //   case CommentMode.blogComment:
-    //     borderColor = Colors.black45;
-    //     sendIconColor = AppColors.background;
-    //     break;
-    //   case CommentMode.replyComment:
-    //     borderColor = Colors.blue;
-    //     sendIconColor = Colors.blue;
-    //     break;
-    //   case CommentMode.replyToReply:
-    //     borderColor = Colors.purple;
-    //     sendIconColor = Colors.purple;
-    //     break;
-    // }
+  
 
     return Container(
       color: context.isDarkMode ? Color(0xFF1E1E1E) : Colors.white,
@@ -214,30 +244,7 @@ class _CommentInputWidgetState extends State<CommentInputWidget> {
                         : Colors.grey.shade700,
                   ),
                   onPressed: () {
-                    showModalBottomSheet(
-                      isDismissible: true,
-                      isScrollControlled: true,
-                      backgroundColor: Colors.transparent,
-                      context: context,
-                      builder: (context) {
-                        return Padding(
-                          padding: EdgeInsets.only(
-                            bottom: MediaQuery.of(context).viewInsets.bottom,
-                          ),
-                          child: DraggableScrollableSheet(
-                            maxChildSize: .5,
-                            initialChildSize: .5,
-                            minChildSize: 0.2,
-                            builder: (context, scrollController) =>
-                                ImagePickerGrid(
-                              onImageCaptured: _onImageCaptured,
-                              onImageToggle: _onImageToggle,
-                              selectedFiles: selectedFiles,
-                            ),
-                          ),
-                        );
-                      },
-                    );
+                    _showImageSourceDialog();
                   },
                 ),
 

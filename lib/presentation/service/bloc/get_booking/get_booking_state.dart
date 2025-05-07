@@ -67,13 +67,12 @@ class GetBookingFailure extends GetBookingState {
     super.bookingList,
     super.overlapBookingList,
     super.pagination,
-    this.message, this.failure,
+    this.message,
+    this.failure,
   );
   final Failure failure;
   final String message;
   @override
   // TODO: implement props
   List<Object?> get props => [];
-
-
 }

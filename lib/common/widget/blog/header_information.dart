@@ -40,7 +40,6 @@ class HeaderInformation extends StatelessWidget {
             //       fontSize: 20.sp),
             // ),
             trailing: trailling,
-            
           ),
         ));
   }

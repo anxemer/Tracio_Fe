@@ -31,10 +31,9 @@ import 'review_booking.dart';
 class BookingDetailScreen extends StatefulWidget {
   // final Map<String, dynamic> bookingDetail;
 
-  const BookingDetailScreen(
-      {super.key, required this.bookingId, required this.animationController});
+  const BookingDetailScreen({super.key, required this.bookingId});
   final int bookingId;
-  final AnimationController animationController;
+  // final AnimationController animationController;
   @override
   State<BookingDetailScreen> createState() => _BookingDetailScreenState();
 }
@@ -42,7 +41,7 @@ class BookingDetailScreen extends StatefulWidget {
 class _BookingDetailScreenState extends State<BookingDetailScreen> {
   @override
   void initState() {
-    widget.animationController.forward();
+    // widget.animationController.forward();
     super.initState();
   }
 
@@ -54,11 +53,12 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
           GetBookingDetailCubit()..getBookingDetail(widget.bookingId),
       child: Scaffold(
         appBar: BasicAppbar(
-          backgroundColor: Colors.transparent,
           title: Text(
             'Booking Detail',
-            style: TextStyle(
-                fontSize: AppSize.textHeading, fontWeight: FontWeight.bold),
+          style: TextStyle(
+                color: Colors.white,
+                fontSize: AppSize.textHeading,
+                fontWeight: FontWeight.bold),
           ),
         ),
         body: BlocBuilder<GetBookingDetailCubit, GetBookingDetailState>(
@@ -454,33 +454,6 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
           children: [
             Stack(
               children: [
-                // Positioned(
-                //   top: 0,
-                //   right: 0,
-                //   child: Column(
-                //     crossAxisAlignment: CrossAxisAlignment.end,
-                //     children: [
-                //       const Text(
-                //         'Service Type',
-                //         style: TextStyle(
-                //           color: Colors.grey,
-                //           fontSize: 14,
-                //         ),
-                //       ),
-                //       const SizedBox(height: 4),
-                //       const Text(
-                //         'Service',
-                //         style: TextStyle(
-                //           fontWeight: FontWeight.w600,
-                //           fontSize: 16,
-                //         ),
-                //       ),
-                //     ],
-                //   ),
-                // ),
-                // SizedBox(
-                //   height: 10.h,
-                // ),
                 Positioned(
                   top: 0,
                   left: 0,
@@ -689,8 +662,11 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
             ontap: () {
               DialogConfirm(
                       btnLeft: () => Navigator.pop(context),
-                      btnRight: () =>
-                          AppNavigator.push(context, CancelReasonScreen()),
+                      btnRight: () => AppNavigator.push(
+                          context,
+                          CancelReasonScreen(
+                            bookingDetailId: booking.bookingDetailId!,
+                          )),
                       notification:
                           'Are you sure you want to cancel this Booking?')
                   .showDialogConfirmation(context);

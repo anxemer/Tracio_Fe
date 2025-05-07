@@ -6,20 +6,22 @@ import 'package:Tracio/data/map/models/request/mapbox_direction_req.dart';
 class ApiUrl {
   //base Url
   // static const baseURL = 'https://192.168.1.9:';
-  // static const baseURL = 'https://user.tracio.space';
-  static const baseURL = 'http://103.28.33.123:';
+  // static const baseURL = 'https://user.Tracio.space';
+  static const baseURL = 'https://api.Tracio.space';
   static const hubUrl = 'http://103.28.33.123:5002/content-hub';
   static const groupRouteHubUrl = 'http://103.28.33.123:5009/locationHub';
   static const chatHubUrl = 'http://103.28.33.123:5005/chat-hub';
+  static const notiHubUrl = 'http://103.28.33.123:5006/notification-hub';
   //port
   // static const portUser = '5003';
-  static const portUser = 'https://user.tracio.space';
-  static const portBlog = 'https://content.tracio.space';
-  static const portRoute = '5009';
-  static const portGroup = '5003';
-  static const portShop = 'https://shop.tracio.space';
-  static const portChat = '5005';
-
+  static const notiPort = 'https://noti.tracio.space';
+  static const portUser = '';
+  static const portBlog = '';
+  static const portRoute = '';
+  static const portGroup = '';
+  static const portShop = '';
+  static const portChat = '';
+  static const sendFcm = '$notiPort/api/fcm';
   //Api User
   static const registerWithEP = '$portUser/api/auth/register-user';
   static const loginGoogle = '$portUser/api/auth/login-google';
@@ -52,7 +54,7 @@ class ApiUrl {
   static const createBlog = '$portBlog/api/blogs';
   static const categoryBlog = '$portBlog/api/blogs/categories';
   static const commentBlog = '$portBlog/api/comments';
-  static const repCommentBlog = '$portBlog/api/replies';
+  static const repCommentBlog = '$portBlog/api/content-replies';
   static const bookmarkBlog = '$portBlog/api/blogs/bookmarks';
   static const unBookmarkBlog = '$portBlog/api/blogs/bookmarks';
   static Uri urlGetBlogComments(int blogId, [Map<String, String>? params]) {

@@ -27,8 +27,9 @@ final class GetNearServiceLoaded extends GetNearServiceState {
 }
 
 final class GetNearServiceFailure extends GetNearServiceState {
-  const GetNearServiceFailure(super.service, this.message, super.shop);
+  const GetNearServiceFailure(super.service, this.message, super.shop, this.failure);
   final String message;
+  final Failure failure;
   @override
   List<Object> get props => [];
 }

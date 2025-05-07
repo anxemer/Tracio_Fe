@@ -123,9 +123,9 @@ class ShopServiceRepositoryImpl extends ShopServiceRepository {
   }
 
   @override
-  Future<Either<Failure, bool>> cancelBooking(int bookingDetailId) async {
+  Future<Either<Failure, bool>> cancelBooking(ConfirmBookingModel cancelBooking) async {
     try {
-      await remoteDataSource.cancelBooking(bookingDetailId);
+      await remoteDataSource.cancelBooking(cancelBooking);
       return Right(true);
     } on ExceptionFailure {
       return Left(ExceptionFailure('cancel service fail'));

@@ -251,7 +251,6 @@ Future<TimeOfDay?> showCustomHourMinutePicker({
   int endHour = 20,
   int minuteInterval = 15,
 }) async {
-
   TimeOfDay adjustedInitialTime = initialTime;
   if (initialTime.hour < startHour) {
     adjustedInitialTime = TimeOfDay(hour: startHour, minute: 0);

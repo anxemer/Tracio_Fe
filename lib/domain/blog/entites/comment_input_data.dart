@@ -1,15 +1,11 @@
 import 'package:Tracio/domain/blog/entites/comment_blog.dart';
 import 'package:Tracio/domain/blog/entites/reply_comment.dart';
 
-enum CommentMode {
-  blogComment,
-  replyComment,
-  replyToReply
-}
+enum CommentMode { blogComment, replyComment, replyToReply }
 
 class CommentInputData {
   final CommentMode mode;
-  final int? blogId; 
+  final int? blogId;
   final int? commentId;
   final int? replyId;
   final String hintText;

@@ -59,12 +59,15 @@ class AuthApiServiceImpl extends AuthApiService {
   @override
   Future<AuthenticationResponseModel> changeRole(
       ChangeRoleReq changRole) async {
-    final formData = FormData.fromMap({
+    final Map<String, dynamic> data = {
       "RefreshToken": changRole.refreshToken,
-      "Role": changRole.role,
+    };
 
-      // "password": params.password,
-    });
+    if (changRole.role != null) {
+      data["Role"] = changRole.role;
+    }
+
+    final formData = FormData.fromMap(data);
     var response = await sl<DioClient>()
         .post(ApiUrl.changeRole, data: formData, isMultipart: true);
     if (response.statusCode == 201) {

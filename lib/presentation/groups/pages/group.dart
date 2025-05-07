@@ -36,11 +36,18 @@ class _GroupPageState extends State<GroupPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => InvitationBloc(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => InvitationBloc(),
+        ),
+        BlocProvider(
+          create: (context) => ChallengeCubit(),
+        ),
+      ],
       child: DefaultTabController(
         length: 3,
-        initialIndex: 2,
+        initialIndex: widget.initialIndex,
         child: Scaffold(
           backgroundColor: Colors.grey.shade200,
           appBar: _buildAppBar(),
@@ -79,7 +86,7 @@ class _GroupPageState extends State<GroupPage> {
       title: Text(
         'Groups',
         style: TextStyle(
-          color: context.isDarkMode ? Colors.white : Colors.black87,
+          color: Colors.white,
           fontWeight: FontWeight.w400,
           fontSize: AppSize.textHeading * 0.9.sp,
         ),

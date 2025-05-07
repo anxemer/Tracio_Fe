@@ -21,7 +21,6 @@ class GetServiceCubit extends Cubit<GetServiceState> {
         emit(GetServiceFailure(
             state.service, state.shop, state.metaData, params, error.message));
       }, (data) {
-
         emit(GetServiceLoaded(
             data.service, data.shop, data.paginationMetaData, params));
       });
@@ -32,7 +31,6 @@ class GetServiceCubit extends Cubit<GetServiceState> {
   }
 
   void getMoreService(GetServiceReq params) async {}
-
 
   void resetState() {
     emit(GetServiceInitial(

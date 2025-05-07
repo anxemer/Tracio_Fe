@@ -8,7 +8,8 @@ import 'package:Tracio/service_locator.dart';
 
 class LoginUseCase extends Usecase<AuthenticationResponseEntity, LoginReq> {
   @override
-  Future<Either<Failure, AuthenticationResponseEntity>> call(LoginReq? params) async {
+  Future<Either<Failure, AuthenticationResponseEntity>> call(
+      LoginReq? params) async {
     return await sl<AuthRepository>().login(params!);
   }
 }

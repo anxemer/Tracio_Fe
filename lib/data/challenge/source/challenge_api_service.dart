@@ -1,3 +1,4 @@
+import 'package:Tracio/data/challenge/models/request/create_challenge_req.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:Tracio/core/erorr/failure.dart';
@@ -7,13 +8,17 @@ import 'package:Tracio/data/challenge/models/response/participants_response_mode
 
 import '../../../core/constants/api_url.dart';
 import '../../../core/network/dio_client.dart';
+import '../../../domain/challenge/entities/challenge_reward.dart';
 import '../../../service_locator.dart';
+import '../models/response/challenge_reward_model.dart';
 
 abstract class ChallengeApiService {
   Future<ChallengeOverviewResponseModel> getChallengeOverview();
   Future<ChallengeModel> getChallengeDetail(int challengeId);
-  Future<ChallengeModel> getRewardUser(int userId);
-  Future<Either> joinChallenge(int challengeId);
+  Future<List<ChallengeRewardEntity>> getRewardUser(int userId);
+  Future<int> joinChallenge(int challengeId);
+  Future<Either> leaveChallenge(int challengeId);
+  Future<ChallengeModel> creteChallenge(CreateChallengeReq challenge);
   Future<ParticipantsResponseModel> getParticipant(int challengeId);
 }
 
@@ -52,12 +57,14 @@ class ChallengeApiServiceImpl extends ChallengeApiService {
   }
 
   @override
-  Future<Either> joinChallenge(int challengeId) async {
+  Future<int> joinChallenge(int challengeId) async {
     try {
       var response = await sl<DioClient>()
           .post('${ApiUrl.apiChallenge}/$challengeId/invitation/request');
       if (response.statusCode == 200) {
-        return Right(true);
+        final data = response.data['result'];
+        final int joinedChallengeId = data['challengeId'];
+        return joinedChallengeId;
       }
       if (response.statusCode == 401) {
         throw AuthenticationFailure('');
@@ -86,7 +93,7 @@ class ChallengeApiServiceImpl extends ChallengeApiService {
   }
 
   @override
-  Future<ChallengeModel> getRewardUser(int userId) async {
+  Future<List<ChallengeRewardModel>> getRewardUser(int userId) async {
     try {
       final queryParams = {
         "userId": userId.toString(),
@@ -94,7 +101,13 @@ class ChallengeApiServiceImpl extends ChallengeApiService {
       Uri apiUrl = ApiUrl.urlGetBlog(queryParams);
       var response = await sl<DioClient>().get(apiUrl.toString());
       if (response.statusCode == 200) {
-        return ChallengeModel.fromJson(response.data['result']);
+        final items = response.data['result']['items'];
+        if (items != null) {
+          return List<ChallengeRewardModel>.from(
+              items.map((c) => ChallengeRewardModel.fromJson(c)));
+        } else {
+          return [];
+        }
       }
       if (response.statusCode == 401) {
         throw AuthenticationFailure('');
@@ -102,6 +115,37 @@ class ChallengeApiServiceImpl extends ChallengeApiService {
       throw throw ExceptionFailure('');
     } on DioException catch (e) {
       throw ServerFailure(e.toString());
+    }
+  }
+
+  @override
+  Future<Either> leaveChallenge(int challengeId) async {
+    try {
+      await sl<DioClient>()
+          .delete('${ApiUrl.apiChallenge}/$challengeId/participant/leave');
+
+      return Right(true);
+    } on DioException catch (e) {
+      throw ServerFailure(e.toString());
+    }
+  }
+
+  @override
+  Future<ChallengeModel> creteChallenge(CreateChallengeReq challenge) async {
+    try {
+      var response = await sl<DioClient>()
+          .post(ApiUrl.apiChallenge, data: challenge.toJson());
+
+      if (response.statusCode == 201) {
+        return ChallengeModel.fromJson(response.data['result']);
+      } else {
+        throw AuthorizationFailure(
+            response.data['message'], response.statusCode!);
+      }
+    } on DioException catch (e) {
+      throw ServerFailure(e.toString());
+    } on AuthenticationFailure catch (e) {
+      throw AuthenticationFailure(e.message);
     }
   }
 }

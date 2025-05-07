@@ -3,6 +3,7 @@ import 'package:Tracio/core/erorr/failure.dart';
 import 'package:Tracio/core/usecase/usecase.dart';
 import 'package:Tracio/data/auth/models/change_role_req.dart';
 import 'package:Tracio/data/auth/models/login_req.dart';
+
 import 'package:Tracio/domain/auth/usecases/change_role.dart';
 import 'package:Tracio/domain/auth/usecases/get_cacher_user.dart';
 import 'package:Tracio/domain/auth/usecases/login.dart';
@@ -10,11 +11,11 @@ import 'package:Tracio/domain/auth/usecases/login_google.dart';
 import 'package:Tracio/domain/auth/usecases/logout.dart';
 import 'package:Tracio/presentation/auth/bloc/authCubit/auth_state.dart';
 
+import '../../../../data/auth/sources/auth_local_source/auth_local_source.dart';
 import '../../../../service_locator.dart';
 
 class AuthCubit extends Cubit<AuthState> {
   AuthCubit() : super(AuthInitial());
-
   void login(LoginReq login) async {
     try {
       emit(AuthLoading());
@@ -66,6 +67,25 @@ class AuthCubit extends Cubit<AuthState> {
   void logout() async {
     await sl<LogoutUseCase>().call(NoParams());
     emit(AuthLoggedOut());
+  }
+
+  void refreshToken() async {
+    try {
+      emit(AuthLoading());
+      var refreshToken = await sl<AuthLocalSource>().getRefreshToken();
+      print('Refresh token: $refreshToken');
+      var result = await sl<ChangeRoleUseCase>()
+          .call(ChangeRoleReq(refreshToken: refreshToken, role: 'user'));
+      result.fold((failure) => emit(AuthFailure(failure)), (data) async {
+        final result = await sl<GetCacherUserUseCase>().call(NoParams());
+        result.fold(
+          (err) => emit(AuthFailure(err)),
+          (user) => emit(AuthChangeRole(user: user)),
+        );
+      });
+    } catch (e) {
+      emit(AuthFailure(ExceptionFailure(e.toString())));
+    }
   }
 
   void checkUser() async {

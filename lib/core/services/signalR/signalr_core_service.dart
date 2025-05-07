@@ -11,7 +11,6 @@ class SignalRCoreService {
   bool get isConnected => _isConnected;
 
   Future<void> init(String hubUrl) async {
-   
     _hub = HubConnectionBuilder()
         .withUrl(
           hubUrl,

@@ -20,11 +20,12 @@ class SplashCubit extends Cubit<SplashState> {
       emit(Authenticated(role: data));
     });
   }
+
   void checkUser() async {
     try {
       final result = await sl<GetCacherUserUseCase>().call(NoParams());
       result.fold((error) => emit(UnAuthenticated()),
-          (data) => emit(Authenticated(role:  data.role!)));
+          (data) => emit(Authenticated(role: data.role!)));
     } catch (e) {
       emit((UnAuthenticated()));
     }
