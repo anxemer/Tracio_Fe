@@ -26,9 +26,6 @@ class _LibraryPageState extends State<LibraryPage>
     0: false, // Rides
     1: false, // Routes
   };
-  bool _isSearching = false;
-  String _searchQuery = '';
-  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -46,7 +43,6 @@ class _LibraryPageState extends State<LibraryPage>
     setState(() {
       _isMapView[_selectedTabIndex] = !(_isMapView[_selectedTabIndex] ?? false);
     });
-    _searchController.dispose();
   }
 
   @override
@@ -103,38 +99,16 @@ class _LibraryPageState extends State<LibraryPage>
 
   PreferredSizeWidget _buildAppBar() {
     return BasicAppbar(
-      hideBack: _isSearching,
+      hideBack: false,
       action: _buildAppbarAction(),
-      title: _isSearching
-          ? Container(
-              color: Colors.white,
-              child: TextField(
-                controller: _searchController,
-                autofocus: true,
-                style: const TextStyle(color: Colors.black87),
-                cursorColor: Colors.black87,
-                decoration: const InputDecoration(
-                  contentPadding:
-                      EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                  hintText: 'Search...',
-                  hintStyle: TextStyle(color: Colors.black87),
-                  border: InputBorder.none,
-                ),
-                onChanged: (value) {
-                  setState(() {
-                    _searchQuery = value;
-                  });
-                },
-              ),
-            )
-          : Text(
-              'Library',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w400,
-                fontSize: AppSize.textHeading * 0.9.sp,
-              ),
-            ),
+      title: Text(
+        'Library',
+        style: TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.w400,
+          fontSize: AppSize.textHeading * 0.9.sp,
+        ),
+      ),
     );
   }
 
@@ -149,20 +123,10 @@ class _LibraryPageState extends State<LibraryPage>
           children: [
             IconButton(
               icon: Icon(
-                _isSearching ? Icons.close : Icons.search,
+                Icons.search,
                 color: Colors.white,
               ),
-              onPressed: () {
-                setState(() {
-                  if (_isSearching) {
-                    _isSearching = false;
-                    _searchController.clear();
-                    _searchQuery = '';
-                  } else {
-                    _isSearching = true;
-                  }
-                });
-              },
+              onPressed: () {},
             ),
             IconButton(
               icon: Icon(isMap ? Icons.list : Icons.map, color: Colors.white),
