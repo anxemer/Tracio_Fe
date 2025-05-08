@@ -135,3 +135,46 @@ class RouteEntity {
     );
   }
 }
+
+class RoutePaginationEntity {
+  List<RouteEntity> routes;
+  int totalCount;
+  int pageNumber;
+  int pageSize;
+  int totalPages;
+  bool hasPreviousPage;
+  bool hasNextPage;
+  RoutePaginationEntity({
+    required this.routes,
+    required this.totalCount,
+    required this.pageNumber,
+    required this.pageSize,
+    required this.totalPages,
+    required this.hasPreviousPage,
+    required this.hasNextPage,
+  });
+
+  RoutePaginationEntity copyWith({
+    List<RouteEntity>? routes,
+    int? totalCount,
+    int? pageNumber,
+    int? pageSize,
+    int? totalPages,
+    bool? hasPreviousPage,
+    bool? hasNextPage,
+  }) {
+    return RoutePaginationEntity(
+      routes: routes ?? this.routes,
+      totalCount: totalCount ?? this.totalCount,
+      pageNumber: pageNumber ?? this.pageNumber,
+      pageSize: pageSize ?? this.pageSize,
+      totalPages: totalPages ?? this.totalPages,
+      hasPreviousPage: hasPreviousPage ?? this.hasPreviousPage,
+      hasNextPage: hasNextPage ?? this.hasNextPage,
+    );
+  }
+
+  int get currentPage => pageNumber;
+
+  bool get isLastPage => !hasNextPage;
+}

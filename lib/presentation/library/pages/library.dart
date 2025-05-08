@@ -82,11 +82,11 @@ class _LibraryPageState extends State<LibraryPage>
                   physics: const NeverScrollableScrollPhysics(),
                   children: [
                     BlocProvider(
-                      create: (context) => RouteFilterCubit(isPlanned: false),
+                      create: (context) => RouteFilterCubit(),
                       child: RidesTab(),
                     ),
                     BlocProvider(
-                      create: (context) => RouteFilterCubit(isPlanned: true),
+                      create: (context) => RouteFilterCubit(),
                       child: RouteTab(),
                     ),
                     SavedTab(),

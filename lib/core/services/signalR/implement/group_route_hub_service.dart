@@ -23,6 +23,7 @@ class GroupRouteHubService {
 
   Future<void> connect() async {
     String accessToken = await sl<AuthLocalSource>().getToken();
+    assert(accessToken.isNotEmpty, '❌ accessToken is empty');
     signalrLogger.i(
         '[GroupRouteHub] 🔌 Connecting to ${ApiUrl.groupRouteHubUrl}/$accessToken...');
     await _core.init("${ApiUrl.groupRouteHubUrl}?token=$accessToken");
@@ -35,12 +36,10 @@ class GroupRouteHubService {
   }
 
   Future<void> joinGroupRoute(String groupRouteId) async {
-    String accessToken = await sl<AuthLocalSource>().getToken();
     signalrLogger.i('[GroupRouteHub] 📤 Sending JoinGroupRoute($groupRouteId)');
     try {
       await _core.invoke('JoinGroupRoute',
-          args: [groupRouteId],
-          hubUrl: "${ApiUrl.groupRouteHubUrl}?token=$accessToken");
+          args: [groupRouteId], hubUrl: ApiUrl.groupRouteHubUrl);
       if (!_joinedGroupRouteIds.contains(groupRouteId)) {
         _joinedGroupRouteIds.add(groupRouteId);
       }
@@ -51,13 +50,11 @@ class GroupRouteHubService {
   }
 
   Future<void> leaveGroupRoute(String groupRouteId) async {
-    String accessToken = await sl<AuthLocalSource>().getToken();
     signalrLogger
         .i('[GroupRouteHub] 📤 Sending LeaveGroupRoute($groupRouteId)');
     try {
       await _core.invoke('LeaveGroupRoute',
-          args: [groupRouteId],
-          hubUrl: "${ApiUrl.groupRouteHubUrl}?token=$accessToken");
+          args: [groupRouteId], hubUrl: ApiUrl.groupRouteHubUrl);
       _joinedGroupRouteIds.remove(groupRouteId);
       signalrLogger.d('[GroupRouteHub] ✅ Left group route: $groupRouteId');
     } catch (e) {
@@ -81,7 +78,7 @@ class GroupRouteHubService {
     }
   }
 
-  void _handleReconnect({String? connectionId}) {
+  void _handleReconnect({String? connectionId}) async {
     signalrLogger.i(
         '🔄 Rejoining ${_joinedGroupRouteIds.length} group routes after reconnect...');
     for (final id in _joinedGroupRouteIds) {

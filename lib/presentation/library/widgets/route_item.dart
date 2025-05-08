@@ -1,4 +1,7 @@
+import 'package:Tracio/presentation/library/pages/route_detail.dart';
+import 'package:Tracio/presentation/map/bloc/map_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:Tracio/core/constants/app_size.dart';
 import 'package:Tracio/domain/map/entities/route.dart';
@@ -102,6 +105,7 @@ class _RouteItemState extends State<RouteItem> {
             },
             itemBuilder: (context) => [
               _buildPopupMenuItem("Share", Icons.share),
+              _buildPopupMenuItem("View Detail", Icons.share_location_outlined),
               _buildPopupMenuItem("Navigate", Icons.directions),
               _buildPopupMenuItem("Edit Details", Icons.edit),
               _buildPopupMenuItem("Download for Offline", Icons.download),
@@ -136,6 +140,19 @@ class _RouteItemState extends State<RouteItem> {
     switch (action) {
       case "Share":
         print("Sharing ${widget.routeData.routeName}");
+        break;
+      case "View Detail":
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => BlocProvider(
+              create: (context) => MapCubit(),
+              child: RouteDetailScreen(
+                routeId: widget.routeData.routeId,
+              ),
+            ),
+          ),
+        );
         break;
       case "Navigate":
         print("Navigating to ${widget.routeData.routeName}");

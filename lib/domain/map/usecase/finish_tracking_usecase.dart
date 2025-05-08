@@ -8,7 +8,7 @@ import 'package:Tracio/service_locator.dart';
 
 class FinishTrackingUsecase extends Usecase<dynamic, FinishTrackingReq> {
   @override
-  Future<Either<Failure, RouteDetailEntity>> call(
+  Future<Either<Failure, RouteDetailEntity?>> call(
       FinishTrackingReq params) async {
     return await sl<RouteRepository>().finishTracking(params);
   }

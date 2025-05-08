@@ -18,15 +18,8 @@ class TrackingGrpcService implements ITrackingGrpcService {
   late final LocationServiceClient _client;
   late final ClientChannel _channel;
 
-  TrackingGrpcService._();
-
-  static TrackingGrpcService init() {
-    final service = TrackingGrpcService._();
-    String token = "";
-    Future.delayed(Duration(seconds: 2), () async {
-      token = await sl<AuthLocalSource>().getToken();
-    });
-    service._channel = ClientChannel(
+  TrackingGrpcService() {
+    _channel = ClientChannel(
       '103.28.33.123',
       port: 6009,
       options: const ChannelOptions(
@@ -34,17 +27,7 @@ class TrackingGrpcService implements ITrackingGrpcService {
       ),
     );
 
-    service._client = LocationServiceClient(
-      service._channel,
-      options: CallOptions(
-        timeout: const Duration(seconds: 5),
-        metadata: {
-          'authorization': 'Bearer $token',
-        },
-      ),
-    );
-
-    return service;
+    _client = LocationServiceClient(_channel);
   }
 
   @override
@@ -52,6 +35,7 @@ class TrackingGrpcService implements ITrackingGrpcService {
     required int routeId,
     required List<Map<String, dynamic>> locations,
   }) async {
+    final token = await sl<AuthLocalSource>().getToken();
     final request = LocationRequest()..routeId = routeId;
 
     for (final loc in locations) {
@@ -66,7 +50,12 @@ class TrackingGrpcService implements ITrackingGrpcService {
 
     try {
       debugPrint('📍 gRPC Success: $request');
-      final response = await _client.sendLocations(request);
+      final response = await _client.sendLocations(
+        request,
+        options: CallOptions(metadata: {
+          'authorization': 'Bearer $token',
+        }),
+      );
       debugPrint('📍 gRPC Success: ${response.message}');
       return response;
     } catch (e) {

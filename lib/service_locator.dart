@@ -3,6 +3,11 @@ import 'package:Tracio/data/blog/repositories/blog_repository_impl.dart';
 import 'package:Tracio/data/challenge/models/request/create_challenge_req.dart';
 import 'package:Tracio/domain/challenge/usecase/create_challenge.dart';
 import 'package:Tracio/domain/challenge/usecase/get_user_reward.dart';
+import 'package:Tracio/domain/map/usecase/delete_route_media_usecase.dart';
+import 'package:Tracio/domain/map/usecase/edit_route_tracking_usecase.dart';
+import 'package:Tracio/domain/map/usecase/get_ongoing_route_usecase.dart';
+import 'package:Tracio/domain/map/usecase/get_route_media_usecase.dart';
+import 'package:Tracio/domain/map/usecase/post_route_media_usecase.dart';
 import 'package:Tracio/domain/user/usecase/unfollow_user..dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -216,7 +221,7 @@ Future<void> initializeDependencies() async {
   // * gRPC & Hubs
   sl.registerLazySingleton(() => SignalRCoreService());
   sl.registerLazySingleton<ITrackingGrpcService>(
-    () => TrackingGrpcService.init(),
+    () => TrackingGrpcService(),
   );
   sl.registerLazySingleton<ITrackingHubService>(() => TrackingHubService());
 
@@ -225,7 +230,8 @@ Future<void> initializeDependencies() async {
       () => GroupRouteHubService(sl<SignalRCoreService>()));
   sl.registerLazySingleton(() => ChatHubService(sl<SignalRCoreService>()));
   sl.registerLazySingleton(() => MatchingHubService(sl<SignalRCoreService>()));
-  sl.registerLazySingleton(() => NotificationHubService(sl<SignalRCoreService>()));
+  sl.registerLazySingleton(
+      () => NotificationHubService(sl<SignalRCoreService>()));
   // * USECASES--use registerFactory
   sl.registerFactory<GetBlogsUseCase>(() => GetBlogsUseCase());
   sl.registerFactory<GetBookmarkBlogsUseCase>(() => GetBookmarkBlogsUseCase());
@@ -344,6 +350,12 @@ Future<void> initializeDependencies() async {
   sl.registerFactory<RegisterShopUseCase>(() => RegisterShopUseCase());
   sl.registerFactory<EditShopUseCase>(() => EditShopUseCase());
   sl.registerFactory<GetShopMessagesUsecase>(() => GetShopMessagesUsecase());
+  sl.registerFactory<PostRouteMediaUsecase>(() => PostRouteMediaUsecase());
+  sl.registerFactory<GetRouteMediaUsecase>(() => GetRouteMediaUsecase());
+  sl.registerFactory<DeleteRouteMediaUsecase>(() => DeleteRouteMediaUsecase());
+  sl.registerFactory<EditRouteTrackingUsecase>(
+      () => EditRouteTrackingUsecase());
+  sl.registerFactory<GetOngoingRouteUsecase>(() => GetOngoingRouteUsecase());
 
   await sl.allReady();
 }

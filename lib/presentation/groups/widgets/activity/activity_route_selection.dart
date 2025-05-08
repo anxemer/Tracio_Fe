@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:Tracio/core/configs/theme/app_colors.dart';
-import 'package:Tracio/data/map/models/request/get_route_req.dart';
 import 'package:Tracio/presentation/library/widgets/feature_section.dart';
 import 'package:Tracio/presentation/library/widgets/route_item.dart';
 import 'package:Tracio/presentation/map/bloc/route_cubit.dart';
@@ -17,9 +16,7 @@ class ActivityRouteSelection extends StatefulWidget {
 
 class _ActivityRouteSelectionState extends State<ActivityRouteSelection> {
   Future<void> _fetchRoutes() async {
-    final GetRouteReq request =
-        GetRouteReq(pageNumber: 1, pageSize: 10, sortAsc: false);
-    await context.read<RouteCubit>().getRoutes(request);
+    await context.read<RouteCubit>().getPlans(null, pageSize: 30);
   }
 
   @override
@@ -46,11 +43,11 @@ class _ActivityRouteSelectionState extends State<ActivityRouteSelection> {
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               children: [
-                if (state is GetRouteLoaded && state.routes.isNotEmpty)
-                  ...state.routes.map((route) => GestureDetector(
+                if (state is GetRouteLoaded && state.plans.isNotEmpty)
+                  ...state.plans.map((route) => GestureDetector(
                       onTap: () => Navigator.pop(context, route),
                       child: RouteItem(routeData: route))),
-                if ((state is GetRouteLoaded && state.routes.isEmpty) ||
+                if ((state is GetRouteLoaded && state.plans.isEmpty) ||
                     state is GetRouteFailure)
                   Column(
                     children: [

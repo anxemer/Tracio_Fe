@@ -1,3 +1,5 @@
+import 'package:Tracio/common/widget/picture/full_screen_image_view.dart';
+import 'package:Tracio/presentation/map/bloc/route_state.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,6 +11,7 @@ import 'package:Tracio/domain/map/entities/route_detail.dart';
 import 'package:Tracio/presentation/library/bloc/reaction/bloc/reaction_bloc.dart';
 import 'package:Tracio/presentation/library/widgets/detail/route_blog_reviews.dart';
 import 'package:Tracio/presentation/map/bloc/route_cubit.dart';
+import 'package:intl/intl.dart';
 
 class RouteDetailInformation extends StatefulWidget {
   final RouteDetailEntity routeEntity;
@@ -87,6 +90,73 @@ class _RouteDetailInformationState extends State<RouteDetailInformation> {
             height: 8.0,
           ),
           Text(widget.routeEntity.description ?? ""),
+          const SizedBox(
+            height: 8.0,
+          ),
+          BlocBuilder<RouteCubit, RouteState>(
+            builder: (context, state) {
+              if (state is GetRouteDetailLoaded &&
+                  state.routeMediaFiles.isNotEmpty) {
+                final media = state.routeMediaFiles;
+
+                return Padding(
+                  padding: const EdgeInsets.only(top: 12.0),
+                  child: GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: media.length,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      mainAxisSpacing: 8,
+                      crossAxisSpacing: 8,
+                      childAspectRatio: 1,
+                    ),
+                    itemBuilder: (context, index) {
+                      final item = media[index];
+                      return ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                              builder: (_) => FullScreenImageView(
+                                imageUrl: item.mediaUrl,
+                                overlay: Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: Colors.black.withValues(alpha: .6),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Text(
+                                    "Captured: ${DateFormat('yyyy-MM-dd HH:mm').format(item.capturedAt)}",
+                                    style: const TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                              ),
+                            ));
+                          },
+                          child: CachedNetworkImage(
+                            imageUrl: item.mediaUrl,
+                            fit: BoxFit.cover,
+                            placeholder: (_, __) => const Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                            errorWidget: (_, __, ___) => const Icon(
+                                Icons.broken_image,
+                                color: Colors.grey),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                );
+              }
+              return const SizedBox.shrink();
+            },
+          ),
+          const SizedBox(
+            height: 8.0,
+          ),
           SizedBox(
             width: MediaQuery.of(context).size.width,
             child: GridView.builder(

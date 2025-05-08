@@ -49,14 +49,10 @@ class _CyclingPageState extends State<CyclingPage> {
   CarouselSliderController carouselController = CarouselSliderController();
   bool isLoading = false;
   void setLoading(bool value) {
+    if (!mounted) return;
     setState(() {
       isLoading = value;
     });
-  }
-
-  @override
-  void initState() {
-    super.initState();
   }
 
   Future<void> _initializeBackgroundGeolocation() async {
@@ -74,6 +70,7 @@ class _CyclingPageState extends State<CyclingPage> {
     });
 
     bg.BackgroundGeolocation.setOdometer(0.0);
+    if (!mounted) return;
     final state = await bg.BackgroundGeolocation.ready(bg.Config(
       reset: false,
       // Logging & Debug
@@ -130,6 +127,7 @@ class _CyclingPageState extends State<CyclingPage> {
     }
 
     final result = await sl<StartTrackingUsecase>().call(params);
+    if (!mounted) return;
     result.fold((error) {
       // Handle error
       debugPrint("Error starting tracking: $error");
@@ -171,6 +169,13 @@ class _CyclingPageState extends State<CyclingPage> {
       debugPrint("Tracking finished successfully: $response");
       await bg.BackgroundGeolocation.stop();
       context.read<TrackingBloc>().add(EndTracking());
+      if (response == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text("Route too short to save (under 500m). Auto-stop")),
+        );
+        return;
+      }
       final decodedPolyline = decodePolyline(response.polyline)
           .map((coord) => mp.Position(coord[1], coord[0]))
           .toList();
@@ -185,7 +190,9 @@ class _CyclingPageState extends State<CyclingPage> {
                           mp.Position(response.origin.longitude,
                               response.origin.latitude),
                           mp.Position(response.destination.longitude,
-                              response.destination.latitude)),
+                              response.destination.latitude),
+                          width: 400,
+                          height: 400),
                     child: BlocProvider.value(
                       value: context.read<RouteCubit>(),
                       child: CyclingSnapshotDisplay(route: response),
@@ -225,6 +232,7 @@ class _CyclingPageState extends State<CyclingPage> {
     super.dispose();
     bg.BackgroundGeolocation.setOdometer(0.0);
     bg.BackgroundGeolocation.stop();
+    bg.BackgroundGeolocation.removeListeners();
 
     EasyThrottle.cancelAll();
   }
@@ -358,7 +366,7 @@ class _CyclingPageState extends State<CyclingPage> {
                       child: Align(
                         alignment: Alignment.topCenter,
                         child: CyclingTopActionBar(
-                          isRiding: isLocked,
+                          isRiding: false,
                         ),
                       ),
                     );

@@ -196,9 +196,12 @@ class _GroupActivityDetailState extends State<GroupActivityDetail> {
             ),
           ),
           _buildActionButton("Start Riding", Icons.start_sharp, () async {
-            await sl<GroupRouteHubService>()
-                .joinGroupRoute(widget.groupRouteId.toString())
-                .then((value) {
+            try {
+              final groupRouteHub = sl<GroupRouteHubService>();
+              await groupRouteHub.connect();
+              await groupRouteHub
+                  .joinGroupRoute(widget.groupRouteId.toString());
+
               Navigator.push(context, MaterialPageRoute(builder: (context) {
                 return BlocProvider.value(
                   value: context.read<TrackingBloc>(),
@@ -208,8 +211,17 @@ class _GroupActivityDetailState extends State<GroupActivityDetail> {
                   ),
                 );
               }));
-            });
-          }, outline: true, disabled: isDisabled),
+            } catch (e, stack) {
+              debugPrint("❌ Failed to start riding: $e\n$stack");
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                      content:
+                          Text('Failed to connect to ride. Please try again.')),
+                );
+              }
+            }
+          }),
         ],
       ),
     );

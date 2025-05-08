@@ -67,6 +67,7 @@ class _RouteDetailScreenState extends State<RouteDetailScreen> with RouteAware {
               listener: (context, state) async {
                 if (state is GetRouteDetailLoaded &&
                     context.read<MapCubit>().mapboxMap != null) {
+                  await context.read<MapCubit>().clearAnnotations();
                   await context.read<MapCubit>().addPolylineRoute(
                       _getLineString(state.route.polyline),
                       lineOpacity: 1,

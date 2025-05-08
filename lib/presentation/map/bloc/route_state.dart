@@ -1,7 +1,9 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:Tracio/core/erorr/failure.dart';
 import 'package:Tracio/domain/map/entities/route.dart';
 import 'package:Tracio/domain/map/entities/route_blog.dart';
 import 'package:Tracio/domain/map/entities/route_detail.dart';
+import 'package:Tracio/domain/map/entities/route_media.dart';
 import 'package:Tracio/domain/map/entities/route_review.dart';
 
 abstract class RouteState {}
@@ -11,23 +13,34 @@ class GetRouteInitial extends RouteState {}
 class GetRouteLoading extends RouteState {}
 
 class GetRouteLoaded extends RouteState {
-  final List<RouteEntity> routes;
-  final int pageSize;
-  final int pageNum;
-  final String? filterValue;
-  final String? filterField;
-  final String? sortField;
-  final bool? sortDesc;
-
+  final List<RouteEntity> rides;
+  final List<RouteEntity> plans;
+  final RoutePaginationEntity? ridePagination;
+  final RoutePaginationEntity? plansPagination;
   GetRouteLoaded({
-    required this.routes,
-    required this.pageSize,
-    required this.pageNum,
-    this.filterValue,
-    this.filterField,
-    this.sortField,
-    this.sortDesc,
+    required this.rides,
+    required this.plans,
+    this.ridePagination,
+    this.plansPagination,
   });
+
+  GetRouteLoaded copyWith({
+    List<RouteEntity>? rides,
+    List<RouteEntity>? plans,
+    RoutePaginationEntity? ridePagination,
+    RoutePaginationEntity? plansPagination,
+  }) {
+    return GetRouteLoaded(
+      rides: rides ?? this.rides,
+      plans: plans ?? this.plans,
+      ridePagination: ridePagination ?? this.ridePagination,
+      plansPagination: plansPagination ?? this.plansPagination,
+    );
+  }
+
+  bool get hasMoreRides => ridePagination?.hasNextPage ?? false;
+
+  bool get hasMorePlans => plansPagination?.hasNextPage ?? false;
 }
 
 class GetRouteFailure extends RouteState {
@@ -53,7 +66,8 @@ class GetRouteDetailLoading extends RouteState {}
 
 class GetRouteDetailLoaded extends RouteState {
   final RouteDetailEntity route;
-  GetRouteDetailLoaded({required this.route});
+  final List<RouteMediaEntity> routeMediaFiles;
+  GetRouteDetailLoaded({required this.route, required this.routeMediaFiles});
 }
 
 class GetRouteDetailFailure extends RouteState {
@@ -114,4 +128,34 @@ class GetRouteBlogLoaded extends RouteState {
 class GetRouteBlogFailure extends RouteState {
   final String errorMessage;
   GetRouteBlogFailure({required this.errorMessage});
+}
+
+class UpdateRouteLoading extends RouteState {}
+
+class UpdateRouteLoadingProgress extends RouteState {
+  final int currentIndex;
+  final int totalCount;
+  final String statusMessage;
+  final double progress;
+
+  UpdateRouteLoadingProgress({
+    required this.currentIndex,
+    required this.totalCount,
+    required this.statusMessage,
+  }) : progress = currentIndex / totalCount;
+
+  List<Object?> get props =>
+      [currentIndex, totalCount, statusMessage, progress];
+}
+
+class UpdateRouteLoaded extends RouteState {
+  final bool isSucceed;
+  final String successMessage;
+
+  UpdateRouteLoaded({required this.isSucceed, required this.successMessage});
+}
+
+class UpdateRouteFailure extends RouteState {
+  final String errorMessage;
+  UpdateRouteFailure({required this.errorMessage});
 }

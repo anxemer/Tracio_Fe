@@ -34,23 +34,15 @@ class _CyclingMapViewState extends State<CyclingMapView>
 
   final groupRouteHub = sl<GroupRouteHubService>();
   final matchingHub = sl<MatchingHubService>();
+
+  StreamSubscription? _locationUpdateSub;
+  StreamSubscription? _matchedUserUpdateSub;
+
   @override
-  void initState() {
-    super.initState();
-
-    groupRouteHub.onLocationUpdate.listen((data) async {
-      await context.read<MapCubit>().updateUserMarker(
-          id: data.userId.toString(),
-          imageUrl: data.profilePicture,
-          newPosition: mapbox.Position(data.longitude, data.latitude));
-    });
-
-    matchingHub.onUpdatedMatchedUser.listen((data) async {
-      await context.read<MapCubit>().updateUserMarker(
-          id: data.userId.toString(),
-          imageUrl: data.avatar,
-          newPosition: mapbox.Position(data.longitude, data.latitude));
-    });
+  void dispose() {
+    _locationUpdateSub?.cancel();
+    _matchedUserUpdateSub?.cancel();
+    super.dispose();
   }
 
   Future<ui.Image> _createNumberedImage(int number) async {
@@ -180,9 +172,37 @@ class _CyclingMapViewState extends State<CyclingMapView>
                 child: mapbox.MapWidget(
                   key: const ValueKey("mapWidget"),
                   cameraOptions: mapCubit.camera,
-                  onMapCreated: (map) {
+                  onMapCreated: (map) async {
                     mapCubit.initializeMap(map);
+
                     isMapInitialized = true;
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      _locationUpdateSub =
+                          groupRouteHub.onLocationUpdate.listen((data) async {
+                        await context.read<MapCubit>().updateUserMarker(
+                              id: data.userId.toString(),
+                              imageUrl: data.profilePicture,
+                              newPosition: mapbox.Position(
+                                  data.longitude, data.latitude),
+                            );
+                      });
+                    });
+                    _matchedUserUpdateSub =
+                        matchingHub.onUpdatedMatchedUser.listen((data) async {
+                      if (!mounted) return;
+
+                      try {
+                        await context.read<MapCubit>().updateUserMarker(
+                              id: data.userId.toString(),
+                              imageUrl: data.avatar,
+                              newPosition: mapbox.Position(
+                                  data.longitude, data.latitude),
+                            );
+                      } catch (e, stack) {
+                        debugPrint(
+                            "❌ Error updating marker for user ${data.userId}: $e\n$stack");
+                      }
+                    });
                   },
                 ),
               ),

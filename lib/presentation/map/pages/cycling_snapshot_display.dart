@@ -1,4 +1,9 @@
 import 'dart:io';
+import 'package:Tracio/data/map/models/request/post_route_media_req.dart';
+import 'package:Tracio/data/map/models/request/update_route_req.dart';
+import 'package:Tracio/presentation/library/pages/route_detail.dart';
+import 'package:Tracio/presentation/map/bloc/route_cubit.dart';
+import 'package:Tracio/presentation/map/bloc/route_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -57,10 +62,93 @@ class _CyclingSnapshotDisplayState extends State<CyclingSnapshotDisplay> {
   void _submit() {
     final name = _nameController.text.trim();
     final desc = _descriptionController.text.trim();
-    debugPrint("Route Name: $name");
-    debugPrint("Description: $desc");
-    debugPrint("Images: ${_selectedImages.map((x) => x.path)}");
-    debugPrint("Mood: ${_chosenMood?.name ?? ""}");
+    final updateRequest = UpdateRouteReq(
+      routeId: widget.route.routeId,
+      routeName: name,
+      description: desc,
+      routeThumbnail: context.read<MapCubit>().snapshotImageUrl.toString(),
+      isPublic: false,
+      mood: _chosenMood?.name ?? "None",
+    );
+    final List<PostRouteMediaReq> routeMedias = _selectedImages
+        .map(
+          (image) => PostRouteMediaReq(
+            routeId: widget.route.routeId,
+            mediaFile: File(image.path),
+          ),
+        )
+        .toList();
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => BlocProvider.value(
+        value: context.read<MapCubit>(),
+        child: BlocProvider.value(
+          value: context.read<RouteCubit>(),
+          child: BlocConsumer<RouteCubit, RouteState>(
+            listener: (context, state) async {
+              if (state is UpdateRouteLoaded) {
+                if (Navigator.canPop(context)) {
+                  Navigator.of(context).pop();
+                }
+                FocusScope.of(context).unfocus();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(state.successMessage),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+                if (context.mounted) {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (_) => BlocProvider.value(
+                            value: context.read<MapCubit>(),
+                            child: RouteDetailScreen(
+                              routeId: widget.route.routeId,
+                            ),
+                          )));
+                }
+              } else if (state is UpdateRouteFailure) {
+                Navigator.of(context).pop();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(state.errorMessage)),
+                );
+              }
+            },
+            builder: (context, state) {
+              if (state is UpdateRouteLoadingProgress) {
+                return AlertDialog(
+                  title: const Text("Uploading"),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      LinearProgressIndicator(value: state.progress),
+                      SizedBox(height: 12),
+                      Text(state.statusMessage),
+                    ],
+                  ),
+                );
+              } else {
+                return const AlertDialog(
+                  content: Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Row(
+                      children: [
+                        CircularProgressIndicator(),
+                        SizedBox(width: 16),
+                        Expanded(child: Text("Saving route..."))
+                      ],
+                    ),
+                  ),
+                );
+              }
+            },
+          ),
+        ),
+      ),
+    );
+
+    context.read<RouteCubit>().updateRouteWithMedia(updateRequest, routeMedias);
   }
 
   @override
@@ -229,6 +317,57 @@ class _CyclingSnapshotDisplayState extends State<CyclingSnapshotDisplay> {
                                       });
                                     },
                                   ),
+                                  SizedBox(height: 32.h),
+                                  InkWell(
+                                    onTap: () async {
+                                      final shouldDelete =
+                                          await showDialog<bool>(
+                                        context: context,
+                                        builder: (context) => AlertDialog(
+                                          title: const Text("Confirm Delete"),
+                                          content: const Text(
+                                              "Are you sure you want to delete this item?"),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () =>
+                                                  Navigator.pop(context, false),
+                                              child: const Text("Cancel"),
+                                            ),
+                                            TextButton(
+                                              onPressed: () =>
+                                                  Navigator.pop(context, true),
+                                              child: const Text("Delete",
+                                                  style: TextStyle(
+                                                      color: Colors.red)),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+
+                                      if (shouldDelete == true) {
+                                        // Call delete logic here
+                                      }
+                                    },
+                                    child: Ink(
+                                      width: double.infinity,
+                                      height: 60.h,
+                                      color: Colors.grey.shade200,
+                                      child: Center(
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            const Icon(Icons.delete,
+                                                color: Colors.redAccent),
+                                            SizedBox(width: 8.h),
+                                            const Text("Delete",
+                                                style: TextStyle(
+                                                    color: Colors.redAccent)),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  )
                                 ],
                               ),
                             ),
