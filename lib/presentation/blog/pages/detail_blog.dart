@@ -78,9 +78,7 @@ class _DetailBlogPageState extends State<DetailBlogPage> {
               tagUserNames: [],
             );
             context.read<GetCommentCubit>().addComment(newComment);
-            context
-                .read<GetBlogCubit>()
-                .incrementCommentCount(widget.blog.blogId);
+            // context.read<GetBlogCubit>().incrementCommentCount(widget.blogId);
             FocusScope.of(context).unfocus();
           },
         );
@@ -121,9 +119,7 @@ class _DetailBlogPageState extends State<DetailBlogPage> {
               context
                   .read<GetCommentCubit>()
                   .addReplyComment(inputData.commentId!, newReply);
-              context
-                  .read<GetBlogCubit>()
-                  .incrementCommentCount(widget.blog.blogId);
+              // context.read<GetBlogCubit>().incrementCommentCount(widget.blogId);
               _commentInputCubit.updateToDefault(widget.blog.blogId);
               FocusScope.of(context).unfocus();
             },
@@ -167,9 +163,7 @@ class _DetailBlogPageState extends State<DetailBlogPage> {
               context
                   .read<GetCommentCubit>()
                   .addReplyComment(inputData.commentId!, newReply);
-              context
-                  .read<GetBlogCubit>()
-                  .incrementCommentCount(widget.blog.blogId);
+              // context.read<GetBlogCubit>().incrementCommentCount(widget.blogId);
               _commentInputCubit.updateToDefault(widget.blog.blogId);
               FocusScope.of(context).unfocus();
             },
@@ -192,13 +186,12 @@ class _DetailBlogPageState extends State<DetailBlogPage> {
     final commentCubit = context.read<GetCommentCubit>();
     return Scaffold(
       appBar: BasicAppbar(
-        backgroundColor: AppColors.lightBackground,
         height: 100.h,
         hideBack: false,
         title: Text(
           'Blog',
           style: TextStyle(
-              color: context.isDarkMode ? Colors.grey.shade200 : Colors.black87,
+              color: Colors.white,
               fontWeight: FontWeight.bold,
               fontSize: AppSize.textHeading.sp),
         ),

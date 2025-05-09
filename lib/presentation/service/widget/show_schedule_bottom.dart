@@ -10,10 +10,13 @@ class ShowScheduleBottom extends StatefulWidget {
     super.key,
     this.serviceId,
     this.isPlan = false,
+    required this.openTime,
+    required this.closeTime,
   });
   final int? serviceId;
   final bool isPlan;
-
+  final int openTime;
+  final int closeTime;
   @override
   State<ShowScheduleBottom> createState() => _ShowScheduleBottomState();
 }
@@ -28,7 +31,8 @@ class _ShowScheduleBottomState extends State<ShowScheduleBottom> {
         BasicTextButton(
           text: 'Choose Your Free Time',
           onPress: () {
-            ChooseFreeTime().showScheduleBottomSheet(context, widget.serviceId);
+            ChooseFreeTime().showScheduleBottomSheet(
+                context, widget.serviceId, widget.openTime, widget.closeTime);
             // _showScheduleBottomSheet(context);
           },
           borderColor: Colors.black,

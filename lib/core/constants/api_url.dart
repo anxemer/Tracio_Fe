@@ -7,7 +7,7 @@ class ApiUrl {
   //base Url
   // static const baseURL = 'https://192.168.1.9:';
   // static const baseURL = 'https://user.Tracio.space';
-  static const baseURL = 'https://api.Tracio.space';
+  static const baseURL = 'https://api.tracio.space';
   static const hubUrl = 'http://103.28.33.123:5002/content-hub';
   static const groupRouteHubUrl = 'http://103.28.33.123:5009/locationHub';
   static const chatHubUrl = 'http://103.28.33.123:5005/chat-hub';
@@ -33,6 +33,7 @@ class ApiUrl {
   static const changeRole = '$portUser/api/auth/refresh-token';
   static const registerShop = '$portUser/api/users/shop-profile';
   static const editShop = '$portShop/api/shops';
+  static const dailyActivity = '$portShop/api/users/cycling-activities';
 
   //Api Blog
   static const reactBlog = '$portBlog/api/reactions';
@@ -151,6 +152,11 @@ class ApiUrl {
     return Uri.parse('$portShop/api/services').replace(queryParameters: params);
   }
 
+  static Uri urlGetDetailService(int serviceId, [Map<String, String>? params]) {
+    return Uri.parse('$portShop/api/services/$serviceId/service-details')
+        .replace(queryParameters: params);
+  }
+
   static Uri urlGetReviewService(int serviceId, [Map<String, String>? params]) {
     return Uri.parse('$portShop/api/services/$serviceId/reviews')
         .replace(queryParameters: params);
@@ -218,6 +224,8 @@ class ApiUrl {
   //Challenge Api
   static const getChallengeOverview = '$portUser/api/challenge/overview';
   static const apiChallenge = '$portUser/api/challenge';
+  static const requestChallenge =
+      '$portUser/api/challenge/update-status-public';
   // static const apiChallengeReward = '$portUser/api/challenge-reward';
   static Uri apiChallengeReward([Map<String, String>? params]) {
     return Uri.parse('$portUser/api/challenge-reward')
@@ -309,7 +317,7 @@ class ApiUrl {
 
   static Uri urlGetRouteBlogReviews(int routeId,
       [Map<String, String>? params]) {
-    return Uri.parse("$portRoute/api/reviews/route/$routeId")
+    return Uri.parse("$portRoute/api/route-reviews/route/$routeId")
         .replace(queryParameters: params);
   }
 

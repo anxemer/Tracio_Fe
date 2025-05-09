@@ -50,21 +50,28 @@ class UserProfileEntity {
   final String? city;
   final String? district;
   final bool? isActive;
-  final bool? isPublic;
+   bool? isPublic;
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final String? followStatus;
   final List<ChallengeRewardEntity>? rewards;
 
-  String get formattedDistance {
-    if (totalDistance == null) return "0 m";
-    final meters = totalDistance! * 1000;
-    if (meters >= 1000) {
-      return "${(meters / 1000).toStringAsFixed(2)} km";
-    }
-    return "${meters.toStringAsFixed(0)} m";
-  }
+    String formatDistanceFlexible() {
+    if (totalDistance == null || totalDistance! <= 0) return '0 m';
 
+    int totalMeters = (totalDistance! * 1000).round();
+    int kilometers = totalMeters ~/ 1000;
+    int meters = totalMeters % 1000;
+
+    if (kilometers > 0 && meters > 0) {
+      return '$kilometers km $meters m';
+    } else if (kilometers > 0) {
+      return '$kilometers km';
+    } else {
+      if (meters < 200) meters = 200;
+      return '$meters m';
+    }
+  }
   String get formattedDuration {
     if (totalDuration == null) return "0h0m";
     final int seconds = totalDuration!.round();

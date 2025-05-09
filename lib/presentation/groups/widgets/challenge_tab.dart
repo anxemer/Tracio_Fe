@@ -113,7 +113,7 @@ class _ChallengeTabState extends State<ChallengeTab> {
                                 ),
                               ),
                               SizedBox(
-                                  height: 80.h,
+                                  height: 90.h,
                                   width: double.infinity,
                                   child: ListView.builder(
                                     scrollDirection: Axis.horizontal,

@@ -17,8 +17,8 @@ enum NotificationType {
   blogReplyReReply,
   blogReplyComment,
   reactionComment,
-  blogReactionReply,
   reactionBlog,
+  blogReactionReply,
   reviewService,
   replyReview,
   bookingService,
@@ -96,6 +96,7 @@ void notificationTapBackground(NotificationResponse notificationResponse) {
 class INotificationService {
   static final FlutterLocalNotificationsPlugin _notificationsPlugin =
       FlutterLocalNotificationsPlugin();
+  static final List<NotificationModel> _pendingNotifications = [];
 
   static const int _trackingChannelId = 888;
   static const int _blogChannelId = 1001;
@@ -118,6 +119,17 @@ class INotificationService {
       onDidReceiveNotificationResponse: _onNotificationTapped,
       onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
     );
+
+    // Đồng bộ hóa các thông báo đang chờ khi context sẵn sàng
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final context = navigatorKey.currentContext;
+      if (context != null && _pendingNotifications.isNotEmpty) {
+        for (var notification in _pendingNotifications) {
+          context.read<NotificationBloc>().add(AddNotification(notification));
+        }
+        _pendingNotifications.clear();
+      }
+    });
   }
 
   static void _onNotificationTapped(NotificationResponse response) {
@@ -126,7 +138,7 @@ class INotificationService {
 
   static void _handleNotificationTap(String? payload) {
     if (payload == null) {
-      print('No payload provided');
+      debugPrint('No payload provided');
       return;
     }
 
@@ -138,7 +150,7 @@ class INotificationService {
 
       final context = navigatorKey.currentContext;
       if (context == null) {
-        print('No context available for navigation');
+        debugPrint('No context available for navigation');
         return;
       }
 
@@ -156,7 +168,6 @@ class INotificationService {
           );
           break;
         case 7:
-        // case 8:
         case 14:
           Navigator.pushNamed(
             context,
@@ -166,11 +177,6 @@ class INotificationService {
           break;
         case 8:
           AppNavigator.push(context, BookingDetailScreen(bookingId: entityId));
-          // Navigator.pushNamed(
-          //   context,
-          //   '/booking_detail',
-          //   arguments: {'bookingId': entityId},
-          // );
           break;
         case 10:
         case 11:
@@ -220,10 +226,10 @@ class INotificationService {
           Navigator.pushNamed(context, '/notifications');
       }
 
-      print(
+      debugPrint(
           'Navigated for notification: $notificationId, entityType: $entityType');
     } catch (e) {
-      print('Error handling notification tap: $e');
+      debugPrint('Error handling notification tap: $e');
     }
   }
 
@@ -235,6 +241,9 @@ class INotificationService {
     String? payload,
     DateTime? startTime,
   }) async {
+    debugPrint(
+        'Showing notification: id=$id, type=$type, title=$title, body=$body, payload=$payload');
+
     // Giải mã payload để lấy thông tin
     Map<String, dynamic>? payloadData;
     if (payload != null) {
@@ -258,6 +267,11 @@ class INotificationService {
     final context = navigatorKey.currentContext;
     if (context != null) {
       context.read<NotificationBloc>().add(AddNotification(notification));
+      debugPrint('Added notification to bloc: ${notification.notificationId}');
+    } else {
+      _pendingNotifications.add(notification);
+      debugPrint(
+          'Context null, added to pending: ${notification.notificationId}');
     }
 
     // Hiển thị thông báo
@@ -269,20 +283,6 @@ class INotificationService {
   static AndroidNotificationDetails _getAndroidNotificationDetails(
       NotificationType type, DateTime? startTime) {
     switch (type) {
-      // case NotificationType.rideTracking:
-      //   return AndroidNotificationDetails(
-      //     'ride_tracking',
-      //     'Ride Tracking',
-      //     channelDescription: 'Ride tracking in progress',
-      //     importance: Importance.defaultImportance,
-      //     priority: Priority.defaultPriority,
-      //     ongoing: true,
-      //     onlyAlertOnce: true,
-      //     usesChronometer: true,
-      //     silent: true,
-      //     when: startTime?.millisecondsSinceEpoch ??
-      //         DateTime.now().millisecondsSinceEpoch,
-      //   );
       case NotificationType.commentBlog:
       case NotificationType.blogReplyReReply:
       case NotificationType.blogReplyComment:

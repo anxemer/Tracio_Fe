@@ -50,12 +50,10 @@ class _DetailServicePageState extends State<DetailServicePage> {
           ServiceDetailCubit()..getServiceDetail(widget.serviceId),
       child: Scaffold(
         appBar: BasicAppbar(
-          backgroundColor: Colors.transparent,
           title: Text(
             'Detail',
             style: TextStyle(
-                color:
-                    context.isDarkMode ? Colors.grey.shade200 : Colors.black87,
+                color: Colors.grey.shade200,
                 fontWeight: FontWeight.bold,
                 fontSize: AppSize.textHeading.sp),
           ),
@@ -93,7 +91,9 @@ class _DetailServicePageState extends State<DetailServicePage> {
                               buildTitle(
                                   state.detailService.service.serviceName!,
                                   state.detailService.service.formattedDuration,
-                                  state.detailService.service.formattedPrice),
+                                  state.detailService.service.formattedPrice,
+                                  state
+                                      .detailService.service.formattedDistance),
                               SizedBox(
                                 height: 10.h,
                               ),
@@ -116,7 +116,8 @@ class _DetailServicePageState extends State<DetailServicePage> {
                                   state.detailService.service.shopId!,
                                   state.detailService.service.district!,
                                   state.detailService.service.city!,
-                                  state.detailService.service.profilePicture!),
+                                  state.detailService.service.profilePicture!,
+                                  state.detailService.service.address!),
                               SizedBox(
                                 height: 10.h,
                               ),
@@ -249,7 +250,10 @@ class _DetailServicePageState extends State<DetailServicePage> {
                                 //   ),
                                 // ],
                               ),
-                              child: buildButton(context),
+                              child: buildButton(
+                                  context,
+                                  state.detailService.service.openHour!,
+                                  state.detailService.service.closeHour!),
                             ),
                           ),
                         ],
@@ -360,17 +364,17 @@ class _DetailServicePageState extends State<DetailServicePage> {
     );
   }
 
-  Padding buildTitle(String serviceName, String duration, String price) {
+  Padding buildTitle(
+      String serviceName, String duration, String price, String distance) {
     var isDark = context.isDarkMode;
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+        padding: EdgeInsets.symmetric(horizontal: 16),
+        child: SizedBox(
+          height: 100.h,
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
+              Flexible(
                 child: Text(
                   serviceName,
                   style: TextStyle(
@@ -378,71 +382,81 @@ class _DetailServicePageState extends State<DetailServicePage> {
                     fontWeight: FontWeight.bold,
                     fontSize: AppSize.textHeading,
                   ),
+                  maxLines: 2, // cho phép 2 dòng
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
-              RatingStart.ratingStart(rating: 5)
-            ],
-          ),
-          SizedBox(
-            height: 10.h,
-          ),
-          Row(
-            children: [
-              Icon(
-                Icons.access_time_sharp,
-                color:
-                    isDark ? AppColors.secondBackground : AppColors.background,
-              ),
-              Text(
-                duration,
-                style: TextStyle(
-                  color: isDark ? Colors.grey.shade300 : Colors.black87,
-                  fontWeight: FontWeight.w600,
-                  fontSize: AppSize.textLarge,
-                ),
-              ),
-              SizedBox(
-                width: 10.h,
-              ),
-              Icon(
-                Icons.attach_money_rounded,
-                color:
-                    isDark ? AppColors.secondBackground : AppColors.background,
-              ),
-              Text(
-                '$price VNĐ',
-                style: TextStyle(
-                  color: isDark ? Colors.grey.shade300 : Colors.black87,
-                  fontWeight: FontWeight.w600,
-                  fontSize: AppSize.textLarge,
-                ),
-              ),
-              SizedBox(
-                width: 10.w,
-              ),
-              Row(
+              SizedBox(height: 10.h),
+              Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: 10.w,
+                runSpacing: 4.h,
                 children: [
-                  Icon(
-                    Icons.location_on_sharp,
-                    color: isDark
-                        ? AppColors.secondBackground
-                        : AppColors.background,
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.access_time_sharp,
+                        color: isDark
+                            ? AppColors.secondBackground
+                            : AppColors.background,
+                      ),
+                      SizedBox(width: 4.w),
+                      Text(
+                        duration,
+                        style: TextStyle(
+                          color: isDark ? Colors.grey.shade300 : Colors.black87,
+                          fontWeight: FontWeight.w600,
+                          fontSize: AppSize.textLarge,
+                        ),
+                      ),
+                    ],
                   ),
-                  Text(
-                    '2 km',
-                    style: TextStyle(
-                      color: isDark ? Colors.grey.shade300 : Colors.black87,
-                      fontWeight: FontWeight.w600,
-                      fontSize: AppSize.textLarge,
-                    ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.attach_money_rounded,
+                        color: isDark
+                            ? AppColors.secondBackground
+                            : AppColors.background,
+                      ),
+                      SizedBox(width: 4.w),
+                      Text(
+                        '$price VNĐ',
+                        style: TextStyle(
+                          color: isDark ? Colors.grey.shade300 : Colors.black87,
+                          fontWeight: FontWeight.w600,
+                          fontSize: AppSize.textLarge,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.location_on_sharp,
+                        color: isDark
+                            ? AppColors.secondBackground
+                            : AppColors.background,
+                      ),
+                      SizedBox(width: 4.w),
+                      Text(
+                        '$distance',
+                        style: TextStyle(
+                          color: isDark ? Colors.grey.shade300 : Colors.black87,
+                          fontWeight: FontWeight.w600,
+                          fontSize: AppSize.textLarge,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
-              )
+              ),
             ],
           ),
-        ],
-      ),
-    );
+        ));
   }
 
   Padding buildDescription(String description) {
@@ -471,106 +485,127 @@ class _DetailServicePageState extends State<DetailServicePage> {
     );
   }
 
-  Widget shopInformation(String shopName, String openTime, String closeTime,
-      int shopId, String district, String city, String shopImage) {
+  Widget shopInformation(
+      String shopName,
+      String openTime,
+      String closeTime,
+      int shopId,
+      String district,
+      String city,
+      String shopImage,
+      String address) {
     var isDark = context.isDarkMode;
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              CirclePicture(imageUrl: shopImage, imageSize: AppSize.iconLarge),
-              SizedBox(
-                width: 10.w,
-              ),
-              Column(
-                children: [
-                  Text(
-                    shopName,
-                    style: TextStyle(
-                      color: isDark ? Colors.grey.shade300 : Colors.black87,
-                      fontWeight: FontWeight.w600,
-                      fontSize: AppSize.textLarge,
-                    ),
-                  ),
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                        horizontal: AppSize.apHorizontalPadding * .8.h),
-                    height: 28,
-                    // width: 100,
-                    decoration: BoxDecoration(
-                        color: Colors.transparent,
-                        border: Border.all(color: AppColors.secondBackground),
-                        borderRadius: BorderRadius.circular(10)),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.timer_outlined,
-                          color: isDark
-                              ? AppColors.secondBackground
-                              : AppColors.background,
-                          size: AppSize.iconSmall,
+        padding: EdgeInsets.symmetric(horizontal: 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CirclePicture(
+                    imageUrl: shopImage, imageSize: AppSize.iconLarge),
+                SizedBox(width: 10.w),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        shopName,
+                        style: TextStyle(
+                          color: isDark ? Colors.grey.shade300 : Colors.black87,
+                          fontWeight: FontWeight.w600,
+                          fontSize: AppSize.textLarge,
                         ),
-                        Text(
-                          '${openTime.substring(0, 5)} - ${closeTime.substring(0, 5)}',
-                          style: TextStyle(
-                            color:
-                                isDark ? Colors.grey.shade300 : Colors.black87,
-                            fontWeight: FontWeight.w600,
-                            fontSize: AppSize.textSmall,
-                          ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      SizedBox(height: 4.h),
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: AppSize.apHorizontalPadding * .8.h,
                         ),
-                      ],
-                    ),
+                        height: 28,
+                        decoration: BoxDecoration(
+                          color: Colors.transparent,
+                          border: Border.all(color: AppColors.secondBackground),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.timer_outlined,
+                              color: isDark
+                                  ? AppColors.secondBackground
+                                  : AppColors.background,
+                              size: AppSize.iconSmall,
+                            ),
+                            SizedBox(width: 4.w),
+                            Text(
+                              '${openTime.substring(0, 5)} - ${closeTime.substring(0, 5)}',
+                              style: TextStyle(
+                                color: isDark
+                                    ? Colors.grey.shade300
+                                    : Colors.black87,
+                                fontWeight: FontWeight.w600,
+                                fontSize: AppSize.textSmall,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              Spacer(),
-              BasicTextButton(
-                fontSize: AppSize.textSmall,
-                onPress: () {
-                  AppNavigator.push(
-                      context,
-                      ShopServicePage(
-                        shopId: shopId,
-                      ));
-                },
-                text: 'View Shop ',
-                borderColor:
-                    isDark ? AppColors.secondBackground : AppColors.background,
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 10.h,
-          ),
-          Row(
-            children: [
-              Icon(
-                Icons.location_on_sharp,
-                color:
-                    isDark ? AppColors.secondBackground : AppColors.background,
-              ),
-              Text(
-                '$district $city',
-                style: TextStyle(
-                  color: isDark ? Colors.white : Colors.black,
-                  fontWeight: FontWeight.w600,
-                  fontSize: AppSize.textLarge,
                 ),
-              ),
-            ],
-          )
-        ],
-      ),
-    );
+                SizedBox(width: 10.w),
+                BasicTextButton(
+                  fontSize: AppSize.textSmall,
+                  onPress: () {
+                    AppNavigator.push(
+                      context,
+                      ShopServicePage(shopId: shopId),
+                    );
+                  },
+                  text: 'View Shop',
+                  borderColor: isDark
+                      ? AppColors.secondBackground
+                      : AppColors.background,
+                ),
+              ],
+            ),
+            SizedBox(height: 10.h),
+            Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 5.w,
+              runSpacing: 4.h,
+              children: [
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.location_on_sharp,
+                      color: isDark
+                          ? AppColors.secondBackground
+                          : AppColors.background,
+                    ),
+                  ],
+                ),
+                Text(
+                  '$address, $district, $city',
+                  style: TextStyle(
+                    color: isDark ? Colors.white : Colors.black,
+                    fontWeight: FontWeight.w600,
+                    fontSize: AppSize.textLarge,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ));
   }
 
-  Widget buildButton(BuildContext context) {
+  Widget buildButton(BuildContext context, int openTime, int closeTime) {
     var bookCubit = context.read<BookingServiceCubit>();
     var cartItemCubit = context.read<CartItemCubit>();
     return Row(
@@ -623,6 +658,8 @@ class _DetailServicePageState extends State<DetailServicePage> {
                     child: Column(
                       children: [
                         AddSchedule(
+                          closeTime: closeTime,
+                          openTime: openTime,
                           serviceId: widget.serviceId,
                         ),
                         SizedBox(

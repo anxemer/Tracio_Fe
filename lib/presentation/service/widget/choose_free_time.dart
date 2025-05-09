@@ -26,7 +26,8 @@ class ChooseFreeTime {
   final ValueNotifier<String?> errorMessageNotifier = ValueNotifier(null);
 
   final List<ScheduleModel> _schedules = [];
-  void showScheduleBottomSheet(BuildContext context, int? serviceId) {
+  void showScheduleBottomSheet(
+      BuildContext context, int? serviceId, int openTime, int closeTime) {
     final bookingCubit = context.read<BookingServiceCubit>();
     _schedules.clear();
     if (bookingCubit.schedules != null) {
@@ -198,8 +199,8 @@ class ChooseFreeTime {
                                             await showCustomHourMinutePicker(
                                           context: context,
                                           initialTime: TimeOfDay.now(),
-                                          startHour: 7,
-                                          endHour: 17,
+                                          startHour: openTime,
+                                          endHour: closeTime,
                                           minuteInterval: 15,
                                         );
 
@@ -288,7 +289,7 @@ class ChooseFreeTime {
                                           initialTime: _selectedTimeFrom ??
                                               TimeOfDay.now(),
                                           startHour: _selectedTimeFrom!.hour,
-                                          endHour: 20,
+                                          endHour: closeTime,
                                           minuteInterval: 15,
                                         );
 

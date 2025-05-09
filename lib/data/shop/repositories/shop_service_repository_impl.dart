@@ -21,6 +21,7 @@ import 'package:Tracio/domain/shop/repositories/shop_service_repository.dart';
 
 import '../../../core/erorr/failure.dart';
 import '../models/get_booking_req.dart';
+import '../models/get_detail_service_req.dart';
 import '../models/get_service_req.dart';
 import '../models/reply_review_req.dart';
 
@@ -231,9 +232,9 @@ class ShopServiceRepositoryImpl extends ShopServiceRepository {
 
   @override
   Future<Either<Failure, DetailServiceResponseEntity>> getServiceDetail(
-      int serviceId) async {
+     GetDetailServiceReq serviced) async {
     try {
-      var returnedData = await remoteDataSource.getServiceDetail(serviceId);
+      var returnedData = await remoteDataSource.getServiceDetail(serviced);
       return Right(returnedData);
     } on ServerFailure {
       return Left(ServerFailure(''));

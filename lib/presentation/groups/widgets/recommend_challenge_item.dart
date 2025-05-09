@@ -95,33 +95,36 @@ class RecommendChallengeItem extends StatelessWidget {
               //       fontSize: AppSize.textSmall.sp, color: Colors.grey.shade700),
               // ),
               SizedBox(height: 12),
-              // Join Button
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () async {
-                    context
-                        .read<ChallengeCubit>()
-                        .joinChallenge(challenge.challengeId!);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: AppSize.apVerticalPadding / 2),
-                    backgroundColor: AppColors.secondBackground,
-                    shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(AppSize.borderRadiusMedium),
+              challenge.isCompleted!
+                  ? SizedBox.shrink()
+                  :
+                  // Join Button
+                  SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          context
+                              .read<ChallengeCubit>()
+                              .joinChallenge(challenge.challengeId!);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: AppSize.apVerticalPadding / 2),
+                          backgroundColor: AppColors.secondBackground,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                AppSize.borderRadiusMedium),
+                          ),
+                        ),
+                        child: Text(
+                          'Join',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: AppSize.textSmall.sp,
+                              fontWeight: FontWeight.w600),
+                        ),
+                      ),
                     ),
-                  ),
-                  child: Text(
-                    'Join',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: AppSize.textSmall.sp,
-                        fontWeight: FontWeight.w600),
-                  ),
-                ),
-              ),
             ],
           ),
         ),

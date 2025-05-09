@@ -114,7 +114,6 @@ class _UserinformationState extends State<Userinformation> {
               //       "Followed") // Hoặc ButtonDesign với trạng thái "Unfollow"
             ],
           ),
-          SizedBox(height: 10.h),
 
           // Padding(
           //   padding: const EdgeInsets.symmetric(horizontal: 40),
@@ -147,45 +146,43 @@ class _UserinformationState extends State<Userinformation> {
           //   ),
           // ),
           const SizedBox(height: 8),
-          widget.myProfile
-              ? SizedBox.shrink()
-              : Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 40),
-                  child: InkWell(
-                    onTap: () => AppNavigator.push(context, FollowersScreen()),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text.rich(TextSpan(
-                          text: 'Follower: ',
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 40),
+            child: InkWell(
+              onTap: () => AppNavigator.push(context, FollowersScreen()),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text.rich(TextSpan(
+                    text: 'Follower: ',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: AppSize.textLarge),
+                    children: [
+                      TextSpan(
+                          text: widget.user.followers.toString(),
                           style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: AppSize.textLarge),
-                          children: [
-                            TextSpan(
-                                text: widget.user.followers.toString(),
-                                style: TextStyle(
-                                    fontWeight: FontWeight.normal,
-                                    fontSize: AppSize.textLarge))
-                          ],
-                        )),
-                        Text.rich(TextSpan(
-                          text: 'Following: ',
+                              fontWeight: FontWeight.normal,
+                              fontSize: AppSize.textLarge))
+                    ],
+                  )),
+                  Text.rich(TextSpan(
+                    text: 'Following: ',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: AppSize.textLarge),
+                    children: [
+                      TextSpan(
+                          text: widget.user.followings.toString(),
                           style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: AppSize.textLarge),
-                          children: [
-                            TextSpan(
-                                text: widget.user.followings.toString(),
-                                style: TextStyle(
-                                    fontWeight: FontWeight.normal,
-                                    fontSize: AppSize.textLarge))
-                          ],
-                        )),
-                      ],
-                    ),
-                  ),
-                ),
+                              fontWeight: FontWeight.normal,
+                              fontSize: AppSize.textLarge))
+                    ],
+                  )),
+                ],
+              ),
+            ),
+          ),
           const SizedBox(height: 24),
           _buildRewardsList(),
 
@@ -206,7 +203,7 @@ class _UserinformationState extends State<Userinformation> {
           VitalTile(
             icon: Icons.directions_bike_outlined,
             title: 'Total Distance',
-            value: widget.user.formattedDistance,
+            value: widget.user.formatDistanceFlexible(),
           ),
           VitalTile(
             icon: Icons.timer_outlined,

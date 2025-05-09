@@ -95,7 +95,8 @@ class ServiceGrid extends StatelessWidget {
                           service: services[index],
                         );
                 },
-                childCount: isShopOwner ? services.length : 4,
+                childCount:
+                    services.isEmpty ? 0 : (isShopOwner ? services.length : 4),
               ),
             ),
           ),

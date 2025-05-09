@@ -1,6 +1,8 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:Tracio/common/helper/is_dark_mode.dart';
 import 'package:Tracio/common/helper/navigator/app_navigator.dart';
 import 'package:Tracio/domain/shop/usecase/cancel_booking.dart';
@@ -12,20 +14,21 @@ import '../../../common/widget/button/button.dart';
 import '../../../core/configs/theme/app_colors.dart';
 import '../../../core/constants/app_size.dart';
 import '../../../domain/shop/entities/response/booking_card_view.dart';
-import '../../../service_locator.dart';
 import '../bloc/bookingservice/booking_service_cubit.dart';
 import '../bloc/bookingservice/resolve_overlap_service/cubit/resolve_overlap_service_cubit.dart';
 
 class ResolveBooking extends StatefulWidget {
   const ResolveBooking({
     super.key,
-    // required this.bookingId,
-    required this.animationController,
+    this.onToggleBooking,
     required this.booking,
+    required this.animationController,
     this.textBtn,
     required this.isDone,
     this.isReview = false,
   });
+  final Function(bool isSelected)? onToggleBooking;
+
   // final int bookingId;
   final BookingCardViewModel booking;
   final AnimationController? animationController;
@@ -37,6 +40,8 @@ class ResolveBooking extends StatefulWidget {
 }
 
 class _ResolveBookingState extends State<ResolveBooking> {
+  bool isSelected = false;
+
   @override
   void initState() {
     widget.animationController?.forward();
@@ -56,6 +61,10 @@ class _ResolveBookingState extends State<ResolveBooking> {
                 width: 120.w,
                 height: 32.h,
                 ontap: () {
+                  setState(() {
+                    isSelected = !isSelected;
+                  });
+                  widget.onToggleBooking?.call(isSelected);
                   setState(() {});
                   context.read<ResolveOverlapServiceCubit>().markAction(
                       widget.booking.bookingDetailId!,
@@ -73,6 +82,11 @@ class _ResolveBookingState extends State<ResolveBooking> {
                 width: 120.w,
                 height: 32.h,
                 ontap: () {
+                  setState(() {
+                    isSelected = !isSelected;
+                  });
+                  widget.onToggleBooking?.call(isSelected);
+
                   setState(() {});
                   context.read<ResolveOverlapServiceCubit>().markAction(
                       widget.booking.bookingDetailId!,

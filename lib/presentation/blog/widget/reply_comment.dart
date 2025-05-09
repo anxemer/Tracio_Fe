@@ -70,7 +70,7 @@ class _ReplyCommentItemState extends State<ReplyCommentItem> {
                     ),
                     SizedBox(width: 8.w),
                     Text(
-                      timeago.format(widget.reply.createdAt!),
+                      timeago.format(widget.reply.createdAt),
                       style: TextStyle(fontSize: AppSize.textMedium.sp),
                     ),
                   ],

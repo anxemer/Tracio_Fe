@@ -55,7 +55,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
         appBar: BasicAppbar(
           title: Text(
             'Booking Detail',
-          style: TextStyle(
+            style: TextStyle(
                 color: Colors.white,
                 fontSize: AppSize.textHeading,
                 fontWeight: FontWeight.bold),
@@ -685,11 +685,12 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
             height: 40.h,
             ontap: () {
               DialogConfirmBooking().showDialogConfirmation(context, () {
+                Navigator.pop(context);
                 context
                     .read<BookingServiceCubit>()
                     .addRescheduleBooking(booking.bookingDetailId!);
-                ChooseFreeTime()
-                    .showScheduleBottomSheet(context, booking.serviceId);
+                ChooseFreeTime().showScheduleBottomSheet(context,
+                    booking.serviceId, booking.openHour!, booking.closeHour!);
               });
             },
             text: 'Reschedule',
@@ -753,6 +754,8 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
                     child: Column(
                       children: [
                         AddSchedule(
+                          closeTime: booking.closeHour!,
+                          openTime: booking.openHour!,
                           serviceId: booking.serviceId,
                         ),
                         SizedBox(
@@ -806,6 +809,8 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
                     child: Column(
                       children: [
                         AddSchedule(
+                          closeTime: booking.closeHour!,
+                          openTime: booking.openHour!,
                           serviceId: booking.serviceId,
                         ),
                         SizedBox(

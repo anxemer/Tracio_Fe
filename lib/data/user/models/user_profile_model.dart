@@ -37,30 +37,30 @@ class UserprofileModel extends UserProfileEntity {
       firebaseId: json["firebaseId"],
       phoneNumber: json["phoneNumber"],
       profilePicture: json["profilePicture"],
-      bio: json["bio"],
+      bio: json["bio"] ?? "",
       totalDistance: json['totalDistance'] != null
           ? (json['totalDistance'] as num).toDouble()
-          : null,
+          : 0.0,
       totalDuration: json['totalDuration'] != null
           ? (json['totalDuration'] as num).toDouble()
-          : null,
+          : 0.0,
       maxDayStreak: json['maxDayStreak'] != null
           ? (json['maxDayStreak'] as num).toDouble()
-          : null,
+          : 0.0,
       dayStreak: json['dayStreak'] != null
           ? (json['dayStreak'] as num).toDouble()
-          : null,
-      totalBlog: json["totalBlog"],
-      followers: json["followers"],
-      followings: json["followings"],
-      totalRoute: json["totalRoute"],
-      gender: json["gender"],
-      birthDate: json["birthDate"],
-      city: json["city"],
-      district: json["district"],
-      isActive: json["isActive"],
-      isPublic: json["isPublic"],
-      followStatus: json["followStatus"],
+          : 0.0,
+      totalBlog: json["totalBlog"] ?? 0,
+      followers: json["followers"] ?? 0,
+      followings: json["followings"] ?? 0,
+      totalRoute: json["totalRoute"] ?? 0,
+      gender: json["gender"] ?? "",
+      birthDate: json["birthDate"] ?? "",
+      city: json["city"] ?? "",
+      district: json["district"] ?? "",
+      isActive: json["isActive"] ?? false,
+      isPublic: json["isPublic"] ?? false,
+      followStatus: json["followStatus"] ?? "",
       createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
       updatedAt: DateTime.tryParse(json["updatedAt"] ?? ""),
       rewards: json['rewards'] != null
@@ -69,7 +69,7 @@ class UserprofileModel extends UserProfileEntity {
                 (x) => ChallengeRewardModel.fromJson(x as Map<String, dynamic>),
               ),
             )
-          : null,
+          : [],
     );
   }
 

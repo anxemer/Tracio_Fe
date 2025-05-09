@@ -45,7 +45,7 @@ class _CommentState extends State<Comment> {
     super.initState();
     _commentInputCubit = context.read<CommentInputCubit>();
     context.read<GetCommentCubit>().getCommentBlog(GetCommentReq(
-        blogId: widget.blogId, commentId: 0, pageNumber: 1, pageSize: 10));
+        blogId: widget.blogId, commentId: 0, pageNumber: 1, pageSize: 50));
   }
 
   void _handleCommentSubmit(

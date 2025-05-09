@@ -51,7 +51,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                 expandedHeight: 180.0,
                 backgroundColor: AppColors.secondBackground,
                 leading: IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Colors.white),
+                  icon: Icon(Icons.arrow_back, color: AppColors.primary),
                   onPressed: () => Navigator.of(context).pop(),
                 ),
                 // actions: [

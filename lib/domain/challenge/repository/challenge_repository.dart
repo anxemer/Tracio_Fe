@@ -15,6 +15,7 @@ abstract class ChallengeRepository {
   Future<Either<Failure, List<ChallengeRewardEntity>>> getUserReward(int userId);
   Future<Either<Failure, int>> joinChallenge(int challengeId);
   Future<Either<Failure, bool>> leaveChallenge(int challengeId);
+  Future<Either<Failure, bool>> requestChallenge(int challengeId);
   Future<Either<Failure, ChallengeEntity>> createChallenge(CreateChallengeReq challenge);
   Future<Either<Failure, ParticipantsResponseEntity>> getParticipants(
       int challengeId);

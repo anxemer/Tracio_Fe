@@ -98,12 +98,24 @@ class ChallengeRepositoryImpl extends ChallengeRepository {
   Future<Either<Failure, ChallengeEntity>> createChallenge(
       CreateChallengeReq challenge) async {
     try {
-    var result =   await remoteDataSource.creteChallenge(challenge);
+      var result = await remoteDataSource.creteChallenge(challenge);
       return Right(result);
     } on ServerFailure {
       return Left(ServerFailure(''));
     } on AuthenticationFailure {
       return Left(AuthenticationFailure('UnAuthenticated'));
-    } 
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> requestChallenge(int challengeId) async {
+    try {
+      await remoteDataSource.requestChallenge(challengeId);
+      return Right(true);
+    } on ServerFailure {
+      return Left(ServerFailure(''));
+    } on AuthenticationFailure {
+      return Left(AuthenticationFailure('UnAuthenticated'));
+    }
   }
 }

@@ -1,11 +1,11 @@
 class EditUserProfileReq {
   EditUserProfileReq({
-    required this.userName,
-    required this.bio,
-    required this.gender,
-    required this.city,
-    required this.district,
-    required this.isPublic,
+    this.userName,
+    this.bio,
+    this.gender,
+    this.city,
+    this.district,
+    this.isPublic,
   });
 
   final String? userName;

@@ -1,4 +1,3 @@
-// notification_bloc.dart
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import '../../../common/helper/notification/notification_model.dart';
 import 'notification_event.dart';
@@ -9,11 +8,11 @@ class NotificationBloc extends HydratedBloc<NotificationEvent, NotificationState
     on<LoadNotifications>(_onLoadNotifications);
     on<AddNotification>(_onAddNotification);
     on<MarkNotificationAsRead>(_onMarkNotificationAsRead);
+    on<DeleteNotification>(_onDeleteNotification);
   }
 
   void _onLoadNotifications(
       LoadNotifications event, Emitter<NotificationState> emit) {
-    // Trạng thái đã được HydratedBloc khôi phục, chỉ cần emit lại
     emit(state.copyWith(notifications: state.notifications));
   }
 
@@ -45,12 +44,21 @@ class NotificationBloc extends HydratedBloc<NotificationEvent, NotificationState
     emit(state.copyWith(notifications: updatedNotifications));
   }
 
+  void _onDeleteNotification(
+      DeleteNotification event, Emitter<NotificationState> emit) {
+    final updatedNotifications = state.notifications
+        .where((notification) => notification.notificationId != event.notificationId)
+        .toList();
+    emit(state.copyWith(notifications: updatedNotifications));
+  }
+
+ int extractor=1;
   @override
   NotificationState? fromJson(Map<String, dynamic> json) {
     try {
       return NotificationState.fromJson(json);
     } catch (_) {
-      return null; // Nếu có lỗi, trả về null để sử dụng trạng thái mặc định
+      return null;
     }
   }
 

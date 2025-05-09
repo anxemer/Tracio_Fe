@@ -1,3 +1,4 @@
+import 'package:Tracio/domain/user/entities/daily_activity_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
@@ -5,19 +6,11 @@ import 'package:Tracio/common/helper/is_dark_mode.dart';
 import 'package:Tracio/core/constants/app_size.dart'; // For number formatting (optional but good)
 
 class WeeklySnapshotCard extends StatelessWidget {
-  final double totalDistance; // in kilometers, for example
-  final int totalDuration; // in seconds, for example
-  final double totalElevationGain; // in meters, for example
-  final int totalRides;
-  final String distanceUnit;
+  final DailyActivityEntity activity; // in meters, for example
 
   const WeeklySnapshotCard({
     super.key,
-    required this.totalDistance,
-    required this.totalDuration,
-    required this.totalElevationGain,
-    required this.totalRides,
-    this.distanceUnit = "km",
+    required this.activity,
   });
 
   @override
@@ -45,7 +38,7 @@ class WeeklySnapshotCard extends StatelessWidget {
           children: [
             // --- Title ---
             Text(
-              'Your Weekly Snapshot',
+              'Your Daily Snapshot',
               style: TextStyle(
                 fontSize: AppSize.textLarge.sp,
                 fontWeight: FontWeight.w600,
@@ -63,8 +56,8 @@ class WeeklySnapshotCard extends StatelessWidget {
                 // --- Distance ---
                 statItem(
                   'Distance',
-                  ' $totalDistance', // Format distance
-                  distanceUnit, // Use the provided unit
+                  ' ${activity.formatDistanceFlexible()}', // Format distance
+                  'Km', // Use the provided unit
                   valueStyle,
                   labelStyle,
                 ),
@@ -72,7 +65,7 @@ class WeeklySnapshotCard extends StatelessWidget {
                 // --- Duration ---
                 statItem(
                   'Time',
-                  '$totalDuration', // Format distance
+                  activity.formatDuration(), // Format distance
                   'Hour', // Use the provided unit
                   valueStyle,
                   labelStyle,
@@ -98,7 +91,7 @@ class WeeklySnapshotCard extends StatelessWidget {
           spacing: 8.w,
           children: [
             Text(value, style: valueStyle),
-            Text(label, style: valueStyle),
+            // Text(label, style: valueStyle),
           ],
         ),
         // SizedBox(height: 4.h), // Small space between value and label

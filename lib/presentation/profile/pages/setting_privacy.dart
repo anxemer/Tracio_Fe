@@ -2,18 +2,30 @@ import 'package:Tracio/common/helper/is_dark_mode.dart';
 import 'package:Tracio/common/widget/appbar/app_bar.dart';
 import 'package:Tracio/core/configs/theme/app_colors.dart';
 import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/data/user/models/edit_user_profile_req.dart';
+import 'package:Tracio/domain/user/entities/user_profile_entity.dart';
+import 'package:Tracio/domain/user/usecase/edit_profile.dart';
+import 'package:Tracio/service_locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AccountPrivacyScreen extends StatefulWidget {
-  const AccountPrivacyScreen({super.key, required this.userId});
+  const AccountPrivacyScreen(
+      {super.key, required this.userId, required this.userStatus});
   final int userId;
+  final bool userStatus;
   @override
   _AccountPrivacyScreenState createState() => _AccountPrivacyScreenState();
 }
 
 class _AccountPrivacyScreenState extends State<AccountPrivacyScreen> {
-  bool isPrivate = false;
+  late bool isPrivate;
+
+  @override
+  void initState() {
+    super.initState();
+    isPrivate = !widget.userStatus;
+  }
 
   void _showConfirmationDialog() {
     showModalBottomSheet(
@@ -53,10 +65,14 @@ class _AccountPrivacyScreenState extends State<AccountPrivacyScreen> {
                       : Colors.grey.shade300,
                   minimumSize: Size(double.infinity, 48.h),
                 ),
-                onPressed: () {
+                onPressed: () async {
                   setState(() {
                     isPrivate = true;
                   });
+                  var result = await sl<EditUserProfileUseCase>()
+                      .call(EditUserProfileReq(isPublic: isPrivate));
+                  result.fold((error) {}, (data) {});
+
                   Navigator.pop(context);
                 },
                 child: Text(
@@ -70,7 +86,7 @@ class _AccountPrivacyScreenState extends State<AccountPrivacyScreen> {
       },
     );
   }
-  
+
   Widget _buildInfoRow(IconData icon, String text) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -113,12 +129,23 @@ class _AccountPrivacyScreenState extends State<AccountPrivacyScreen> {
                         fontSize: AppSize.textLarge)),
                 Switch(
                   value: isPrivate,
-                  onChanged: (val) {
+                  onChanged: (val) async {
                     if (val) {
                       _showConfirmationDialog();
                     } else {
-                      setState(() {
-                        isPrivate = false;
+                      var result = await sl<EditUserProfileUseCase>()
+                          .call(EditUserProfileReq(isPublic: isPrivate));
+                      result.fold((error) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content:
+                                Text('Update privacy Fail! Please try again'),
+                          ),
+                        );
+                      }, (data) {
+                        setState(() {
+                          isPrivate = false;
+                        });
                       });
                     }
                   },

@@ -1,4 +1,3 @@
-// notification_event.dart
 import '../../../common/helper/notification/notification_model.dart';
 
 abstract class NotificationEvent {}
@@ -15,4 +14,10 @@ class MarkNotificationAsRead extends NotificationEvent {
   final String notificationId;
 
   MarkNotificationAsRead(this.notificationId);
+}
+
+class DeleteNotification extends NotificationEvent {
+  final String notificationId;
+
+  DeleteNotification(this.notificationId);
 }

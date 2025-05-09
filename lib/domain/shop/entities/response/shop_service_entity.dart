@@ -14,6 +14,7 @@ class ShopServiceEntity {
   final String? profilePicture;
   final String? city;
   final String? district;
+  final String? address;
   final String? serviceName;
   final String? description;
   final double? price;
@@ -34,6 +35,7 @@ class ShopServiceEntity {
     this.profilePicture,
     this.city,
     this.district,
+    this.address,
     this.serviceName,
     this.description,
     this.price,
@@ -76,5 +78,22 @@ class ShopServiceEntity {
 
     final formatter = NumberFormat('#,###', 'vi_VN');
     return formatter.format(priceAsInt);
+  }
+
+  int? get openHour {
+    if (openTime == null || !openTime!.contains(':')) return null;
+    return int.tryParse(openTime!.split(':')[0]);
+  }
+
+  int? get closeHour {
+    if (closeTime == null || !closeTime!.contains(':')) return null;
+    return int.tryParse(closeTime!.split(':')[0]);
+  }
+
+  String get formattedDistance {
+    if (distance == null) return "0km 0m";
+    final km = distance!.floor();
+    final m = ((distance! - km) * 1000).round();
+    return "${km}km ${m}m";
   }
 }

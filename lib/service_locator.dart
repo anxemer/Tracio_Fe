@@ -1,6 +1,7 @@
 import 'package:Tracio/core/services/signalR/implement/notification_hub_service.dart';
 import 'package:Tracio/data/blog/repositories/blog_repository_impl.dart';
 import 'package:Tracio/data/challenge/models/request/create_challenge_req.dart';
+import 'package:Tracio/domain/blog/usecase/edit_blog.dart';
 import 'package:Tracio/domain/challenge/usecase/create_challenge.dart';
 import 'package:Tracio/domain/challenge/usecase/get_user_reward.dart';
 import 'package:Tracio/domain/groups/usecases/update_group_route_status_usecase.dart';
@@ -9,6 +10,11 @@ import 'package:Tracio/domain/map/usecase/edit_route_tracking_usecase.dart';
 import 'package:Tracio/domain/map/usecase/get_ongoing_route_usecase.dart';
 import 'package:Tracio/domain/map/usecase/get_route_media_usecase.dart';
 import 'package:Tracio/domain/map/usecase/post_route_media_usecase.dart';
+import 'package:Tracio/domain/challenge/usecase/request_challenge.dart';
+import 'package:Tracio/domain/user/usecase/edit_profile.dart';
+import 'package:Tracio/domain/user/usecase/get_daily_activity.dart';
+import 'package:Tracio/domain/user/usecase/get_follow_request.dart';
+import 'package:Tracio/domain/user/usecase/resolve_follow_request.dart';
 import 'package:Tracio/domain/user/usecase/unfollow_user..dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -163,6 +169,7 @@ import 'core/network/dio_client.dart';
 import 'data/auth/sources/auth_local_source/auth_local_source.dart';
 import 'domain/blog/usecase/rep_comment.dart';
 import 'domain/blog/usecase/un_react_blog.dart';
+import 'domain/challenge/usecase/leave_challenge.dart';
 
 final sl = GetIt.instance;
 
@@ -360,4 +367,11 @@ Future<void> initializeDependencies() async {
   sl.registerFactory<UpdateGroupRouteStatusUsecase>(() => UpdateGroupRouteStatusUsecase());
 
   await sl.allReady();
+  sl.registerFactory<EditBlogUseCase>(() => EditBlogUseCase());
+  sl.registerFactory<EditUserProfileUseCase>(() => EditUserProfileUseCase());
+  sl.registerFactory<GetDailyActivityUseCase>(() => GetDailyActivityUseCase());
+  sl.registerFactory<GetFollowRequestUseCase>(() => GetFollowRequestUseCase());
+  sl.registerFactory<ResolveFollowUserUseCase>(
+      () => ResolveFollowUserUseCase());
+  sl.registerFactory<RequestChallengeUseCase>(() => RequestChallengeUseCase());
 }

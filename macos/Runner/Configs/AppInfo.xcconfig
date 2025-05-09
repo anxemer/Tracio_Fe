@@ -8,7 +8,7 @@
 PRODUCT_NAME = tracio_fe
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.example.tracioFe
+PRODUCT_BUNDLE_IDENTIFIER = com.example.tracio_feFe
 
 // The copyright displayed in application information
 PRODUCT_COPYRIGHT = Copyright © 2025 com.example. All rights reserved.

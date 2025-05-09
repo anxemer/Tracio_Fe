@@ -1,4 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:Tracio/data/blog/models/response/edit_blog_model.dart';
 import 'package:dartz/dartz.dart';
 
 import 'package:Tracio/core/erorr/failure.dart';
@@ -178,6 +179,19 @@ class BlogRepositoryImpl extends BlogRepository {
       return Left(ServerFailure(''));
     } on AuthenticationFailure {
       return Left(AuthenticationFailure('UnAuthenticated'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> editBlogs(EditBlogModel react) async{
+    try {
+      var returnData = await remoteDataSource.editBlog(react);
+
+      return Right(returnData);
+    } on Failure catch (e) {
+      return Left(e);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
     }
   }
 }
