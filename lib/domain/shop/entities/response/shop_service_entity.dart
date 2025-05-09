@@ -93,7 +93,7 @@ class ShopServiceEntity {
   String get formattedDistance {
     if (distance == null) return "0km 0m";
     final km = distance!.floor();
-    final m = ((distance! - km) * 1000).round();
+    final m = ((distance! - km)).round();
     return "${km}km ${m}m";
   }
 }
