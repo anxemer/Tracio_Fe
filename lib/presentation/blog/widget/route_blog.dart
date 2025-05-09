@@ -6,12 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:Tracio/common/widget/blog/blog_holder.dart';
-import 'package:Tracio/core/constants/app_size.dart';
-import 'package:Tracio/presentation/blog/bloc/get_blog_cubit.dart';
-import 'package:Tracio/presentation/blog/widget/new_feed.dart';
-import '../../../core/configs/theme/assets/app_images.dart';
-import '../../../data/blog/models/request/get_blog_req.dart';
-import '../bloc/get_blog_state.dart';
 
 class RouteBLog extends StatefulWidget {
   const RouteBLog({super.key});
@@ -25,9 +19,48 @@ class _RouteBLogState extends State<RouteBLog>
   @override
   bool get wantKeepAlive => true;
   Timer? _scrollDebounce;
+  final ScrollController _scrollController = ScrollController();
+  bool _isLoadingMore = false;
+  @override
+  initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  void _onScroll() {
+    if (_scrollDebounce?.isActive ?? false) _scrollDebounce!.cancel();
+    _scrollDebounce = Timer(const Duration(milliseconds: 200), () {
+      final state = context.read<RouteCubit>().state;
+      if (state is GetRouteBlogLoaded && state.hasNextPage && !_isLoadingMore) {
+        if (_scrollController.position.pixels >=
+            _scrollController.position.maxScrollExtent - 300) {
+          _loadMore();
+        }
+      }
+    });
+  }
+
+  Future<void> _loadMore() async {
+    setState(() => _isLoadingMore = true);
+
+    final state = context.read<RouteCubit>().state;
+    if (state is GetRouteBlogLoaded) {
+      final nextPage = state.pageNumber + 1;
+
+      await context.read<RouteCubit>().getRouteBlogList(
+            pageNumber: nextPage,
+            pageSize: state.pageSize,
+          );
+    }
+
+    if (mounted) {
+      setState(() => _isLoadingMore = false);
+    }
+  }
 
   @override
   void dispose() {
+    _scrollController.dispose();
     _scrollDebounce?.cancel();
     super.dispose();
   }
@@ -78,21 +111,11 @@ class _RouteBLogState extends State<RouteBLog>
               }
 
               return ListView.builder(
+                controller: _scrollController,
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                itemCount: routes.length,
+                itemCount: routes.length + (_isLoadingMore ? 1 : 0),
                 itemBuilder: (context, index) {
-                  // if (index == blogs.length && state.isLoading!) {
-                  //   return Padding(
-                  //     padding: EdgeInsets.symmetric(
-                  //       vertical: AppSize.apSectionPadding.w,
-                  //     ),
-                  //     child: const Center(
-                  //       child: CircularProgressIndicator(),
-                  //     ),
-                  //   );
-                  // }
-
                   if (index < routes.length) {
                     return Container(
                       decoration: BoxDecoration(
@@ -108,9 +131,12 @@ class _RouteBLogState extends State<RouteBLog>
                         routeId: routes[index].routeId,
                       ),
                     );
+                  } else {
+                    return const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 20),
+                      child: Center(child: CircularProgressIndicator()),
+                    );
                   }
-
-                  return null;
                 },
               );
             }

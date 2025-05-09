@@ -1,7 +1,10 @@
+import 'package:Tracio/presentation/groups/pages/group.dart';
+import 'package:Tracio/presentation/map/bloc/map_cubit.dart';
+import 'package:Tracio/presentation/map/pages/route_planner.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:Tracio/common/helper/navigator/app_navigator.dart';
-import 'package:Tracio/common/widget/navbar/bottom_nav_bar_manager.dart';
 import 'package:Tracio/core/configs/theme/app_colors.dart';
 import 'package:Tracio/core/constants/app_size.dart';
 import 'package:Tracio/presentation/service/page/bottom_nav_bar_service.dart';
@@ -57,8 +60,7 @@ class ShortcutKey extends StatelessWidget {
                       borderRadius:
                           BorderRadius.circular(AppSize.borderRadiusMedium)),
                   child: InkWell(
-                    onTap: () =>
-                        AppNavigator.push(context, BottomNavBarManager()),
+                    onTap: () => AppNavigator.push(context, GroupPage()),
                     child: Icon(
                       Icons.radar_rounded,
                       size: AppSize.iconLarge,
@@ -76,10 +78,9 @@ class ShortcutKey extends StatelessWidget {
                       borderRadius:
                           BorderRadius.circular(AppSize.borderRadiusMedium)),
                   child: InkWell(
-                    onTap: () =>
-                        AppNavigator.push(context, BottomNavBarService()),
+                    onTap: () => AppNavigator.push(context, RoutePlanner()),
                     child: Icon(
-                      Icons.store_mall_directory_outlined,
+                      Icons.route,
                       size: AppSize.iconLarge,
                     ),
                   ),
