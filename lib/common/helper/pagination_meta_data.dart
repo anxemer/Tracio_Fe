@@ -7,12 +7,10 @@ class PaginationMetaData extends PaginationMetaDataEntity {
     required super.pageSize,
     required super.totalSeenBlogs,
     required super.totalSeenBlogPages,
-    required this.hasNextPage,
-    required this.hasPreviousPage,
+    required super.hasNextPage,
+    required super.hasPreviousPage,
   });
 
-  final bool? hasNextPage;
-  final bool? hasPreviousPage;
 
   PaginationMetaData copyWith({
     bool? isSeen,

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:Tracio/common/bloc/generic_data_cubit.dart';
 import 'package:Tracio/common/widget/button/loading.dart';
 import 'package:Tracio/presentation/blog/widget/route_blog.dart';
@@ -26,34 +28,23 @@ class BlogPage extends StatefulWidget {
 
 class _BlogPageState extends State<BlogPage> with TickerProviderStateMixin {
   late TabController _tabController;
-  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
+    _scrollController = ScrollController();
+
     _tabController = TabController(length: 2, vsync: this);
-    _scrollController.addListener(_scrollListener);
   }
 
   @override
   void dispose() {
-    _scrollController.removeListener(_scrollListener);
     _scrollController.dispose();
     _tabController.dispose();
     super.dispose();
   }
 
-  void _scrollListener() {
-    final maxScroll = _scrollController.position.maxScrollExtent;
-    final currentScroll = _scrollController.position.pixels;
-
-    if (currentScroll > maxScroll * 0.7 && _tabController.index == 0) {
-      final blogState = context.read<GetBlogCubit>().state;
-      if (blogState is GetBlogLoaded && !blogState.isLoading!) {
-        context.read<GetBlogCubit>().getMoreBlogs();
-      }
-    }
-  }
+  late ScrollController _scrollController;
 
   @override
   Widget build(BuildContext context) {
@@ -117,7 +108,7 @@ class _BlogPageState extends State<BlogPage> with TickerProviderStateMixin {
             children: [
               // Tab 1: Blogs
               BlocProvider(
-                create: (_) => GetBlogCubit()..getBlog(GetBlogReq()),
+                create: (_) => GetBlogCubit(),
                 child: const BlogListView(),
               ),
               // Tab 2: Routes

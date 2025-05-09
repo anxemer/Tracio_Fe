@@ -8,74 +8,105 @@ import 'package:Tracio/domain/blog/entites/pagination_meta_data_entity.dart';
 import '../../../core/erorr/failure.dart';
 
 abstract class GetBlogState extends Equatable {
-  final List<BlogEntity>? blogs;
+  final List<BlogEntity> blogs;
   final PaginationMetaDataEntity metaData;
   final GetBlogReq params;
   final Failure? failure;
-  final bool? isLoading;
-  GetBlogState({
+  final bool isLoading;
+
+  const GetBlogState({
     required this.blogs,
     required this.metaData,
     required this.params,
     this.failure,
-    this.isLoading,
+    this.isLoading = false,
+  });
+
+  @override
+  List<Object?> get props => [blogs, metaData, params, failure, isLoading];
+}
+
+// Initial
+class GetBlogInitial extends GetBlogState {
+  const GetBlogInitial({
+    required super.blogs,
+    required super.metaData,
+    required super.params,
   });
 }
 
-class GetBlogInitial extends GetBlogState {
-  GetBlogInitial(
-      {required super.blogs, required super.metaData, required super.params});
-
-  @override
-  List<Object?> get props => [];
-}
-
+// Loading
 class GetBlogLoading extends GetBlogState {
-  GetBlogLoading(
-      {required super.blogs,
-      required super.metaData,
-      required super.params,
-      required super.isLoading});
-
-  @override
-  List<Object?> get props => [];
+  const GetBlogLoading({
+    required super.blogs,
+    required super.metaData,
+    required super.params,
+    required super.isLoading,
+  });
 }
 
+// Loaded
 class GetBlogLoaded extends GetBlogState {
-  // final List<BlogEntity> listBlog;
+  const GetBlogLoaded({
+    required super.blogs,
+    required super.metaData,
+    required super.params,
+    required super.isLoading,
+  });
 
-  GetBlogLoaded(
-      {required super.blogs,
-      required super.metaData,
-      required super.params,
-      required super.isLoading});
-
-  @override
-  List<Object?> get props => [blogs];
+  GetBlogLoaded copyWith({
+    List<BlogEntity>? blogs,
+    PaginationMetaDataEntity? metaData,
+    GetBlogReq? params,
+    bool? isLoading,
+  }) {
+    return GetBlogLoaded(
+      blogs: blogs ?? this.blogs,
+      metaData: metaData ?? this.metaData,
+      params: params ?? this.params,
+      isLoading: isLoading ?? this.isLoading,
+    );
+  }
 }
+
+// Bookmark Loaded
 class GetBlogBookmarkLoaded extends GetBlogState {
-  // final List<BlogEntity> listBlog;
+  const GetBlogBookmarkLoaded({
+    required super.blogs,
+    required super.metaData,
+    required super.params,
+    required super.isLoading,
+  });
 
-  GetBlogBookmarkLoaded(
-      {required super.blogs,
-      required super.metaData,
-      required super.params,
-      required super.isLoading});
-
-  @override
-  List<Object?> get props => [blogs];
+  GetBlogBookmarkLoaded copyWith({
+    List<BlogEntity>? blogs,
+    PaginationMetaDataEntity? metaData,
+    GetBlogReq? params,
+    bool? isLoading,
+  }) {
+    return GetBlogBookmarkLoaded(
+      blogs: blogs ?? this.blogs,
+      metaData: metaData ?? this.metaData,
+      params: params ?? this.params,
+      isLoading: isLoading ?? this.isLoading,
+    );
+  }
 }
 
+// Failure
 class GetBlogFailure extends GetBlogState {
   final String errorMessage;
 
-  GetBlogFailure(
-      {required this.errorMessage,
-      required super.blogs,
-      required super.metaData,
-      required super.params,
-      required super.isLoading});
+  const GetBlogFailure({
+    required this.errorMessage,
+    required super.blogs,
+    required super.metaData,
+    required super.params,
+    required super.isLoading,
+    super.failure,
+  });
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props =>
+      [errorMessage, blogs, metaData, params, isLoading];
 }
