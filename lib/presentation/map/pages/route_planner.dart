@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:Tracio/common/widget/navbar/bottom_nav_bar_manager.dart';
+import 'package:Tracio/presentation/library/pages/library.dart';
 import 'package:Tracio/presentation/map/bloc/route_cubit.dart';
 import 'package:Tracio/presentation/map/bloc/route_state.dart';
 import 'package:flutter/material.dart';
@@ -67,7 +67,7 @@ class _RoutePlannerState extends State<RoutePlanner> {
                 Future.delayed(Duration(seconds: 2));
                 Navigator.of(context).pushAndRemoveUntil(
                   MaterialPageRoute(
-                    builder: (_) => BottomNavBarManager(selectedIndex: 1),
+                    builder: (_) => LibraryPage(),
                   ),
                   (route) => false,
                 );
@@ -135,7 +135,17 @@ class _RoutePlannerState extends State<RoutePlanner> {
                               size: 20,
                               color: Colors.black,
                             ),
-                            onPressed: () {},
+                            onPressed: () async {
+                              var camera = await context
+                                  .read<MapCubit>()
+                                  .mapboxMap
+                                  ?.getCameraState();
+
+                              context.read<MapCubit>().animateCamera(
+                                    camera!.center.coordinates,
+                                    zoom: camera.zoom + 1,
+                                  );
+                            },
                           ),
                           IconButton(
                             icon: const Icon(
@@ -143,7 +153,17 @@ class _RoutePlannerState extends State<RoutePlanner> {
                               size: 20,
                               color: Colors.black,
                             ),
-                            onPressed: () {},
+                            onPressed: () async {
+                              var camera = await context
+                                  .read<MapCubit>()
+                                  .mapboxMap
+                                  ?.getCameraState();
+
+                              context.read<MapCubit>().animateCamera(
+                                    camera!.center.coordinates,
+                                    zoom: camera.zoom - 1,
+                                  );
+                            },
                           ),
                         ],
                       ),

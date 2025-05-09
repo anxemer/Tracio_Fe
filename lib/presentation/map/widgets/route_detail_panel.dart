@@ -16,7 +16,6 @@ import 'package:Tracio/presentation/map/bloc/map_state.dart';
 import 'package:Tracio/presentation/map/bloc/route_cubit.dart';
 import 'package:Tracio/presentation/map/pages/snapshot_display_page.dart';
 
-//TODO: Hover Build Metric session for more detail info
 class RouteDetailPanel extends StatefulWidget {
   final ScrollController scrollController;
 
@@ -71,6 +70,11 @@ class _RouteDetailPanelState extends State<RouteDetailPanel> {
       await circleAnnotationManager!.update(updated);
       hoverAnnotation = updated;
     }
+    mapboxMap.flyTo(
+        CameraOptions(center: Point(coordinates: position)),
+        MapAnimationOptions(
+          duration: 0,
+        ));
   }
 
   @override

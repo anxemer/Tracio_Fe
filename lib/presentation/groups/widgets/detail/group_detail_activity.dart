@@ -24,18 +24,24 @@ class _GroupDetailActivityState extends State<GroupDetailActivity> {
     return BlocBuilder<GroupCubit, GroupState>(
       builder: (context, state) {
         if (state is GetGroupDetailSuccess) {
+          final now = DateTime.now();
+          final upcomingRoutes = state.groupRoutes.groupRouteList
+              .where((route) => route.startDateTime.isAfter(now))
+              .toList();
+
           return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   if (!state.groupRouteDetailsError)
                     Text(
-                      state.groupRoutes.groupRouteList.isNotEmpty
+                      upcomingRoutes.isNotEmpty
                           ? "Upcoming Activities"
                           : "No upcoming activities",
                       style: TextStyle(
-                        color: state.groupRoutes.groupRouteList.isNotEmpty
+                        color: upcomingRoutes.isNotEmpty
                             ? AppColors.primary
                             : Colors.black54,
                       ),
@@ -45,12 +51,14 @@ class _GroupDetailActivityState extends State<GroupDetailActivity> {
                     GestureDetector(
                       onTap: () {
                         AppNavigator.push(
-                            context,
-                            BlocProvider(
-                              create: (context) => FormGroupActivityCubit(),
-                              child: CreateGroupActivity(
-                                  groupId: state.group.groupId),
-                            ));
+                          context,
+                          BlocProvider(
+                            create: (_) => FormGroupActivityCubit(),
+                            child: CreateGroupActivity(
+                              groupId: state.group.groupId,
+                            ),
+                          ),
+                        );
                       },
                       child: Text(
                         "Create an activity",
@@ -64,38 +72,37 @@ class _GroupDetailActivityState extends State<GroupDetailActivity> {
                 ],
               ),
               const SizedBox(height: AppSize.apHorizontalPadding / 2),
-              if (state.groupRoutes.groupRouteList.isNotEmpty)
+              if (upcomingRoutes.isNotEmpty)
                 ListView.separated(
                   shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemCount: state.groupRoutes.groupRouteList.length,
-                  separatorBuilder: (_, __) => SizedBox(height: 12),
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: upcomingRoutes.length,
+                  separatorBuilder: (_, __) => const SizedBox(height: 12),
                   itemBuilder: (context, index) {
-                    final activity = state.groupRoutes.groupRouteList[index];
-                    return GroupActivityLoaded(
-                      groupRoute: activity,
-                    );
+                    final activity = upcomingRoutes[index];
+                    return GroupActivityLoaded(groupRoute: activity);
                   },
                 ),
-              if (state.groupRoutes.groupRouteList.isEmpty &&
-                  !state.groupRouteDetailsError)
-                EmptyGroupActivity(),
+              if (upcomingRoutes.isEmpty && !state.groupRouteDetailsError)
+                const EmptyGroupActivity(),
               if (state.groupRouteDetailsError)
                 SizedBox(
                   width: MediaQuery.of(context).size.width * 0.6,
                   child: Center(
-                      child: Text(
-                    "This group is private. Please join in to see more.",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
+                    child: Text(
+                      "This group is private. Please join in to see more.",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
                         color: Colors.grey.shade500,
-                        fontWeight: FontWeight.w700),
-                  )),
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
                 )
             ],
           );
         } else {
-          return SizedBox.shrink();
+          return const SizedBox.shrink();
         }
       },
     );

@@ -15,6 +15,7 @@ class GroupRouteEntity {
   final Position address;
   final String groupStatus;
   final int totalCheckIn;
+  final String groupCheckinStatus; //NotStated, OnGoing, Finished, Deleted
   final List<Participant> participants;
   final int? ridingRouteId;
   final RouteBlogEntity? ridingRoute;
@@ -34,6 +35,7 @@ class GroupRouteEntity {
     required this.address,
     required this.groupStatus,
     required this.totalCheckIn,
+    required this.groupCheckinStatus,
     required this.participants,
     required this.ridingRouteId,
     required this.ridingRoute,
@@ -59,6 +61,7 @@ class GroupRouteEntity {
     Position? address,
     String? groupStatus,
     int? totalCheckIn,
+    String? groupCheckinStatus,
     List<Participant>? participants,
     int? ridingRouteId,
     RouteBlogEntity? ridingRoute,
@@ -78,6 +81,7 @@ class GroupRouteEntity {
       address: address ?? this.address,
       groupStatus: groupStatus ?? this.groupStatus,
       totalCheckIn: totalCheckIn ?? this.totalCheckIn,
+      groupCheckinStatus: groupCheckinStatus ?? this.groupCheckinStatus,
       participants: participants ?? this.participants,
       ridingRouteId: ridingRouteId ?? this.ridingRouteId,
       ridingRoute: ridingRoute ?? this.ridingRoute,

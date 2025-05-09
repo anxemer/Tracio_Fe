@@ -14,6 +14,7 @@ class GetGroupRouteRep extends GroupRouteEntity {
       required super.address,
       required super.groupStatus,
       required super.totalCheckIn,
+      required super.groupCheckinStatus,
       required super.participants,
       required super.ridingRouteId,
       required super.creatorId,
@@ -38,6 +39,7 @@ class GetGroupRouteRep extends GroupRouteEntity {
       ),
       groupStatus: map['groupCheckinStatus'],
       totalCheckIn: map['totalCheckin'] ?? 0,
+      groupCheckinStatus: map['groupCheckinStatus'] ?? "NotStated",
       participants: [],
       ridingRouteId: map['ridingRouteId'],
       ridingRoute: map['ridingRoute'] != null
