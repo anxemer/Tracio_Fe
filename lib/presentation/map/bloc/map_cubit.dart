@@ -39,14 +39,13 @@ class MapCubit extends Cubit<MapCubitState> {
   final Map<String, PointAnnotationManager> _managers = {};
   final Map<String, Uint8List> _imageCache = {};
 
-  Future<void> initializeMap(
-    MapboxMap mapboxMap, {
-    LocationComponentSettings? locationSetting,
-    LogoSettings? logoSetting,
-    AttributionSettings? attributionSetting,
-    CompassSettings? compassSetting,
-    GesturesSettings? gesturesSetting,
-  }) async {
+  Future<void> initializeMap(MapboxMap mapboxMap,
+      {LocationComponentSettings? locationSetting,
+      LogoSettings? logoSetting,
+      AttributionSettings? attributionSetting,
+      CompassSettings? compassSetting,
+      GesturesSettings? gesturesSetting,
+      Snapshotter? snapshotterSetting}) async {
     this.mapboxMap = mapboxMap;
 
     // Location setting
@@ -145,7 +144,7 @@ class MapCubit extends Cubit<MapCubitState> {
         iconSize: iconSize,
         iconAnchor: iconAnchor);
 
-    pointAnnotationManager?.create(annotation);
+    await pointAnnotationManager?.create(annotation);
     pointAnnotations.add(annotation);
     emit(MapAnnotationsUpdated());
   }
@@ -157,9 +156,8 @@ class MapCubit extends Cubit<MapCubitState> {
       Color lineBorderColor = Colors.white,
       double lineBorderWidth = 1.0}) async {
     try {
-      polylineAnnotationManager ??= await mapboxMap?.annotations
-          .createPolylineAnnotationManager(
-              id: 'polyline-route', below: "symbol");
+      polylineAnnotationManager ??=
+          await mapboxMap?.annotations.createPolylineAnnotationManager();
 
       final polylineOptions = PolylineAnnotationOptions(
         geometry: lineString,
@@ -173,8 +171,7 @@ class MapCubit extends Cubit<MapCubitState> {
 
       await polylineAnnotationManager?.create(polylineOptions);
     } catch (e) {
-      print('Error adding polyline: $e');
-      // You may want to handle this error and show feedback to the user
+      debugPrint('Error adding polyline: $e');
     }
   }
 
@@ -241,8 +238,8 @@ class MapCubit extends Cubit<MapCubitState> {
     _updateAnnotationsOnMap();
   }
 
-  Future<void> getSnapshot(
-      LineString lineString, Position start, Position end) async {
+  Future<void> getSnapshot(LineString lineString, Position start, Position end,
+      {int width = 400, int height = 700}) async {
     emit(StaticImageLoading());
     try {
       // Encode the polyline coordinates to a string
@@ -253,11 +250,12 @@ class MapCubit extends Cubit<MapCubitState> {
 
       if (polylineEncoded.isNotEmpty) {
         snapshotImageUrl = ApiUrl.urlGetStaticImageMapbox(
-          dotenv.env['MAPBOX_ACCESS_TOKEN']!,
-          [start.lng, start.lat],
-          [end.lng, end.lat],
-          polylineEncoded,
-        );
+            dotenv.env['MAPBOX_ACCESS_TOKEN']!,
+            [start.lng, start.lat],
+            [end.lng, end.lat],
+            polylineEncoded,
+            width: width,
+            height: height);
 
         // Assuming `snapshotImage` is set properly with the image URL
         emit(StaticImageLoaded(snapshot: snapshotImageUrl));
@@ -274,18 +272,19 @@ class MapCubit extends Cubit<MapCubitState> {
     required String imageUrl,
     required Position position,
     double imageSize = 1.0,
-    Color borderColor = Colors.white,
+    Color borderColor = Colors.black54,
     double borderSize = 6.0,
   }) async {
     final bytes = await _fetchAndResizeImage(
       url: imageUrl,
-      size: 100,
+      size: 80,
       borderColor: borderColor,
       borderSize: borderSize,
+      borderRadius: 50
     );
 
     final manager = await mapboxMap?.annotations
-        .createPointAnnotationManager(id: 'user_$id', below: "");
+        .createPointAnnotationManager(id: 'user_$id');
     final annotation = await manager?.create(
       PointAnnotationOptions(
         geometry: Point(coordinates: position),
@@ -302,21 +301,34 @@ class MapCubit extends Cubit<MapCubitState> {
     required String imageUrl,
     required Position newPosition,
   }) async {
-    var checkLayer = await mapboxMap?.style.styleLayerExists("user_$id");
-    if (checkLayer == null) {
-      debugPrint("Layer not found for id: $id");
-      addUserMarker(
-        id: id,
-        imageUrl: imageUrl, // Replace with actual URL
-        position: newPosition,
-      );
+    if (!_userAnnotations.containsKey(id) || !_managers.containsKey(id)) {
+      debugPrint("🔍 No marker found for user $id — creating new one.");
+      await addUserMarker(id: id, imageUrl: imageUrl, position: newPosition);
+      return;
     }
-    if (!_userAnnotations.containsKey(id)) return;
+
     final marker = _userAnnotations[id]!;
-    final updated = PointAnnotation(
-        id: marker.id, geometry: Point(coordinates: newPosition));
-    await _managers[id]?.update(updated);
-    _userAnnotations[id] = updated;
+    final manager = _managers[id];
+
+    if (manager == null) {
+      debugPrint("❌ No annotation manager found for user $id.");
+      return;
+    }
+
+    try {
+      final updated = PointAnnotation(
+        id: marker.id,
+        geometry: Point(coordinates: newPosition),
+      );
+
+      await manager.update(updated);
+      _userAnnotations[id] = updated;
+
+      debugPrint(
+          "✅ Marker updated for user $id at (${newPosition.lng}, ${newPosition.lat})");
+    } catch (e, stackTrace) {
+      debugPrint("❌ Failed to update marker for user $id: $e\n$stackTrace");
+    }
   }
 
   Future<void> clearAllMarkers() async {
@@ -332,6 +344,7 @@ class MapCubit extends Cubit<MapCubitState> {
     required int size,
     required Color borderColor,
     required double borderSize,
+    required double borderRadius,
   }) async {
     if (_imageCache.containsKey(url)) {
       return _imageCache[url]!;
@@ -345,8 +358,9 @@ class MapCubit extends Cubit<MapCubitState> {
       },
       (data) async {
         final image = Uint8List.fromList(data);
-        final resized =
-            await createMarkerImage(image, size, borderColor, borderSize);
+        final resized = await createMarkerImage(
+            image, size, borderColor, borderSize,
+            borderRadius: borderRadius);
         _imageCache[url] = resized;
         return resized;
       },
@@ -432,9 +446,7 @@ class MapCubit extends Cubit<MapCubitState> {
 
       if (response.statusCode == 200 && response.data != null) {
         Uint8List originalBytes = response.data as Uint8List;
-        var resizedImageBytes =
-            await createMarkerImage(originalBytes, 40, Colors.black87, 4);
-        return resizedImageBytes.buffer.asUint8List();
+        return await createMarkerImage(originalBytes, 40, Colors.black87, 4);
       } else {
         throw Exception('Failed to load image: ${response.statusCode}');
       }

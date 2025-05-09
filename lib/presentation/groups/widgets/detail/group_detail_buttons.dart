@@ -80,7 +80,8 @@ class _GroupDetailButtonsState extends State<GroupDetailButtons> {
               ),
 
             //Join REQUEST BUTTON
-            if (_membership != MembershipEnum.member)
+            if (_membership != MembershipEnum.member &&
+                _membership != MembershipEnum.admin)
               BlocListener<InvitationBloc, InvitationState>(
                 listenWhen: (prev, curr) {
                   return curr.status != prev.status &&

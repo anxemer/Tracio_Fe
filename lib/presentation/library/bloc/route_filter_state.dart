@@ -16,8 +16,9 @@ class RouteFilterState extends Equatable {
   final int speedStart;
   final int speedEnd;
   final Map<String, bool> activeField;
-  final String sortField;
-
+  final String
+      sortField; // RouteName, City, TotalDistance, ElevationGain, MovingTime, DurationTime, AvgSpeed, MaxSpeed, ReactionCounts, ReviewCounts, CreatedAt, UpdatedAt
+  final bool sortDesc;
   final int maxLength = 50;
   final int maxSpeed = 100;
   final int maxElevation = 10000;
@@ -39,7 +40,8 @@ class RouteFilterState extends Equatable {
       this.speedStart = 0,
       this.speedEnd = 100,
       Map<String, bool>? activeField,
-      this.sortField = "Date"})
+      this.sortField = "CreatedAt",
+      this.sortDesc = false})
       : activeField = activeField ??
             const {
               "date": false,
@@ -68,6 +70,7 @@ class RouteFilterState extends Equatable {
     int? speedEnd,
     Map<String, bool>? activeField,
     String? sortField,
+    bool? sortDesc,
   }) {
     return RouteFilterState(
         fromDate: fromDate ?? this.fromDate,
@@ -85,7 +88,57 @@ class RouteFilterState extends Equatable {
         speedStart: speedStart ?? this.speedStart,
         speedEnd: speedEnd ?? this.speedEnd,
         activeField: activeField,
-        sortField: sortField ?? this.sortField);
+        sortField: sortField ?? this.sortField,
+        sortDesc: sortDesc ?? this.sortDesc);
+  }
+
+  Map<String, String> toParams({String? searchName}) {
+    final Map<String, String> params = {
+      'sortField': sortField,
+      'sortAsc': sortDesc.toString(),
+    };
+
+    if (searchName != null && searchName.isNotEmpty) {
+      params['searchName'] = searchName;
+    }
+
+    if (activeField['length'] == true) {
+      params['minDistance'] = lengthStart.toString();
+      params['maxDistance'] = lengthEnd.toString();
+    }
+
+    if (activeField['elevation'] == true) {
+      params['minElevation'] = elevationStart.toString();
+      params['maxElevation'] = elevationEnd.toString();
+    }
+
+    if (activeField['moving_time'] == true) {
+      params['minMovingTime'] = movingTimeStart.toString();
+      params['maxMovingTime'] = movingTimeEnd.toString();
+    }
+
+    if (activeField['speed'] == true) {
+      params['minAvgSpeed'] = speedStart.toString();
+      params['maxAvgSpeed'] = speedEnd.toString();
+    }
+
+    if (activeField['location'] == true &&
+        latitude != null &&
+        longitude != null) {
+      params['startLat'] = latitude.toString();
+      params['startLng'] = longitude.toString();
+    }
+
+    if (activeField['date'] == true) {
+      if (fromDate != null) {
+        params['fromDate'] = fromDate!.toIso8601String();
+      }
+      if (toDate != null) {
+        params['toDate'] = toDate!.toIso8601String();
+      }
+    }
+
+    return params;
   }
 
   @override

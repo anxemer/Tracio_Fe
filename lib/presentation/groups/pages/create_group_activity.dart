@@ -4,7 +4,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:Tracio/core/configs/theme/app_colors.dart';
 import 'package:Tracio/core/configs/utils/validators/group_validator.dart';
 import 'package:Tracio/core/constants/app_size.dart';
-import 'package:Tracio/data/map/models/request/get_route_req.dart';
 import 'package:Tracio/domain/map/entities/route.dart';
 import 'package:Tracio/presentation/groups/cubit/form_group_activity_cubit.dart';
 import 'package:Tracio/presentation/groups/cubit/form_group_activity_state.dart';
@@ -238,9 +237,9 @@ class _CreateGroupActivityState extends State<CreateGroupActivity>
                         const SizedBox(height: 6),
                         GestureDetector(
                           onTap: () async {
-                            final GetRouteReq request = GetRouteReq(
-                                pageNumber: 1, pageSize: 10, sortAsc: false);
-                            context.read<RouteCubit>().getRoutes(request);
+                            context
+                                .read<RouteCubit>()
+                                .getPlans(null, pageSize: 30);
                             final result = await Navigator.push<RouteEntity>(
                                 context,
                                 MaterialPageRoute(

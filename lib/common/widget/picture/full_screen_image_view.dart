@@ -8,11 +8,13 @@ import 'package:gal/gal.dart';
 class FullScreenImageView extends StatelessWidget {
   final String? imageUrl;
   final File? file;
+  final Widget? overlay;
 
   const FullScreenImageView({
     super.key,
     this.imageUrl,
     this.file,
+    this.overlay,
   });
 
   Future<void> _saveImage(BuildContext context) async {
@@ -59,26 +61,38 @@ class FullScreenImageView extends StatelessWidget {
         ],
       ),
       extendBodyBehindAppBar: true,
-      body: Center(
-        child: file != null
-            ? PhotoView(
-                imageProvider: FileImage(file!),
-                backgroundDecoration: const BoxDecoration(color: Colors.black),
-                minScale: PhotoViewComputedScale.contained,
-                maxScale: PhotoViewComputedScale.covered * 2.5,
-              )
-            : imageUrl != null
+      body: Stack(
+        children: [
+          Center(
+            child: file != null
                 ? PhotoView(
-                    imageProvider: CachedNetworkImageProvider(imageUrl!),
+                    imageProvider: FileImage(file!),
                     backgroundDecoration:
                         const BoxDecoration(color: Colors.black),
                     minScale: PhotoViewComputedScale.contained,
                     maxScale: PhotoViewComputedScale.covered * 2.5,
                   )
-                : const Center(
-                    child:
-                        Icon(Icons.broken_image, color: Colors.white, size: 80),
-                  ),
+                : imageUrl != null
+                    ? PhotoView(
+                        imageProvider: CachedNetworkImageProvider(imageUrl!),
+                        backgroundDecoration:
+                            const BoxDecoration(color: Colors.black),
+                        minScale: PhotoViewComputedScale.contained,
+                        maxScale: PhotoViewComputedScale.covered * 2.5,
+                      )
+                    : const Center(
+                        child: Icon(Icons.broken_image,
+                            color: Colors.white, size: 80),
+                      ),
+          ),
+          if (overlay != null)
+            Positioned(
+              bottom: 24,
+              left: 16,
+              right: 16,
+              child: overlay!,
+            )
+        ],
       ),
     );
   }

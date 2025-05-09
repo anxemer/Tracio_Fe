@@ -2,6 +2,8 @@ import 'package:fixnum/fixnum.dart';
 import 'package:flutter/foundation.dart';
 import 'package:grpc/grpc.dart';
 import 'package:Tracio/core/generated/location.pbgrpc.dart';
+import 'package:Tracio/data/auth/sources/auth_local_source/auth_local_source.dart';
+import '../../../service_locator.dart';
 
 abstract class ITrackingGrpcService {
   Future<LocationResponse> sendLocations({
@@ -25,16 +27,7 @@ class TrackingGrpcService implements ITrackingGrpcService {
       ),
     );
 
-    _client = LocationServiceClient(
-      _channel,
-      options: CallOptions(
-        timeout: Duration(seconds: 5),
-        metadata: {
-          'authorization':
-              'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkRHJtVHU2cnBDaFJJRUFKOTg5SHFnOFFXZjYzIiwianRpIjoiNDg1NjNmMzUtZmJiZC00YWJmLThlYjQtNjA0NmFlNWEwNzg1Iiwicm9sZSI6InVzZXIiLCJ1bmlxdWVfbmFtZSI6Ikzhu5ljIFRy4bqnbiBNaW5oIChTRTE3MTI0NikiLCJlbWFpbCI6InRybWlubG9jQGdtYWlsLmNvbSIsImN1c3RvbV9pZCI6IjIyIiwiYXZhdGFyIjoiaHR0cHM6Ly91c2VyYXZhdGFydHJhY2lvLnMzLmFtYXpvbmF3cy5jb20vN2ZjZDIzZmItNzQyYS00NmFmLTgyNDAtNWFkZmE1NGE0NTJjX2F2YXRhciUyMGZpbmFsLmpwZyIsIm5iZiI6MTc0NDMyMDk2NywiZXhwIjoxODM5MDE1MzY3LCJpYXQiOjE3NDQzMjA5NjcsImlzcyI6IlVzZXIiLCJhdWQiOiJodHRwczovL3VzZXIudHJhY2lvLnNwYWNlIn0.qhrqrAzvyDjDuVgxM382cGBjDOl-NBYnuS-4xt1EsqM',
-        },
-      ),
-    );
+    _client = LocationServiceClient(_channel);
   }
 
   @override
@@ -42,29 +35,31 @@ class TrackingGrpcService implements ITrackingGrpcService {
     required int routeId,
     required List<Map<String, dynamic>> locations,
   }) async {
+    final token = await sl<AuthLocalSource>().getToken();
     final request = LocationRequest()..routeId = routeId;
 
     for (final loc in locations) {
-      final location = Location()
+      request.locations.add(Location()
         ..latitude = loc['latitude']
         ..longitude = loc['longitude']
         ..timestamp = Int64(loc['timestamp'])
         ..speed = loc['speed']
         ..distance = loc['distance']
-        ..altitude = loc['altitude'];
-      request.locations.add(location);
+        ..altitude = loc['altitude']);
     }
 
     try {
-      final response = await _client.sendLocations(request);
-      if (kDebugMode) {
-        print('📍 gRPC Success: ${response.message}');
-      }
+      debugPrint('📍 gRPC Success: $request');
+      final response = await _client.sendLocations(
+        request,
+        options: CallOptions(metadata: {
+          'authorization': 'Bearer $token',
+        }),
+      );
+      debugPrint('📍 gRPC Success: ${response.message}');
       return response;
     } catch (e) {
-      if (kDebugMode) {
-        print('❌ gRPC Error: $e');
-      }
+      debugPrint('❌ gRPC Error: $e');
       return LocationResponse(success: false, message: 'gRPC send failed');
     }
   }
@@ -72,8 +67,6 @@ class TrackingGrpcService implements ITrackingGrpcService {
   @override
   Future<void> close() async {
     await _channel.shutdown();
-    if (kDebugMode) {
-      print('🛑 gRPC channel closed');
-    }
+    debugPrint('🛑 gRPC channel closed');
   }
 }

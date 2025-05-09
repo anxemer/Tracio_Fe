@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:Tracio/presentation/chat/widgets/shop_conversation_tab.dart';
+import 'package:Tracio/presentation/chat/widgets/user_conversation_tab.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:Tracio/common/widget/appbar/app_bar.dart';
@@ -7,7 +9,6 @@ import 'package:Tracio/core/configs/theme/app_colors.dart';
 import 'package:Tracio/core/constants/app_size.dart';
 import 'package:Tracio/core/services/signalR/implement/chat_hub_service.dart';
 import 'package:Tracio/presentation/chat/bloc/bloc/conversation_bloc.dart';
-import 'package:Tracio/presentation/chat/widgets/conversation_list_item.dart';
 import 'package:Tracio/presentation/chat/widgets/conversation_search_box.dart';
 import 'package:Tracio/main.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -56,81 +57,35 @@ class _ConversationScreenState extends State<ConversationScreen>
     super.didPopNext();
   }
 
-  Future<void> _onRefresh() async {
-    context.read<ConversationBloc>().add(GetConversations());
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      floatingActionButton: _buildFloatingButton(),
-      appBar: _buildAppBar(),
-      body: Column(
-        children: [
-          ConversationSearchBox(),
-          Expanded(
-              child: BlocBuilder<ConversationBloc, ConversationState>(
-            buildWhen: (previous, current) {
-              if (previous is ConversationLoaded &&
-                  current is ConversationLoaded) {
-                return previous.refreshKey != current.refreshKey;
-              }
-              return true;
-            },
-            builder: (context, state) {
-              return RefreshIndicator(
-                onRefresh: _onRefresh,
-                child: Builder(
-                  builder: (_) {
-                    if (state is ConversationLoading) {
-                      return const Center(child: CircularProgressIndicator());
-                    } else if (state is ConversationFailure) {
-                      return ListView(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 24, horizontal: 16),
-                            child: Center(
-                                child: Text("Error: ${state.errorMessage}")),
-                          ),
-                        ],
-                      );
-                    } else if (state is ConversationLoaded) {
-                      if (state.conversations.isEmpty) {
-                        return ListView(
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          children: const [
-                            Padding(
-                              padding: EdgeInsets.symmetric(vertical: 24.0),
-                              child: Center(
-                                  child: Text("No conversations found.")),
-                            ),
-                          ],
-                        );
-                      }
-
-                      return MediaQuery.removePadding(
-                        context: context,
-                        child: ListView.builder(
-                          itemCount: state.conversations.length,
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          itemBuilder: (context, index) {
-                            return ConversationListItem(
-                              conversation: state.conversations[index],
-                            );
-                          },
-                        ),
-                      );
-                    }
-
-                    return ListView(); // fallback empty
-                  },
-                ),
-              );
-            },
-          )),
-        ],
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        floatingActionButton: _buildFloatingButton(),
+        appBar: _buildAppBar(),
+        body: Column(
+          children: [
+            ConversationSearchBox(),
+            const TabBar(
+              labelColor: Colors.black,
+              indicatorColor: AppColors.primary,
+              tabs: [
+                Tab(text: "Users"),
+                Tab(text: "Shops"),
+              ],
+            ),
+            Expanded(
+              child: TabBarView(
+                physics: const NeverScrollableScrollPhysics(),
+                children: [
+                  UserConversationTab(),
+                  ShopConversationTab(),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

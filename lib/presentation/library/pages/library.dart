@@ -11,26 +11,61 @@ import 'package:Tracio/presentation/library/widgets/route_tab.dart';
 import 'package:Tracio/presentation/library/widgets/saved_tab.dart';
 import 'package:Tracio/presentation/map/bloc/get_location_cubit.dart';
 
-class LibraryPage extends StatelessWidget {
+class LibraryPage extends StatefulWidget {
   const LibraryPage({super.key});
 
   @override
+  State<LibraryPage> createState() => _LibraryPageState();
+}
+
+class _LibraryPageState extends State<LibraryPage>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+  int _selectedTabIndex = 0;
+  final Map<int, bool> _isMapView = {
+    0: false, // Rides
+    1: false, // Routes
+  };
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 4, vsync: this);
+    _tabController.addListener(() {
+      if (_tabController.indexIsChanging) return;
+      setState(() {
+        _selectedTabIndex = _tabController.index;
+      });
+    });
+  }
+
+  void _toggleViewMode() {
+    setState(() {
+      _isMapView[_selectedTabIndex] = !(_isMapView[_selectedTabIndex] ?? false);
+    });
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(create: (context) => RouteFilterCubit()),
-        BlocProvider(create: (context) => GetLocationCubit()),
-      ],
+    return BlocProvider(
+      create: (context) => GetLocationCubit(),
       child: DefaultTabController(
         length: 4,
         child: Scaffold(
           appBar: _buildAppBar(),
           body: Column(
             children: [
-              const TabBar(
+              TabBar(
+                controller: _tabController,
                 labelColor: Colors.black,
                 indicatorColor: AppColors.primary,
-                tabs: [
+                tabs: const [
                   Tab(text: "Rides"),
                   Tab(text: "Routes"),
                   Tab(text: "Saved"),
@@ -39,8 +74,20 @@ class LibraryPage extends StatelessWidget {
               ),
               Expanded(
                 child: TabBarView(
-                  physics: NeverScrollableScrollPhysics(),
-                  children: [RidesTab(), RouteTab(), SavedTab(), OfflineTab()],
+                  controller: _tabController,
+                  physics: const NeverScrollableScrollPhysics(),
+                  children: [
+                    BlocProvider(
+                      create: (context) => RouteFilterCubit(),
+                      child: RidesTab(),
+                    ),
+                    BlocProvider(
+                      create: (context) => RouteFilterCubit(),
+                      child: RouteTab(),
+                    ),
+                    SavedTab(),
+                    OfflineTab()
+                  ],
                 ),
               ),
             ],
@@ -50,7 +97,6 @@ class LibraryPage extends StatelessWidget {
     );
   }
 
-//TODO: Build app bar
   PreferredSizeWidget _buildAppBar() {
     return BasicAppbar(
       hideBack: false,
@@ -67,9 +113,29 @@ class LibraryPage extends StatelessWidget {
   }
 
   Widget _buildAppbarAction() {
-    return IconButton(
-      onPressed: () {},
-      icon: Icon(Icons.search),
-    );
+    final isMap = _isMapView[_selectedTabIndex] ?? false;
+
+    switch (_selectedTabIndex) {
+      case 0:
+      case 1:
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              icon: Icon(
+                Icons.search,
+                color: Colors.white,
+              ),
+              onPressed: () {},
+            ),
+            IconButton(
+              icon: Icon(isMap ? Icons.list : Icons.map, color: Colors.white),
+              onPressed: _toggleViewMode,
+            ),
+          ],
+        );
+      default:
+        return const SizedBox.shrink();
+    }
   }
 }

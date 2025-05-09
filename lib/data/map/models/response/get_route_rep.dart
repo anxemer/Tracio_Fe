@@ -1,31 +1,16 @@
-import 'dart:convert';
-
 import 'package:Tracio/data/map/models/route.dart';
 import 'package:Tracio/domain/map/entities/route.dart';
 
-class GetRouteRepModel {
-  final List<RouteEntity> routes;
-  final int? pageNumber;
-  final int? pageSize;
-  final int? totalRoutes;
-  final int? totalPages;
+class GetRouteRepModel extends RoutePaginationEntity {
   GetRouteRepModel({
-    required this.routes,
-    this.pageNumber,
-    this.pageSize,
-    this.totalRoutes,
-    this.totalPages,
+    required super.routes,
+    required super.pageNumber,
+    required super.pageSize,
+    required super.totalCount,
+    required super.totalPages,
+    required super.hasPreviousPage,
+    required super.hasNextPage,
   });
-
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      // 'routes': routes.map((x) => x.toMap()).toList(),
-      // 'pageNumber': pageNumber?.toMap(),
-      // 'pageSize': pageSize?.toMap(),
-      // 'totalRoutes': totalRoutes?.toMap(),
-      // 'totalPages': totalPages?.toMap(),
-    };
-  }
 
   factory GetRouteRepModel.fromMap(Map<String, dynamic> map) {
     final resultMap = map['result'];
@@ -39,10 +24,10 @@ class GetRouteRepModel {
           routesList.map((x) => RouteModel.fromMap(x as Map<String, dynamic>))),
       pageNumber: resultMap['pageNumber'],
       pageSize: resultMap['pageSize'],
-      totalRoutes: resultMap['totalCount'],
+      totalCount: resultMap['totalCount'],
       totalPages: resultMap['totalPages'],
+      hasPreviousPage: resultMap['hasPreviousPage'],
+      hasNextPage: resultMap['hasNextPage'],
     );
   }
-
-  String toJson() => json.encode(toMap());
 }

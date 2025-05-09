@@ -6,7 +6,6 @@ import 'package:Tracio/core/constants/app_size.dart';
 import 'package:Tracio/presentation/auth/bloc/authCubit/auth_cubit.dart';
 import 'package:Tracio/presentation/auth/pages/login.dart';
 import 'package:Tracio/presentation/shop_owner/page/dash_board.dart';
-import 'package:Tracio/presentation/splash/bloc/splash_cubit.dart';
 import 'package:Tracio/common/widget/navbar/bottom_nav_bar_manager.dart';
 
 import '../../auth/bloc/authCubit/auth_state.dart';
@@ -22,8 +21,6 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     context.read<AuthCubit>().refreshToken();
-
-    // context.read<SplashCubit>().refre();
     super.initState();
   }
 

@@ -1,5 +1,10 @@
+import 'package:Tracio/data/map/models/request/post_route_media_req.dart';
+import 'package:Tracio/data/map/models/request/update_route_req.dart';
+import 'package:Tracio/domain/map/entities/route.dart';
+import 'package:Tracio/domain/map/entities/route_media.dart';
 import 'package:dartz/dartz.dart';
 import 'package:Tracio/core/erorr/failure.dart';
+import 'package:Tracio/data/map/models/request/finish_tracking_req.dart';
 import 'package:Tracio/data/map/models/request/post_reply_req.dart';
 import 'package:Tracio/data/map/models/request/post_review_req.dart';
 import 'package:Tracio/data/map/models/response/get_route_blog_rep.dart';
@@ -50,8 +55,8 @@ class RouteRepositoryImpl extends RouteRepository {
   }
 
   @override
-  Future<Either<Failure, dynamic>> finishTracking(
-      Map<String, dynamic> request) async {
+  Future<Either<Failure, RouteDetailEntity?>> finishTracking(
+      FinishTrackingReq request) async {
     var returnedData = await sl<RouteApiService>().finishTracking(request);
     return returnedData.fold((error) {
       return left(error);
@@ -149,6 +154,60 @@ class RouteRepositoryImpl extends RouteRepository {
   @override
   Future<Either<Failure, RouteDetailEntity>> getRouteDetail(int routeId) async {
     var returnedData = await sl<RouteApiService>().getRouteDetail(routeId);
+    return returnedData.fold((error) {
+      return left(error);
+    }, (data) {
+      return right(data);
+    });
+  }
+
+  @override
+  Future<Either<Failure, dynamic>> deleteRouteMediaFiles(int pictureId) async {
+    var returnedData =
+        await sl<RouteApiService>().deleteRouteMediaFiles(pictureId);
+    return returnedData.fold((error) {
+      return left(error);
+    }, (data) {
+      return right(data);
+    });
+  }
+
+  @override
+  Future<Either<Failure, RouteEntity>> editRouteTracking(
+      UpdateRouteReq request) async {
+    var returnedData = await sl<RouteApiService>().editRouteTracking(request);
+    return returnedData.fold((error) {
+      return left(error);
+    }, (data) {
+      return right(data);
+    });
+  }
+
+  @override
+  Future<Either<Failure, RouteEntity>> getOnGoingInRoute() async {
+    var returnedData = await sl<RouteApiService>().getOnGoingInRoute();
+    return returnedData.fold((error) {
+      return left(error);
+    }, (data) {
+      return right(data);
+    });
+  }
+
+  @override
+  Future<Either<Failure, List<RouteMediaEntity>>> getRouteMediaFiles(
+      int routeId) async {
+    var returnedData = await sl<RouteApiService>().getRouteMediaFiles(routeId);
+    return returnedData.fold((error) {
+      return left(error);
+    }, (data) {
+      return right(data);
+    });
+  }
+
+  @override
+  Future<Either<Failure, RouteMediaEntity>> postRouteMediaFiles(
+      PostRouteMediaReq request) async {
+    var returnedData = await sl<RouteApiService>().postRouteMediaFiles(request);
     return returnedData.fold((error) {
       return left(error);
     }, (data) {

@@ -27,7 +27,6 @@ class GetBlogInitial extends GetBlogState {
       {required super.blogs, required super.metaData, required super.params});
 
   @override
-  // TODO: implement props
   List<Object?> get props => [];
 }
 
@@ -52,7 +51,6 @@ class GetBlogLoaded extends GetBlogState {
       required super.isLoading});
 
   @override
-  // TODO: implement props
   List<Object?> get props => [blogs];
 }
 class GetBlogBookmarkLoaded extends GetBlogState {
@@ -65,7 +63,6 @@ class GetBlogBookmarkLoaded extends GetBlogState {
       required super.isLoading});
 
   @override
-  // TODO: implement props
   List<Object?> get props => [blogs];
 }
 
@@ -80,6 +77,5 @@ class GetBlogFailure extends GetBlogState {
       required super.isLoading});
 
   @override
-  // TODO: implement props
   List<Object?> get props => [];
 }

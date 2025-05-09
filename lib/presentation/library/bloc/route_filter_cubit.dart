@@ -2,7 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:Tracio/presentation/library/bloc/route_filter_state.dart';
 
 class RouteFilterCubit extends Cubit<RouteFilterState> {
-  RouteFilterCubit() : super(const RouteFilterState());
+  RouteFilterCubit() : super(RouteFilterState());
 
   int maxLength = 50;
   int maxSpeed = 100;
@@ -120,9 +120,16 @@ class RouteFilterCubit extends Cubit<RouteFilterState> {
     }
   }
 
-  void setSortField(String sortField) {
-    emit(state.copyWith(sortField: sortField, activeField: {
-      ...state.activeField,
-    }));
+  void setSortField(String newSortField) {
+    final isSameField = newSortField == state.sortField;
+    final newSortDesc = isSameField ? !state.sortDesc : true;
+
+    emit(state.copyWith(
+      sortField: newSortField,
+      sortDesc: newSortDesc,
+      activeField: {
+        ...state.activeField,
+      },
+    ));
   }
 }

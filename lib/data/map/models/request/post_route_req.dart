@@ -8,7 +8,6 @@ class PostRouteReq {
   final List<Location>? waypoints;
   final String polyline;
   final String routeThumbnail;
-  final String privacyLevel;
   PostRouteReq({
     required this.routeName,
     this.description,
@@ -17,7 +16,6 @@ class PostRouteReq {
     this.waypoints,
     required this.polyline,
     required this.routeThumbnail,
-    this.privacyLevel = 'Public',
   });
 
   PostRouteReq copyWith({
@@ -28,7 +26,6 @@ class PostRouteReq {
     List<Location>? waypoints,
     String? polyline,
     String? routeThumbnail,
-    String? privacyLevel,
   }) {
     return PostRouteReq(
       routeName: routeName ?? this.routeName,
@@ -38,7 +35,6 @@ class PostRouteReq {
       waypoints: waypoints ?? this.waypoints,
       polyline: polyline ?? this.polyline,
       routeThumbnail: routeThumbnail ?? this.routeThumbnail,
-      privacyLevel: privacyLevel ?? this.privacyLevel,
     );
   }
 
@@ -51,7 +47,6 @@ class PostRouteReq {
       'waypoints': waypoints?.map((x) => x.toJson()).toList() ?? [],
       'polyline': polyline,
       'routeThumbnail': routeThumbnail,
-      'privacyLevel': privacyLevel,
     };
   }
 

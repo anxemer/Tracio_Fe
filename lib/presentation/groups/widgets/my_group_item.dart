@@ -5,7 +5,7 @@ import 'package:Tracio/core/constants/app_size.dart';
 import 'package:Tracio/domain/groups/entities/group.dart';
 import 'package:Tracio/presentation/groups/cubit/invitation_bloc.dart';
 import 'package:Tracio/presentation/groups/pages/group_detail.dart';
-import 'package:Tracio/presentation/map/bloc/tracking_location_bloc.dart';
+import 'package:Tracio/presentation/map/bloc/tracking/bloc/tracking_bloc.dart';
 
 class MyGroupItem extends StatefulWidget {
   final Group group;
@@ -95,7 +95,7 @@ class _MyGroupItemState extends State<MyGroupItem> {
                 context,
                 MaterialPageRoute(
                   builder: (_) => BlocProvider.value(
-                    value: BlocProvider.of<LocationCubit>(context),
+                    value: BlocProvider.of<TrackingBloc>(context),
                     child: BlocProvider.value(
                       value: BlocProvider.of<InvitationBloc>(context),
                       child: GroupDetailScreen(

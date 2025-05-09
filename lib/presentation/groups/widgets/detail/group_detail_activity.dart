@@ -29,16 +29,17 @@ class _GroupDetailActivityState extends State<GroupDetailActivity> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    state.groupRoutes.isNotEmpty
-                        ? "Upcoming Activities"
-                        : "No upcoming activities",
-                    style: TextStyle(
-                      color: state.groupRoutes.isNotEmpty
-                          ? AppColors.primary
-                          : Colors.black54,
+                  if (!state.groupRouteDetailsError)
+                    Text(
+                      state.groupRoutes.groupRouteList.isNotEmpty
+                          ? "Upcoming Activities"
+                          : "No upcoming activities",
+                      style: TextStyle(
+                        color: state.groupRoutes.groupRouteList.isNotEmpty
+                            ? AppColors.primary
+                            : Colors.black54,
+                      ),
                     ),
-                  ),
                   if (state.group.membership == MembershipEnum.member ||
                       state.group.membership == MembershipEnum.admin)
                     GestureDetector(
@@ -63,20 +64,34 @@ class _GroupDetailActivityState extends State<GroupDetailActivity> {
                 ],
               ),
               const SizedBox(height: AppSize.apHorizontalPadding / 2),
-              if (state.groupRoutes.isNotEmpty)
+              if (state.groupRoutes.groupRouteList.isNotEmpty)
                 ListView.separated(
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),
-                  itemCount: state.groupRoutes.length,
+                  itemCount: state.groupRoutes.groupRouteList.length,
                   separatorBuilder: (_, __) => SizedBox(height: 12),
                   itemBuilder: (context, index) {
-                    final activity = state.groupRoutes[index];
+                    final activity = state.groupRoutes.groupRouteList[index];
                     return GroupActivityLoaded(
                       groupRoute: activity,
                     );
                   },
                 ),
-              if (state.groupRoutes.isEmpty) EmptyGroupActivity()
+              if (state.groupRoutes.groupRouteList.isEmpty &&
+                  !state.groupRouteDetailsError)
+                EmptyGroupActivity(),
+              if (state.groupRouteDetailsError)
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.6,
+                  child: Center(
+                      child: Text(
+                    "This group is private. Please join in to see more.",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: Colors.grey.shade500,
+                        fontWeight: FontWeight.w700),
+                  )),
+                )
             ],
           );
         } else {

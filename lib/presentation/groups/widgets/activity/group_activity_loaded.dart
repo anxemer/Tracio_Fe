@@ -4,6 +4,7 @@ import 'package:Tracio/common/helper/navigator/app_navigator.dart';
 import 'package:Tracio/core/constants/app_size.dart';
 import 'package:Tracio/domain/groups/entities/group_route.dart';
 import 'package:Tracio/presentation/groups/cubit/group_cubit.dart';
+import 'package:Tracio/presentation/groups/cubit/group_state.dart';
 import 'package:Tracio/presentation/groups/widgets/activity/calendar_box.dart';
 import 'package:Tracio/presentation/groups/widgets/activity/group_activity_detail.dart';
 
@@ -25,13 +26,14 @@ class GroupActivityLoaded extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
         onTap: () {
-          context
-              .read<GroupCubit>()
-              .getGroupRouteDetail(groupRoute.groupRouteId);
           AppNavigator.push(
               context,
               BlocProvider.value(
-                value: context.read<GroupCubit>(),
+                value: context.read<GroupCubit>()
+                  ..getGroupRouteDetail(
+                      groupRoute.groupRouteId,
+                      context.read<GroupCubit>().state
+                          as GetGroupDetailSuccess),
                 child: GroupActivityDetail(
                   groupRouteId: groupRoute.groupRouteId,
                 ),

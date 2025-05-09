@@ -140,17 +140,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 icon: Icons.check_circle_outline,
                                 color: Colors.green,
                               ),
-
-                              // _buildStatisticCard(
-                              //   title: 'Doanh thu dự kiến hôm nay',
-                              //   value: _currencyFormat.format(_expectedRevenueToday),
-                              //   icon: Icons.attach_money,
-                              //   color: Colors.teal,
-                              // ),
                             ],
                           ),
                           SizedBox(height: 10.h),
-                          Text('Recents Booking',
+                          Text('Recent Bookings',
                               style: TextStyle(
                                   fontSize: AppSize.textLarge,
                                   color:
@@ -247,16 +240,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                           ServiceManagementPage(
                                             shopId: 7,
                                           ));
-
-                                      // AppNavigator.push(
-                                      //     context,
-                                      //     BlocProvider.value(
-                                      //       value: context
-                                      //           .read<ServiceManagementCubit>(),
-                                      //       child: CreateEditServiceScreen(
-                                      //         shopId: 7,
-                                      //       ),
-                                      //     ));
                                     },
                                   ),
                                 ],
@@ -270,8 +253,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   context.read<AuthCubit>().changeRole(
                                       ChangeRoleReq(
                                           refreshToken: refreshToken,
-                                          role:
-                                              'user')); // Đảm bảo bạn đã định nghĩa route này
+                                          role: 'user'));
                                 },
                               ),
                             ],

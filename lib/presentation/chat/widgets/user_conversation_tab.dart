@@ -50,8 +50,7 @@ class _UserConversationTabState extends State<UserConversationTab>
                   ],
                 );
               } else if (state is ConversationLoaded) {
-                final userConversations =
-                    state.conversations.where((c) => !c.isGroup).toList();
+                final userConversations = state.conversations;
 
                 if (userConversations.isEmpty) {
                   return ListView(

@@ -4,6 +4,12 @@ import 'package:Tracio/data/challenge/models/request/create_challenge_req.dart';
 import 'package:Tracio/domain/blog/usecase/edit_blog.dart';
 import 'package:Tracio/domain/challenge/usecase/create_challenge.dart';
 import 'package:Tracio/domain/challenge/usecase/get_user_reward.dart';
+import 'package:Tracio/domain/groups/usecases/update_group_route_status_usecase.dart';
+import 'package:Tracio/domain/map/usecase/delete_route_media_usecase.dart';
+import 'package:Tracio/domain/map/usecase/edit_route_tracking_usecase.dart';
+import 'package:Tracio/domain/map/usecase/get_ongoing_route_usecase.dart';
+import 'package:Tracio/domain/map/usecase/get_route_media_usecase.dart';
+import 'package:Tracio/domain/map/usecase/post_route_media_usecase.dart';
 import 'package:Tracio/domain/challenge/usecase/request_challenge.dart';
 import 'package:Tracio/domain/user/usecase/edit_profile.dart';
 import 'package:Tracio/domain/user/usecase/get_daily_activity.dart';
@@ -17,10 +23,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:Tracio/core/network/network_infor.dart';
 import 'package:Tracio/core/services/signalR/implement/chat_hub_service.dart';
 import 'package:Tracio/core/services/signalR/implement/group_route_hub_service.dart';
+import 'package:Tracio/core/services/signalR/implement/matching_hub_service.dart';
 import 'package:Tracio/core/services/signalR/signalr_core_service.dart';
+import 'package:Tracio/core/signalr_service.dart';
 import 'package:Tracio/data/auth/repositories/auth_repositoty_impl.dart';
 import 'package:Tracio/data/auth/sources/auth_remote_source/auth_api_service.dart';
 import 'package:Tracio/data/auth/sources/auth_remote_source/auth_firebase_service.dart';
+import 'package:Tracio/data/blog/repositories/blog_repository_impl.dart';
 import 'package:Tracio/data/blog/source/blog_api_service.dart';
 import 'package:Tracio/data/chat/repositories/chat_repository_impl.dart';
 import 'package:Tracio/data/chat/source/chat_api_service.dart';
@@ -52,7 +61,7 @@ import 'package:Tracio/domain/auth/repositories/auth_repository.dart';
 import 'package:Tracio/domain/auth/usecases/change_role.dart';
 import 'package:Tracio/domain/auth/usecases/check_email_verified.dart';
 import 'package:Tracio/domain/blog/usecase/get_bookmark_blog.dart';
-import 'package:Tracio/domain/challenge/usecase/leave_challenge.dart';
+import 'package:Tracio/domain/chat/usecases/get_shop_messages_usecase.dart';
 import 'package:Tracio/domain/shop/usecase/edit_shop.dart';
 import 'package:Tracio/domain/shop/usecase/get_review_booking.dart';
 import 'package:Tracio/domain/shop/usecase/get_shop_profile.dart';
@@ -160,6 +169,7 @@ import 'core/network/dio_client.dart';
 import 'data/auth/sources/auth_local_source/auth_local_source.dart';
 import 'domain/blog/usecase/rep_comment.dart';
 import 'domain/blog/usecase/un_react_blog.dart';
+import 'domain/challenge/usecase/leave_challenge.dart';
 
 final sl = GetIt.instance;
 
@@ -218,14 +228,16 @@ Future<void> initializeDependencies() async {
       () => ChallengeRepositoryImpl(remoteDataSource: sl()));
   // * gRPC & Hubs
   sl.registerLazySingleton(() => SignalRCoreService());
-
-  sl.registerLazySingleton<ITrackingGrpcService>(() => TrackingGrpcService());
+  sl.registerLazySingleton<ITrackingGrpcService>(
+    () => TrackingGrpcService(),
+  );
   sl.registerLazySingleton<ITrackingHubService>(() => TrackingHubService());
 
   //when hub services is depended on SignalRCoreService
   sl.registerLazySingleton(
       () => GroupRouteHubService(sl<SignalRCoreService>()));
   sl.registerLazySingleton(() => ChatHubService(sl<SignalRCoreService>()));
+  sl.registerLazySingleton(() => MatchingHubService(sl<SignalRCoreService>()));
   sl.registerLazySingleton(
       () => NotificationHubService(sl<SignalRCoreService>()));
   // * USECASES--use registerFactory
@@ -348,11 +360,4 @@ Future<void> initializeDependencies() async {
   sl.registerFactory<LeaveChallengeUseCase>(() => LeaveChallengeUseCase());
   sl.registerFactory<GetUserRewardUseCase>(() => GetUserRewardUseCase());
   sl.registerFactory<CreateChallengeUseCase>(() => CreateChallengeUseCase());
-  sl.registerFactory<EditBlogUseCase>(() => EditBlogUseCase());
-  sl.registerFactory<EditUserProfileUseCase>(() => EditUserProfileUseCase());
-  sl.registerFactory<GetDailyActivityUseCase>(() => GetDailyActivityUseCase());
-  sl.registerFactory<GetFollowRequestUseCase>(() => GetFollowRequestUseCase());
-  sl.registerFactory<ResolveFollowUserUseCase>(
-      () => ResolveFollowUserUseCase());
-  sl.registerFactory<RequestChallengeUseCase>(() => RequestChallengeUseCase());
 }

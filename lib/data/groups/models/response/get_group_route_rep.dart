@@ -1,4 +1,5 @@
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
+import 'package:Tracio/data/map/models/route_blog.dart';
 import 'package:Tracio/domain/groups/entities/group_route.dart';
 
 class GetGroupRouteRep extends GroupRouteEntity {
@@ -18,30 +19,35 @@ class GetGroupRouteRep extends GroupRouteEntity {
       required super.creatorId,
       required super.creatorAvatarUrl,
       required super.creatorName,
-      required super.groupRouteDetails});
+      required super.groupRouteDetails,
+      required super.ridingRoute});
 
   factory GetGroupRouteRep.fromMap(Map<String, dynamic> map) {
     return GetGroupRouteRep(
-        groupRouteId: map['groupRouteId'],
-        routeId: map['routeId'],
-        groupId: map['groupId'],
-        title: map['title'],
-        description: map['description'],
-        startDateTime: DateTime.parse(map['startTime']),
-        addressMeeting: map['addressMeeting'],
-        address: Position.named(
-          lat: map['address']['latitude'],
-          lng: map['address']['longitude'],
-          alt: _tryParseAltitude(map['address']['altitude']),
-        ),
-        groupStatus: map['groupCheckinStatus'],
-        totalCheckIn: map['totalCheckin'] ?? 0,
-        participants: [],
-        ridingRouteId: map['ridingRouteId'] ?? 0,
-        creatorId: map['createdBy'] as int,
-        creatorAvatarUrl: map['creatorAvatarUrl'],
-        creatorName: map['creatorName'],
-        groupRouteDetails: []);
+      groupRouteId: map['groupRouteId'],
+      routeId: map['routeId'],
+      groupId: map['groupId'],
+      title: map['title'],
+      description: map['description'],
+      startDateTime: DateTime.parse(map['startTime']),
+      addressMeeting: map['addressMeeting'],
+      address: Position.named(
+        lat: map['address']['latitude'],
+        lng: map['address']['longitude'],
+        alt: _tryParseAltitude(map['address']['altitude']),
+      ),
+      groupStatus: map['groupCheckinStatus'],
+      totalCheckIn: map['totalCheckin'] ?? 0,
+      participants: [],
+      ridingRouteId: map['ridingRouteId'],
+      ridingRoute: map['ridingRoute'] != null
+          ? RouteBlogModel.fromMap(map['ridingRoute'])
+          : null,
+      creatorId: map['createdBy'] as int,
+      creatorAvatarUrl: map['creatorAvatarUrl'],
+      creatorName: map['creatorName'],
+      groupRouteDetails: [],
+    );
   }
 
   static double? _tryParseAltitude(dynamic alt) {

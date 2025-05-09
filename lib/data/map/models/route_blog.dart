@@ -38,7 +38,7 @@ class RouteBlogModel extends RouteBlogEntity {
       mood: map['mood'],
       isPublic: map['isPublic'],
       isPlanned: map['isPlanned'],
-      isReacted: map['isReacted'],
+      isReacted: map['isReacted'] ?? false,
       createdAt: DateTime.parse(map['createdAt']),
       updatedAt: DateTime.parse(map['updatedAt']),
     );

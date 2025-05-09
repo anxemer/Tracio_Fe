@@ -14,6 +14,8 @@ abstract class ChatApiService {
       {Map<String, String>? params});
   Future<Either<Failure, MessagePaginationModel>> getMessages(
       Map<String, String> params);
+  Future<Either<Failure, MessagePaginationModel>> getShopMessages(
+      int entityId, Map<String, String> params);
   Future<Either<Failure, MessageEntity>> postMessage(PostMessageReq request);
   Future<Either<Failure, dynamic>> postConversation(int userId);
   Future<Either<Failure, dynamic>> getConversationByGroupId(int groupId);
@@ -120,6 +122,28 @@ class ChatApiServiceImpl extends ChatApiService {
 
       if (response.statusCode == 201) {
         return right(null);
+      } else {
+        return left(ExceptionFailure('Error: ${response.statusCode}'));
+      }
+    } on DioException catch (e) {
+      return left(
+          ExceptionFailure(e.response?.data['message'] ?? 'An error occurred'));
+    } catch (e) {
+      return left(ExceptionFailure('An unexpected error occurred: $e'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, MessagePaginationModel>> getShopMessages(
+      int entityId, Map<String, String> params) async {
+    try {
+      var response = await sl<DioClient>()
+          .get(ApiUrl.urlGetShopMessages(entityId, params).toString());
+
+      if (response.statusCode == 200) {
+        var responseData =
+            MessagePaginationModel.fromMap(response.data['result']);
+        return right(responseData);
       } else {
         return left(ExceptionFailure('Error: ${response.statusCode}'));
       }

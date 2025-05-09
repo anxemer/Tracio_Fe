@@ -31,6 +31,13 @@ class _RouteDetailScreenState extends State<RouteDetailScreen> with RouteAware {
   double panelHeight = 0;
 
   @override
+  void initState() {
+    Future.microtask(
+        () => context.read<RouteCubit>().getRouteDetail(widget.routeId));
+    super.initState();
+  }
+
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     routeObserver.subscribe(this, ModalRoute.of(context)!);
@@ -60,6 +67,7 @@ class _RouteDetailScreenState extends State<RouteDetailScreen> with RouteAware {
               listener: (context, state) async {
                 if (state is GetRouteDetailLoaded &&
                     context.read<MapCubit>().mapboxMap != null) {
+                  await context.read<MapCubit>().clearAnnotations();
                   await context.read<MapCubit>().addPolylineRoute(
                       _getLineString(state.route.polyline),
                       lineOpacity: 1,

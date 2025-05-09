@@ -26,13 +26,13 @@ abstract class GroupApiService {
   Future<Either<Failure, PostGroupRouteRep>> postGroupRoute(
       int groupId, PostGroupRouteReq request);
   Future<Either<Failure, GetGroupRouteListRep>> getGroupRoutesByGroup(
-      int groupId);
+      int groupId, Map<String, String> params);
   Future<Either<Failure, dynamic>> deleteGroupRoute(
       int groupId, int groupRouteId);
   Future<Either<Failure, dynamic>> updateGroupRoute(
       int groupId, int groupRouteId, PostGroupRouteReq request);
   Future<Either<Failure, GetParticipantListRep>> getParticipantsByGroup(
-      int groupId);
+      int groupId, Map<String, String> params);
   Future<Either<Failure, dynamic>> kickUser(int groupId, int targetUserId);
   Future<Either<Failure, dynamic>> leaveGroup(int groupId);
   Future<Either<Failure, dynamic>> assignRole(
@@ -40,6 +40,8 @@ abstract class GroupApiService {
 
   Future<Either<Failure, dynamic>> getGroupRouteDetail(int groupRouteId,
       [Map<String, String>? params]);
+  Future<Either<Failure, dynamic>> updateStatusGroupRoute(
+      int groupId, int groupRouteId, String status);
 }
 
 class GroupApiServiceImpl extends GroupApiService {
@@ -110,10 +112,11 @@ class GroupApiServiceImpl extends GroupApiService {
 
   @override
   Future<Either<Failure, GetGroupRouteListRep>> getGroupRoutesByGroup(
-      int groupId) async {
+      int groupId, Map<String, String> params) async {
     try {
-      var response = await sl<DioClient>()
-          .get(ApiUrl.urlGetGroupRoute(groupId).toString());
+      var response = await sl<DioClient>().get(ApiUrl.urlGetGroupRoute(groupId)
+          .replace(queryParameters: params)
+          .toString());
 
       if (response.statusCode == 200) {
         GetGroupRouteListRep data =
@@ -136,10 +139,12 @@ class GroupApiServiceImpl extends GroupApiService {
 
   @override
   Future<Either<Failure, GetParticipantListRep>> getParticipantsByGroup(
-      int groupId) async {
+      int groupId, Map<String, String> params) async {
     try {
-      var response = await sl<DioClient>()
-          .get(ApiUrl.urlGetParticipants(groupId).toString());
+      var response = await sl<DioClient>().get(
+          ApiUrl.urlGetParticipants(groupId)
+              .replace(queryParameters: params)
+              .toString());
 
       if (response.statusCode == 200) {
         GetParticipantListRep data =
@@ -387,6 +392,29 @@ class GroupApiServiceImpl extends GroupApiService {
     } catch (e) {
       return left(
           ExceptionFailure('An unexpected error occurred: ${e.toString()}'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, dynamic>> updateStatusGroupRoute(
+      int groupId, int groupRouteId, String status) async {
+    try {
+      var uri = ApiUrl.urlUpdateGroupRouteStatus(groupId, groupRouteId, status);
+      var response = await sl<DioClient>().put(uri.toString());
+
+      if (response.statusCode == 200) {
+        return right(response.data["result"]);
+      } else if (response.statusCode == 400) {
+        return Left(AuthorizationFailure(
+            'You do not have permission to perform this action.', 400));
+      } else {
+        return left(ExceptionFailure('Error: ${response.statusCode}'));
+      }
+    } on DioException catch (e) {
+      return left(ExceptionFailure(
+          e.response?.data ?? e.message ?? 'An error occurred'));
+    } catch (e) {
+      return left(ExceptionFailure('An unexpected error occurred: $e'));
     }
   }
 }

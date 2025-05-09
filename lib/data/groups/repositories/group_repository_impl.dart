@@ -60,9 +60,9 @@ class GroupRepositoryImpl extends GroupRepository {
 
   @override
   Future<Either<Failure, GetGroupRouteListRep>> getGroupRoutesByGroup(
-      int groupId) async {
+      int groupId, Map<String, String> params) async {
     var returnedData =
-        await sl<GroupApiService>().getGroupRoutesByGroup(groupId);
+        await sl<GroupApiService>().getGroupRoutesByGroup(groupId, params);
     return returnedData.fold((error) {
       return left(error);
     }, (data) {
@@ -72,9 +72,9 @@ class GroupRepositoryImpl extends GroupRepository {
 
   @override
   Future<Either<Failure, GetParticipantListRep>> getParticipantsByGroup(
-      int groupId) async {
+      int groupId, Map<String, String> params) async {
     var returnedData =
-        await sl<GroupApiService>().getParticipantsByGroup(groupId);
+        await sl<GroupApiService>().getParticipantsByGroup(groupId, params);
     return returnedData.fold((error) {
       return left(error);
     }, (data) {
@@ -103,6 +103,18 @@ class GroupRepositoryImpl extends GroupRepository {
     };
     var returnedData =
         await sl<GroupApiService>().getGroupRouteDetail(groupRouteId, params);
+    return returnedData.fold((error) {
+      return left(error);
+    }, (data) {
+      return right(data);
+    });
+  }
+
+  @override
+  Future<Either<Failure, GetRouteDetailRep>> updateGroupRouteStatus(
+      int groupRouteId, int groupId, String status) async {
+    var returnedData = await sl<GroupApiService>()
+        .updateStatusGroupRoute(groupRouteId, groupId, status);
     return returnedData.fold((error) {
       return left(error);
     }, (data) {

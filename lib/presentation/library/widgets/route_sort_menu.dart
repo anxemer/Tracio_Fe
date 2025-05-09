@@ -18,6 +18,7 @@ class _RouteSortMenuState extends State<RouteSortMenu> {
     return BlocBuilder<RouteFilterCubit, RouteFilterState>(
         builder: (context, state) {
       return PopupMenuButton<String>(
+        key: ValueKey("${state.sortField}_${state.sortDesc}"),
         style: ButtonStyle(
             backgroundColor: WidgetStatePropertyAll(Colors.white),
             shape: WidgetStatePropertyAll(RoundedRectangleBorder(
@@ -34,47 +35,56 @@ class _RouteSortMenuState extends State<RouteSortMenu> {
         ),
         initialValue: state.sortField,
         onSelected: (value) {
-          //TODO:FETCH DATA
           context.read<RouteFilterCubit>().setSortField(value);
         },
         itemBuilder: (context) => [
-          PopupMenuItem(
-              enabled: false,
-              child: Text(
-                "Sort by",
-                style: TextStyle(color: Colors.black45),
-              )),
-          _buildPopupMenuItem("Date", isActive: state.sortField == "Date"),
-          _buildPopupMenuItem("Name", isActive: state.sortField == "Name"),
-          _buildPopupMenuItem("Length", isActive: state.sortField == "Length"),
-          _buildPopupMenuItem("Elevation Gain",
-              isActive: state.sortField == "Elevation Gain"),
-          _buildPopupMenuItem("Average Speed",
-              isActive: state.sortField == "Average Speed"),
-          _buildPopupMenuItem("Moving Time",
-              isActive: state.sortField == "Moving Time"),
+          const PopupMenuItem(
+            enabled: false,
+            child: Text("Sort by", style: TextStyle(color: Colors.black45)),
+          ),
+          _buildPopupMenuItem("Date", "CreatedAt",
+              currentSortField: state.sortField, sortDesc: state.sortDesc),
+          _buildPopupMenuItem("Name", "RouteName",
+              currentSortField: state.sortField, sortDesc: state.sortDesc),
+          _buildPopupMenuItem("Elevation Gain", "ElevationGain",
+              currentSortField: state.sortField, sortDesc: state.sortDesc),
+          _buildPopupMenuItem("Average Speed", "AvgSpeed",
+              currentSortField: state.sortField, sortDesc: state.sortDesc),
+          _buildPopupMenuItem("Moving Time", "MovingTime",
+              currentSortField: state.sortField, sortDesc: state.sortDesc),
         ],
       );
     });
   }
 
-  PopupMenuItem<String> _buildPopupMenuItem(String text,
-      {bool isActive = false}) {
+  PopupMenuItem<String> _buildPopupMenuItem(
+    String label,
+    String value, {
+    required String currentSortField,
+    required bool sortDesc,
+  }) {
+    final isActive = value == currentSortField;
+    final icon = !isActive
+        ? null
+        : sortDesc
+            ? Icons.arrow_downward
+            : Icons.arrow_upward;
+
     return PopupMenuItem(
-      value: text,
+      value: value,
       child: Row(
         children: [
           isActive
-              ? Icon(
-                  Icons.check_outlined,
-                  color: Colors.black54,
-                  size: AppSize.iconSmall,
-                )
-              : SizedBox(width: 20),
-          SizedBox(width: 5),
-          Text(text,
+              ? Icon(Icons.check_outlined,
+                  color: Colors.black54, size: AppSize.iconSmall)
+              : const SizedBox(width: 20),
+          const SizedBox(width: 5),
+          Text(label,
               style: TextStyle(
                   color: Colors.black54, fontSize: AppSize.textMedium.sp)),
+          const Spacer(),
+          if (icon != null)
+            Icon(icon, size: AppSize.iconSmall, color: Colors.black54),
         ],
       ),
     );

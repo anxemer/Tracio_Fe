@@ -46,7 +46,7 @@ class _CreateBlogHeaderState extends State<CreateBlogHeader> {
                       )),
                   child: SizedBox(
                     child: CirclePicture(
-                        imageUrl: user!.profilePicture!,
+                        imageUrl: user?.profilePicture! ?? "",
                         imageSize: AppSize.iconSmall.sp),
                   )),
               SizedBox(

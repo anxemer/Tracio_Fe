@@ -179,7 +179,8 @@ class ApiUrl {
   static const rescheduleBooking = '$portShop/api/bookings/reschedule-booking';
 
   static Uri urlGetStaticImageMapbox(String accessToken, List<num> start,
-      List<num> end, String polylineEncoded) {
+      List<num> end, String polylineEncoded,
+      {int width = 400, int height = 700}) {
     final startNum = '${start[0]},${start[1]}';
     final endNum = '${end[0]},${end[1]}';
 
@@ -192,7 +193,7 @@ class ApiUrl {
 
     final uri = Uri.https(
       'api.mapbox.com',
-      '/styles/v1/mapbox/streets-v12/static/$points,$path/auto/400x700',
+      '/styles/v1/mapbox/streets-v12/static/$points,$path/auto/${width}x$height',
       {
         'access_token': accessToken,
       },
@@ -367,5 +368,35 @@ class ApiUrl {
   static Uri urlPostConversation = Uri.parse("$portChat/api/conversations");
   static Uri urlGetConversationByGroupId(int groupId) {
     return Uri.parse("$portChat/api/conversations/$groupId/conversation");
+  }
+
+  static Uri urlGetShopMessages(int entityId, Map<String, String>? params) {
+    return Uri.parse(
+            "$portChat/api/conversations/$entityId/shop-conversation/messages")
+        .replace(queryParameters: params);
+  }
+
+  static Uri urlGetRouteOnGoingIn =
+      Uri.parse("$portRoute/api/route/tracking/pending");
+  static Uri urlUpdateTrackingRoute(int routeId) {
+    return Uri.parse("$portRoute/api/route/tracking/$routeId");
+  }
+
+  static Uri urlGetRouteMediaFiles(int routeId) {
+    return Uri.parse("$portRoute/api/pictures/route/$routeId");
+  }
+
+  static Uri urlPostRouteMediaFiles(int routeId) {
+    return Uri.parse("$portRoute/api/pictures/route/$routeId");
+  }
+
+  static Uri urlDeleteRouteMediaFiles(int pictureId) {
+    return Uri.parse("$portRoute/api/pictures/$pictureId");
+  }
+
+  static Uri urlUpdateGroupRouteStatus(
+      int groupRouteId, int groupId, String status) {
+    return Uri.parse(
+        "$portGroup/api/group/$groupId/route/$groupRouteId/status");
   }
 }

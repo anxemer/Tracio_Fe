@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:Tracio/data/map/models/request/get_route_req.dart';
 import 'package:Tracio/presentation/library/widgets/route_filter_widget.dart';
 import 'package:Tracio/presentation/library/widgets/route_list.dart';
 import 'package:Tracio/presentation/map/bloc/route_cubit.dart';
@@ -20,17 +19,6 @@ class _RouteTabState extends State<RouteTab>
   bool get wantKeepAlive => true;
 
   @override
-  void initState() {
-    super.initState();
-    final GetRouteReq request =
-        GetRouteReq(pageNumber: 1, pageSize: 5, sortAsc: false);
-    Future.microtask(() {
-      // ignore: use_build_context_synchronously
-      context.read<RouteCubit>().getRoutes(request);
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     super.build(context);
 
@@ -39,7 +27,7 @@ class _RouteTabState extends State<RouteTab>
         BlocConsumer<RouteCubit, RouteState>(
             listener: (context, state) {},
             builder: (context, state) {
-              if (state is GetRouteLoaded && state.routes.isNotEmpty) {
+              if (state is GetRouteLoaded && state.plans.isNotEmpty) {
                 return Container(
                   width: double.infinity,
                   height: 50.h,

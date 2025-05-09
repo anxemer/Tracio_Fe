@@ -1,22 +1,15 @@
 import 'package:Tracio/domain/groups/entities/group_route.dart';
+import 'package:Tracio/domain/groups/entities/group_route.dart';
 
-class GetParticipantListRep {
-  final List<Participant> participants;
-  final int totalCount;
-  final int pageNumber;
-  final int pageSize;
-  final int totalPages;
-  final bool hasPreviousPage;
-  final bool hasNextPage;
-
+class GetParticipantListRep extends GroupParticipantPaginationEntity {
   GetParticipantListRep({
-    required this.participants,
-    required this.totalCount,
-    required this.pageNumber,
-    required this.pageSize,
-    required this.totalPages,
-    required this.hasPreviousPage,
-    required this.hasNextPage,
+    required super.participants,
+    required super.totalCount,
+    required super.pageNumber,
+    required super.pageSize,
+    required super.totalPages,
+    required super.hasPreviousPage,
+    required super.hasNextPage,
   });
 
   factory GetParticipantListRep.fromMap(Map<String, dynamic> map) {

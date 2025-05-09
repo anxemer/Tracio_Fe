@@ -7,7 +7,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:Tracio/core/configs/theme/app_colors.dart';
 import 'package:Tracio/core/constants/app_size.dart';
-import 'package:Tracio/data/map/models/request/get_route_req.dart';
 import 'package:Tracio/domain/map/entities/route.dart';
 import 'package:Tracio/presentation/chat/bloc/bloc/conversation_bloc.dart';
 import 'package:Tracio/presentation/library/pages/library.dart';
@@ -84,7 +83,7 @@ class _ChatTextBoxState extends State<ChatTextBox> {
         MaterialPageRoute(
             builder: (_) => BlocProvider.value(
                   value: context.read<RouteCubit>()
-                    ..getRoutes(GetRouteReq(pageSize: 10, pageNumber: 1)),
+                    ..getPlans(null, pageSize: 30),
                   child: LibraryPage(),
                 )));
     setState(() {

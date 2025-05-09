@@ -3,13 +3,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:Tracio/common/helper/navigator/app_navigator.dart';
 import 'package:Tracio/common/widget/appbar/app_bar.dart';
+import 'package:Tracio/common/widget/navbar/bottom_nav_bar_manager.dart';
 import 'package:Tracio/core/configs/theme/app_colors.dart';
 import 'package:Tracio/core/constants/app_size.dart';
 import 'package:Tracio/data/groups/models/request/get_group_list_req.dart';
 import 'package:Tracio/domain/auth/entities/user.dart';
 import 'package:Tracio/presentation/groups/cubit/group_cubit.dart';
 import 'package:Tracio/presentation/groups/cubit/group_state.dart';
-import 'package:Tracio/presentation/groups/pages/group.dart';
 import 'package:Tracio/presentation/groups/widgets/detail/group_detail_loaded.dart';
 import 'package:Tracio/presentation/groups/widgets/detail/group_detail_skeleton.dart';
 
@@ -47,7 +47,11 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
           GetGroupListReq request =
               GetGroupListReq(pageNumber: 1, pageSize: 10, getMyGroups: true);
           context.read<GroupCubit>().getGroupList(request);
-          AppNavigator.pushAndRemove(context, GroupPage());
+          AppNavigator.pushAndRemove(
+              context,
+              BottomNavBarManager(
+                selectedIndex: 3,
+              ));
         }
       },
       child: Scaffold(

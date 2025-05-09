@@ -3,17 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:Tracio/common/widget/appbar/app_bar.dart';
+import 'package:Tracio/common/widget/navbar/bottom_nav_bar_manager.dart';
 import 'package:Tracio/core/configs/theme/app_colors.dart';
 import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/core/services/signalR/implement/group_route_hub_service.dart';
 import 'package:Tracio/domain/groups/entities/group_route.dart';
 import 'package:Tracio/domain/map/entities/route_blog.dart';
 import 'package:Tracio/presentation/groups/cubit/group_cubit.dart';
 import 'package:Tracio/presentation/groups/cubit/group_state.dart';
 import 'package:Tracio/presentation/groups/widgets/activity/calendar_box.dart';
 import 'package:Tracio/presentation/library/pages/route_detail.dart';
-import 'package:Tracio/presentation/library/widgets/route_blog_item.dart';
-import 'package:Tracio/presentation/map/bloc/route_cubit.dart';
-import 'package:Tracio/presentation/map/bloc/route_state.dart';
+import 'package:Tracio/presentation/map/bloc/map_cubit.dart';
+import 'package:Tracio/presentation/map/bloc/tracking/bloc/tracking_bloc.dart';
+import 'package:Tracio/service_locator.dart';
 
 class GroupActivityDetail extends StatefulWidget {
   final int groupRouteId;
@@ -26,20 +28,13 @@ class GroupActivityDetail extends StatefulWidget {
 class _GroupActivityDetailState extends State<GroupActivityDetail> {
   final int _calendarBoxWidth = 60;
   final int _calendarBoxHeight = 70;
-  final int _statBoxHeight = 80;
   final int _imageHeight = 200;
   final int _imageRouteHeight = 180;
 
   Future<void> _onRefresh() async {
     if (!mounted) return;
-    context.read<GroupCubit>().getGroupRouteDetail(widget.groupRouteId);
-    context.read<RouteCubit>().getRouteBlogList();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    Future.microtask(() => {context.read<RouteCubit>().getRouteBlogList()});
+    var state = context.read<GroupCubit>().state as GetGroupDetailSuccess;
+    context.read<GroupCubit>().getGroupRouteDetail(widget.groupRouteId, state);
   }
 
   @override
@@ -48,7 +43,7 @@ class _GroupActivityDetailState extends State<GroupActivityDetail> {
       body: BlocBuilder<GroupCubit, GroupState>(
         builder: (context, state) {
           if (state is GetGroupDetailSuccess) {
-            final groupRoute = state.groupRoutes
+            final groupRoute = state.groupRoutes.groupRouteList
                 .firstWhere((p) => p.groupRouteId == widget.groupRouteId);
 
             return Stack(
@@ -67,48 +62,8 @@ class _GroupActivityDetailState extends State<GroupActivityDetail> {
                         const SizedBox(height: AppSize.apSectionMargin),
                         _buildRouteOverview(groupRoute),
                         const SizedBox(height: AppSize.apSectionMargin),
-                        // _buildMemberActivities(state),
+                        _buildMemberActivities(state),
                         const SizedBox(height: AppSize.apSectionMargin),
-                        Container(
-                          color: Colors.grey.shade200,
-                          child: BlocBuilder<RouteCubit, RouteState>(
-                            builder: (context, routeState) {
-                              if (routeState is GetRouteBlogLoaded &&
-                                  routeState.routeBlogs.isNotEmpty) {
-                                return ListView.builder(
-                                  shrinkWrap: true,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  itemCount: routeState.routeBlogs.length,
-                                  itemBuilder: (_, index) {
-                                    return Padding(
-                                      padding: const EdgeInsets.only(
-                                          bottom:
-                                              AppSize.apVerticalPadding / 2),
-                                      child: Material(
-                                        color: Colors.transparent,
-                                        child: _buildMemberActivityCard(
-                                          routeState.routeBlogs[index],
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                );
-                              } else if (routeState is GetRouteBlogLoaded &&
-                                  routeState.routeBlogs.isEmpty) {
-                                return Center(child: Text("Nothing here"));
-                              }
-                              if (routeState is GetRouteBlogLoading) {
-                                return Center(
-                                  child: CircularProgressIndicator(
-                                    color: AppColors.secondBackground,
-                                  ),
-                                );
-                              }
-
-                              return Text("Error");
-                            },
-                          ),
-                        ),
                       ],
                     ),
                   ),
@@ -193,16 +148,40 @@ class _GroupActivityDetailState extends State<GroupActivityDetail> {
   }
 
   Widget _buildScheduleInfo(GroupRouteEntity groupRoute) {
+    bool isDisabled = isLessThan30MinutesFromNow(groupRoute.startDateTime) &&
+        isAlreadyInGroupTracking();
     return Padding(
       padding:
           const EdgeInsets.symmetric(horizontal: AppSize.apHorizontalPadding),
       child: Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Wrap(
+            spacing: 8.0,
+            runSpacing: 8.0,
             children: [
-              Text("${groupRoute.formattedDate} ${groupRoute.formattedTime}"),
-              Text(groupRoute.addressMeeting),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.calendar_today, size: 16, color: Colors.grey),
+                  SizedBox(width: 8.0),
+                  Text(
+                      "${groupRoute.formattedDate} ${groupRoute.formattedTime}"),
+                ],
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.location_on, size: 16, color: Colors.grey),
+                  SizedBox(width: 8.0),
+                  Flexible(
+                    child: Text(
+                      groupRoute.addressMeeting,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
           const SizedBox(height: AppSize.apSectionMargin),
@@ -216,70 +195,93 @@ class _GroupActivityDetailState extends State<GroupActivityDetail> {
               ),
             ),
           ),
-          _buildActionButton("Start Riding", Icons.start_sharp, () {
-            //TODO: Connect hub => navigate to cycling
-          }, outline: true, disabled: true),
+          _buildActionButton("Start Riding", Icons.start_sharp, () async {
+            try {
+              final groupRouteHub = sl<GroupRouteHubService>();
+              await groupRouteHub.connect();
+              await groupRouteHub
+                  .joinGroupRoute(widget.groupRouteId.toString());
+
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return BlocProvider.value(
+                  value: context.read<TrackingBloc>(),
+                  child: BottomNavBarManager(
+                    selectedIndex: 2,
+                    isNavVisible: false,
+                  ),
+                );
+              }));
+            } catch (e, stack) {
+              debugPrint("❌ Failed to start riding: $e\n$stack");
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                      content:
+                          Text('Failed to connect to ride. Please try again.')),
+                );
+              }
+            }
+          }),
         ],
       ),
     );
   }
 
   Widget _buildRouteOverview(GroupRouteEntity groupRoute) {
-    return Padding(
-      padding:
-          const EdgeInsets.symmetric(horizontal: AppSize.apHorizontalPadding),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Route Overview",
-            style: TextStyle(
-              color: Colors.grey.shade600,
-              fontSize: AppSize.textMedium.sp,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: AppSize.apVerticalPadding),
-          InkWell(
-            onTap: () {},
-            child: Container(
-              width: double.infinity,
-              height: _imageRouteHeight * 0.8 + _statBoxHeight.h,
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey.shade300, width: 1.0),
-                borderRadius: BorderRadius.circular(8.0),
+    if (groupRoute.ridingRoute != null) {
+      return Padding(
+        padding:
+            const EdgeInsets.symmetric(horizontal: AppSize.apHorizontalPadding),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Route Overview",
+              style: TextStyle(
+                color: Colors.grey.shade600,
+                fontSize: AppSize.textMedium.sp,
+                fontWeight: FontWeight.w600,
               ),
-              child: Column(
-                children: [
-                  // _buildGreyBackgroundImage(height: _imageRouteHeight * 0.8.h),
-                  CachedNetworkImage(
-                    imageUrl:
-                        "https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/path-5+f44-0.5(io%7B%60A%7B~jjSpCzDsFrFyGeJi@wRcGN~AjUmRlw@lM%7Ca@ri@%60h@hKeM%60OmGtG~FlGqHj]~[zHgGfK%7CI%60EmEkMsL)/auto/500x300?access_token=pk.eyJ1IjoidHJtaW5sb2MiLCJhIjoiY203MWU3NmdjMGE2azJwczh5Nzd2c2VmaCJ9.llG8qqDi6cylYa7mVdLWag",
-                    fit: BoxFit.cover,
-                    errorWidget: (context, url, error) => CircleAvatar(
-                      backgroundColor: Colors.transparent,
-                      radius: AppSize.imageSmall / 2.4.w,
-                      child: Icon(
-                        Icons.person,
-                        size: AppSize.imageSmall / 2.w,
-                      ),
+            ),
+            const SizedBox(height: AppSize.apVerticalPadding),
+            InkWell(
+              onTap: () {},
+              child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey.shade300, width: 1.0),
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: Column(
+                  children: [
+                    CachedNetworkImage(
+                      imageUrl: groupRoute.ridingRoute!.routeThumbnail,
+                      fit: BoxFit.cover,
+                      errorWidget: (context, url, error) =>
+                          _buildGreyBackgroundImage(
+                              height: _imageRouteHeight * 0.8.h),
                     ),
-                  ),
-                  const SizedBox(height: AppSize.apVerticalPadding),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      _buildStatText("Distance", "7.2 km"),
-                      _buildStatText("Elev. Gain", "32 ft"),
-                    ],
-                  ),
-                ],
+                    const SizedBox(height: AppSize.apVerticalPadding),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        _buildStatText("Distance:",
+                            "${groupRoute.ridingRoute!.totalDistance.toStringAsFixed(1)} km"),
+                        _buildStatText("Elev. Gain:",
+                            "${groupRoute.ridingRoute!.totalElevationGain.toStringAsFixed(1)} m"),
+                      ],
+                    ),
+                    const SizedBox(height: AppSize.apVerticalPadding),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
+    } else {
+      return SizedBox.shrink();
+    }
   }
 
   Widget _buildStatText(String label, String value) {
@@ -289,7 +291,7 @@ class _GroupActivityDetailState extends State<GroupActivityDetail> {
           label,
           style: TextStyle(fontSize: AppSize.textMedium.sp),
         ),
-        const SizedBox(width: 8.0),
+        const SizedBox(width: 4.0),
         Text(
           value,
           style: TextStyle(
@@ -317,6 +319,7 @@ class _GroupActivityDetailState extends State<GroupActivityDetail> {
             ),
           ),
         ),
+        const SizedBox(height: AppSize.apVerticalPadding),
         if (state.groupRouteDetails.isEmpty)
           Align(
             alignment: Alignment.center,
@@ -355,37 +358,45 @@ class _GroupActivityDetailState extends State<GroupActivityDetail> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => BlocProvider.value(
-              value: context.read<GroupCubit>(),
-              child: RouteDetailScreen(routeId: detail.routeId),
+            builder: (context) => BlocProvider(
+              create: (context) => MapCubit(),
+              child: BlocProvider.value(
+                value: context.read<GroupCubit>(),
+                child: RouteDetailScreen(routeId: detail.routeId),
+              ),
             ),
           ),
         );
       },
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(12),
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.grey.shade300, width: 1),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey.shade300),
+          color: Colors.white,
         ),
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(12),
+        margin: const EdgeInsets.symmetric(vertical: 6),
         child: Row(
           children: [
             _buildThumbnail(detail.routeThumbnail),
-            const SizedBox(width: 8.0),
+            const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildUserInfo(detail),
-                  const SizedBox(height: 4.0),
+                  const SizedBox(height: 12),
                   Wrap(
-                    spacing: 4.0,
+                    spacing: 8,
+                    runSpacing: 4,
                     children: [
-                      Text("${detail.totalDistance} km"),
-                      Text("${detail.avgSpeed} km/h"),
-                      Text("${_formatDuration(detail.totalDuration)} hrs"),
-                      Text("${detail.totalElevationGain} m"),
+                      _buildStatChip("${detail.totalDistance} km", Icons.route),
+                      _buildStatChip("${detail.avgSpeed} km/h", Icons.speed),
+                      _buildStatChip(
+                          _formatDuration(detail.totalDuration), Icons.timer),
+                      _buildStatChip(
+                          "${detail.totalElevationGain} m", Icons.terrain),
                     ],
                   ),
                 ],
@@ -393,6 +404,25 @@ class _GroupActivityDetailState extends State<GroupActivityDetail> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildStatChip(String label, IconData icon) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey.shade300),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14, color: Colors.grey.shade700),
+          const SizedBox(width: 4),
+          Text(label,
+              style: const TextStyle(fontSize: 12, color: Colors.black87)),
+        ],
       ),
     );
   }
@@ -418,14 +448,14 @@ class _GroupActivityDetailState extends State<GroupActivityDetail> {
     return Row(
       children: [
         CircleAvatar(
-          radius: 16.w,
+          radius: 14.w,
           backgroundColor: Colors.grey.shade300,
           child: ClipOval(
             child: CachedNetworkImage(
               imageUrl: detail.cyclistAvatar,
               fit: BoxFit.cover,
-              width: 32.w,
-              height: 32.w,
+              width: 28.w,
+              height: 28.w,
               placeholder: (context, url) =>
                   _buildPlaceholderIcon(Icons.person),
               errorWidget: (context, url, error) =>
@@ -533,6 +563,17 @@ class _GroupActivityDetailState extends State<GroupActivityDetail> {
         ],
       ),
     );
+  }
+
+  bool isLessThan30MinutesFromNow(DateTime startDateTime) {
+    final now = DateTime.now();
+    final difference = startDateTime.difference(now).inMinutes;
+    return difference >= 0 && difference < 30;
+  }
+
+  bool isAlreadyInGroupTracking() {
+    final joinedGroupRoutes = sl<GroupRouteHubService>().joinedGroupRouteIds;
+    return joinedGroupRoutes.isNotEmpty;
   }
 
   SizedBox _buildActionButton(

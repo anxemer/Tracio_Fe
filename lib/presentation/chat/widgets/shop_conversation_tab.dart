@@ -4,14 +4,14 @@ import 'package:Tracio/core/constants/app_size.dart';
 import 'package:Tracio/presentation/chat/bloc/bloc/conversation_bloc.dart';
 import 'package:Tracio/presentation/chat/widgets/conversation_list_item.dart';
 
-class GroupConversationTab extends StatefulWidget {
-  const GroupConversationTab({super.key});
+class ShopConversationTab extends StatefulWidget {
+  const ShopConversationTab({super.key});
 
   @override
-  State<GroupConversationTab> createState() => _GroupConversationTabState();
+  State<ShopConversationTab> createState() => _ShopConversationTabState();
 }
 
-class _GroupConversationTabState extends State<GroupConversationTab>
+class _ShopConversationTabState extends State<ShopConversationTab>
     with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
@@ -44,8 +44,7 @@ class _GroupConversationTabState extends State<GroupConversationTab>
                   ],
                 );
               } else if (state is ConversationLoaded) {
-                final groupConversations =
-                    state.conversations.where((c) => c.isGroup).toList();
+                final groupConversations = state.shopConversations;
 
                 if (groupConversations.isEmpty) {
                   return ListView(
