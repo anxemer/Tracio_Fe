@@ -24,6 +24,7 @@ final class TrackingInProgress extends TrackingState {
   final DateTime currentTime;
   final int? routeId;
   final int? groupRouteId;
+  final List<MatchedUserEntity>? matchedUsers;
 
   const TrackingInProgress({
     required this.isPaused,
@@ -40,6 +41,7 @@ final class TrackingInProgress extends TrackingState {
     required this.currentTime,
     this.routeId,
     this.groupRouteId,
+    this.matchedUsers,
   });
 
   TrackingInProgress copyWith({
@@ -57,6 +59,7 @@ final class TrackingInProgress extends TrackingState {
     DateTime? currentTime,
     int? routeId,
     int? groupRouteId,
+    List<MatchedUserEntity>? matchedUsers,
   }) {
     return TrackingInProgress(
       isPaused: isPaused ?? this.isPaused,
@@ -73,6 +76,7 @@ final class TrackingInProgress extends TrackingState {
       currentTime: currentTime ?? this.currentTime,
       routeId: routeId ?? this.routeId,
       groupRouteId: groupRouteId ?? this.groupRouteId,
+      matchedUsers: matchedUsers ?? this.matchedUsers,
     );
   }
 
@@ -92,5 +96,6 @@ final class TrackingInProgress extends TrackingState {
         currentTime,
         routeId,
         groupRouteId,
+        matchedUsers,
       ];
 }

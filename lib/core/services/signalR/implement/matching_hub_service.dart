@@ -14,10 +14,12 @@ class MatchingHubService {
   final _matchingUserStream = StreamController<UserMatchingModel>.broadcast();
 
   final List<int> _matchedUser = [];
+  final List<UserMatchingModel> _matchingUser = [];
   Stream<MatchedUserEntity> get onUpdatedMatchedUser =>
       _matchedUserStream.stream;
   Stream<UserMatchingModel> get onRequestUpdate => _matchingUserStream.stream;
-
+  List<UserMatchingModel> get matchingUser => _matchingUser;
+  List<int> get matchedUser => _matchedUser;
   MatchingHubService(this._core);
 
   Future<void> connect() async {
@@ -48,7 +50,11 @@ class MatchingHubService {
             approveRequest.status
           ],
           hubUrl: "${ApiUrl.groupRouteHubUrl}?token=$accessToken");
-
+      if (approveRequest.status == "Rejected") {
+        _matchedUser.remove(approveRequest.otherUserId);
+        _matchingUser.removeWhere(
+            (element) => element.userId == approveRequest.otherUserId);
+      }
       signalrLogger.d(
           '[MatchingHubService] ✅ Sent ${approveRequest.status} successfully to: User${approveRequest.otherUserId} - Route${approveRequest.otherRouteId}');
     } catch (e) {
@@ -92,6 +98,9 @@ class MatchingHubService {
         final model = UserMatchingModel.fromMap(raw);
         if (!_matchingUserStream.isClosed) {
           _matchingUserStream.add(model);
+          if (!_matchingUser.contains(model)) {
+            _matchingUser.add(model);
+          }
         }
       } else {
         signalrLogger.w('[MatchingHubService] ⚠️ Unexpected data format: $raw');

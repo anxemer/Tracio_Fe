@@ -262,6 +262,9 @@ class _CyclingMapViewState extends State<CyclingMapView>
                         if (!mounted) return;
 
                         try {
+                          context
+                              .read<TrackingBloc>()
+                              .add(AddMatchedUser(data));
                           await context.read<MapCubit>().updateUserMarker(
                                 id: data.userId.toString(),
                                 imageUrl: data.avatar,
