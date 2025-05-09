@@ -153,8 +153,7 @@ class RouteApiServiceImpl extends RouteApiService {
         return left(ExceptionFailure('Error: ${response.statusCode}'));
       }
     } on DioException catch (e) {
-      return left(
-          ExceptionFailure(e.response?.data['message'] ?? 'An error occurred'));
+      return left(ExceptionFailure(e.message ?? 'An error occurred'));
     } catch (e) {
       return left(ExceptionFailure('An unexpected error occurred: $e'));
     }

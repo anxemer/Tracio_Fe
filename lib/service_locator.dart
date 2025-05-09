@@ -3,6 +3,7 @@ import 'package:Tracio/data/blog/repositories/blog_repository_impl.dart';
 import 'package:Tracio/data/challenge/models/request/create_challenge_req.dart';
 import 'package:Tracio/domain/challenge/usecase/create_challenge.dart';
 import 'package:Tracio/domain/challenge/usecase/get_user_reward.dart';
+import 'package:Tracio/domain/groups/usecases/update_group_route_status_usecase.dart';
 import 'package:Tracio/domain/map/usecase/delete_route_media_usecase.dart';
 import 'package:Tracio/domain/map/usecase/edit_route_tracking_usecase.dart';
 import 'package:Tracio/domain/map/usecase/get_ongoing_route_usecase.dart';
@@ -356,6 +357,7 @@ Future<void> initializeDependencies() async {
   sl.registerFactory<EditRouteTrackingUsecase>(
       () => EditRouteTrackingUsecase());
   sl.registerFactory<GetOngoingRouteUsecase>(() => GetOngoingRouteUsecase());
+  sl.registerFactory<UpdateGroupRouteStatusUsecase>(() => UpdateGroupRouteStatusUsecase());
 
   await sl.allReady();
 }

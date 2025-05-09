@@ -40,6 +40,8 @@ abstract class GroupApiService {
 
   Future<Either<Failure, dynamic>> getGroupRouteDetail(int groupRouteId,
       [Map<String, String>? params]);
+  Future<Either<Failure, dynamic>> updateStatusGroupRoute(
+      int groupId, int groupRouteId, String status);
 }
 
 class GroupApiServiceImpl extends GroupApiService {
@@ -390,6 +392,29 @@ class GroupApiServiceImpl extends GroupApiService {
     } catch (e) {
       return left(
           ExceptionFailure('An unexpected error occurred: ${e.toString()}'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, dynamic>> updateStatusGroupRoute(
+      int groupId, int groupRouteId, String status) async {
+    try {
+      var uri = ApiUrl.urlUpdateGroupRouteStatus(groupId, groupRouteId, status);
+      var response = await sl<DioClient>().put(uri.toString());
+
+      if (response.statusCode == 200) {
+        return right(response.data["result"]);
+      } else if (response.statusCode == 400) {
+        return Left(AuthorizationFailure(
+            'You do not have permission to perform this action.', 400));
+      } else {
+        return left(ExceptionFailure('Error: ${response.statusCode}'));
+      }
+    } on DioException catch (e) {
+      return left(ExceptionFailure(
+          e.response?.data ?? e.message ?? 'An error occurred'));
+    } catch (e) {
+      return left(ExceptionFailure('An unexpected error occurred: $e'));
     }
   }
 }

@@ -385,4 +385,10 @@ class ApiUrl {
   static Uri urlDeleteRouteMediaFiles(int pictureId) {
     return Uri.parse("$portRoute/api/pictures/$pictureId");
   }
+
+  static Uri urlUpdateGroupRouteStatus(
+      int groupRouteId, int groupId, String status) {
+    return Uri.parse(
+        "$portGroup/api/group/$groupId/route/$groupRouteId/status");
+  }
 }

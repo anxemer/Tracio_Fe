@@ -129,7 +129,23 @@ class _CyclingPageState extends State<CyclingPage> {
     final result = await sl<StartTrackingUsecase>().call(params);
     if (!mounted) return;
     result.fold((error) {
-      // Handle error
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              "🚨 Failed to start tracking: ${error.message}",
+              style: const TextStyle(color: Colors.white),
+            ),
+            backgroundColor: Colors.redAccent,
+            behavior: SnackBarBehavior.floating,
+            margin: const EdgeInsets.fromLTRB(16, 20, 16, 0), // top spacing
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            elevation: 6,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
       debugPrint("Error starting tracking: $error");
     }, (response) async {
       final routeIdFromApi = response["result"]["routeId"];
@@ -209,21 +225,43 @@ class _CyclingPageState extends State<CyclingPage> {
   }
 
   void _onPausePressed() async {
-    await bg.BackgroundGeolocation.changePace(false);
-    context.read<TrackingBloc>().add(PauseTracking());
+    final trackingState = context.read<TrackingBloc>().state;
+
+    if (trackingState is TrackingInProgress && !trackingState.isPaused) {
+      await bg.BackgroundGeolocation.changePace(false);
+      context.read<TrackingBloc>().add(PauseTracking());
+    }
   }
 
-  void _onResumePressed() {
-    //TODO:setOdometer
-    setState(() {
-      showHoldOptions = false;
-    });
-    context.read<TrackingBloc>().add(ResumeTracking());
+  void _onResumePressed() async {
+    final trackingState = context.read<TrackingBloc>().state;
+
+    if (trackingState is TrackingInProgress && trackingState.isPaused) {
+      await bg.BackgroundGeolocation.setOdometer(trackingState.odometerKm ?? 0);
+
+      setState(() {
+        showHoldOptions = false;
+      });
+
+      context.read<TrackingBloc>().add(ResumeTracking());
+
+      await bg.BackgroundGeolocation.changePace(true);
+    }
   }
 
   void _onFinishPressed() async {
     setLoading(true);
     await _fetchFinishTracking();
+
+    //Leave group route hub
+    final joinedGroupRoutes = sl<GroupRouteHubService>().joinedGroupRouteIds;
+    if (joinedGroupRoutes.isEmpty) {
+      debugPrint("❌ No joined group route ID available.");
+    } else {
+      final groupRouteId = joinedGroupRoutes.first;
+      await sl<GroupRouteHubService>().leaveGroupRoute(groupRouteId);
+    }
+
     setLoading(false);
   }
 
@@ -339,132 +377,142 @@ class _CyclingPageState extends State<CyclingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: MultiBlocProvider(
-          providers: [
-            BlocProvider(create: (context) => MapCubit()),
-            BlocProvider(create: (context) => GetDirectionCubit()),
-            BlocProvider(create: (context) => GetLocationCubit()),
-            BlocProvider(
-                create: (context) =>
-                    MatchRequestCubit(sl<MatchingHubService>()))
-          ],
-          child: Stack(
-            children: [
-              /// Map View
-              CyclingMapView(),
-
-              /// Cycling Top Bar
-              BlocBuilder<TrackingBloc, TrackingState>(
-                builder: (context, state) {
-                  if (state is! TrackingInProgress) {
-                    return Positioned(
-                      top: 10,
-                      left: 0,
-                      right: 0,
-                      child: Align(
-                        alignment: Alignment.topCenter,
-                        child: CyclingTopActionBar(
-                          isRiding: false,
-                        ),
-                      ),
-                    );
-                  } else {
-                    return SizedBox.shrink();
-                  }
-                },
-              ),
-
-              //Show when tracking
-              BlocBuilder<TrackingBloc, TrackingState>(
-                buildWhen: (previous, current) => previous != current,
-                builder: (context, state) {
-                  if (state is TrackingInProgress) {
-                    return Positioned(
-                      bottom: 0,
-                      left: 0,
-                      child: Container(
-                        height: showHoldOptions
-                            ? _fabHeightStart.h
-                            : isLocked
-                                ? _fabHeightLocked.h
-                                : _fabHeightTracking.h,
-                        width: MediaQuery.of(context).size.width,
-                        decoration: BoxDecoration(color: Colors.white),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            if (!showHoldOptions && !state.isPaused)
-                              CyclingMetricCarousel(
-                                odometerKm: state.odometerKm ?? 0,
-                                speed: state.speed ?? 0,
-                                elevationGain: state.elevationGain ?? 0,
-                                duration: state.duration,
-                                avgSpeed: state.avgSpeed ?? 0,
-                                batteryLevel: state.battery,
-                                altitude: state.altitude ?? 0,
-                                movingTime: state.movingTime,
-                              ),
-
-                            if (!showHoldOptions &&
-                                !isLocked &&
-                                !state.isPaused)
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                mainAxisSize: MainAxisSize.max,
-                                children: [
-                                  CyclingLockScreenButton(
-                                      onCallBack: () => setState(() {
-                                            isLocked = true;
-                                          })),
-                                  _buildPauseButton(),
-                                  CyclingTakePictureButton()
-                                ],
-                              ),
-
-                            // Show when options for Resume/Finish
-                            if (showHoldOptions && state.isPaused)
-                              _buildResumeFinishButtons(),
-
-                            //Show when lock
-                            if (isLocked)
-                              SizedBox(
-                                width: MediaQuery.of(context).size.width * .6,
-                                child: SlideToUnlock(
-                                  onCallBack: () {
-                                    setState(() {
-                                      isLocked = false;
-                                    });
-                                  },
-                                ),
-                              )
-                          ],
-                        ),
-                      ),
-                    );
-                  } else {
-                    return Positioned(
-                      bottom: 20,
-                      left: 0,
-                      right: 0,
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: _buildStartButton(),
-                      ),
-                    );
-                  }
-                },
-              ),
-              if (isLoading)
-                const Opacity(
-                  opacity: 0.6,
-                  child: ModalBarrier(dismissible: false, color: Colors.black),
-                ),
-              if (isLoading) const Center(child: CircularProgressIndicator()),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) {
+          return;
+        }
+        _onPausePressed();
+      },
+      child: Scaffold(
+        body: SafeArea(
+          child: MultiBlocProvider(
+            providers: [
+              BlocProvider(create: (context) => MapCubit()),
+              BlocProvider(create: (context) => GetDirectionCubit()),
+              BlocProvider(create: (context) => GetLocationCubit()),
+              BlocProvider(
+                  create: (context) =>
+                      MatchRequestCubit(sl<MatchingHubService>()))
             ],
+            child: Stack(
+              children: [
+                /// Map View
+                CyclingMapView(),
+
+                /// Cycling Top Bar
+                BlocBuilder<TrackingBloc, TrackingState>(
+                  builder: (context, state) {
+                    if (state is! TrackingInProgress) {
+                      return Positioned(
+                        top: 10,
+                        left: 0,
+                        right: 0,
+                        child: Align(
+                          alignment: Alignment.topCenter,
+                          child: CyclingTopActionBar(
+                            isRiding: false,
+                          ),
+                        ),
+                      );
+                    } else {
+                      return SizedBox.shrink();
+                    }
+                  },
+                ),
+
+                //Show when tracking
+                BlocBuilder<TrackingBloc, TrackingState>(
+                  buildWhen: (previous, current) => previous != current,
+                  builder: (context, state) {
+                    if (state is TrackingInProgress) {
+                      return Positioned(
+                        bottom: 0,
+                        left: 0,
+                        child: Container(
+                          height: showHoldOptions
+                              ? _fabHeightStart.h
+                              : isLocked
+                                  ? _fabHeightLocked.h
+                                  : _fabHeightTracking.h,
+                          width: MediaQuery.of(context).size.width,
+                          decoration: BoxDecoration(color: Colors.white),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              if (!showHoldOptions && !state.isPaused)
+                                CyclingMetricCarousel(
+                                  odometerKm: state.odometerKm ?? 0,
+                                  speed: state.speed ?? 0,
+                                  elevationGain: state.elevationGain ?? 0,
+                                  duration: state.duration,
+                                  avgSpeed: state.avgSpeed ?? 0,
+                                  batteryLevel: state.battery,
+                                  altitude: state.altitude ?? 0,
+                                  movingTime: state.movingTime,
+                                ),
+
+                              if (!showHoldOptions &&
+                                  !isLocked &&
+                                  !state.isPaused)
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: [
+                                    CyclingLockScreenButton(
+                                        onCallBack: () => setState(() {
+                                              isLocked = true;
+                                            })),
+                                    _buildPauseButton(),
+                                    CyclingTakePictureButton()
+                                  ],
+                                ),
+
+                              // Show when options for Resume/Finish
+                              if (showHoldOptions && state.isPaused)
+                                _buildResumeFinishButtons(),
+
+                              //Show when lock
+                              if (isLocked)
+                                SizedBox(
+                                  width: MediaQuery.of(context).size.width * .6,
+                                  child: SlideToUnlock(
+                                    onCallBack: () {
+                                      setState(() {
+                                        isLocked = false;
+                                      });
+                                    },
+                                  ),
+                                )
+                            ],
+                          ),
+                        ),
+                      );
+                    } else {
+                      return Positioned(
+                        bottom: 20,
+                        left: 0,
+                        right: 0,
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: _buildStartButton(),
+                        ),
+                      );
+                    }
+                  },
+                ),
+                if (isLoading)
+                  const Opacity(
+                    opacity: 0.6,
+                    child:
+                        ModalBarrier(dismissible: false, color: Colors.black),
+                  ),
+                if (isLoading) const Center(child: CircularProgressIndicator()),
+              ],
+            ),
           ),
         ),
       ),

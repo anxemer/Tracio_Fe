@@ -278,4 +278,24 @@ class RouteCubit extends Cubit<RouteState> {
       successMessage: 'Route updated and media files uploaded successfully.',
     ));
   }
+
+  Future<void> uploadMediaWithLocation(PostRouteMediaReq mediaFile) async {
+    emit(UpdateRouteLoading());
+    emit(UpdateRouteLoadingProgress(
+      currentIndex: 1,
+      totalCount: 1,
+      statusMessage: 'Uploading file...',
+    ));
+    final uploadResult = await sl<PostRouteMediaUsecase>().call(mediaFile);
+    if (uploadResult.isLeft()) {
+      final error = (uploadResult as Left).value as Failure;
+      emit(UpdateRouteFailure(errorMessage: error.message));
+      return;
+    }
+
+    emit(UpdateRouteLoaded(
+      isSucceed: true,
+      successMessage: 'Route updated and media files uploaded successfully.',
+    ));
+  }
 }

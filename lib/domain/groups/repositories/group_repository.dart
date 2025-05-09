@@ -25,4 +25,6 @@ abstract class GroupRepository {
       int groupRouteId,
       {int pageNumber = 1,
       int pageSize = 5});
+  Future<Either<Failure, GetRouteDetailRep>> updateGroupRouteStatus(
+      int groupRouteId, int groupId, String status);
 }

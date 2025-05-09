@@ -27,7 +27,6 @@ class _SnapshotEditSectionState extends State<SnapshotEditSection> {
   late String name;
   late String desc;
 
-  final List<String> _options = ["Public", "Private"];
   @override
   void initState() {
     super.initState();
@@ -110,36 +109,6 @@ class _SnapshotEditSectionState extends State<SnapshotEditSection> {
             ),
           );
         }),
-
-        const SizedBox(height: AppSize.apSectionPadding),
-
-        /// **Route Privacy Title**
-        const Text(
-          "Route Privacy",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-        ),
-        const SizedBox(height: AppSize.apVerticalPadding),
-
-        /// **Privacy Selection Toggle Buttons**
-        ToggleButtons(
-          isSelected: List.generate(
-              _options.length, (index) => index == widget.selectedIndex),
-          onPressed: widget.onPrivacyChanged,
-          borderRadius: BorderRadius.circular(50),
-          borderWidth: 1.5,
-          borderColor: Colors.grey,
-          selectedBorderColor: AppColors.primary,
-          fillColor: AppColors.primary.withAlpha(30),
-          color: Colors.black87,
-          selectedColor: AppColors.primary,
-          constraints: const BoxConstraints(minHeight: 40, minWidth: 120),
-          children: _options.map((label) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text(label, style: const TextStyle(fontSize: 14)),
-            );
-          }).toList(),
-        ),
 
         const SizedBox(height: AppSize.apSectionPadding),
 

@@ -1,3 +1,4 @@
+import 'package:Tracio/domain/groups/usecases/update_group_route_status_usecase.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:Tracio/core/constants/membership_enum.dart';
@@ -213,5 +214,19 @@ class GroupCubit extends Cubit<GroupState> {
             groupRouteDetails: []));
       },
     );
+  }
+
+  Future<void> updateGroupRouteStatus(GetGroupDetailSuccess? loadedState,
+      int groupId, int groupRouteId, String status) async {
+    emit(GroupLoading());
+    UpdateGroupRouteStatusUsecaseParams params =
+        UpdateGroupRouteStatusUsecaseParams(
+            groupId: groupId, groupRouteId: groupRouteId, status: status);
+    final result = await sl<UpdateGroupRouteStatusUsecase>().call(params);
+    result.fold((error) {
+      emit(GroupFailure(errorMessage: error.toString()));
+    }, (data) {
+      emit(PostGroupRouteSuccess(groupRoute: data, isSuccess: true));
+    });
   }
 }

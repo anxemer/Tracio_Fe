@@ -172,7 +172,7 @@ class _RoutePlannerMapState extends State<RoutePlannerMap> {
     userPositionStream = await locationTracking.setupPositionTracking();
     geolocator.LocationSettings locationSettings = geolocator.LocationSettings(
       accuracy: geolocator.LocationAccuracy.bestForNavigation,
-      distanceFilter: 0,
+      distanceFilter: 200,
     );
     userPositionStream?.cancel();
     userPositionStream = geolocator.Geolocator.getPositionStream(

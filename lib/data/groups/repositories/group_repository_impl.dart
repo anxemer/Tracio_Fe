@@ -109,4 +109,16 @@ class GroupRepositoryImpl extends GroupRepository {
       return right(data);
     });
   }
+
+  @override
+  Future<Either<Failure, GetRouteDetailRep>> updateGroupRouteStatus(
+      int groupRouteId, int groupId, String status) async {
+    var returnedData = await sl<GroupApiService>()
+        .updateStatusGroupRoute(groupRouteId, groupId, status);
+    return returnedData.fold((error) {
+      return left(error);
+    }, (data) {
+      return right(data);
+    });
+  }
 }

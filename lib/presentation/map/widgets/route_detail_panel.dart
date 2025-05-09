@@ -39,16 +39,15 @@ class _RouteDetailPanelState extends State<RouteDetailPanel> {
   }
 
   Future<void> _handleHoverUpdate(Position? position) async {
-    circleAnnotationManager ??= await context
-        .read<MapCubit>()
-        .mapboxMap!
-        .annotations
-        .createCircleAnnotationManager(id: "hover");
+    final mapboxMap = context.read<MapCubit>().mapboxMap;
+    if (mapboxMap == null) return;
+
+    circleAnnotationManager ??=
+        await mapboxMap.annotations.createCircleAnnotationManager();
 
     if (position == null) {
-      // If no position, delete the hover annotation
       if (hoverAnnotation != null) {
-        await circleAnnotationManager!.delete(hoverAnnotation!);
+        await circleAnnotationManager!.deleteAll();
         hoverAnnotation = null;
       }
       return;
@@ -65,13 +64,12 @@ class _RouteDetailPanelState extends State<RouteDetailPanel> {
         circleStrokeWidth: 3.0,
       );
 
-      final createdAnnotations =
-          await circleAnnotationManager!.create(circleOption);
-      hoverAnnotation = createdAnnotations;
+      hoverAnnotation = await circleAnnotationManager!.create(circleOption);
     } else {
-      hoverAnnotation!.geometry = point;
-
-      await circleAnnotationManager!.update(hoverAnnotation!);
+      final updated =
+          CircleAnnotation(id: hoverAnnotation!.id, geometry: point);
+      await circleAnnotationManager!.update(updated);
+      hoverAnnotation = updated;
     }
   }
 
@@ -109,7 +107,7 @@ class _RouteDetailPanelState extends State<RouteDetailPanel> {
         final mapCubit = context.read<MapCubit>();
         if (state is GetDirectionLoaded) {
           final direction = state.direction;
-          double distanceInMiles;
+          double distanceAsKm;
           double estimatedTimeMinutes;
           double averageElevationFeet = 0.0;
           if (hoverPoint != null) {
@@ -117,11 +115,11 @@ class _RouteDetailPanelState extends State<RouteDetailPanel> {
                 elevationPoints.first.longitude);
             final end = LatLng(hoverPoint!.latitude, hoverPoint!.longitude);
 
-            distanceInMiles = _calDistanceAsMile(start, end);
+            distanceAsKm = _calDistanceAsKm(start, end);
             estimatedTimeMinutes = _calculateEstimatedTime(start, end);
             averageElevationFeet = hoverPoint!.altitude;
           } else {
-            distanceInMiles = direction.distance * 0.000621371;
+            distanceAsKm = direction.distance * 0.000621371;
             estimatedTimeMinutes = direction.duration / 60;
             if (elevationPoints.isNotEmpty) {
               final totalElevationMeters = elevationPoints
@@ -138,15 +136,15 @@ class _RouteDetailPanelState extends State<RouteDetailPanel> {
             child: Row(
               mainAxisSize: MainAxisSize.max,
               children: <Widget>[
-                _buildMetricColumn(distanceInMiles, "mi"),
+                _buildMetricColumn("Distance", distanceAsKm, "km"),
                 const SizedBox(width: 8),
                 const VerticalDivider(color: Colors.black26, thickness: 1),
                 const SizedBox(width: 8),
-                _buildMetricColumn(averageElevationFeet, "ft"),
+                _buildMetricColumn("Elev. Gain", averageElevationFeet, "ft"),
                 const SizedBox(width: 8),
                 const VerticalDivider(color: Colors.black26, thickness: 1),
                 const SizedBox(width: 8),
-                _buildMetricColumn(estimatedTimeMinutes, "min"),
+                _buildMetricColumn("Est. Time", estimatedTimeMinutes, "min"),
                 const Spacer(),
                 ElevatedButton(
                   style: ButtonStyle(
@@ -175,7 +173,11 @@ class _RouteDetailPanelState extends State<RouteDetailPanel> {
                           MaterialPageRoute(
                             builder: (context) => SnapshotDisplayPage(
                               snapshotImage: mapCubit.snapshotImageUrl!,
-                              metricsSection: _buildMetricsData(),
+                              metricsSection: _buildMetricsData(
+                                distanceAsKm,
+                                estimatedTimeMinutes,
+                                averageElevationFeet,
+                              ),
                             ),
                           ),
                         );
@@ -183,7 +185,6 @@ class _RouteDetailPanelState extends State<RouteDetailPanel> {
                           final routeName = result["routeName"] as String?;
                           final routeDescription =
                               result["routeDescription"] as String?;
-                          final routePrivacy = result["routePrivacy"] as int?;
 
                           if (mapCubit.pointAnnotations.isEmpty) return;
 
@@ -197,8 +198,6 @@ class _RouteDetailPanelState extends State<RouteDetailPanel> {
                           final request = PostRouteReq(
                             routeName: routeName ?? "New Route",
                             description: routeDescription,
-                            privacyLevel:
-                                routePrivacy == 0 ? "Private" : "public",
                             origin: origin,
                             destination: destination,
                             waypoints: waypoints,
@@ -249,17 +248,17 @@ class _RouteDetailPanelState extends State<RouteDetailPanel> {
         mainAxisSize: MainAxisSize.max,
         children: <Widget>[
           //Distance as Miles
-          _buildMetricColumn(0, "mi"),
+          _buildMetricColumn("Distance", 0, "km"),
           const SizedBox(width: 8),
           const VerticalDivider(color: Colors.black26, thickness: 1),
           const SizedBox(width: 8),
           //Average elevation as ft
-          _buildMetricColumn(0, "ft"),
+          _buildMetricColumn("Elev. Gain", 0, "ft"),
           const SizedBox(width: 8),
           const VerticalDivider(color: Colors.black26, thickness: 1),
           const SizedBox(width: 8),
           //EST time as min
-          _buildMetricColumn(0, "est. min"),
+          _buildMetricColumn("Est. Time", 0, "est. min"),
           const Spacer(),
           ElevatedButton(
             style: ButtonStyle(
@@ -283,7 +282,8 @@ class _RouteDetailPanelState extends State<RouteDetailPanel> {
     );
   }
 
-  Container _buildMetricsData() {
+  Container _buildMetricsData(double distanceAsKm, double estimatedTimeMinutes,
+      double averageElevationFeet) {
     return Container(
       height: 110,
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 16),
@@ -291,44 +291,28 @@ class _RouteDetailPanelState extends State<RouteDetailPanel> {
         mainAxisSize: MainAxisSize.max,
         children: <Widget>[
           //Distance as Miles
-          _buildMetricColumn(0.64, "mi"),
+          _buildMetricColumn("Distance", distanceAsKm, "mi"),
           const SizedBox(width: 8),
           const VerticalDivider(color: Colors.black26, thickness: 1),
           const SizedBox(width: 8),
           //Average elevation as ft
-          _buildMetricColumn(75.52, "ft"),
+          _buildMetricColumn("Elev. Gain", averageElevationFeet, "ft"),
           const SizedBox(width: 8),
           const VerticalDivider(color: Colors.black26, thickness: 1),
           const SizedBox(width: 8),
           //EST time as min
-          _buildMetricColumn(3.55, "est. min"),
-          const Spacer(),
-          ElevatedButton(
-            style: ButtonStyle(
-              shape: WidgetStatePropertyAll<RoundedRectangleBorder>(
-                RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(2),
-                  side: BorderSide(color: Colors.grey.shade300),
-                ),
-              ),
-              backgroundColor:
-                  WidgetStatePropertyAll<Color>(Colors.grey.shade200),
-            ),
-            onPressed: () {},
-            child: const Text(
-              "Done",
-              style: TextStyle(color: Colors.black45, fontSize: 16),
-            ),
-          ),
+          _buildMetricColumn("Est. Time", estimatedTimeMinutes, "est. min"),
         ],
       ),
     );
   }
 
-  Column _buildMetricColumn(double value, String unit) {
+  Widget _buildMetricColumn(String label, double value, String unit) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Text(label,
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
         Text(value.toStringAsFixed(2), style: const TextStyle(fontSize: 18)),
         Text(unit, style: const TextStyle(fontSize: 14)),
       ],
@@ -339,9 +323,45 @@ class _RouteDetailPanelState extends State<RouteDetailPanel> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
+        Padding(
           padding: EdgeInsets.symmetric(horizontal: 10),
-          child: Text("Elevation chart", style: TextStyle(fontSize: 12)),
+          child: Row(
+            children: [
+              Text("Elevation chart", style: TextStyle(fontSize: 12)),
+              Spacer(),
+              Text("Elev. greater than", style: TextStyle(fontSize: 12)),
+              SizedBox(width: 4),
+              Container(
+                width: 10,
+                height: 10,
+                decoration: BoxDecoration(
+                  color: Colors.green,
+                  border: Border.all(color: Colors.white, width: 1),
+                ),
+              ),
+              Text("10%", style: TextStyle(fontSize: 12)),
+              SizedBox(width: 4),
+              Container(
+                width: 10,
+                height: 10,
+                decoration: BoxDecoration(
+                  color: Colors.grey,
+                  border: Border.all(color: Colors.white, width: 1),
+                ),
+              ),
+              Text("20%", style: TextStyle(fontSize: 12)),
+              SizedBox(width: 4),
+              Container(
+                width: 10,
+                height: 10,
+                decoration: BoxDecoration(
+                  color: Colors.redAccent,
+                  border: Border.all(color: Colors.white, width: 1),
+                ),
+              ),
+              Text("30%", style: TextStyle(fontSize: 12)),
+            ],
+          ),
         ),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 16),
@@ -371,10 +391,10 @@ class _RouteDetailPanelState extends State<RouteDetailPanel> {
                   },
                   child: Elevation(
                     elevationPoints,
-                    color: Colors.grey.shade400,
+                    color: AppColors.background,
                     elevationGradientColors: ElevationGradientColors(
                       gt10: Colors.green,
-                      gt20: Colors.orangeAccent,
+                      gt20: Colors.grey,
                       gt30: Colors.redAccent,
                     ),
                   ),
@@ -390,8 +410,8 @@ class _RouteDetailPanelState extends State<RouteDetailPanel> {
     return speedKmh > 0 ? (distanceKm / speedKmh) * 60 : 0;
   }
 
-  double _calDistanceAsMile(LatLng start, LatLng end) {
-    return distance.as(LengthUnit.Mile, start, end);
+  double _calDistanceAsKm(LatLng start, LatLng end) {
+    return distance.as(LengthUnit.Kilometer, start, end);
   }
 
   String _encodePolyline(LineString lineString) {
