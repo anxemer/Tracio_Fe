@@ -1,20 +1,31 @@
 import 'package:dio/dio.dart';
+import 'package:dio/io.dart';
+import 'dart:io';
 
 import '../constants/api_url.dart';
 import 'interceptors.dart';
 
 class DioClient {
   late final Dio _dio;
-  DioClient()
+  DioClient({String? baseUrl})
       : _dio = Dio(
           BaseOptions(
-              baseUrl: ApiUrl.baseURL,
+              baseUrl: baseUrl ?? ApiUrl.baseURL,
               headers: {'Content-Type': 'application/json; charset=UTF-8'},
               responseType: ResponseType.json,
-              sendTimeout: const Duration(seconds: 10),
-              receiveTimeout: const Duration(seconds: 10)),
+              sendTimeout: const Duration(seconds: 120),
+              receiveTimeout: const Duration(seconds: 120),
+              validateStatus: (status) {
+                return status != null && status < 500;
+              }),
         )..interceptors
-            .addAll([AuthorizationInterceptor(), LoggerInterceptor()]);
+            .addAll([AuthorizationInterceptor(), LoggerInterceptor()]) {
+    (_dio.httpClientAdapter as IOHttpClientAdapter).createHttpClient = () {
+      final client = HttpClient();
+      client.badCertificateCallback = (cert, host, port) => true;
+      return client;
+    };
+  }
 
   // GET METHOD
   Future<Response> get(

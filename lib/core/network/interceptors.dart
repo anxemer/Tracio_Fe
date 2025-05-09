@@ -1,6 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:Tracio/core/constants/api_url.dart';
+
+import '../../data/auth/sources/auth_local_source/auth_local_source.dart';
+import '../../service_locator.dart';
 
 /// This interceptor is used to show request and response logs
 class LoggerInterceptor extends Interceptor {
@@ -13,7 +16,7 @@ class LoggerInterceptor extends Interceptor {
     final requestPath = '${options.baseUrl}${options.path}';
     logger.e('${options.method} request ==> $requestPath'); //Error log
     logger.d('Error type: ${err.error} \n '
-        'Error message: ${err.message}'); //Debug log
+        'Error message: ${err.response}'); //Debug log
     handler.next(err); //Continue with the Error
   }
 
@@ -38,9 +41,15 @@ class AuthorizationInterceptor extends Interceptor {
   @override
   void onRequest(
       RequestOptions options, RequestInterceptorHandler handler) async {
-    final SharedPreferences sharedPreferences =
-        await SharedPreferences.getInstance();
-    final token = sharedPreferences.getString('accessToken');
+    // final SharedPreferences sharedPreferences =
+    //     await SharedPreferences.getInstance();
+    // final token = sharedPreferences.getString('accessToken');
+    if (options.path.contains(ApiUrl.loginWithEP)) {
+      handler.next(options);
+      return;
+    }
+    // String token = await sl<AuthLocalSource>().getToken();
+    String token = await sl<AuthLocalSource>().getToken();
     options.headers['Authorization'] = "Bearer $token";
     handler.next(options); // continue with the Request
   }

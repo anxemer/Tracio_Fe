@@ -1,38 +1,59 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/presentation/blog/widget/post_blog.dart';
-import 'package:tracio_fe/data/blog/models/get_blog_req.dart';
-import 'package:tracio_fe/presentation/blog/bloc/get_blog_cubit.dart';
-
-import '../../../core/configs/theme/app_colors.dart';
-import '../../../core/configs/theme/assets/app_images.dart';
-import '../bloc/get_blog_state.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/domain/blog/entites/blog_entity.dart';
+import 'package:Tracio/presentation/blog/bloc/comment/comment_input_cubit.dart';
+import 'package:Tracio/presentation/blog/bloc/comment/comment_input_state.dart';
+import 'package:Tracio/presentation/blog/widget/post_blog.dart';
+import 'package:Tracio/presentation/blog/widget/react_blog.dart';
+import '../../../common/bloc/generic_data_cubit.dart';
+import '../../../common/widget/blog/custom_bottomsheet.dart';
+import '../bloc/comment/get_comment_cubit.dart';
+import 'comment.dart';
+import 'list_react.dart';
 
 class NewFeeds extends StatelessWidget {
-  const NewFeeds({super.key});
-  // final GetBlogReq getBlogReq;
+  const NewFeeds({super.key, required this.blogs, this.isPersonal = false});
 
+  final BlogEntity blogs;
+  final bool isPersonal;
   @override
   Widget build(BuildContext context) {
-    // ScreenUtil.init(context, designSize: Size(720, 1600));
-    return BlocBuilder<GetBlogCubit, GetBlogState>(
-      builder: (context, state) {
-        if (state is GetBlogLoading) {
-          return SliverToBoxAdapter(
-              child: Center(child: CircularProgressIndicator()));
-        }
-        if (state is GetBlogLoaded) {
-          return SliverList(
-              delegate: SliverChildBuilderDelegate(
-                  (context, index) => PostBlog(
-                        blogEntity: state.listBlog[index],
-                        // morewdget: _comment(),
-                      ),
-                  childCount: state.listBlog.length));
-        }
-        return Container();
-      },
+    final commentCubit = context.read<GetCommentCubit>();
+    final reacCubit = context.read<GenericDataCubit>();
+    return Column(
+      children: [
+        PostBlog(
+          isPersonal: isPersonal,
+          blogEntity: blogs,
+          //  onLikeUpdated: () => blogs.likesCount++,
+          // morewdget: _comment(),
+        ),
+        const SizedBox(height: 10),
+        ReactBlog(
+          blogEntity: blogs,
+          textReactionAction: () => CustomModalBottomSheet.show(
+              context: context,
+              child: ListReact(
+                blogId: blogs.blogId,
+                cubit: reacCubit,
+                //             ),
+              )),
+          cmtAction: () => CustomModalBottomSheet.show(
+            context: context,
+            child: BlocProvider(
+              create: (context) => CommentInputCubit(blogs.blogId),
+              child: BlocProvider.value(
+                value: commentCubit,
+                child: Comment(
+                  blogId: blogs.blogId,
+                ),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: AppSize.apSectionPadding),
+      ],
     );
   }
 }

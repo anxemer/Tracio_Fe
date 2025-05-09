@@ -1,10 +1,13 @@
-import 'package:tracio_fe/core/usecase/usecase.dart';
-import 'package:tracio_fe/domain/auth/repositories/auth_repository.dart';
-import 'package:tracio_fe/service_locator.dart';
+import 'package:dartz/dartz.dart';
+import 'package:Tracio/core/usecase/usecase.dart';
+import 'package:Tracio/domain/auth/repositories/auth_repository.dart';
+import 'package:Tracio/service_locator.dart';
 
-class IsLoggedInUseCase implements Usecase<bool, dynamic> {
+import '../../../core/erorr/failure.dart';
+
+class IsLoggedInUseCase implements Usecase<String, NoParams> {
   @override
-  Future<bool> call({params}) async {
-    return await sl<AuthRepository>().isloggedIn();
+  Future<Either<Failure, String>> call(NoParams params) async {
+    return await sl<AuthRepository>().isLoggedIn();
   }
 }

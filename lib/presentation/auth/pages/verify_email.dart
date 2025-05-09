@@ -1,20 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/presentation/auth/bloc/verify_email/verify_email_cubit.dart';
+import 'package:Tracio/common/widget/button/loading.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/core/extension/string_extension.dart';
+import 'package:Tracio/presentation/auth/bloc/verify_email/verify_email_cubit.dart';
 
 import '../../../common/helper/navigator/app_navigator.dart';
+import '../../../common/widget/input_text_form_field.dart';
 import '../../../core/configs/theme/app_colors.dart';
 import '../../../core/configs/theme/assets/app_images.dart';
 import '../bloc/verify_email/verify_email_state.dart';
 import '../widgets/button_auth.dart';
-import '../widgets/input_field_auth.dart';
 import 'login.dart';
 import 'register.dart';
 
 class VerifyEmailpage extends StatelessWidget {
   VerifyEmailpage({super.key});
   final TextEditingController _emailCon = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -57,32 +61,46 @@ class VerifyEmailpage extends StatelessWidget {
                                 child: Text(
                                   "← Back to login",
                                   style: TextStyle(
-                                      color: Colors.black, fontSize: 24.sp),
+                                      color: Colors.black,
+                                      fontSize: AppSize.textMedium.sp),
                                 ),
                               ),
                             )),
                         Align(
                           alignment: Alignment.center,
                           child: Text(
-                            'Sign In',
+                            'Veryfy Email',
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                fontSize: 60.sp,
+                                fontSize: AppSize.textExtraLarge.sp,
                                 color: Colors.black),
                           ),
                         ),
                         SizedBox(
                           height: 10.h,
                         ),
-                        InputFieldAuth(
-                          textController: _emailCon,
-                          suffixIconl: Icon(Icons.remove_red_eye_outlined),
-                          hintText: 'Email',
-                          prefixIcon: Icon(
-                            Icons.email_outlined,
-                            color: Colors.black,
+                        Form(
+                          key: _formKey,
+                          child: InputTextFormField(
+                            controller: _emailCon,
+                            labelText: 'Email',
+                            hint: 'Email',
+                            prefixIcon: Icon(
+                              Icons.email_outlined,
+                              color: Colors.black,
+                            ),
+                            validation: (String? val) {
+                              if (val == null || val.isEmpty) {
+                                return 'This field can\'t be empty';
+                              }
+                              if (!val.isValidEmail) {
+                                return 'Please input valid email';
+                              }
+                              return null;
+                            },
                           ),
                         ),
+
                         SizedBox(
                           height: 30.h,
                         ),
@@ -103,18 +121,21 @@ class VerifyEmailpage extends StatelessWidget {
                             if (state is VerifyEmailFailure) {
                               return Column(
                                 children: [
-                                  _buttonSignIn(
-                                      context, _emailCon.text.toString()),
+                                  _buttonSignIn(),
+                                  SizedBox(
+                                    height: 10.h,
+                                  ),
                                   Text(
                                     'Verify failure, please try again',
                                     style: TextStyle(
-                                        color: Colors.red, fontSize: 18.sp),
+                                        color: Colors.red,
+                                        fontSize: AppSize.textLarge.sp,
+                                        fontWeight: FontWeight.w500),
                                   ),
                                 ],
                               );
                             }
-                            return _buttonSignIn(
-                                context, _emailCon.text.toString().trim());
+                            return _buttonSignIn();
                           },
                         ),
 
@@ -141,16 +162,42 @@ class VerifyEmailpage extends StatelessWidget {
     );
   }
 
-  Widget _buttonSignIn(BuildContext context, String email) {
+  Widget _buttonSignIn() {
     return BlocBuilder<VerifyEmailCubit, VerifyEmailState>(
       builder: (context, state) {
         if (state is VerifyEmailLoading) {
-          return const CircularProgressIndicator(); // Hiển thị loading khi đang xử lý
+          return Column(
+            children: [
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                decoration: BoxDecoration(
+                  color: Colors.green.shade50,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: Colors.green,
+                  ),
+                ),
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'A confirmation email will be sent to you soon, please check your email!',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: AppSize.textMedium,
+                    color: Colors.green,
+                  ),
+                ),
+              ),
+              LoadingButton(),
+            ],
+          );
         }
 
         return GestureDetector(
           onTap: () async {
-            context.read<VerifyEmailCubit>().verifyEmail(email.trim());
+            if (_formKey.currentState!.validate()) {
+              context.read<VerifyEmailCubit>().verifyEmail(_emailCon.text);
+            }
           },
           child: ButtonAuth(
             title: 'Verify Email',
@@ -160,40 +207,4 @@ class VerifyEmailpage extends StatelessWidget {
       },
     );
   }
-
-  // Widget _registerText(BuildContext context) {
-  //   return Row(
-  //     mainAxisAlignment: MainAxisAlignment.center,
-  //     children: [
-  //       Text(
-  //         'Don\'t have an account?',
-  //         style: TextStyle(
-  //             fontSize: 24.sp,
-  //             color: Colors.black,
-  //             fontWeight: FontWeight.w500),
-  //       ),
-  //       TextButton(
-  //           style: ButtonStyle(
-  //             overlayColor: WidgetStateProperty.resolveWith<Color?>(
-  //               (Set<WidgetState> states) {
-  //                 if (states.contains(WidgetState.pressed)) {
-  //                   return Colors.black.withOpacity(0.2); // Màu khi nhấn
-  //                 }
-  //                 return null;
-  //               },
-  //             ),
-  //           ),
-  //           onPressed: () {
-  //             AppNavigator.push(context, RegisterPage());
-  //           },
-  //           child: Text(
-  //             'Register',
-  //             style: TextStyle(
-  //                 fontSize: 24.sp,
-  //                 fontWeight: FontWeight.w500,
-  //                 color: AppColors.secondBackground),
-  //           ))
-  //     ],
-  //   );
-  // }
 }

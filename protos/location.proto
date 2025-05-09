@@ -1,0 +1,26 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "TrackingService";
+
+service LocationService {
+  rpc SendLocations (LocationRequest) returns (LocationResponse);
+}
+
+message Location {
+  double latitude = 1;
+  double longitude = 2;
+  optional double altitude = 3;
+  int64 timestamp = 4;
+  optional double speed = 5;    // kilometer per hour
+  optional double distance = 6; // kilometer from previous location
+}
+
+message LocationRequest {
+  int32 routeId = 1;
+  repeated Location locations = 2;
+}
+
+message LocationResponse {
+  bool success = 1;
+  string message = 2;
+}

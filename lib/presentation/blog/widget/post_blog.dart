@@ -1,161 +1,260 @@
+import 'package:Tracio/presentation/profile/pages/user_profile.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/common/widget/blog/animation_react.dart';
-import 'package:tracio_fe/common/widget/blog/header_information.dart';
-import 'package:tracio_fe/common/widget/blog/picture_card.dart';
-import 'package:tracio_fe/data/blog/models/react_blog_req.dart';
-import 'package:tracio_fe/domain/blog/entites/blog.dart';
-import 'package:tracio_fe/domain/blog/usecase/react_blog.dart';
+import 'package:Tracio/common/helper/is_dark_mode.dart';
+import 'package:Tracio/common/helper/navigator/app_navigator.dart';
+import 'package:Tracio/common/widget/blog/animation_react.dart';
+import 'package:Tracio/common/widget/blog/header_information.dart';
+import 'package:Tracio/common/widget/blog/picture_card.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/domain/blog/entites/blog_entity.dart';
+import 'package:Tracio/domain/user/usecase/follow_user.dart';
+import 'package:Tracio/presentation/blog/bloc/comment/comment_input_cubit.dart';
+import 'package:Tracio/presentation/blog/pages/detail_blog.dart';
+import 'package:timeago/timeago.dart' as timeago;
+import 'package:Tracio/presentation/blog/widget/animated_button_follow.dart';
 
+import '../../../domain/auth/entities/user.dart';
 import '../../../service_locator.dart';
-import 'react_blog.dart';
+import '../../auth/bloc/authCubit/auth_cubit.dart';
+import '../../auth/bloc/authCubit/auth_state.dart';
+import '../bloc/comment/get_comment_cubit.dart';
+import '../pages/edit_blog.dart';
 
 class PostBlog extends StatefulWidget {
-  const PostBlog({super.key, required this.blogEntity, this.morewdget});
+  const PostBlog(
+      {super.key,
+      required this.blogEntity,
+      // required this.onLikeUpdated,
+      this.isPersonal = false});
   final BlogEntity blogEntity;
-  final Widget? morewdget;
-
+  final bool isPersonal;
+  // final Function() onLikeUpdated;
   @override
   State<PostBlog> createState() => _PostBlogState();
 }
 
 class _PostBlogState extends State<PostBlog> {
   bool isAnimating = false;
-  final List<String> listImageUrl = [
-    "https://scontent.fsgn5-15.fna.fbcdn.net/v/t39.30808-6/475808610_2055510964890945_6981339981204090445_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeFuzhyv1tGpVw0zdp5FZi2QCmE5p8uTYu8KYTmny5Ni7x0XFZUf_3CjmfFq0ijyHshABIFlon-KuqcJwNodd3tD&_nc_ohc=V5QUgb_JkvcQ7kNvgGFL4sG&_nc_oc=AdhaXFs5ieuQa19m2u6i4PJeQQblTNYG0iGwrgIXeFKgjMxv_bcGxjwI8Mda9s6GJeanabDK6SGc39B07LpXjqDz&_nc_zt=23&_nc_ht=scontent.fsgn5-15.fna&_nc_gid=A0-wGDajTZBpzD1sxzOjQ-q&oh=00_AYAZ-xivIey7xtzADd2Z0Q_V4QibPFLVA_puS3YcTwfdQQ&oe=67B9F8A6",
-    "https://scontent.fsgn5-10.fna.fbcdn.net/v/t39.30808-6/475301636_575094608686984_5016456148173086214_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeFThwvZJzHculvQp6XUlQ1ANSMGxnlrtis1IwbGeWu2K1zJ1KU2u-mFJpCVrwmmZIF8FvXl1_CCekeBz5xNRBrn&_nc_ohc=nov_yaNV1cYQ7kNvgE9wgkc&_nc_oc=AdjS2_oxFIrJq5lpE05jh5CkD6zROdS7CAuw_zM3mgTT3TP2aQJNf-0AJ4OHc_Ay9kzv4KCROSZMdUGnNIj0h1ZS&_nc_zt=23&_nc_ht=scontent.fsgn5-10.fna&_nc_gid=AW0gW2GjeJiS5JsCWZqvn4y&oh=00_AYBRw_NDYLEDmr89Lm39fzBt8z8imlBE5iM8SP3uq8HD9w&oe=67B9ECFC",
-    "https://static.minhtuanmobile.com/uploads/editer/2024-10/12/images/giai-thich-dong-thoi-gian-cua-dragon-ball-daima-1.webp"
-  ];
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: 16.w),
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            color: Colors.lightBlueAccent.withValues(alpha: .1)),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            HeaderInformation(
-                title: Text(
-                  widget.blogEntity.userName,
-                  style:
-                      TextStyle(fontWeight: FontWeight.bold, fontSize: 40.sp),
-                ),
-                imageUrl: Image.network(widget.blogEntity.avatar),
-                trailling: Icon(Icons.arrow_forward_ios_rounded)),
-            SizedBox(
-              height: 16.h,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                widget.blogEntity.content.toString(),
-                style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 28.sp,
-                    fontWeight: FontWeight.w500),
-              ),
-            ),
-            SizedBox(
-              height: 16.h,
-            ),
-            GestureDetector(
-              onDoubleTap: () async {
-                await sl<ReactBlogUseCase>().call(
-                    params: ReactBlogReq(
-                        cyclistId: 1,
-                        cyclistName: 'An Xemer',
-                        entityId: widget.blogEntity.blogId,
-                        entityType: "blog"));
-                setState(() {
-                  isAnimating = true;
-                });
-              },
-              child: Stack(alignment: Alignment.center, children: [
-                PictureCard(
-                  listImageUrl: listImageUrl,
-                ),
-                AnimatedOpacity(
-                  opacity: isAnimating ? 1 : 0,
-                  duration: Duration(microseconds: 200),
-                  child: AnimationReact(
-                    child: Icon(
-                      Icons.favorite,
-                      color: Colors.red.shade600,
-                      size: 100.w,
-                    ),
-                    isAnimating: isAnimating,
-                    duration: Duration(milliseconds: 400),
-                    iconlike: false,
-                    End: () {
-                      setState(() {
-                        isAnimating = false;
-                      });
-                    },
-                  ),
-                )
-              ]),
-            ),
-            // _reactBlog(),
-            ReactBlog(
-              blogEntity: widget.blogEntity,
-            ),
-            // Padding(
-            //   padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            //   child: Text(
-            //     'view all 200 comments',
-            //     style: TextStyle(
-            //         color: Colors.black54,
-            //         fontSize: 24.sp,
-            //         fontWeight: FontWeight.w500),
-            //   ),
-            // ),
-            widget.morewdget ?? Container()
-          ],
-        ),
-      ),
-    );
+  bool _showFollowButton = true;
+  bool isAlreadyFollowed = false; // Lấy từ state/dữ liệu thực tế
+
+  void _handleFollowLogic() async {
+    await sl<FollowUserUseCase>().call(widget.blogEntity.userId);
+    setState(() {
+      isAlreadyFollowed = true;
+    });
+    // setState(() { isAlreadyFollowed = true; }); // Ví dụ cập nhật UI ngay lập tức (tùy logic)
   }
 
-  // Widget _informationPost() {
-  //   return HeaderInformation(title: title, imageUrl: imageUrl, trailling: trailling)
-  //   // SizedBox(
-  //   //     width: 750.w,
-  //   //     height: 100.h,
-  //   //     child: Center(
-  //   //       child: ListTile(
-  //   //         leading: ClipOval(
-  //   //           child: Container(
-  //   //             decoration:
-  //   //                 BoxDecoration(borderRadius: BorderRadius.circular(60.sp)),
-  //   //             width: 80.w,
-  //   //             // height: 100.h,
-  //   //             child: Image.asset(
-  //   //               AppImages.man,
-  //   //               fit: BoxFit.fill,
-  //   //             ),
-  //   //           ),
-  //   //         ),
-  //   //         title: Text(
-  //   //           widget.blogEntity.userName.toString(),
-  //   //           style: TextStyle(
-  //   //               color: Colors.black,
-  //   //               fontWeight: FontWeight.w700,
-  //   //               fontSize: 28.sp),
-  //   //         ),
-  //   //         // subtitle: Text(
-  //   //         //   'AnXemer',
-  //   //         //   style: TextStyle(
-  //   //         //       color: Colors.black,
-  //   //         //       fontWeight: FontWeight.w400,
-  //   //         //       fontSize: 20.sp),
-  //   //         // ),
-  //   //         trailing: Icon(Icons.arrow_forward_ios_rounded),
-  //   //       ),
-  //   //     ));
-  // }
+  @override
+  void initState() {
+    isAlreadyFollowed = widget.blogEntity.isFollowed;
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final state = context.read<AuthCubit>().state;
+    UserEntity? user;
+
+    if (state is AuthLoaded) {
+      user = state.user;
+    } else if (state is AuthChangeRole) {
+      user = state.user;
+    }
+    var isDark = context.isDarkMode;
+    List<String> mediaUrls = widget.blogEntity.mediaFiles
+        .map((file) => file.mediaUrl ?? "")
+        .toList();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        HeaderInformation(
+          title: Text(
+            widget.blogEntity.userName,
+            style: TextStyle(
+                fontWeight: FontWeight.bold, fontSize: AppSize.textLarge.sp),
+          ),
+          subtitle: Text(
+            timeago.format(widget.blogEntity.createdAt!),
+            style: TextStyle(fontSize: AppSize.textSmall.sp),
+          ),
+          imageUrl: InkWell(
+            onTap: () => AppNavigator.push(
+                context,
+                UserProfilePage(
+                  myProfile: user!.userId == widget.blogEntity.userId,
+                  userId: widget.blogEntity.userId,
+                )),
+            child: CachedNetworkImage(
+              imageUrl: widget.blogEntity.avatar,
+              fit: BoxFit.cover,
+              imageBuilder: (context, imageProvider) => CircleAvatar(
+                // radius: 30.sp,
+                backgroundImage: imageProvider,
+              ),
+              errorWidget: (context, url, error) => CircleAvatar(
+                backgroundColor: Colors.grey.shade300,
+                radius: AppSize.imageSmall / 2.w,
+                child: Icon(
+                  Icons.person,
+                  size: AppSize.imageSmall / 2.w,
+                ),
+              ),
+            ),
+          ),
+          trailling: () {
+            if (widget.isPersonal) {
+              // Nếu là blog của chính người dùng
+              return PopupMenuButton<int>(
+                icon: const Icon(Icons.more_vert),
+                onSelected: (int result) {
+                  if (result == 0) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EditBlogPostScreen(
+                          imageUrl: widget.blogEntity.mediaFiles,
+                          blogId: widget.blogEntity.blogId,
+                          initialContent: widget.blogEntity.content,
+                          initialIsPublic: widget.blogEntity.isPublic,
+                        ),
+                      ),
+                    );
+                  } else if (result == 1) {
+                    // handle delete
+                  }
+                },
+                itemBuilder: (BuildContext context) => <PopupMenuEntry<int>>[
+                  PopupMenuItem<int>(
+                    value: 0,
+                    child: Row(
+                      children: const [
+                        Icon(Icons.edit, color: Colors.black),
+                        SizedBox(width: 8),
+                        Text('Edit'),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem<int>(
+                    value: 1,
+                    child: Row(
+                      children: const [
+                        Icon(Icons.delete, color: Colors.red),
+                        SizedBox(width: 8),
+                        Text('Delete'),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            }
+
+            final isOwner = user?.userId == widget.blogEntity.userId;
+
+            if (!isOwner) {
+              if (widget.blogEntity.isFollowed) {
+                return const SizedBox.shrink();
+              } else {
+                return Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (!isAlreadyFollowed && _showFollowButton)
+                      AnimatedFollowButton(
+                        onUnfollow: () {},
+                        initiallyFollowed: false,
+                        initialFillColor: Colors.transparent,
+                        onFollow: _handleFollowLogic,
+                        initialTextColor:
+                            !isDark ? Colors.black87 : Colors.white,
+                        width: 80.w,
+                        height: 30.h,
+                      ),
+                  ],
+                );
+              }
+            }
+
+            return const SizedBox
+                .shrink(); // Trường hợp là chủ sở hữu, không hiển thị gì thêm
+          }(),
+        ),
+        SizedBox(
+          height: 10.h,
+        ),
+        Padding(
+          padding: EdgeInsets.only(left: 20),
+          child: Text(
+            widget.blogEntity.content.toString(),
+            style: TextStyle(
+                color: context.isDarkMode ? Colors.white : Colors.black,
+                fontSize: AppSize.textMedium.sp,
+                fontWeight: FontWeight.w400),
+          ),
+        ),
+        SizedBox(
+          height: 10.h,
+        ),
+        GestureDetector(
+            onTap: () => AppNavigator.push(
+                context,
+                BlocProvider(
+                  create: (context) =>
+                      CommentInputCubit(widget.blogEntity.blogId),
+                  child: BlocProvider.value(
+                    value: context.read<GetCommentCubit>(),
+                    child: DetailBlogPage(
+                      userId: user!.userId!,
+                      blog: widget.blogEntity,
+                    ),
+                  ),
+                )),
+            // onDoubleTap: () async {
+            //   await sl<ReactBlogUseCase>().call(ReactBlogReq(
+            //       entityId: widget.blogEntity.blogId, entityType: "blog"));
+            //   setState(() {
+            //     widget.blogEntity.likesCount++;
+            //     widget.blogEntity.isReacted = true;
+            //     isAnimating = true;
+            //   });
+            //   widget.onLikeUpdated();
+            // },
+            child: mediaUrls.isNotEmpty
+                ? Stack(alignment: Alignment.center, children: [
+                    PictureCard(listImageUrl: mediaUrls),
+                    AnimatedOpacity(
+                      opacity: isAnimating ? 1 : 0,
+                      duration: Duration(microseconds: 100),
+                      child: AnimationReact(
+                        isAnimating: isAnimating,
+                        duration: Duration(milliseconds: 400),
+                        iconlike: false,
+                        End: () {
+                          setState(() {
+                            isAnimating = false;
+                          });
+                        },
+                        child: Icon(
+                          Icons.favorite,
+                          color: const Color.fromARGB(255, 242, 81, 78),
+                          size: 44.sp,
+                        ),
+                      ),
+                    )
+                  ])
+                : Container()),
+        // _reactBlog(),
+        // ReactBlog(
+        //   blogEntity: widget.blogEntity,
+        // ),
+
+        // widget.morewdget ?? Container()
+      ],
+    );
+  }
 }

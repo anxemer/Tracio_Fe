@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
-import 'package:tracio_fe/core/configs/theme/app_colors.dart';
-import 'package:tracio_fe/data/auth/models/register_req.dart';
-import 'package:tracio_fe/domain/auth/usecases/register_with_ep.dart';
-import 'package:tracio_fe/presentation/auth/pages/login.dart';
-import 'package:tracio_fe/presentation/auth/pages/login_phone.dart';
-import 'package:tracio_fe/presentation/home/pages/home.dart';
-import 'package:tracio_fe/service_locator.dart';
+import 'package:Tracio/common/helper/navigator/app_navigator.dart';
+import 'package:Tracio/core/configs/theme/app_colors.dart';
+import 'package:Tracio/core/extension/string_extension.dart';
+import 'package:Tracio/data/auth/models/register_req.dart';
+import 'package:Tracio/domain/auth/usecases/register_with_ep.dart';
+import 'package:Tracio/presentation/auth/pages/login.dart';
+import 'package:Tracio/presentation/auth/pages/login_phone.dart';
+import 'package:Tracio/service_locator.dart';
 
 import '../../../common/widget/button/button.dart';
+import '../../../common/widget/input_text_form_field.dart';
 import '../../../core/configs/theme/assets/app_images.dart';
+import '../../../core/constants/app_size.dart';
 import '../widgets/button_auth.dart';
-import '../widgets/input_field_auth.dart';
 
 class RegisterPage extends StatelessWidget {
   RegisterPage({super.key, this.email, this.firebaseId});
@@ -20,10 +21,11 @@ class RegisterPage extends StatelessWidget {
   final String? firebaseId;
   final TextEditingController _fullnameCon = TextEditingController();
   final TextEditingController _passwordCon = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-
     return Scaffold(
       body: Stack(
         children: [
@@ -64,8 +66,9 @@ class RegisterPage extends StatelessWidget {
                               vertical: 8.w, horizontal: 12.h),
                           child: Text(
                             "← Back to login",
-                            style:
-                                TextStyle(color: Colors.black, fontSize: 24.sp),
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontSize: AppSize.textLarge.sp),
                           ),
                         ),
                       )),
@@ -74,54 +77,84 @@ class RegisterPage extends StatelessWidget {
                     child: Text(
                       "Register",
                       style: TextStyle(
-                          fontSize: 60.h,
+                          fontSize: AppSize.textExtraLarge.h,
                           fontWeight: FontWeight.bold,
                           color: Colors.black),
                     ),
                   ),
                   Align(
                     alignment: Alignment(0, -0.2),
-                    child: Column(
-                      children: [
-                        SizedBox(height: 20),
-                        InputFieldAuth(
-                            textController: _fullnameCon,
-                            hintText: 'Fullname',
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        children: [
+                          SizedBox(height: 20),
+                          InputTextFormField(
+                            controller: _fullnameCon,
+                            labelText: 'Fullname',
+                            hint: 'Fullname',
                             prefixIcon: Icon(
                               Icons.person_outline_sharp,
                               color: Colors.black,
-                            )),
-                        SizedBox(
-                          height: 20.h,
-                        ),
-                        InputFieldAuth(
-                            enale: false,
-                            textController: TextEditingController(text: email),
-                            hintText: 'Email',
+                            ),
+                            validation: (String? val) {
+                              if (val == null || val.isEmpty) {
+                                return 'This field can\'t be empty';
+                              }
+
+                              return null;
+                            },
+                          ),
+
+                          SizedBox(
+                            height: 20.h,
+                          ),
+                          InputTextFormField(
+                            controller: TextEditingController(text: email),
+                            labelText: 'Email',
+                            hint: 'Email',
                             prefixIcon: Icon(
                               Icons.email_outlined,
                               color: Colors.black,
-                            )),
-
-                        SizedBox(
-                          height: 20.h,
-                        ),
-                        InputFieldAuth(
-                          obscureText: true,
-                          textController: _passwordCon,
-                          suffixIconl: Icon(Icons.remove_red_eye_outlined),
-                          hintText: 'Password',
-                          prefixIcon: Icon(
-                            Icons.lock_outline_rounded,
-                            color: Colors.black,
+                            ),
+                            validation: (String? val) {
+                              if (val == null || val.isEmpty) {
+                                return 'This field can\'t be empty';
+                              }
+                              if (!val.isValidEmail) {
+                                return 'Please input valid email';
+                              }
+                              return null;
+                            },
                           ),
-                        ),
 
-                        SizedBox(
-                          height: 20.h,
-                        ),
-                        // _phoneField(context),
-                      ],
+                          SizedBox(
+                            height: 20.h,
+                          ),
+                          InputTextFormField(
+                            controller: _passwordCon,
+                            labelText: 'Password',
+                            hint: 'Password',
+                            prefixIcon: Icon(
+                              Icons.email_outlined,
+                              color: Colors.black,
+                            ),
+                            isSecureField: true,
+                            validation: (String? val) {
+                              if (val == null || val.isEmpty) {
+                                return 'This field can\'t be empty';
+                              }
+
+                              return null;
+                            },
+                          ),
+
+                          // SizedBox(
+                          //   height: 20.h,
+                          // ),
+                          // _phoneField(context),
+                        ],
+                      ),
                     ),
                   ),
                   Align(
@@ -148,13 +181,13 @@ class RegisterPage extends StatelessWidget {
 
           // Hình tròn ở góc trên bên phải
           Positioned(
-            top: 30,
+            top: 10,
             right: 0,
             child: Container(
-              width: 300.w,
-              height: 300.h,
+              width: 200.w,
+              height: 200.h,
               decoration: BoxDecoration(
-                color: AppColors.background,
+                color: AppColors.background.withValues(alpha: .4),
                 // Màu cam giống trong ảnh
                 borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(200), // Bo tròn một góc
@@ -200,22 +233,27 @@ class RegisterPage extends StatelessWidget {
   Widget _buttonRegister(BuildContext context) {
     return GestureDetector(
         onTap: () async {
-          var result = await sl<RegisterWithEmailAndPassUseCase>().call(
-              params: RegisterReq(
-                  firebaseId: firebaseId.toString(),
-                  fullName: _fullnameCon.text,
-                  email: email.toString(),
-                  password: _passwordCon.text));
+          var result;
+          // print(firebaseId.toString());
+          if (_formKey.currentState!.validate()) {
+            result = await sl<RegisterWithEmailAndPassUseCase>().call(
+                RegisterReq(
+                    firebaseId: firebaseId.toString(),
+                    fullName: _fullnameCon.text,
+                    email: email.toString(),
+                    password: _passwordCon.text));
+          }
+
           result.fold((l) {
             var snackbar = SnackBar(
-              content: Text(l),
+              content: Text('Register Failure! Please try again'),
               behavior: SnackBarBehavior.floating,
             );
             ScaffoldMessenger.of(context).showSnackBar(snackbar);
           }, (r) {
             Future.microtask(
               () {
-                AppNavigator.pushReplacement(context, HomePage());
+                AppNavigator.pushReplacement(context, LoginPage());
               },
             );
           });
@@ -256,10 +294,12 @@ class RegisterPage extends StatelessWidget {
         ButtonDesign(
           ontap: () {},
           text: "Google",
-          icon: AppImages.logoGg,
+          image: AppImages.logoGg,
           fillColor: Colors.white,
           textColor: Colors.black,
           borderColor: Colors.green,
+          iconSize: AppSize.iconSmall,
+          fontSize: AppSize.textMedium,
         ),
         SizedBox(height: 20.h),
         ButtonDesign(
@@ -267,10 +307,12 @@ class RegisterPage extends StatelessWidget {
             AppNavigator.push(context, LoginPhone());
           },
           text: "Phone Number",
-          icon: AppImages.logoPhone,
+          image: AppImages.logoPhone,
           fillColor: Colors.white,
           textColor: Colors.black,
           borderColor: Colors.black,
+          iconSize: AppSize.iconSmall,
+          fontSize: AppSize.textMedium,
         ),
       ],
     );

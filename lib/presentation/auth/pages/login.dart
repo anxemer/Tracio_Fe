@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:tracio_fe/common/helper/navigator/app_navigator.dart';
-import 'package:tracio_fe/common/widget/button/button.dart';
-import 'package:tracio_fe/core/configs/theme/app_colors.dart';
-import 'package:tracio_fe/core/configs/theme/assets/app_images.dart';
-import 'package:tracio_fe/data/auth/models/login_req.dart';
-import 'package:tracio_fe/domain/auth/usecases/login.dart';
-import 'package:tracio_fe/presentation/auth/pages/login_phone.dart';
-import 'package:tracio_fe/presentation/auth/pages/verify_email.dart';
-import 'package:tracio_fe/presentation/auth/widgets/button_auth.dart';
-import 'package:tracio_fe/presentation/auth/widgets/input_field_auth.dart';
-import 'package:tracio_fe/service_locator.dart';
+import 'package:Tracio/common/helper/navigator/app_navigator.dart';
+import 'package:Tracio/common/widget/button/button.dart';
+import 'package:Tracio/common/widget/input_text_form_field.dart';
+import 'package:Tracio/core/configs/theme/app_colors.dart';
+import 'package:Tracio/core/configs/theme/assets/app_images.dart';
+import 'package:Tracio/core/constants/app_size.dart';
+import 'package:Tracio/core/erorr/failure.dart';
+import 'package:Tracio/core/extension/string_extension.dart';
+import 'package:Tracio/data/auth/models/login_req.dart';
+import 'package:Tracio/presentation/auth/bloc/authCubit/auth_cubit.dart';
+import 'package:Tracio/presentation/auth/pages/verify_email.dart';
+import 'package:Tracio/presentation/auth/widgets/button_auth.dart';
 
-import '../../home/pages/home.dart';
+import '../../../common/widget/navbar/bottom_nav_bar_manager.dart';
+import '../bloc/authCubit/auth_state.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({super.key});
@@ -24,98 +28,151 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailCon = TextEditingController();
   final TextEditingController _passCon = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _logoDisplay(context),
-            Container(
-                height: size.height * 1.3.h,
-                width: size.width,
-                decoration: BoxDecoration(
-                    color: AppColors.background.withOpacity(.5),
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(50),
-                        topRight: Radius.circular(50))),
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                  child: Column(
-                    children: [
-                      Align(
-                        alignment: Alignment.center,
-                        child: Text(
-                          'Sign In',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 60.sp,
-                              color: Colors.black),
+    return BlocListener<AuthCubit, AuthState>(
+        listener: (context, state) {
+          if (state is AuthLoading) {
+            EasyLoading.show(status: 'Loading...');
+          } else if (state is AuthLoaded) {
+            Future.microtask(
+              () {
+                EasyLoading.dismiss();
+                AppNavigator.pushReplacement(context, BottomNavBarManager());
+              },
+            );
+          } else if (state is AuthFailure) {
+            if (state.failure is CredentialFailure) {
+              EasyLoading.showError("Username/Password Wrong!");
+            } else {
+              EasyLoading.showError("Error");
+            }
+          } else if (state is AuthLoggedOut) {
+            Future.microtask(() {
+              AppNavigator.pushAndRemove(context, LoginPage());
+            });
+          }
+        },
+        child: Scaffold(
+          body: SingleChildScrollView(
+            physics: NeverScrollableScrollPhysics(),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _logoDisplay(context),
+                  Container(
+                      height: size.height.h,
+                      width: size.width,
+                      decoration: BoxDecoration(
+                          color: AppColors.background.withOpacity(.5),
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(50),
+                              topRight: Radius.circular(50))),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 10),
+                        child: Column(
+                          children: [
+                            Align(
+                              alignment: Alignment.center,
+                              child: Text(
+                                'Sign In',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: AppSize.textExtraLarge.sp,
+                                    color: Colors.black),
+                              ),
+                            ),
+                            SizedBox(
+                              height: 10.h,
+                            ),
+                            InputTextFormField(
+                              controller: _emailCon,
+                              labelText: 'Email',
+                              hint: 'Email',
+                              prefixIcon: Icon(
+                                Icons.email_outlined,
+                                color: Colors.black,
+                              ),
+                              validation: (String? val) {
+                                if (val == null || val.isEmpty) {
+                                  return 'This field can\'t be empty';
+                                }
+                                if (!val.isValidEmail) {
+                                  return 'Please input valid email';
+                                }
+                                return null;
+                              },
+                              textInputAction: TextInputAction.next,
+                            ),
+
+                            SizedBox(
+                              height: 10.h,
+                            ),
+                            InputTextFormField(
+                              maxLine: 1,
+                              controller: _passCon,
+                              labelText: 'Password',
+                              hint: 'Password',
+                              prefixIcon: Icon(
+                                Icons.lock_outline_rounded,
+                                color: Colors.black,
+                              ),
+                              isSecureField: true,
+                              validation: (String? val) {
+                                if (val == null || val.isEmpty) {
+                                  return 'This field can\'t be empty';
+                                }
+
+                                return null;
+                              },
+                            ),
+
+                            SizedBox(
+                              height: 5.h,
+                            ),
+                            _forgotPassText(),
+                            _buttonSignIn(context),
+                            SizedBox(
+                              height: 10.h,
+                            ),
+                            _dividerWithText(),
+                            SizedBox(
+                              height: 10.h,
+                            ),
+                            _anotherLogin(),
+                            // SizedBox(
+                            //   height: 10.h,
+                            // ),
+                            _registerText(context)
+                          ],
                         ),
-                      ),
-                      SizedBox(
-                        height: 10.h,
-                      ),
-                      InputFieldAuth(
-                          textController: _emailCon,
-                          hintText: 'Email',
-                          prefixIcon: Icon(
-                            Icons.email_outlined,
-                            color: Colors.black,
-                          )),
-                      SizedBox(
-                        height: 10.h,
-                      ),
-                      InputFieldAuth(
-                        obscureText: true,
-                        textController: _passCon,
-                        suffixIconl: Icon(Icons.remove_red_eye_outlined),
-                        hintText: 'Password',
-                        prefixIcon: Icon(
-                          Icons.lock_outline_rounded,
-                          color: Colors.black,
-                        ),
-                      ),
-                      SizedBox(
-                        height: 5.h,
-                      ),
-                      _forgotPassText(),
-                      _buttonSignIn(context),
-                      SizedBox(
-                        height: 10.h,
-                      ),
-                      _dividerWithText(),
-                      SizedBox(
-                        height: 10.h,
-                      ),
-                      _anotherLogin(),
-                      // SizedBox(
-                      //   height: 10.h,
-                      // ),
-                      _registerText(context)
-                    ],
-                  ),
-                )),
-          ],
-        ),
-      ),
-    );
+                      )),
+                ],
+              ),
+            ),
+          ),
+        ));
   }
 
   Widget _logoDisplay(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height / 2.8,
-      decoration: BoxDecoration(
-          image: DecorationImage(image: AssetImage(AppImages.logo))),
+    return Padding(
+      padding: EdgeInsets.all(AppSize.apSectionPadding * 1.4),
+      child: Container(
+        height: MediaQuery.of(context).size.height / 5,
+        decoration: BoxDecoration(
+            image: DecorationImage(image: AssetImage(AppImages.logo))),
+      ),
     );
   }
 
   Widget _forgotPassText() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.end,
       children: [
         TextButton(
             onPressed: () {},
@@ -124,7 +181,7 @@ class _LoginPageState extends State<LoginPage> {
               style: TextStyle(
                   fontWeight: FontWeight.w500,
                   color: Colors.black.withOpacity(.5),
-                  fontSize: 24.sp),
+                  fontSize: AppSize.textMedium.sp),
             ))
       ],
     );
@@ -133,20 +190,10 @@ class _LoginPageState extends State<LoginPage> {
   Widget _buttonSignIn(BuildContext context) {
     return GestureDetector(
         onTap: () async {
-          var result = await sl<LoginUseCase>().call(
-              params: LoginReq(email: _emailCon.text, password: _passCon.text));
-          result.fold((l) {
-            var snackbar = SnackBar(
-              content: Text(l),
-              behavior: SnackBarBehavior.floating,
-            );
-          }, (r) { 
-            Future.microtask(
-              () {
-                AppNavigator.pusshAndRemove(context, HomePage());
-              },
-            );
-          });
+          if (_formKey.currentState!.validate()) {
+            context.read<AuthCubit>().login(
+                LoginReq(email: _emailCon.text, password: _passCon.text));
+          }
         },
         child:
             ButtonAuth(title: 'Sign In', icon: Icons.arrow_forward_outlined));
@@ -165,7 +212,8 @@ class _LoginPageState extends State<LoginPage> {
           padding: const EdgeInsets.symmetric(horizontal: 10),
           child: Text(
             "or sign in with",
-            style: TextStyle(color: Colors.black, fontSize: 24.sp),
+            style:
+                TextStyle(color: Colors.black, fontSize: AppSize.textMedium.sp),
           ),
         ),
         Expanded(
@@ -182,23 +230,17 @@ class _LoginPageState extends State<LoginPage> {
     return Column(
       children: [
         ButtonDesign(
-          ontap: () {},
+          width: AppSize.cardWidth.w,
+          ontap: () {
+            context.read<AuthCubit>().loginWithGoogle();
+          },
           text: "Google",
-          icon: AppImages.logoGg,
+          image: AppImages.logoGg,
           fillColor: Colors.white,
           textColor: Colors.black,
           borderColor: Colors.green,
-        ),
-        SizedBox(height: 20.h), // Khoảng cách tự động co giãn
-        ButtonDesign(
-          ontap: () {
-            AppNavigator.pushReplacement(context, LoginPhone());
-          },
-          text: "Phone Number",
-          icon: AppImages.logoPhone,
-          fillColor: Colors.white,
-          textColor: Colors.black,
-          borderColor: Colors.black,
+          iconSize: AppSize.iconSmall,
+          fontSize: AppSize.textMedium.sp,
         ),
       ],
     );
@@ -211,7 +253,7 @@ class _LoginPageState extends State<LoginPage> {
         Text(
           'Don\'t have an account?',
           style: TextStyle(
-              fontSize: 24.sp,
+              fontSize: AppSize.textMedium.sp,
               color: Colors.black,
               fontWeight: FontWeight.w500),
         ),
@@ -232,7 +274,7 @@ class _LoginPageState extends State<LoginPage> {
             child: Text(
               'Register',
               style: TextStyle(
-                  fontSize: 24.sp,
+                  fontSize: AppSize.textMedium.sp,
                   fontWeight: FontWeight.w500,
                   color: AppColors.secondBackground),
             ))
