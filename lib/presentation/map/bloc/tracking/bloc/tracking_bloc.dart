@@ -67,6 +67,7 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
 
   void _onEndTracking(EndTracking event, Emitter<TrackingState> emit) {
     _ticker?.cancel();
+
     emit(TrackingInitial());
   }
 
