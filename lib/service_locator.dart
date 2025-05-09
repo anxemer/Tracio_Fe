@@ -357,7 +357,21 @@ Future<void> initializeDependencies() async {
   sl.registerFactory<ReplyReviewUseCase>(() => ReplyReviewUseCase());
   sl.registerFactory<RegisterShopUseCase>(() => RegisterShopUseCase());
   sl.registerFactory<EditShopUseCase>(() => EditShopUseCase());
-  sl.registerFactory<LeaveChallengeUseCase>(() => LeaveChallengeUseCase());
-  sl.registerFactory<GetUserRewardUseCase>(() => GetUserRewardUseCase());
-  sl.registerFactory<CreateChallengeUseCase>(() => CreateChallengeUseCase());
+  sl.registerFactory<GetShopMessagesUsecase>(() => GetShopMessagesUsecase());
+  sl.registerFactory<PostRouteMediaUsecase>(() => PostRouteMediaUsecase());
+  sl.registerFactory<GetRouteMediaUsecase>(() => GetRouteMediaUsecase());
+  sl.registerFactory<DeleteRouteMediaUsecase>(() => DeleteRouteMediaUsecase());
+  sl.registerFactory<EditRouteTrackingUsecase>(
+      () => EditRouteTrackingUsecase());
+  sl.registerFactory<GetOngoingRouteUsecase>(() => GetOngoingRouteUsecase());
+  sl.registerFactory<UpdateGroupRouteStatusUsecase>(() => UpdateGroupRouteStatusUsecase());
+
+  await sl.allReady();
+  sl.registerFactory<EditBlogUseCase>(() => EditBlogUseCase());
+  sl.registerFactory<EditUserProfileUseCase>(() => EditUserProfileUseCase());
+  sl.registerFactory<GetDailyActivityUseCase>(() => GetDailyActivityUseCase());
+  sl.registerFactory<GetFollowRequestUseCase>(() => GetFollowRequestUseCase());
+  sl.registerFactory<ResolveFollowUserUseCase>(
+      () => ResolveFollowUserUseCase());
+  sl.registerFactory<RequestChallengeUseCase>(() => RequestChallengeUseCase());
 }
