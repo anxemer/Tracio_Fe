@@ -1,3 +1,4 @@
+import 'package:Tracio/domain/shop/entities/response/cart_item_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -66,23 +67,45 @@ class _PlanServicePageState extends State<PlanServicePage>
   @override
   Widget build(BuildContext context) {
     final bookingCubit = context.read<BookingServiceCubit>();
+    Map<String, int?> calculateOperatingHours(List<CartItemEntity> cartItem) {
+      if (cartItem.isEmpty) {
+        return {"minOpenHour": null, "maxCloseHour": null};
+      }
+
+      // Tìm giờ mở cửa nhỏ nhất
+      int? minOpenHour = cartItem
+          .map((booking) => booking.openHour)
+          .where((hour) => hour != null)
+          .reduce((a, b) => a! < b! ? a : b);
+
+      // Tìm giờ đóng cửa lớn nhất
+      int? maxCloseHour = cartItem
+          .map((booking) => booking.closeHour)
+          .where((hour) => hour != null)
+          .reduce((a, b) => a! > b! ? a : b);
+
+      // Trả về kết quả dưới dạng một Map
+      return {"minOpenHour": minOpenHour, "maxCloseHour": maxCloseHour};
+    }
 
     // int selectedIndex = -1;
     var isDark = context.isDarkMode;
     return Scaffold(
       appBar: BasicAppbar(
-        backgroundColor: Colors.transparent,
         title: Text(
           'Plan',
           style: TextStyle(
               fontSize: AppSize.textHeading.sp,
-              color: isDark ? Colors.grey.shade200 : Colors.black87,
+              color: Colors.grey.shade200,
               fontWeight: FontWeight.bold),
         ),
       ),
       body: BlocBuilder<CartItemCubit, CartItemState>(
         builder: (context, state) {
           if (state is GetCartItemLoaded) {
+            var operatingHours = calculateOperatingHours(state.cart);
+            int? minOpenHour = operatingHours["minOpenHour"];
+            int? maxCloseHour = operatingHours["maxCloseHour"];
             return Column(
               children: [
                 Expanded(
@@ -260,10 +283,12 @@ class _PlanServicePageState extends State<PlanServicePage>
                                     : Colors.grey.shade200,
                               ),
                               child: AddSchedule(
-                              
-                                  // cartItem: bookingCubit.selectedServices,
-                                  // bookingModel: bookingModel,
-                                  ),
+                                openTime: minOpenHour!,
+                                closeTime: maxCloseHour!,
+
+                                // cartItem: bookingCubit.selectedServices,
+                                // bookingModel: bookingModel,
+                              ),
                             ),
                           ),
                   ]),

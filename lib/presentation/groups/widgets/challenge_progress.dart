@@ -6,7 +6,6 @@ import 'package:Tracio/common/helper/navigator/app_navigator.dart';
 import 'package:Tracio/common/widget/button/loading.dart';
 import 'package:Tracio/common/widget/dialog_confirm.dart';
 import 'package:Tracio/common/widget/error.dart';
-import 'package:Tracio/common/widget/navbar/bottom_nav_bar_manager.dart';
 import 'package:Tracio/common/widget/picture/circle_picture.dart';
 import 'package:Tracio/core/configs/theme/app_colors.dart';
 import 'package:Tracio/core/constants/app_size.dart';

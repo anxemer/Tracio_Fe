@@ -1,3 +1,4 @@
+import 'package:Tracio/domain/auth/entities/user.dart' show UserEntity;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:Tracio/common/helper/navigator/app_navigator.dart';
@@ -18,55 +19,52 @@ class MorePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // final state = context.read<AuthCubit>().state;
+    // UserEntity? user;
+
+    // if (state is AuthLoaded) {
+    //   user = state.user;
+    // } else if (state is AuthChangeRole) {
+    //   user = state.user;
+    // }
     return Scaffold(
-      appBar: BasicAppbar(
-        title: Text(
-          'More',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w400,
-            fontSize: AppSize.textHeading * 0.9.sp,
+        appBar: BasicAppbar(
+          title: Text(
+            'More',
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w400,
+              fontSize: AppSize.textHeading * 0.9.sp,
+            ),
           ),
+          hideBack: true,
         ),
-        hideBack: true,
-      ),
-      body: ListView(
-        children: [
-          BlocBuilder<AuthCubit, AuthState>(
-            builder: (context, state) {
-              if (state is AuthLoaded) {
-                return ListTile(
-                  leading: CirclePicture(
-                      imageUrl: state.user!.profilePicture!,
-                      imageSize: AppSize.iconLarge),
-                  // CircleAvatar(
-                  //   backgroundImage:
-                  //       NetworkImage(state.user.profilePicture),
-                  //   radius: 20.w,
-                  // ),
-                  title: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('My Profile'),
-                      Text(
-                        state.user!.email!,
-                        style: TextStyle(
-                          fontSize: AppSize.textSmall.sp,
-                          color: Colors.black54,
-                        ),
-                      ),
-                    ],
-                  ),
-                  onTap: () {
-                    Navigator.pushNamed(context, '/profile');
-                  },
-                );
-              } else if (state is AuthLoading) {
-                return ServiceCardPlaceHolder();
-              }
-              return Container();
-            },
-          ),
+        body: ListView(children: [
+          // ListTile(
+          //   leading: CirclePicture(
+          //       imageUrl: user!.profilePicture!, imageSize: AppSize.iconLarge),
+          //   // CircleAvatar(
+          //   //   backgroundImage:
+          //   //       NetworkImage(user.profilePicture),
+          //   //   radius: 20.w,
+          //   // ),
+          //   title: Column(
+          //     crossAxisAlignment: CrossAxisAlignment.start,
+          //     children: [
+          //       Text('My Profile'),
+          //       Text(
+          //         user.email!,
+          //         style: TextStyle(
+          //           fontSize: AppSize.textSmall.sp,
+          //           color: Colors.black54,
+          //         ),
+          //       ),
+          //     ],
+          //   ),
+          //   onTap: () {
+          //     Navigator.pushNamed(context, '/profile');
+          //   },
+          // ),
           Divider(),
           ListTile(
             leading: Icon(Icons.library_books, color: Colors.black54),
@@ -140,8 +138,6 @@ class MorePage extends StatelessWidget {
               // Navigator.pushNamed(context, '/logout');
             },
           ),
-        ],
-      ),
-    );
+        ]));
   }
 }

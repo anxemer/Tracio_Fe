@@ -1,3 +1,4 @@
+import 'package:Tracio/data/blog/models/response/edit_blog_model.dart';
 import 'package:dartz/dartz.dart';
 import 'package:Tracio/data/blog/models/request/comment_blog_req.dart';
 import 'package:Tracio/data/blog/models/request/create_blog_req.dart';
@@ -21,6 +22,7 @@ abstract class BlogRepository {
   Future<Either<Failure, bool>> reactBlogs(ReactBlogReq react);
   Future<Either<Failure, List<ReactionResponseEntity>>> getReactBlogs(int blog);
   Future<Either<Failure, bool>> createBlogs(CreateBlogReq react);
+  Future<Either<Failure, bool>> editBlogs(EditBlogModel react);
   Future<Either<Failure, bool>> bookmarkBlogs(int blogId);
   Future<Either<Failure, bool>> unBookmarkBlogs(int blogId);
   Future<Either<Failure, List<CategoryEntity>>> getCategoryBlog();

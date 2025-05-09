@@ -1,3 +1,9 @@
+import 'package:Tracio/common/bloc/generic_data_cubit.dart';
+import 'package:Tracio/common/widget/button/loading.dart';
+import 'package:Tracio/presentation/blog/widget/route_blog.dart';
+import 'package:Tracio/presentation/library/widgets/route_blog_item.dart';
+import 'package:Tracio/presentation/map/bloc/route_cubit.dart';
+import 'package:Tracio/presentation/map/bloc/route_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -8,6 +14,7 @@ import 'package:Tracio/presentation/blog/widget/create_blog_header.dart';
 import 'package:Tracio/presentation/blog/widget/shortcut_key.dart';
 import 'package:Tracio/presentation/blog/widget/snapshot_home.dart';
 
+import '../../../common/bloc/generic_data_state.dart';
 import '../bloc/get_blog_state.dart';
 
 class BlogPage extends StatefulWidget {
@@ -57,6 +64,7 @@ class _BlogPageState extends State<BlogPage> with TickerProviderStateMixin {
           controller: _scrollController,
           headerSliverBuilder: (context, innerBoxIsScrolled) => [
             SliverAppBar(
+              automaticallyImplyLeading: false,
               toolbarHeight: 60.h,
               flexibleSpace: CreateBlogHeader(),
             ),
@@ -65,14 +73,20 @@ class _BlogPageState extends State<BlogPage> with TickerProviderStateMixin {
                   Divider(thickness: 4, height: 4, color: Colors.grey.shade300),
             ),
             SliverAppBar(
+              automaticallyImplyLeading: false,
               toolbarHeight: 120.h,
-              flexibleSpace: 
-              WeeklySnapshotCard(
-                totalDistance: 100,
-                totalDuration: 500,
-                totalElevationGain: 10,
-                totalRides: 10,
-                distanceUnit: 'KM',
+              flexibleSpace: BlocBuilder<GenericDataCubit, GenericDataState>(
+                builder: (context, state) {
+                  if (state is DataLoaded) {
+                    return WeeklySnapshotCard(
+                      activity: state.data,
+                    );
+                  }
+                  if (state is DataLoading) {
+                    return LoadingButton();
+                  }
+                  return SizedBox.shrink();
+                },
               ),
             ),
             SliverToBoxAdapter(
@@ -80,6 +94,7 @@ class _BlogPageState extends State<BlogPage> with TickerProviderStateMixin {
                   Divider(thickness: 4, height: 4, color: Colors.grey.shade300),
             ),
             SliverAppBar(
+              automaticallyImplyLeading: false,
               toolbarHeight: 80.h,
               flexibleSpace: ShortcutKey(),
             ),
@@ -106,7 +121,10 @@ class _BlogPageState extends State<BlogPage> with TickerProviderStateMixin {
                 child: const BlogListView(),
               ),
               // Tab 2: Routes
-              Container(),
+              BlocProvider(
+                create: (context) => RouteCubit()..getRouteBlogList(),
+                child: RouteBLog(),
+              )
             ],
           ),
         ),

@@ -41,7 +41,7 @@ class _CreateBlogHeaderState extends State<CreateBlogHeader> {
                   onTap: () => AppNavigator.push(
                       context,
                       UserProfilePage(
-                        userId: user!.userId,
+                        userId: user?.userId,
                         myProfile: true,
                       )),
                   child: SizedBox(

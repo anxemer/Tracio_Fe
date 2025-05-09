@@ -154,7 +154,7 @@ class _AllReviewServiceState extends State<AllReviewService> {
                                     )
                                   : SizedBox.shrink()
                               : widget.isBooking
-                                  ? buildButton(context)
+                                  ? buildButton(context, 7, 17)
                                   : SizedBox.shrink(),
                         ),
                       ),
@@ -180,7 +180,7 @@ class _AllReviewServiceState extends State<AllReviewService> {
     );
   }
 
-  Widget buildButton(BuildContext context) {
+  Widget buildButton(BuildContext context, int openTime, int closeTime) {
     var bookCubit = context.read<BookingServiceCubit>();
     var cartItemCubit = context.read<CartItemCubit>();
     return Row(
@@ -233,6 +233,8 @@ class _AllReviewServiceState extends State<AllReviewService> {
                     child: Column(
                       children: [
                         AddSchedule(
+                          openTime: openTime,
+                          closeTime: closeTime,
                           serviceId: widget.serviceId,
                         ),
                         SizedBox(

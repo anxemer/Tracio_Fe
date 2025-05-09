@@ -105,7 +105,9 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
           title: Text(
             'Leaderboard',
             style: TextStyle(
-                fontWeight: FontWeight.bold, fontSize: AppSize.textHeading),
+                fontWeight: FontWeight.bold,
+                fontSize: AppSize.textHeading,
+                color: Colors.white),
           ),
         ),
         backgroundColor: Colors.white, // Nền trắng cho body

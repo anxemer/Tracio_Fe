@@ -31,9 +31,7 @@ class BottomNavBarManagerState extends State<BottomNavBarManager> {
     HomePage(),
     ExplorationPage(),
     CyclingPage(),
-    GroupPage(
-      
-    ),
+    GroupPage(),
     MorePage(),
   ];
   void _onTabChanged(int index) {

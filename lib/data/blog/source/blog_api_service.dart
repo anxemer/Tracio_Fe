@@ -1,3 +1,4 @@
+import 'package:Tracio/data/blog/models/response/edit_blog_model.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:Tracio/core/constants/api_url.dart';
@@ -26,6 +27,7 @@ abstract class BlogApiService {
   Future<BlogResponse> getBookmarkBlogs(GetBlogReq getBlog);
   Future<Either> reactBlog(ReactBlogReq react);
   Future<bool> createBlog(CreateBlogReq react);
+  Future<bool> editBlog(EditBlogModel react);
   Future<Either> bookmarkBlog(int blogId);
   Future<Either> unBookmarkBlog(int blogId);
   Future<List<CategoryModel>> getCategoryBlog();
@@ -251,6 +253,24 @@ class BlogApiServiceImpl extends BlogApiService {
         throw AuthenticationFailure(response.statusMessage.toString());
       }
       throw ServerFailure(response.statusMessage.toString());
+    }
+  }
+
+  @override
+  Future<bool> editBlog(EditBlogModel react) async {
+    try {
+      var response = await sl<DioClient>()
+          .put('${ApiUrl.createBlog}/${react.bloId}', data: react.toMap());
+      if (response.statusCode == 200) {
+        return true;
+      }
+      if (response.statusCode == 401) {
+        throw AuthenticationFailure('');
+      }
+      throw ServerFailure(response.data['message']);
+    } on DioException catch (e) {
+      throw ServerFailure(
+          e.response?.data['message'] ?? e.message ?? 'Network error');
     }
   }
 }

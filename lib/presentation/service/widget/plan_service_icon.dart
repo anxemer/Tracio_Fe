@@ -54,9 +54,7 @@ class PlanServiceIcon extends StatelessWidget {
             ),
             child: InkWell(
               onTap: () {
-                isDetail
-                    ? AppNavigator.push(context, PlanServicePage())
-                    : SizedBox.shrink();
+                AppNavigator.push(context, PlanServicePage());
               },
               child: Icon(Icons.edit_calendar_rounded,
                   color: isActive ? AppColors.primary : Colors.grey.shade600,

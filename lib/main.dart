@@ -123,6 +123,12 @@ class _MyAppState extends State<MyApp> {
           'entityId': message.entityId,
           'entityType': message.entityType,
           'notificationId': message.notificationId,
+          'senderName': message.senderName, // Thêm senderName
+          'senderAvatar': message.senderAvatar, // Thêm senderAvatar
+          'message': message.message, // Thêm message
+          'isRead': message.isRead, // Thêm isRead
+          'createdAt': message.createdAt, // Thêm createdAt
+          'messageId': message.messageId, // Thêm messageId
         });
 
         INotificationService.showNotification(

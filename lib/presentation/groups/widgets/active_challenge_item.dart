@@ -24,7 +24,7 @@ class ActiveChallengeItem extends StatelessWidget {
       children: [
         SizedBox(
           width: 40.w,
-          height: 40.h,
+          height: 48.h,
           child: Stack(
             alignment: Alignment.center,
             children: [

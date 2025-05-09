@@ -1,3 +1,9 @@
+import 'package:Tracio/common/helper/navigator/app_navigator.dart';
+import 'package:Tracio/common/widget/navbar/bottom_nav_bar_manager.dart';
+import 'package:Tracio/data/blog/models/response/edit_blog_model.dart';
+import 'package:Tracio/domain/blog/usecase/edit_blog.dart';
+import 'package:Tracio/presentation/blog/pages/detail_blog.dart';
+import 'package:Tracio/service_locator.dart';
 import 'package:flutter/material.dart';
 import 'package:Tracio/common/helper/media_file.dart';
 import 'package:Tracio/core/constants/app_size.dart';
@@ -46,10 +52,21 @@ class _EditBlogPostScreenState extends State<EditBlogPostScreen> {
     super.dispose();
   }
 
-  void _saveChanges() {
+  void _saveChanges() async {
     final updatedContent = _contentController.text;
     final updatedIsPublic = _isPublic;
+    var result = await sl<EditBlogUseCase>()
+        .call(EditBlogModel(widget.blogId, updatedContent, updatedIsPublic));
 
+    result.fold((error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Update Blog failure! Please try again.'),
+        ),
+      );
+    }, (data) {
+      AppNavigator.push(context, BottomNavBarManager());
+    });
     // final result = EditBlogResult(
     //   content: updatedContent,
     //   isPublic: updatedIsPublic,

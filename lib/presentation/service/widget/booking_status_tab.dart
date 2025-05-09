@@ -34,9 +34,31 @@ class BookingStatusTab extends StatefulWidget {
 }
 
 class _BookingStatusTabState extends State<BookingStatusTab> {
+  List<BookingEntity> selectedBooking = [];
+  Map<String, int?> calculateOperatingHours(List<BookingEntity> bookings) {
+    if (bookings.isEmpty) {
+      return {"minOpenHour": null, "maxCloseHour": null};
+    }
+
+    // Tìm giờ mở cửa nhỏ nhất
+    int? minOpenHour = bookings
+        .map((booking) => booking.openHour)
+        .where((hour) => hour != null)
+        .reduce((a, b) => a! < b! ? a : b);
+
+    // Tìm giờ đóng cửa lớn nhất
+    int? maxCloseHour = bookings
+        .map((booking) => booking.closeHour)
+        .where((hour) => hour != null)
+        .reduce((a, b) => a! > b! ? a : b);
+
+    return {"minOpenHour": minOpenHour, "maxCloseHour": maxCloseHour};
+  }
+
   @override
   void initState() {
     super.initState();
+    context.read<BookingServiceCubit>().clearBookingItem();
     context
         .read<GetBookingCubit>()
         .getBooking(GetBookingReq(status: widget.status));
@@ -125,6 +147,11 @@ class _BookingStatusTabState extends State<BookingStatusTab> {
                     builder: (context, bookState) {
                       var reschedule =
                           context.read<BookingServiceCubit>().reschedule;
+                      var operatingHours =
+                          calculateOperatingHours(selectedBooking);
+                      int? minOpenHour = operatingHours["minOpenHour"];
+                      int? maxCloseHour = operatingHours["maxCloseHour"];
+
                       return reschedule.isNotEmpty
                           ? Container(
                               color: Colors.white,
@@ -133,7 +160,10 @@ class _BookingStatusTabState extends State<BookingStatusTab> {
                                     horizontal: AppSize.apHorizontalPadding.w,
                                     vertical: AppSize.apVerticalPadding.h * .2,
                                   ),
-                                  child: ShowScheduleBottom()),
+                                  child: ShowScheduleBottom(
+                                    closeTime: maxCloseHour!,
+                                    openTime: minOpenHour!,
+                                  )),
                             )
                           : SizedBox.shrink();
                     },
@@ -215,6 +245,19 @@ class _BookingStatusTabState extends State<BookingStatusTab> {
                               widget.status == 'Reschedule' ||
                               widget.status == 'Confirmed')
                           ? ResolveBooking(
+                              onToggleBooking: (isSelected) {
+                                setState(() {
+                                  if (isSelected) {
+                                    selectedBooking
+                                        .add(bookings[index]); // thêm booking
+                                  } else {
+                                    selectedBooking.removeWhere((b) =>
+                                        b.bookingDetailId ==
+                                        bookings[index]
+                                            .bookingDetailId); // xoá booking
+                                  }
+                                });
+                              },
                               // isReview: state.bookingList[index].,
                               isDone: false,
                               textBtn: widget.textBtn,

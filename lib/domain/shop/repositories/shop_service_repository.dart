@@ -1,3 +1,4 @@
+import 'package:Tracio/data/shop/models/get_detail_service_req.dart';
 import 'package:dartz/dartz.dart';
 import 'package:Tracio/core/erorr/failure.dart';
 import 'package:Tracio/data/shop/models/create_service_req.dart';
@@ -41,7 +42,7 @@ abstract class ShopServiceRepository {
       GetBookingReq getBooking);
   Future<Either<Failure, BookingDetailEntity>> getBookingDetail(int bookingId);
   Future<Either<Failure, DetailServiceResponseEntity>> getServiceDetail(
-      int serviceId);
+      GetDetailServiceReq service);
   Future<Either<Failure, bool>> delelteCartItem(int itemId);
   Future<Either<Failure, bool>> processBooking(int bookingDetailId);
   Future<Either<Failure, bool>> cancelBooking(ConfirmBookingModel cancelBooking);

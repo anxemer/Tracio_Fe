@@ -1,3 +1,4 @@
+import 'package:Tracio/common/helper/is_dark_mode.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -102,7 +103,9 @@ class _CommentItemState extends State<CommentItem> {
               final likeCount = widget.comment.likeCount;
 
               return _buildComment(
+                context.isDarkMode,
                 mediaUrls,
+                null,
                 comment,
                 isReacted: isReacted,
                 likeCount: likeCount,
@@ -132,7 +135,9 @@ class _CommentItemState extends State<CommentItem> {
               List<String> mediaUrls =
                   reply.mediaFiles.map((file) => file.mediaUrl ?? "").toList();
               return _buildComment(
+                context.isDarkMode,
                 mediaUrls,
+                reply.reReplyCyclistName,
                 reply,
                 isReacted: isReacted,
                 likeCount: likeCount,
@@ -198,7 +203,9 @@ class _CommentItemState extends State<CommentItem> {
   }
 
   Widget _buildComment(
+    bool isDark,
     List<String> imageUrl,
+    String? reReplyName,
     BaseCommentEntity comment, {
     required bool isReacted,
     required int likeCount,
@@ -211,7 +218,7 @@ class _CommentItemState extends State<CommentItem> {
           padding: EdgeInsets.all(8.0),
           width: double.infinity,
           decoration: BoxDecoration(
-              color: Colors.grey.shade200,
+              color: isDark ? Colors.grey.shade600 : Colors.grey.shade200,
               borderRadius: BorderRadius.circular(8.0)),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -224,10 +231,25 @@ class _CommentItemState extends State<CommentItem> {
                   )),
               const SizedBox(height: 4.0),
               // CONTENT
-              Text(comment.content,
-                  style: TextStyle(
-                    fontSize: AppSize.textMedium.sp,
-                  )),
+              RichText(
+                  text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: reReplyName == null ? '' : '@$reReplyName ',
+                    style: TextStyle(
+                        fontSize: AppSize.textLarge.sp,
+                        color: Colors.blue,
+                        fontWeight: FontWeight.w600),
+                  ),
+                  TextSpan(
+                    text: comment.content.toString(),
+                    style: TextStyle(
+                      fontSize: AppSize.textMedium.sp,
+                      color: isDark ? Colors.white : Colors.black,
+                    ),
+                  ),
+                ],
+              )),
               imageUrl.isNotEmpty
                   ? SizedBox(
                       height: AppSize.imageLarge.h,

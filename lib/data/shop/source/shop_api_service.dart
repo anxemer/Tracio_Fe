@@ -1,3 +1,4 @@
+import 'package:Tracio/data/shop/models/get_detail_service_req.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:Tracio/data/shop/models/booking_detail_model.dart';
@@ -38,7 +39,8 @@ abstract class ShopApiService {
   Future<Either> bookingService(BookingServiceReq booking);
   Future<BookingResponseModel> getBooking(GetBookingReq getBooking);
   Future<BookingDetailModel> getBookingDetail(int bookingId);
-  Future<DetailServiceResponseModel> getServiceDetail(int serviceId);
+  Future<DetailServiceResponseModel> getServiceDetail(
+      GetDetailServiceReq serviceId);
   Future<Either> deleteCartItem(int itemId);
   Future<Either> processBooking(int bookingDetailId);
   Future<Either> cancelBooking(ConfirmBookingModel cancelBooking);
@@ -146,7 +148,7 @@ class ShopApiServiceImpl extends ShopApiService {
   @override
   Future<Either> deleteCartItem(int itemId) async {
     try {
-      await sl<DioClient>().delete('${ApiUrl.deleteCartItem}/${itemId}');
+      await sl<DioClient>().delete('${ApiUrl.deleteCartItem}/$itemId');
 
       return Right(true);
     } on DioException catch (e) {
@@ -303,23 +305,19 @@ class ShopApiServiceImpl extends ShopApiService {
   }
 
   @override
-  Future<DetailServiceResponseModel> getServiceDetail(int serviceId) async {
-    try {
-      var response = await sl<DioClient>()
-          .get('${ApiUrl.apiService}/$serviceId/service-details');
-      if (response.statusCode == 200) {
-        return DetailServiceResponseModel.fromMap(response.data['result']);
-        // List.from(response.data['result']['bookings'])
-        //     .map((e) => BookingModel.fromMap(e))
-        //     .toList();
-      }
+  Future<DetailServiceResponseModel> getServiceDetail(
+      GetDetailServiceReq service) async {
+    Uri apiUrl =
+        ApiUrl.urlGetDetailService(service.serviceId!, service.toQueryParams());
+
+    var response = await sl<DioClient>().get(apiUrl.toString());
+    if (response.statusCode == 200) {
+      return DetailServiceResponseModel.fromMap(response.data['result']);
+    } else {
       if (response.statusCode == 401) {
-        throw AuthenticationFailure('');
-      } else {
-        throw ExceptionFailure('');
+        throw AuthenticationFailure(response.statusMessage.toString());
       }
-    } on DioException catch (e) {
-      throw ServerFailure(e.toString());
+      throw ServerFailure(response.statusMessage.toString());
     }
   }
 

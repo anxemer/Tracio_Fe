@@ -28,8 +28,11 @@ class ParticipantsModels extends ParticipantsEntity {
       pace: json['pace'] != null ? (json['pace'] as num).toDouble() : null,
       challengeRank: json["challengeRank"],
       isCompleted: json["isCompleted"],
-      joinedAt: DateTime.tryParse(json["joinedAt"] ?? ""),
-      completedAt: DateTime.tryParse(json["completedAt"] ?? ""),
+      joinedAt:
+          json["joinedAt"] != null ? DateTime.tryParse(json["joinedAt"]) : null,
+      completedAt: json["completedAt"] != null
+          ? DateTime.tryParse(json["completedAt"])
+          : null,
       isRewardClaimed: json["isRewardClaimed"],
       isCurrentUser: json["isRewardClaimed"],
     );

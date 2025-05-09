@@ -13,7 +13,8 @@ class DetailInformationChallenge extends StatefulWidget {
       required this.participants,
       this.create,
       required this.isSystem,
-      required this.isPublic, required this.myChallenge});
+      required this.isPublic,
+      required this.myChallenge});
   final String totalGoal;
   final String participants;
   final String startDate;
@@ -51,38 +52,37 @@ class _DetailInformationChallengeState
           _buildDetailRow('Paricipants', widget.participants, '', context),
           widget.isSystem
               ? SizedBox.shrink()
-              : _buildDetailRow('create', widget.create ?? '', '', context),
-          
-      widget.    myChallenge ? 
-          Row(
-
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Icon(
-                    _isPublic ? Icons.public : Icons.lock,
-                    color: Colors.grey[600],
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    _isPublic ? 'Public' : 'Privete',
-                    style: TextStyle(
-                        fontSize: AppSize.textLarge,
-                        color: Colors.grey.shade700),
-                  ),
-                ],
-              ),
-              Switch(
-                value: _isPublic,
-                onChanged: (newValue) {
-                  setState(() {
-                    _isPublic = newValue;
-                  });
-                },
-              ),
-            ],
-          ): SizedBox.shrink()
+              : _buildDetailRow('Creater', widget.create ?? '', '', context),
+          widget.myChallenge
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          _isPublic ? Icons.public : Icons.lock,
+                          color: Colors.grey[600],
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          _isPublic ? 'Public' : 'Private',
+                          style: TextStyle(
+                              fontSize: AppSize.textLarge,
+                              color: Colors.grey.shade700),
+                        ),
+                      ],
+                    ),
+                    Switch(
+                      value: _isPublic,
+                      onChanged: (newValue) {
+                        setState(() {
+                          _isPublic = newValue;
+                        });
+                      },
+                    ),
+                  ],
+                )
+              : SizedBox.shrink()
         ],
       ),
     );

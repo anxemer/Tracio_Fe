@@ -7,6 +7,8 @@ class BookingModel extends BookingEntity {
     required super.serviceName,
     required super.serviceMediaFile,
     required super.shopName,
+    required super.openTime,
+    required super.closeTime,
     required super.bookedDate,
     required super.duration,
     required super.estimatedEndDate,
@@ -47,6 +49,8 @@ class BookingModel extends BookingEntity {
       estimatedEndDate: DateTime.tryParse(json["estimatedEndDate"] ?? ""),
       status: json["status"],
       price: json['price'] != null ? (json['price'] as num).toDouble() : null,
+      openTime: json["openTime"],
+      closeTime: json["closeTime"],
     );
   }
 

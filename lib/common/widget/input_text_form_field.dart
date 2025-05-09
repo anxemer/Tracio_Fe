@@ -71,7 +71,7 @@ class _InputTextFormFieldState extends State<InputTextFormField> {
         });
       },
       child: TextFormField(
-        maxLines: widget.maxLine ?? 1,
+        maxLines: widget.maxLine,
         keyboardType: widget.keyBoardType,
         onTap: widget.ontap != null ? () => widget.ontap!() : null,
         focusNode: _focusNode,

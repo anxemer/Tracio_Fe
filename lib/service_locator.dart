@@ -1,8 +1,14 @@
 import 'package:Tracio/core/services/signalR/implement/notification_hub_service.dart';
 import 'package:Tracio/data/blog/repositories/blog_repository_impl.dart';
 import 'package:Tracio/data/challenge/models/request/create_challenge_req.dart';
+import 'package:Tracio/domain/blog/usecase/edit_blog.dart';
 import 'package:Tracio/domain/challenge/usecase/create_challenge.dart';
 import 'package:Tracio/domain/challenge/usecase/get_user_reward.dart';
+import 'package:Tracio/domain/challenge/usecase/request_challenge.dart';
+import 'package:Tracio/domain/user/usecase/edit_profile.dart';
+import 'package:Tracio/domain/user/usecase/get_daily_activity.dart';
+import 'package:Tracio/domain/user/usecase/get_follow_request.dart';
+import 'package:Tracio/domain/user/usecase/resolve_follow_request.dart';
 import 'package:Tracio/domain/user/usecase/unfollow_user..dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -342,4 +348,11 @@ Future<void> initializeDependencies() async {
   sl.registerFactory<LeaveChallengeUseCase>(() => LeaveChallengeUseCase());
   sl.registerFactory<GetUserRewardUseCase>(() => GetUserRewardUseCase());
   sl.registerFactory<CreateChallengeUseCase>(() => CreateChallengeUseCase());
+  sl.registerFactory<EditBlogUseCase>(() => EditBlogUseCase());
+  sl.registerFactory<EditUserProfileUseCase>(() => EditUserProfileUseCase());
+  sl.registerFactory<GetDailyActivityUseCase>(() => GetDailyActivityUseCase());
+  sl.registerFactory<GetFollowRequestUseCase>(() => GetFollowRequestUseCase());
+  sl.registerFactory<ResolveFollowUserUseCase>(
+      () => ResolveFollowUserUseCase());
+  sl.registerFactory<RequestChallengeUseCase>(() => RequestChallengeUseCase());
 }

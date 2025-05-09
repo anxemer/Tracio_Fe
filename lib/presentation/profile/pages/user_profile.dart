@@ -1,5 +1,4 @@
 import 'package:Tracio/common/widget/button/loading.dart';
-import 'package:Tracio/presentation/blog/bloc/comment/get_comment_cubit.dart';
 import 'package:Tracio/presentation/profile/pages/setting_privacy.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -37,7 +36,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
   Widget build(BuildContext context) {
     late UserProfileEntity userEntity;
     ItemUser? selectedItem;
-    var isDark = context.isDarkMode;
     return MultiBlocProvider(
       providers: [
         BlocProvider(
@@ -78,7 +76,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
                             AppNavigator.push(
                                 context,
                                 AccountPrivacyScreen(
-                                    userId: userEntity.userId!));
+                                  userId: userEntity.userId!,
+                                  userStatus: userEntity.isPublic!,
+                                ));
                           }
                         },
                         itemBuilder: (BuildContext context) =>
@@ -114,7 +114,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   userEntity = state.userProfileEntity;
                   return Column(
                     children: [
-                      Userinformation(
+                    Userinformation(
                         myProfile: widget.myProfile,
                         user: state.userProfileEntity,
                       ),

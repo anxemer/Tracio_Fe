@@ -17,7 +17,7 @@ import 'package:Tracio/presentation/notifications/page/notifications.dart';
 import 'package:Tracio/service_locator.dart';
 
 class GroupPage extends StatefulWidget {
-  const GroupPage({super.key, this.initialIndex = 2});
+  const GroupPage({super.key, this.initialIndex = 1});
   final int initialIndex;
   @override
   State<GroupPage> createState() => _GroupPageState();
@@ -47,7 +47,7 @@ class _GroupPageState extends State<GroupPage> {
         ),
       ],
       child: DefaultTabController(
-        length: 3,
+        length: 2,
         initialIndex: widget.initialIndex,
         child: Scaffold(
           backgroundColor: Colors.grey.shade200,
@@ -61,7 +61,6 @@ class _GroupPageState extends State<GroupPage> {
                   labelColor: Colors.black,
                   indicatorColor: AppColors.primary,
                   tabs: [
-                    Tab(text: "Active"),
                     Tab(text: "Challenges"),
                     Tab(text: "Groups"),
                   ],
@@ -70,7 +69,7 @@ class _GroupPageState extends State<GroupPage> {
               Expanded(
                 child: TabBarView(
                   physics: NeverScrollableScrollPhysics(),
-                  children: [ActiveChallengeTab(), ChallengeTab(), GroupTab()],
+                  children: [ChallengeTab(), GroupTab()],
                 ),
               ),
             ],

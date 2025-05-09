@@ -178,6 +178,7 @@ class _CreateChallengeScreenState extends State<CreateChallengeScreen> {
                   ),
                   SizedBox(height: 10.h),
                   InputTextFormField(
+                    
                     hint: 'Description',
                     labelText: 'Description',
                     controller: _challengeDescriptionController,

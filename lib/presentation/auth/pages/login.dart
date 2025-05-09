@@ -114,6 +114,7 @@ class _LoginPageState extends State<LoginPage> {
                               height: 10.h,
                             ),
                             InputTextFormField(
+                              maxLine: 1,
                               controller: _passCon,
                               labelText: 'Password',
                               hint: 'Password',

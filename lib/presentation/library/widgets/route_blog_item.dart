@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:Tracio/common/helper/navigator/app_navigator.dart';
-import 'package:Tracio/common/widget/drag_handle/drag_handle.dart';
 import 'package:Tracio/core/constants/app_size.dart';
 import 'package:Tracio/domain/map/entities/route_blog.dart';
 import 'package:Tracio/presentation/library/bloc/reaction/bloc/reaction_bloc.dart';

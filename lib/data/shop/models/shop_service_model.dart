@@ -12,6 +12,7 @@ class ShopServiceModel extends ShopServiceEntity {
       super.city,
       super.district,
       super.serviceName,
+      super.address,
       super.description,
       super.price,
       super.status,
@@ -52,6 +53,8 @@ class ShopServiceModel extends ShopServiceEntity {
       serviceId: map['serviceId'] != null ? map['serviceId'] as int : null,
       shopId: map['shopId'] != null ? map['shopId'] as int : null,
       shopName: map['shopName'] != null ? map['shopName'] as String : null,
+      address: map['address'] != null ? map['address'] as String : null,
+      distance: map['distance'] != null ? map['distance'] as double : null,
       openTime: map['openTime'] != null ? map['openTime'] as String : null,
       closeTime: map['closeTime'] != null ? map['closeTime'] as String : null,
       categoryName:

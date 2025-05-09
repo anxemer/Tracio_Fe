@@ -1,3 +1,7 @@
+import 'package:Tracio/core/usecase/usecase.dart';
+import 'package:Tracio/domain/user/entities/daily_activity_entity.dart';
+import 'package:Tracio/domain/user/usecase/get_daily_activity.dart';
+import 'package:Tracio/service_locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -35,6 +39,10 @@ class _HomePageState extends State<HomePage> {
             create: (context) => GetBlogCubit()..getBlog(GetBlogReq())),
         BlocProvider(create: (context) => CreateBlogCubit()),
         BlocProvider(create: (context) => GetCommentCubit()),
+        BlocProvider(
+            create: (context) => GenericDataCubit()
+              ..getData<DailyActivityEntity>(sl<GetDailyActivityUseCase>(),
+                  params: NoParams())),
       ],
       child: SafeArea(
         bottom: true,
@@ -49,8 +57,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   PreferredSizeWidget _buildAppBar() {
-    var isDark = context.isDarkMode;
-
     return BasicAppbar(
       height: AppSize.appBarHeight.h,
       hideBack: true,

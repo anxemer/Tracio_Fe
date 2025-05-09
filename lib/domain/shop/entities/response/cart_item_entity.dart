@@ -59,4 +59,13 @@ class CartItemEntity {
     final formatter = NumberFormat('#,###', 'vi_VN');
     return formatter.format(priceAsInt);
   }
+   int? get openHour {
+    if (openTime == null || !openTime!.contains(':')) return null;
+    return int.tryParse(openTime!.split(':')[0]);
+  }
+
+  int? get closeHour {
+    if (closeTime == null || !closeTime!.contains(':')) return null;
+    return int.tryParse(closeTime!.split(':')[0]);
+  }
 }
