@@ -106,13 +106,12 @@ class _BookingManagementScreenState extends State<BookingManagementScreen>
 
     return Scaffold(
       appBar: BasicAppbar(
-        backgroundColor: Colors.transparent,
         title: Text(
           'Booking Management',
           style: TextStyle(
             fontSize: AppSize.textLarge,
             fontWeight: FontWeight.bold,
-            color: isDark ? Colors.white70 : Colors.black87,
+            color: Colors.white70,
           ),
         ),
         action: IconButton(

@@ -432,26 +432,6 @@ class _DetailServicePageState extends State<DetailServicePage> {
                       ),
                     ],
                   ),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.location_on_sharp,
-                        color: isDark
-                            ? AppColors.secondBackground
-                            : AppColors.background,
-                      ),
-                      SizedBox(width: 4.w),
-                      Text(
-                        '$distance',
-                        style: TextStyle(
-                          color: isDark ? Colors.grey.shade300 : Colors.black87,
-                          fontWeight: FontWeight.w600,
-                          fontSize: AppSize.textLarge,
-                        ),
-                      ),
-                    ],
-                  ),
                 ],
               ),
             ],
