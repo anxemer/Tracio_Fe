@@ -136,28 +136,45 @@ class RouteCubit extends Cubit<RouteState> {
   }
 
   Future<void> getRouteBlogList({int pageNumber = 1, int pageSize = 5}) async {
-    emit(GetRouteBlogLoading());
+    // If we're loading the first page, show loading indicator
+    if (pageNumber == 1) {
+      emit(GetRouteBlogLoading());
+    }
+
     final params = {
       "pageNumber": pageNumber.toString(),
-      "pageSize": pageSize.toString()
+      "pageSize": pageSize.toString(),
     };
-    var data = await sl<GetRouteBlogListUsecase>().call(params);
 
-    data.fold((error) {
-      emit(GetRouteBlogFailure(errorMessage: error.message));
-    }, (data) async {
-      emit(GetRouteBlogLoaded(
-        routeBlogs: data.routeBlogs,
-        pageNumber: data.pageNumber,
-        hasPreviousPage: data.hasPreviousPage,
-        totalCount: data.totalCount,
-        pageSize: data.pageSize,
-        hasNextPage: data.hasNextPage,
-        totalPages: data.totalPage,
-        reviews: [],
-        reviewPaginationEntity: null,
-      ));
-    });
+    final result = await sl<GetRouteBlogListUsecase>().call(params);
+
+    result.fold(
+      (error) => emit(GetRouteBlogFailure(errorMessage: error.message)),
+      (data) {
+        final previousState = state;
+
+        // Append to existing list if already loaded and pageNumber > 1
+        final updatedBlogs =
+            (previousState is GetRouteBlogLoaded && pageNumber > 1)
+                ? [...previousState.routeBlogs, ...data.routeBlogs]
+                : data.routeBlogs;
+
+        emit(GetRouteBlogLoaded(
+          routeBlogs: updatedBlogs,
+          pageNumber: data.pageNumber,
+          hasPreviousPage: data.hasPreviousPage,
+          totalCount: data.totalCount,
+          pageSize: data.pageSize,
+          hasNextPage: data.hasNextPage,
+          totalPages: data.totalPage,
+          reviews:
+              previousState is GetRouteBlogLoaded ? previousState.reviews : [],
+          reviewPaginationEntity: previousState is GetRouteBlogLoaded
+              ? previousState.reviewPaginationEntity
+              : null,
+        ));
+      },
+    );
   }
 
   Future<void> getRouteBlogReviews(int routeId,

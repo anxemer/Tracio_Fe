@@ -134,7 +134,7 @@ class _BlogPageState extends State<BlogPage> with TickerProviderStateMixin {
               // Tab 2: Routes
               BlocProvider(
                 create: (context) => RouteCubit()..getRouteBlogList(),
-                child: RouteBLog(),
+                child: RouteBLog(scrollController: _scrollController),
               )
             ],
           ),
