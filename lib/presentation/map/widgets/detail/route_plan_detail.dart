@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:Tracio/presentation/library/pages/library.dart';
 import 'package:Tracio/presentation/map/bloc/route_cubit.dart';
 import 'package:Tracio/presentation/map/bloc/route_state.dart';
 import 'package:Tracio/presentation/map/widgets/detail/route_detail_top_action_bar.dart';
@@ -16,8 +15,6 @@ import 'package:Tracio/presentation/map/bloc/get_direction_cubit.dart';
 import 'package:Tracio/presentation/map/bloc/get_location_cubit.dart';
 import 'package:Tracio/presentation/map/bloc/map_cubit.dart';
 import 'package:Tracio/presentation/map/bloc/map_state.dart';
-import 'package:Tracio/presentation/map/widgets/route_detail_panel.dart';
-import 'package:Tracio/presentation/map/widgets/top_action_bar.dart';
 import 'package:Tracio/main.dart';
 
 class RoutePlanDetail extends StatefulWidget {
