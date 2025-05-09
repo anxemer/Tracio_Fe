@@ -40,6 +40,27 @@ class _BlogListViewState extends State<BlogListView>
     return BlocBuilder<GetBlogCubit, GetBlogState>(
       builder: (context, state) {
         if (state is GetBlogLoaded) {
+          if (state.blogs.isEmpty) {
+            return RefreshIndicator(
+              onRefresh: () async {
+                await context
+                    .read<GetBlogCubit>()
+                    .getBlog(GetBlogReq(isSeen: true));
+              },
+              child: ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: const [
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 100.0),
+                    child: Center(
+                      child: Text(
+                          'You have viewed the entire blog, Pull to refresh'),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
           return RefreshIndicator(
             onRefresh: () async {
               await context
@@ -50,16 +71,16 @@ class _BlogListViewState extends State<BlogListView>
               onNotification: (ScrollNotification scrollInfo) {
                 if (scrollInfo.metrics.pixels >=
                         scrollInfo.metrics.maxScrollExtent * 0.7 &&
-                    !(state.isLoading ?? false)) {
+                    !(state.isLoading)) {
                   context.read<GetBlogCubit>().getMoreBlogs();
                 }
                 return false;
               },
               child: ListView.builder(
                 physics: const AlwaysScrollableScrollPhysics(),
-                itemCount: state.blogs.length + (state.isLoading! ? 1 : 0),
+                itemCount: state.blogs.length + (state.isLoading ? 1 : 0),
                 itemBuilder: (context, index) {
-                  if (index == state.blogs.length && state.isLoading!) {
+                  if (index == state.blogs.length && state.isLoading) {
                     return const Padding(
                       padding: EdgeInsets.symmetric(vertical: 16.0),
                       child: Center(child: CircularProgressIndicator()),
@@ -76,7 +97,7 @@ class _BlogListViewState extends State<BlogListView>
                     ),
                     child: NewFeeds(
                       isPersonal: true,
-                      key: ValueKey('blog_${state.blogs![index].blogId}'),
+                      key: ValueKey('blog_${state.blogs[index].blogId}'),
                       blogs: state.blogs[index],
                     ),
                   );
