@@ -30,7 +30,7 @@ class MatchRequestCubit extends Cubit<MatchRequestState> {
     emit(MatchRequestVisible(_current!));
 
     _autoDismissTimer?.cancel();
-    _autoDismissTimer = Timer(Duration(seconds: 10), () => dismiss(false));
+    _autoDismissTimer = Timer(Duration(seconds: 30), () => dismiss(false));
   }
 
   void dismiss(bool accepted) {

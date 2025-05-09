@@ -69,6 +69,12 @@ class _CyclingPageState extends State<CyclingPage> {
 
       context.read<TrackingBloc>().add(UpdateTrackingData(location));
     });
+    bg.BackgroundGeolocation.onEnabledChange((bool enabled) {
+      debugPrint("BackgroundGeolocation enabled: $enabled");
+      setState(() {
+        _isBgGeoInitialized = enabled;
+      });
+    });
 
     bg.BackgroundGeolocation.setOdometer(0.0);
     if (!mounted) return;
@@ -257,6 +263,12 @@ class _CyclingPageState extends State<CyclingPage> {
     final trackingState = context.read<TrackingBloc>().state;
 
     if (trackingState is TrackingInProgress && trackingState.isPaused) {
+      final state = await bg.BackgroundGeolocation.state;
+
+      if (!state.enabled) {
+        await bg.BackgroundGeolocation.start(); // ✅ Required before changePace
+      }
+
       await bg.BackgroundGeolocation.setOdometer(trackingState.odometerKm ?? 0);
 
       setState(() {
@@ -447,7 +459,14 @@ class _CyclingPageState extends State<CyclingPage> {
                           prev.matchedUsers?.map((e) => e.userId).toSet() ?? {};
                       final currIds =
                           curr.matchedUsers?.map((e) => e.userId).toSet() ?? {};
-                      return currIds.difference(prevIds).isNotEmpty;
+
+                      // Trigger rebuild if sets are different in size or content
+                      if (prevIds.length != currIds.length) return true;
+
+                      for (final id in prevIds) {
+                        if (!currIds.contains(id)) return true;
+                      }
+                      return false;
                     }
                     return prev.runtimeType != curr.runtimeType;
                   },

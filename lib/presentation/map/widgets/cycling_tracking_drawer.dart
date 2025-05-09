@@ -1,6 +1,7 @@
 import 'package:Tracio/core/services/signalR/implement/matching_hub_service.dart';
 import 'package:Tracio/data/map/models/matched_user.dart';
 import 'package:Tracio/domain/map/entities/matched_user.dart';
+import 'package:Tracio/presentation/map/bloc/map_cubit.dart';
 import 'package:Tracio/presentation/map/bloc/tracking/bloc/tracking_bloc.dart';
 import 'package:Tracio/service_locator.dart';
 import 'package:flutter/material.dart';
@@ -110,7 +111,7 @@ class _CyclingTrackingDrawerState extends State<CyclingTrackingDrawer>
                             var matchingUsers =
                                 sl<MatchingHubService>().matchingUser;
                             var otherUser = matchingUsers.firstWhere(
-                              (element) => element.userId == user.userId,
+                              (element) => element.otherUserId == user.userId,
                             );
 
                             sl<MatchingHubService>().approveMatch(
@@ -125,6 +126,10 @@ class _CyclingTrackingDrawerState extends State<CyclingTrackingDrawer>
                             context.read<TrackingBloc>().add(
                                   RemoveMatchedUser(otherUser.otherUserId),
                                 );
+                            context
+                                .read<MapCubit>()
+                                .pointAnnotationManager
+                                ?.deleteAll();
                           },
                           child: const Icon(Icons.logout, size: 16),
                         ),

@@ -17,7 +17,7 @@ class MatchRequestBanner extends StatefulWidget {
     required this.avatar,
     required this.onAccept,
     required this.onCancel,
-    this.durationSeconds = 10,
+    this.durationSeconds = 30,
   });
 
   @override
