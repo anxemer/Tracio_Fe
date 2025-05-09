@@ -52,11 +52,12 @@ class _BookingDetailShopScreenState extends State<BookingDetailShopScreen> {
       ],
       child: Scaffold(
         appBar: BasicAppbar(
-          backgroundColor: Colors.transparent,
           title: Text(
             'Booking Detail',
             style: TextStyle(
-                fontSize: AppSize.textHeading, fontWeight: FontWeight.bold),
+                fontSize: AppSize.textHeading,
+                fontWeight: FontWeight.bold,
+                color: Colors.white),
           ),
         ),
         body: BlocConsumer<ResolveBookingShopCubit, ResolveBookingShopState>(
@@ -306,8 +307,11 @@ class _BookingDetailShopScreenState extends State<BookingDetailShopScreen> {
             ontap: () {
               DialogConfirm(
                       btnLeft: () => Navigator.pop(context),
-                      btnRight: () =>
-                          AppNavigator.push(context, CancelReasonScreen(bookingDetailId:booking.bookingDetailId! ,)),
+                      btnRight: () => AppNavigator.push(
+                          context,
+                          CancelReasonScreen(
+                            bookingDetailId: booking.bookingDetailId!,
+                          )),
                       notification:
                           'Are you sure you want to cancel this Booking?')
                   .showDialogConfirmation(context);
@@ -358,8 +362,11 @@ class _BookingDetailShopScreenState extends State<BookingDetailShopScreen> {
                       title: Text('Cancel Booking'),
                       onTap: () {
                         DialogConfirm(
-                          btnLeft: () =>
-                              AppNavigator.push(context, CancelReasonScreen(bookingDetailId:booking.bookingDetailId! ,)),
+                          btnLeft: () => AppNavigator.push(
+                              context,
+                              CancelReasonScreen(
+                                bookingDetailId: booking.bookingDetailId!,
+                              )),
                           btnRight: () => Navigator.pop(context),
                           notification:
                               'Are you sure you want to cancel this Booking?',

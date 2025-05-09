@@ -43,10 +43,6 @@ class _RouteBLogState extends State<RouteBLog>
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Image.asset(
-              AppImages.error,
-              width: AppSize.imageLarge,
-            ),
             SizedBox(height: 16.h),
             Text(message),
           ],
