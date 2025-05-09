@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:Tracio/domain/map/entities/matched_user.dart';
 import 'package:equatable/equatable.dart';
 
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
@@ -23,6 +24,8 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
     on<UpdateTrackingData>(_onUpdateTrackingData);
     on<ResumeTracking>(_onResumeTracking);
     on<UpdateTime>(_onUpdateTime);
+    on<AddMatchedUser>(_onAddMatchedUser);
+    on<RemoveMatchedUser>(_onRemoveMatchedUser);
   }
 
   void _onStartTracking(StartTracking event, Emitter<TrackingState> emit) {
@@ -64,6 +67,7 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
 
   void _onEndTracking(EndTracking event, Emitter<TrackingState> emit) {
     _ticker?.cancel();
+
     emit(TrackingInitial());
   }
 
@@ -136,5 +140,30 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
       movingTime: movingTime,
       currentTime: now,
     ));
+  }
+
+  void _onAddMatchedUser(AddMatchedUser event, Emitter<TrackingState> emit) {
+    final currentState = state;
+    if (currentState is TrackingInProgress) {
+      final updatedList = [...?currentState.matchedUsers];
+
+      if (!updatedList.any((u) => u.userId == event.user.userId)) {
+        updatedList.add(event.user);
+      }
+
+      emit(currentState.copyWith(matchedUsers: updatedList));
+    }
+  }
+
+  void _onRemoveMatchedUser(
+      RemoveMatchedUser event, Emitter<TrackingState> emit) {
+    final currentState = state;
+    if (currentState is TrackingInProgress) {
+      final updatedList = [...?currentState.matchedUsers]
+          .where((u) => u.userId != event.userId)
+          .toList();
+
+      emit(currentState.copyWith(matchedUsers: updatedList));
+    }
   }
 }

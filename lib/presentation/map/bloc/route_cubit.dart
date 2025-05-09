@@ -41,8 +41,12 @@ class RouteCubit extends Cubit<RouteState> {
       emit(GetRouteLoading());
     }
     final currentRides = loadedState?.rides ?? [];
+    final addedFilter = {
+      ...?filterParams,
+      "isPlanned": "false",
+    };
     GetRouteReq request = GetRouteReq(
-        pageNumber: pageNumber, pageSize: pageSize, params: filterParams);
+        pageNumber: pageNumber, pageSize: pageSize, params: addedFilter);
     var data = await sl<GetRoutesUseCase>().call(request);
     data.fold((error) {
       emit(GetRouteFailure(failure: ExceptionFailure(error.message)));

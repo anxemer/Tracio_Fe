@@ -195,7 +195,10 @@ class _GroupActivityDetailState extends State<GroupActivityDetail> {
               ),
             ),
           ),
-          _buildActionButton("Start Riding", Icons.start_sharp, () async {
+          _buildActionButton(
+              disabled: isDisabled,
+              "Start Riding",
+              Icons.start_sharp, () async {
             try {
               final groupRouteHub = sl<GroupRouteHubService>();
               await groupRouteHub.connect();

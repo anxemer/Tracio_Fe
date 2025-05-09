@@ -1,5 +1,6 @@
 import 'package:Tracio/presentation/library/pages/route_detail.dart';
 import 'package:Tracio/presentation/map/bloc/map_cubit.dart';
+import 'package:Tracio/presentation/map/widgets/detail/route_plan_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -147,9 +148,13 @@ class _RouteItemState extends State<RouteItem> {
           MaterialPageRoute(
             builder: (context) => BlocProvider(
               create: (context) => MapCubit(),
-              child: RouteDetailScreen(
-                routeId: widget.routeData.routeId,
-              ),
+              child: widget.routeData.isPlanned
+                  ? RoutePlanDetail(
+                      routeId: widget.routeData.routeId,
+                    )
+                  : RouteDetailScreen(
+                      routeId: widget.routeData.routeId,
+                    ),
             ),
           ),
         );

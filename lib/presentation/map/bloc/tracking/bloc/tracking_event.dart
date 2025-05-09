@@ -18,9 +18,13 @@ class StartTracking extends TrackingEvent {
 }
 
 class PauseTracking extends TrackingEvent {}
+
 class ResumeTracking extends TrackingEvent {}
+
 class EndTracking extends TrackingEvent {}
+
 class UpdateTime extends TrackingEvent {}
+
 class UpdateTrackingData extends TrackingEvent {
   final bg.Location location;
 
@@ -28,4 +32,22 @@ class UpdateTrackingData extends TrackingEvent {
 
   @override
   List<Object?> get props => [location];
+}
+
+class AddMatchedUser extends TrackingEvent {
+  final MatchedUserEntity user;
+
+  const AddMatchedUser(this.user);
+
+  @override
+  List<Object?> get props => [user];
+}
+
+class RemoveMatchedUser extends TrackingEvent {
+  final int userId;
+
+  const RemoveMatchedUser(this.userId);
+
+  @override
+  List<Object?> get props => [userId];
 }

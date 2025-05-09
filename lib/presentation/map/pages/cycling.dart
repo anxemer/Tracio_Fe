@@ -1,3 +1,4 @@
+import 'package:Tracio/presentation/map/widgets/cycling_tracking_drawer.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:easy_debounce/easy_throttle.dart';
 import 'package:flutter/material.dart';
@@ -173,9 +174,10 @@ class _CyclingPageState extends State<CyclingPage> {
         FinishTrackingReq(routeId: trackingState.routeId!);
 
     final result = await sl<FinishTrackingUsecase>().call(request);
-    return result.fold((error) {
+    return result.fold((error) async {
       debugPrint("Error finishing tracking: $error");
-
+      await bg.BackgroundGeolocation.stop();
+      context.read<TrackingBloc>().add(EndTracking());
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Failed to finish tracking. Try again.")),
       );
@@ -185,17 +187,28 @@ class _CyclingPageState extends State<CyclingPage> {
       debugPrint("Tracking finished successfully: $response");
       await bg.BackgroundGeolocation.stop();
       context.read<TrackingBloc>().add(EndTracking());
+      setState(() {
+        showHoldOptions = false;
+        isLocked = false;
+      });
       if (response == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
               content: Text("Route too short to save (under 500m). Auto-stop")),
         );
+
         return;
       }
       final decodedPolyline = decodePolyline(response.polyline)
           .map((coord) => mp.Position(coord[1], coord[0]))
           .toList();
       final lineString = mp.LineString(coordinates: decodedPolyline);
+      //reset state
+      setState(() {
+        showHoldOptions = false;
+        isLocked = false;
+      });
+
       Navigator.push(
           context,
           MaterialPageRoute(
@@ -225,10 +238,17 @@ class _CyclingPageState extends State<CyclingPage> {
   }
 
   void _onPausePressed() async {
-    final trackingState = context.read<TrackingBloc>().state;
-
-    if (trackingState is TrackingInProgress && !trackingState.isPaused) {
-      await bg.BackgroundGeolocation.changePace(false);
+    final state = context.read<TrackingBloc>().state;
+    if (state is TrackingInProgress && !state.isPaused) {
+      final isEnabled = await bg.BackgroundGeolocation.state;
+      if (isEnabled.enabled) {
+        await bg.BackgroundGeolocation.changePace(false);
+      } else {
+        debugPrint("⚠️ BackgroundGeolocation is not enabled.");
+      }
+      setState(() {
+        showHoldOptions = true;
+      });
       context.read<TrackingBloc>().add(PauseTracking());
     }
   }
@@ -330,9 +350,6 @@ class _CyclingPageState extends State<CyclingPage> {
   Widget _buildPauseButton() {
     return GestureDetector(
       onLongPress: () async {
-        setState(() {
-          showHoldOptions = true;
-        });
         _onPausePressed();
       },
       child: Container(
@@ -422,9 +439,30 @@ class _CyclingPageState extends State<CyclingPage> {
                   },
                 ),
 
+                BlocBuilder<TrackingBloc, TrackingState>(
+                  buildWhen: (prev, curr) {
+                    if (prev is TrackingInProgress &&
+                        curr is TrackingInProgress) {
+                      final prevIds =
+                          prev.matchedUsers?.map((e) => e.userId).toSet() ?? {};
+                      final currIds =
+                          curr.matchedUsers?.map((e) => e.userId).toSet() ?? {};
+                      return currIds.difference(prevIds).isNotEmpty;
+                    }
+                    return prev.runtimeType != curr.runtimeType;
+                  },
+                  builder: (context, state) {
+                    if (state is TrackingInProgress &&
+                        state.matchedUsers?.isNotEmpty == true) {
+                      return CyclingTrackingDrawer(
+                          matchedUsers: state.matchedUsers!);
+                    }
+                    return const SizedBox.shrink();
+                  },
+                ),
+
                 //Show when tracking
                 BlocBuilder<TrackingBloc, TrackingState>(
-                  buildWhen: (previous, current) => previous != current,
                   builder: (context, state) {
                     if (state is TrackingInProgress) {
                       return Positioned(

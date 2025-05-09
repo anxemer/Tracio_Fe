@@ -64,14 +64,33 @@ class GetDirectionCubit extends Cubit<GetDirectionState> {
     });
   }
 
-  Future<void> getElevation(String encodedPolyline) async {
+  Future<void> getElevation(LineString lineString, {int interval = 5}) async {
     emit(GetElevationLoading());
-    //Elevation point
-    var data = await sl<GetElevationUseCase>().call(encodedPolyline);
-    data.fold((error) {
-      emit(GetElevationFailure(errorMessage: error.toString()));
-    }, (data) {
-      emit(GetElevationLoaded(elevationPoints: data));
-    });
+
+    try {
+      // 1. Generate points along the line
+      final points = getPointsAlongLine(lineString, meterInterval: interval);
+
+      // 2. Extract coordinates
+      final coords = coordAll(points);
+
+      // 3. Encode as polyline
+      final encodedPolyline = encodePolyline(coords);
+
+      // 4. Call use case to get elevation
+      final elevationData =
+          await sl<GetElevationUseCase>().call(encodedPolyline);
+
+      elevationData.fold(
+        (error) {
+          emit(GetElevationFailure(errorMessage: error.toString()));
+        },
+        (elevationPoints) {
+          emit(GetElevationLoaded(elevationPoints: elevationPoints));
+        },
+      );
+    } catch (e) {
+      emit(GetElevationFailure(errorMessage: e.toString()));
+    }
   }
 }

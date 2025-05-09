@@ -44,7 +44,12 @@ class _CreateGroupActivityState extends State<CreateGroupActivity>
       appBar: AppBar(title: const Text('New Activity')),
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
-        child: BlocBuilder<FormGroupActivityCubit, FormGroupActivityState>(
+        child: BlocConsumer<FormGroupActivityCubit, FormGroupActivityState>(
+          listener: (context, state) {
+            if (state.isSuccess) {
+              Navigator.pop(context, true);
+            }
+          },
           builder: (context, state) {
             final startDate = state.startDateTime;
             if (state.isFailed) {
@@ -347,6 +352,15 @@ class _CreateGroupActivityState extends State<CreateGroupActivity>
                                       .read<FormGroupActivityCubit>()
                                       .submitCreateGroupActivity(
                                           widget.groupId);
+
+                                  if (context
+                                          .read<FormGroupActivityCubit>()
+                                          .state
+                                          .isSuccess ==
+                                      true) {
+                                    Navigator.pop(context, true);
+                                  }
+
                                   setState(() {});
                                 } else if (dateTimeError != null) {
                                   ScaffoldMessenger.of(context).showSnackBar(
