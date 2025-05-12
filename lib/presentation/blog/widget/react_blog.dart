@@ -12,10 +12,8 @@ import 'package:Tracio/domain/blog/usecase/unBookmark.dart';
 import 'package:Tracio/presentation/library/bloc/reaction/bloc/reaction_bloc.dart';
 
 import '../../../common/helper/notification/notification_model.dart';
-import '../../../core/services/notifications/i_notification_service.dart';
 import '../../../core/services/signalR/implement/notification_hub_service.dart';
 import '../../../service_locator.dart';
-import '../../notifications/page/notifications.dart';
 
 class ReactBlog extends StatefulWidget {
   ReactBlog(
@@ -63,7 +61,7 @@ class _ReactBlogState extends State<ReactBlog> {
             return;
           }
           _messageSubscription = _notiService.onMessageUpdate.listen((message) {
-            if (message!.entityType == 0 && mounted) {
+            if (message.entityType == 0 && mounted) {
               setState(() {
                 commentsCount++;
               });

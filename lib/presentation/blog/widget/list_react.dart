@@ -12,8 +12,7 @@ import '../../../domain/blog/usecase/get_reaction_blog.dart';
 import '../../../service_locator.dart';
 
 class ListReact extends StatefulWidget {
-  const ListReact({super.key, required this.cubit, required this.blogId});
-  final GenericDataCubit cubit;
+  const ListReact({super.key, required this.blogId});
   final int blogId;
   @override
   State<ListReact> createState() => _ListReactState();
@@ -24,15 +23,11 @@ class _ListReactState extends State<ListReact> {
   @override
   void initState() {
     super.initState();
-    widget.cubit.getData<List<ReactionResponseEntity>>(
-        sl<GetReactBlogUseCase>(),
-        params: widget.blogId);
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<GenericDataCubit, GenericDataState>(
-      bloc: widget.cubit,
       builder: (context, state) {
         if (state is DataLoading) {
           return const Center(child: CircularProgressIndicator());

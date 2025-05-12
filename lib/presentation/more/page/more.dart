@@ -19,14 +19,14 @@ class MorePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final state = context.read<AuthCubit>().state;
-    // UserEntity? user;
+    final state = context.read<AuthCubit>().state;
+    UserEntity? user;
 
-    // if (state is AuthLoaded) {
-    //   user = state.user;
-    // } else if (state is AuthChangeRole) {
-    //   user = state.user;
-    // }
+    if (state is AuthLoaded) {
+      user = state.user;
+    } else if (state is AuthChangeRole) {
+      user = state.user;
+    }
     return Scaffold(
         appBar: BasicAppbar(
           title: Text(
@@ -40,31 +40,35 @@ class MorePage extends StatelessWidget {
           hideBack: true,
         ),
         body: ListView(children: [
-          // ListTile(
-          //   leading: CirclePicture(
-          //       imageUrl: user!.profilePicture!, imageSize: AppSize.iconLarge),
-          //   // CircleAvatar(
-          //   //   backgroundImage:
-          //   //       NetworkImage(user.profilePicture),
-          //   //   radius: 20.w,
-          //   // ),
-          //   title: Column(
-          //     crossAxisAlignment: CrossAxisAlignment.start,
-          //     children: [
-          //       Text('My Profile'),
-          //       Text(
-          //         user.email!,
-          //         style: TextStyle(
-          //           fontSize: AppSize.textSmall.sp,
-          //           color: Colors.black54,
-          //         ),
-          //       ),
-          //     ],
-          //   ),
-          //   onTap: () {
-          //     Navigator.pushNamed(context, '/profile');
-          //   },
-          // ),
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 8),
+            child: ListTile(
+              leading: CirclePicture(
+                  imageUrl: user!.profilePicture!,
+                  imageSize: AppSize.iconLarge),
+              // CircleAvatar(
+              //   backgroundImage:
+              //       NetworkImage(user.profilePicture),
+              //   radius: 20.w,
+              // ),
+              title: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('My Profile'),
+                  Text(
+                    user.email!,
+                    style: TextStyle(
+                      fontSize: AppSize.textSmall.sp,
+                      color: Colors.black54,
+                    ),
+                  ),
+                ],
+              ),
+              onTap: () {
+                Navigator.pushNamed(context, '/profile');
+              },
+            ),
+          ),
           Divider(),
           ListTile(
             leading: Icon(Icons.library_books, color: Colors.black54),

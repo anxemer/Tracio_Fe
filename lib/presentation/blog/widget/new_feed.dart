@@ -8,6 +8,9 @@ import 'package:Tracio/presentation/blog/widget/post_blog.dart';
 import 'package:Tracio/presentation/blog/widget/react_blog.dart';
 import '../../../common/bloc/generic_data_cubit.dart';
 import '../../../common/widget/blog/custom_bottomsheet.dart';
+import '../../../domain/blog/entites/reaction_response_entity.dart';
+import '../../../domain/blog/usecase/get_reaction_blog.dart';
+import '../../../service_locator.dart';
 import '../bloc/comment/get_comment_cubit.dart';
 import 'comment.dart';
 import 'list_react.dart';
@@ -34,10 +37,16 @@ class NewFeeds extends StatelessWidget {
           blogEntity: blogs,
           textReactionAction: () => CustomModalBottomSheet.show(
               context: context,
-              child: ListReact(
-                blogId: blogs.blogId,
-                cubit: reacCubit,
-                //             ),
+              child: BlocProvider(
+                create: (context) => GenericDataCubit()
+                  ..getData<List<ReactionResponseEntity>>(
+                      sl<GetReactBlogUseCase>(),
+                      params: blogs.blogId),
+                child: ListReact(
+                  blogId: blogs.blogId,
+
+                  //             ),
+                ),
               )),
           cmtAction: () => CustomModalBottomSheet.show(
             context: context,
