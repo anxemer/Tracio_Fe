@@ -276,12 +276,11 @@ class MapCubit extends Cubit<MapCubitState> {
     double borderSize = 6.0,
   }) async {
     final bytes = await _fetchAndResizeImage(
-      url: imageUrl,
-      size: 80,
-      borderColor: borderColor,
-      borderSize: borderSize,
-      borderRadius: 50
-    );
+        url: imageUrl,
+        size: 80,
+        borderColor: borderColor,
+        borderSize: borderSize,
+        borderRadius: 50);
 
     final manager = await mapboxMap?.annotations
         .createPointAnnotationManager(id: 'user_$id');
@@ -439,7 +438,8 @@ class MapCubit extends Cubit<MapCubitState> {
 
   Future<Uint8List> getNetworkImageData(Uri imageUrl) async {
     try {
-      final response = await sl<DioClient>().get(
+      final dio = Dio();
+      final response = await dio.get(
         imageUrl.toString(),
         options: Options(responseType: ResponseType.bytes),
       );

@@ -14,7 +14,9 @@ import '../../../data/blog/models/request/get_blog_req.dart';
 import '../bloc/get_blog_state.dart';
 
 class RouteBLog extends StatefulWidget {
-  const RouteBLog({super.key});
+  final ScrollController scrollController;
+
+  const RouteBLog({super.key, required this.scrollController});
 
   @override
   State<RouteBLog> createState() => _RouteBLogState();
@@ -27,7 +29,33 @@ class _RouteBLogState extends State<RouteBLog>
   Timer? _scrollDebounce;
 
   @override
+  void initState() {
+    super.initState();
+    widget.scrollController.addListener(_onScroll);
+  }
+
+  void _onScroll() {
+    final maxScroll = widget.scrollController.position.maxScrollExtent;
+    final currentScroll = widget.scrollController.position.pixels;
+
+    if (currentScroll > maxScroll * 0.7) {
+      if (_scrollDebounce?.isActive ?? false) _scrollDebounce!.cancel();
+
+      _scrollDebounce = Timer(const Duration(milliseconds: 300), () {
+        final state = context.read<RouteCubit>().state;
+        if (state is GetRouteBlogLoaded && state.hasNextPage) {
+          context.read<RouteCubit>().getRouteBlogList(
+                pageNumber: state.pageNumber + 1,
+                pageSize: state.pageSize,
+              );
+        }
+      });
+    }
+  }
+
+  @override
   void dispose() {
+    widget.scrollController.removeListener(_onScroll);
     _scrollDebounce?.cancel();
     super.dispose();
   }

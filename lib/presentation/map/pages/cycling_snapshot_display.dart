@@ -31,7 +31,7 @@ class _CyclingSnapshotDisplayState extends State<CyclingSnapshotDisplay> {
   late TextEditingController _descriptionController;
   final List<XFile> _selectedImages = [];
   RouteMood? _chosenMood;
-
+  bool _isPublic = true;
   final ImagePicker _picker = ImagePicker();
 
   @override
@@ -67,7 +67,7 @@ class _CyclingSnapshotDisplayState extends State<CyclingSnapshotDisplay> {
       routeName: name,
       description: desc,
       routeThumbnail: context.read<MapCubit>().snapshotImageUrl.toString(),
-      isPublic: false,
+      isPublic: _isPublic,
       mood: _chosenMood?.name ?? "None",
     );
     final List<PostRouteMediaReq> routeMedias = _selectedImages
@@ -260,6 +260,27 @@ class _CyclingSnapshotDisplayState extends State<CyclingSnapshotDisplay> {
                                             color: Colors.grey.shade400),
                                       ),
                                     ),
+                                  ),
+                                  SizedBox(height: 16.h),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        "Make route public:",
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      Switch(
+                                        value: _isPublic,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            _isPublic = value;
+                                          });
+                                        },
+                                        activeColor: Colors.green,
+                                      ),
+                                    ],
                                   ),
                                   SizedBox(height: 16.h),
                                   Text("Photos (max 3):",

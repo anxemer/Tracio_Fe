@@ -163,18 +163,15 @@ class _CyclingTopActionBarState extends State<CyclingTopActionBar> {
                   ),
                 ),
                 onSelected: (String value) {
-                  // Handle your menu item selection here
-                  print('Selected: $value');
+                  switch (value) {
+                    case 'Route Planner':
+                      break;
+                  }
                 },
                 itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
                   const PopupMenuItem<String>(
                     value: 'Route Planner',
                     child: Text('Route Planner'),
-                  ),
-                  const PopupMenuDivider(),
-                  const PopupMenuItem<String>(
-                    value: 'Search',
-                    child: Text('Search'),
                   ),
                   const PopupMenuDivider(),
                   const PopupMenuItem<String>(

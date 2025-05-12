@@ -1,3 +1,4 @@
+import 'package:Tracio/common/widget/picture/full_screen_image_view.dart';
 import 'package:Tracio/presentation/map/bloc/route_cubit.dart';
 import 'package:Tracio/presentation/map/bloc/route_state.dart';
 import 'package:flutter/material.dart';
@@ -32,68 +33,78 @@ class _RouteDetailMapViewState extends State<RouteDetailMapView> {
   Widget build(BuildContext context) {
     final mapCubit = context.read<MapCubit>();
 
-    return BlocBuilder<MapCubit, MapCubitState>(
-      builder: (context, _) {
-        return MapWidget(
-          key: const ValueKey("mapWidget"),
-          cameraOptions: mapCubit.camera,
-          onMapCreated: (map) async {
-            mapCubit.initializeMap(
-              map,
-              locationSetting: LocationComponentSettings(enabled: false),
-              gesturesSetting: GesturesSettings(rotateEnabled: false),
-              logoSetting: LogoSettings(
-                marginLeft: MediaQuery.of(context).size.width - 100.w,
-                marginBottom: 120.h,
-              ),
-              attributionSetting: AttributionSettings(
-                marginLeft: MediaQuery.of(context).size.width - 120.w,
-                marginBottom: 120.h,
-              ),
-            );
+    return BlocListener<RouteCubit, RouteState>(
+      listener: (context, state) async {
+        if (state is GetRouteDetailLoaded) {
+          final markers = <PointAnnotationOptions>[];
 
-            pointAnnotationManager =
-                await map.annotations.createPointAnnotationManager();
-
-            /// Listen to RouteCubit after map is created
-            final state = context.read<RouteCubit>().state;
-            if (state is GetRouteDetailLoaded) {
-              final markers = <PointAnnotationOptions>[];
-
-              for (var media in state.routeMediaFiles) {
-                final loc = media.location;
-                if (loc != null) {
-                  var imageByte = await mapCubit
-                      .getNetworkImageData(Uri.parse(media.mediaUrl));
-                  markers.add(PointAnnotationOptions(
-                    geometry: Point(
-                        coordinates: Position(loc.longitude, loc.latitude)),
-                    image: imageByte,
-                    iconSize: 1.5,
-                  ));
-                }
-              }
-
-              if (markers.isNotEmpty) {
-                await pointAnnotationManager?.createMulti(markers);
-
-                // Add click listener
-                pointAnnotationManager?.addOnPointAnnotationClickListener(
-                  AnnotationClickListener((annotation) {
-                    final coords = annotation.geometry.coordinates;
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                          content:
-                              Text("Clicked at: ${coords.lat}, ${coords.lng}")),
-                    );
-                  }),
-                );
-              }
+          for (var media in state.routeMediaFiles) {
+            final loc = media.location;
+            if (loc != null) {
+              var imageByte =
+                  await mapCubit.getNetworkImageData(Uri.parse(media.mediaUrl));
+              markers.add(PointAnnotationOptions(
+                geometry:
+                    Point(coordinates: Position(loc.latitude, loc.longitude)),
+                image: imageByte,
+                iconSize: 3,
+                iconAnchor: IconAnchor.BOTTOM,
+              ));
             }
-          },
-          onTapListener: (_) {},
-        );
+          }
+
+          if (markers.isNotEmpty) {
+            await pointAnnotationManager?.createMulti(markers);
+
+            // Add click listener
+            pointAnnotationManager?.addOnPointAnnotationClickListener(
+              AnnotationClickListener((annotation) {
+                final coords = annotation.geometry.coordinates;
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => FullScreenImageView(
+                        imageUrl: state.routeMediaFiles
+                            .firstWhere((media) =>
+                                media.location?.latitude == coords.lng &&
+                                media.location?.longitude == coords.lat)
+                            .mediaUrl,
+                      ),
+                    ));
+              }),
+            );
+          }
+        }
       },
+      child: BlocBuilder<MapCubit, MapCubitState>(
+        builder: (context, _) {
+          return MapWidget(
+            key: const ValueKey("mapWidget"),
+            cameraOptions: mapCubit.camera,
+            onMapCreated: (map) async {
+              mapCubit.initializeMap(
+                map,
+                locationSetting: LocationComponentSettings(enabled: false),
+                gesturesSetting: GesturesSettings(rotateEnabled: false),
+                logoSetting: LogoSettings(
+                  marginLeft: MediaQuery.of(context).size.width - 100.w,
+                  marginBottom: 120.h,
+                ),
+                attributionSetting: AttributionSettings(
+                  marginLeft: MediaQuery.of(context).size.width - 120.w,
+                  marginBottom: 120.h,
+                ),
+              );
+
+              pointAnnotationManager = await map.annotations
+                  .createPointAnnotationManager(below: "route");
+              pointAnnotationManager?.setIconAllowOverlap(true);
+              pointAnnotationManager?.setIconIgnorePlacement(true);
+            },
+            onTapListener: (_) {},
+          );
+        },
+      ),
     );
   }
 }

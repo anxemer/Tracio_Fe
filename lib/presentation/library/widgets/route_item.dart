@@ -1,5 +1,8 @@
+import 'package:Tracio/common/widget/navbar/bottom_nav_bar_manager.dart';
+import 'package:Tracio/data/map/models/request/update_route_req.dart';
 import 'package:Tracio/presentation/library/pages/route_detail.dart';
 import 'package:Tracio/presentation/map/bloc/map_cubit.dart';
+import 'package:Tracio/presentation/map/bloc/route_cubit.dart';
 import 'package:Tracio/presentation/map/widgets/detail/route_plan_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -109,7 +112,6 @@ class _RouteItemState extends State<RouteItem> {
               _buildPopupMenuItem("View Detail", Icons.share_location_outlined),
               _buildPopupMenuItem("Navigate", Icons.directions),
               _buildPopupMenuItem("Edit Details", Icons.edit),
-              _buildPopupMenuItem("Download for Offline", Icons.download),
               _buildPopupMenuItem("Delete from Library", Icons.delete,
                   isDestructive: true),
             ],
@@ -140,7 +142,18 @@ class _RouteItemState extends State<RouteItem> {
   void _handleMenuAction(String action) {
     switch (action) {
       case "Share":
-        print("Sharing ${widget.routeData.routeName}");
+        if (widget.routeData.isPlanned) {
+        } else {
+          final updateRequest = UpdateRouteReq(
+            routeId: widget.routeData.routeId,
+            routeName: widget.routeData.routeName,
+            description: widget.routeData.description,
+            routeThumbnail: widget.routeData.routeThumbnail,
+            isPublic: true,
+            mood: "None",
+          );
+          context.read<RouteCubit>().updateRouteWithMedia(updateRequest, []);
+        }
         break;
       case "View Detail":
         Navigator.push(
@@ -160,7 +173,17 @@ class _RouteItemState extends State<RouteItem> {
         );
         break;
       case "Navigate":
-        print("Navigating to ${widget.routeData.routeName}");
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => BlocProvider(
+                create: (context) => MapCubit(),
+                child: BottomNavBarManager(
+                  selectedIndex: 2,
+                  isNavVisible: false,
+                )),
+          ),
+        );
         break;
       case "Edit Details":
         Navigator.push(
@@ -170,9 +193,6 @@ class _RouteItemState extends State<RouteItem> {
                 EditRoutePlannedScreen(routeData: widget.routeData),
           ),
         );
-        break;
-      case "Download for Offline":
-        print("Downloading ${widget.routeData.routeName}");
         break;
       case "Delete from Library":
         print("Deleting ${widget.routeData.routeName}");

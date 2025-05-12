@@ -1,3 +1,7 @@
+import 'dart:math';
+
+import 'package:Tracio/presentation/map/bloc/route_cubit.dart';
+import 'package:Tracio/presentation/map/bloc/route_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -72,22 +76,45 @@ class _LibraryPageState extends State<LibraryPage>
                   Tab(text: "Offline"),
                 ],
               ),
-              Expanded(
-                child: TabBarView(
-                  controller: _tabController,
-                  physics: const NeverScrollableScrollPhysics(),
-                  children: [
-                    BlocProvider(
-                      create: (context) => RouteFilterCubit(),
-                      child: RidesTab(),
-                    ),
-                    BlocProvider(
-                      create: (context) => RouteFilterCubit(),
-                      child: RouteTab(),
-                    ),
-                    SavedTab(),
-                    OfflineTab()
-                  ],
+              BlocListener<RouteCubit, RouteState>(
+                listener: (context, state) {
+                  if (state is UpdateRouteLoaded) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(state.successMessage),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                    context.read<RouteCubit>().getPlans(null);
+                    context.read<RouteCubit>().getRides(null);
+                  } else if (state is UpdateRouteFailure) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(state.errorMessage),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                    context.read<RouteCubit>().getPlans(null);
+                    context.read<RouteCubit>().getRides(null);
+                  }
+                },
+                child: Expanded(
+                  child: TabBarView(
+                    controller: _tabController,
+                    physics: const NeverScrollableScrollPhysics(),
+                    children: [
+                      BlocProvider(
+                        create: (context) => RouteFilterCubit(),
+                        child: RidesTab(),
+                      ),
+                      BlocProvider(
+                        create: (context) => RouteFilterCubit(),
+                        child: RouteTab(),
+                      ),
+                      SavedTab(),
+                      OfflineTab()
+                    ],
+                  ),
                 ),
               ),
             ],
