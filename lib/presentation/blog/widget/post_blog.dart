@@ -1,3 +1,4 @@
+import 'package:Tracio/data/auth/sources/auth_local_source/auth_local_source.dart';
 import 'package:Tracio/presentation/profile/pages/user_profile.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -19,10 +20,7 @@ import 'package:Tracio/presentation/blog/widget/animated_button_follow.dart';
 
 import '../../../domain/auth/entities/user.dart';
 import '../../../service_locator.dart';
-import '../../auth/bloc/authCubit/auth_cubit.dart';
-import '../../auth/bloc/authCubit/auth_state.dart';
 import '../bloc/comment/get_comment_cubit.dart';
-import '../pages/edit_blog.dart';
 
 class PostBlog extends StatefulWidget {
   const PostBlog(
@@ -58,14 +56,9 @@ class _PostBlogState extends State<PostBlog> {
 
   @override
   Widget build(BuildContext context) {
-    final state = context.read<AuthCubit>().state;
-    UserEntity? user;
+    UserEntity? user = sl<AuthLocalSource>().getUser();
+    final isOwner = user?.userId == widget.blogEntity.userId;
 
-    if (state is AuthLoaded) {
-      user = state.user;
-    } else if (state is AuthChangeRole) {
-      user = state.user;
-    }
     var isDark = context.isDarkMode;
     List<String> mediaUrls = widget.blogEntity.mediaFiles
         .map((file) => file.mediaUrl ?? "")
@@ -109,79 +102,32 @@ class _PostBlogState extends State<PostBlog> {
             ),
           ),
           trailling: () {
-            if (widget.isPersonal) {
-              // Nếu là blog của chính người dùng
-              return PopupMenuButton<int>(
-                icon: const Icon(Icons.more_vert),
-                onSelected: (int result) {
-                  if (result == 0) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => EditBlogPostScreen(
-                          imageUrl: widget.blogEntity.mediaFiles,
-                          blogId: widget.blogEntity.blogId,
-                          initialContent: widget.blogEntity.content,
-                          initialIsPublic: widget.blogEntity.isPublic,
-                        ),
-                      ),
-                    );
-                  } else if (result == 1) {
-                    // handle delete
-                  }
-                },
-                itemBuilder: (BuildContext context) => <PopupMenuEntry<int>>[
-                  PopupMenuItem<int>(
-                    value: 0,
-                    child: Row(
-                      children: const [
-                        Icon(Icons.edit, color: Colors.black),
-                        SizedBox(width: 8),
-                        Text('Edit'),
-                      ],
+            if (widget.blogEntity.isFollowed) {
+              return InkWell(
+                  onTap: () => showPostOptions(context, isOwner),
+                  child: Icon(Icons.more_vert_outlined));
+            } else {
+              return Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (!isAlreadyFollowed && _showFollowButton && !isOwner)
+                    AnimatedFollowButton(
+                      onUnfollow: () {},
+                      initiallyFollowed: false,
+                      initialFillColor: Colors.transparent,
+                      onFollow: _handleFollowLogic,
+                      initialTextColor: !isDark ? Colors.black87 : Colors.white,
+                      width: 80.w,
+                      height: 30.h,
                     ),
-                  ),
-                  PopupMenuItem<int>(
-                    value: 1,
-                    child: Row(
-                      children: const [
-                        Icon(Icons.delete, color: Colors.red),
-                        SizedBox(width: 8),
-                        Text('Delete'),
-                      ],
-                    ),
-                  ),
+                  InkWell(
+                      onTap: () => showPostOptions(context, isOwner),
+                      child: Icon(Icons.more_vert_outlined))
                 ],
               );
             }
 
-            final isOwner = user?.userId == widget.blogEntity.userId;
-
-            if (!isOwner) {
-              if (widget.blogEntity.isFollowed) {
-                return const SizedBox.shrink();
-              } else {
-                return Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (!isAlreadyFollowed && _showFollowButton)
-                      AnimatedFollowButton(
-                        onUnfollow: () {},
-                        initiallyFollowed: false,
-                        initialFillColor: Colors.transparent,
-                        onFollow: _handleFollowLogic,
-                        initialTextColor:
-                            !isDark ? Colors.black87 : Colors.white,
-                        width: 80.w,
-                        height: 30.h,
-                      ),
-                  ],
-                );
-              }
-            }
-
-            return const SizedBox
-                .shrink(); // Trường hợp là chủ sở hữu, không hiển thị gì thêm
+            // Trường hợp là chủ sở hữu, không hiển thị gì thêm
           }(),
         ),
         SizedBox(
@@ -255,6 +201,107 @@ class _PostBlogState extends State<PostBlog> {
 
         // widget.morewdget ?? Container()
       ],
+    );
+  }
+
+  void showPostOptions(BuildContext context, bool isOwner) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.grey[900],
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              isOwner
+                  ? _buildOption(context, Icons.edit, 'Edit', () {
+                      Navigator.pop(context);
+                      // handle edit
+                    })
+                  : SizedBox.shrink(),
+              isOwner
+                  ? _buildOption(context, Icons.delete, 'Delete', () {
+                      Navigator.pop(context);
+                      // handle delete
+                    })
+                  : SizedBox.shrink(),
+              _buildOption(context, Icons.bookmark_add_outlined, 'Save', () {
+                Navigator.pop(context);
+                // handle save
+              }),
+              _buildOption(
+                  context, Icons.report_gmailerrorred_rounded, 'Report', () {
+                Navigator.pop(context);
+                showReportReasons(context); // chuyển sang popup ảnh 2
+              }),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildOption(
+      BuildContext context, IconData icon, String label, VoidCallback onTap) {
+    return ListTile(
+      leading: Icon(icon, color: Colors.white),
+      title: Text(label, style: TextStyle(color: Colors.white)),
+      onTap: onTap,
+    );
+  }
+
+  void showReportReasons(BuildContext context) {
+    final reasons = [
+      'I just don\'t like it',
+      'Bullying or unwanted contact',
+      'Suicide, self-injury or eating disorders',
+      'Violence, hate or exploitation',
+      'Selling or promoting restricted items',
+      'Nudity or sexual activity',
+      'Scam, fraud or spam',
+      'False information',
+      'Intellectual property',
+    ];
+
+    showModalBottomSheet(
+      isScrollControlled: true,
+      context: context,
+      backgroundColor: Colors.grey[900],
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Text(
+                  'Why are you reporting this post?',
+                  style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+              const SizedBox(height: 10),
+              ...reasons.map((reason) => ListTile(
+                    title: Text(reason, style: TextStyle(color: Colors.white)),
+                    onTap: () {
+                      Navigator.pop(context);
+                      // handle report reason
+                    },
+                  )),
+            ],
+          ),
+        );
+      },
     );
   }
 }

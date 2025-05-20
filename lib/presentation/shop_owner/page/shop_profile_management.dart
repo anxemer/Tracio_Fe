@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:Tracio/common/helper/navigator/app_navigator.dart';
+import 'package:Tracio/presentation/shop_owner/page/dash_board.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -98,8 +100,8 @@ class _ShopProfileManagementScreenState
       _cityController.text = data.city ?? '';
       _districtController.text = data.district ?? '';
       _existingImageUrl = data.profilePicture;
-      latitude = data.coordinate!.latitude!; // Lưu URL ảnh cũ
-      longitude = data.coordinate!.longitude!; // Lưu URL ảnh cũ
+      latitude = data.coordinate!.latitude!;
+      longitude = data.coordinate!.longitude!;
 
       // if (_selectedOpenTime != null) {
       //   _openTimeController.text =
@@ -262,8 +264,6 @@ class _ShopProfileManagementScreenState
                 openTime: openTime,
                 closedTime: closeTime));
       }
-    } else {
-      print("Form invalid");
     }
   }
 
@@ -277,7 +277,7 @@ class _ShopProfileManagementScreenState
     return BlocListener<ShopProfileManageCubit, ShopProfileManageState>(
         listener: (context, state) {
           if (state is ShopProfileManageSuccess) {
-            Navigator.pop(context, state.success);
+            AppNavigator.push(context, DashboardScreen());
           }
           if (state is ShopProfileManageFailure) {
             ScaffoldMessenger.of(context).showSnackBar(

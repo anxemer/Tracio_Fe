@@ -25,13 +25,15 @@ class CommentItem extends StatefulWidget {
       required this.onViewMoreReplyTap,
       required this.onViewMoreReviewTap,
       required this.onReact,
+      required this.onCmt,
       required this.onReply});
   final CommentBlogEntity comment;
   final int replyCount;
   final Future<void> Function(int) onViewMoreReplyTap;
   final Future<void> Function() onViewMoreReviewTap;
   final Future<void> Function() onReact;
-  final Future<void> Function() onReply;
+  final Future<void> Function() onCmt;
+  final Future<void> Function(ReplyCommentEntity) onReply;
 
   @override
   State<CommentItem> createState() => _CommentItemState();
@@ -46,9 +48,13 @@ class _CommentItemState extends State<CommentItem> {
     await widget.onViewMoreReplyTap(widget.comment.commentId);
   }
 
-  void handleReplyCommentTab() async {
-    await widget.onReply();
+  void handleCommentTab() async {
+    await widget.onCmt();
   }
+
+  // void handleReplyCommentTab() async {
+  //   await widget.onReply();
+  // }
 
   @override
   void initState() {
@@ -103,6 +109,7 @@ class _CommentItemState extends State<CommentItem> {
               final likeCount = widget.comment.likeCount;
 
               return _buildComment(
+                onCmt: handleCommentTab,
                 context.isDarkMode,
                 mediaUrls,
                 null,
@@ -135,6 +142,10 @@ class _CommentItemState extends State<CommentItem> {
               List<String> mediaUrls =
                   reply.mediaFiles.map((file) => file.mediaUrl ?? "").toList();
               return _buildComment(
+                onCmt: () async {
+                  await widget.onReply(reply); // truyền đúng reply đang click
+                  FocusScope.of(context).requestFocus(FocusNode());
+                },
                 context.isDarkMode,
                 mediaUrls,
                 reply.reReplyCyclistName,
@@ -210,6 +221,7 @@ class _CommentItemState extends State<CommentItem> {
     required bool isReacted,
     required int likeCount,
     required VoidCallback onReact,
+    required VoidCallback onCmt,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -292,7 +304,7 @@ class _CommentItemState extends State<CommentItem> {
               ),
             ),
             InkWell(
-              onTap: handleReplyCommentTab,
+              onTap: onCmt,
               child:
                   Text("Reply", style: TextStyle(color: Colors.grey.shade500)),
             ),

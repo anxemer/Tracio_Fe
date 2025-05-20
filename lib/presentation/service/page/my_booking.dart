@@ -113,7 +113,7 @@ class _MyBookingPageState extends State<MyBookingPage>
                               text: 'Canceled',
                             ),
                             Tab(
-                              text: 'Not Arive',
+                              text: 'Not Arrive',
                             )
                           ]),
                     ),

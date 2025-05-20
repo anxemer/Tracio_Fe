@@ -1,3 +1,5 @@
+import 'package:Tracio/data/auth/sources/auth_local_source/auth_local_source.dart';
+import 'package:Tracio/service_locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -21,13 +23,13 @@ class _CreateBlogHeaderState extends State<CreateBlogHeader> {
   @override
   Widget build(BuildContext context) {
     final state = context.read<AuthCubit>().state;
-    UserEntity? user;
+    UserEntity? user = sl<AuthLocalSource>().getUser();
 
-    if (state is AuthLoaded) {
-      user = state.user;
-    } else if (state is AuthChangeRole) {
-      user = state.user;
-    }
+    // if (state is AuthLoaded) {
+    //   user = state.user;
+    // } else if (state is AuthChangeRole) {
+    //   user = state.user;
+    // }
     return Padding(
       padding: EdgeInsets.symmetric(
           vertical: 8.h, horizontal: AppSize.apHorizontalPadding.w),

@@ -64,6 +64,8 @@ class UserApiSourceImpl extends UserApiSource {
     final response = await dioClient.post('/api/fcm', data: fcm.toJson());
     if (response.statusCode == 201) {
       return Right(true);
+    } else if (response.statusCode == 401) {
+      throw AuthenticationFailure('Unauthentication');
     } else {
       throw ServerException();
     }

@@ -1,9 +1,11 @@
 import 'package:Tracio/core/services/signalR/implement/notification_hub_service.dart';
 import 'package:Tracio/data/blog/repositories/blog_repository_impl.dart';
 import 'package:Tracio/data/challenge/models/request/create_challenge_req.dart';
+import 'package:Tracio/domain/auth/usecases/send_fcm.dart';
 import 'package:Tracio/domain/blog/usecase/edit_blog.dart';
 import 'package:Tracio/domain/challenge/usecase/create_challenge.dart';
 import 'package:Tracio/domain/challenge/usecase/get_user_reward.dart';
+import 'package:Tracio/domain/challenge/usecase/leave_challenge.dart';
 import 'package:Tracio/domain/groups/usecases/update_group_route_status_usecase.dart';
 import 'package:Tracio/domain/map/usecase/delete_route_media_usecase.dart';
 import 'package:Tracio/domain/map/usecase/edit_route_tracking_usecase.dart';
@@ -169,7 +171,6 @@ import 'core/network/dio_client.dart';
 import 'data/auth/sources/auth_local_source/auth_local_source.dart';
 import 'domain/blog/usecase/rep_comment.dart';
 import 'domain/blog/usecase/un_react_blog.dart';
-import 'domain/challenge/usecase/leave_challenge.dart';
 
 final sl = GetIt.instance;
 
@@ -227,7 +228,7 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton<ChallengeRepository>(
       () => ChallengeRepositoryImpl(remoteDataSource: sl()));
   // * gRPC & Hubs
-  sl.registerLazySingleton(() => SignalRCoreService());
+  sl.registerSingleton(SignalRCoreService());
   sl.registerLazySingleton<ITrackingGrpcService>(
     () => TrackingGrpcService(),
   );
@@ -364,7 +365,8 @@ Future<void> initializeDependencies() async {
   sl.registerFactory<EditRouteTrackingUsecase>(
       () => EditRouteTrackingUsecase());
   sl.registerFactory<GetOngoingRouteUsecase>(() => GetOngoingRouteUsecase());
-  sl.registerFactory<UpdateGroupRouteStatusUsecase>(() => UpdateGroupRouteStatusUsecase());
+  sl.registerFactory<UpdateGroupRouteStatusUsecase>(
+      () => UpdateGroupRouteStatusUsecase());
 
   await sl.allReady();
   sl.registerFactory<EditBlogUseCase>(() => EditBlogUseCase());
@@ -374,4 +376,7 @@ Future<void> initializeDependencies() async {
   sl.registerFactory<ResolveFollowUserUseCase>(
       () => ResolveFollowUserUseCase());
   sl.registerFactory<RequestChallengeUseCase>(() => RequestChallengeUseCase());
+  sl.registerFactory<CreateChallengeUseCase>(() => CreateChallengeUseCase());
+  sl.registerFactory<SendFcmUseCase>(() => SendFcmUseCase());
+  sl.registerFactory<LeaveChallengeUseCase>(() => LeaveChallengeUseCase());
 }

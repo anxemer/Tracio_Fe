@@ -47,7 +47,7 @@ class NotificationModel {
       'entityType': entityType,
       'message': message,
       'isRead': isRead,
-      'createdAt': createdAt.millisecondsSinceEpoch,
+      'createdAt': createdAt.toIso8601String(),
       'messageId': messageId,
     };
   }

@@ -95,36 +95,59 @@ class RecommendChallengeItem extends StatelessWidget {
               //       fontSize: AppSize.textSmall.sp, color: Colors.grey.shade700),
               // ),
               SizedBox(height: 12),
-              challenge.isCompleted!
-                  ? SizedBox.shrink()
-                  :
-                  // Join Button
-                  SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () async {
-                          context
-                              .read<ChallengeCubit>()
-                              .joinChallenge(challenge.challengeId!);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: AppSize.apVerticalPadding / 2),
-                          backgroundColor: AppColors.secondBackground,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                                AppSize.borderRadiusMedium),
-                          ),
-                        ),
-                        child: Text(
-                          'Join',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: AppSize.textSmall.sp,
-                              fontWeight: FontWeight.w600),
-                        ),
+              if (challenge.status == 'Requested')
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: null, // disable button
+                    icon: const Icon(Icons.hourglass_top),
+                    label: Text('Watting'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.grey,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.circular(AppSize.borderRadiusMedium),
+                      ),
+                      textStyle: TextStyle(
+                        fontSize: AppSize.textLarge,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      minimumSize: const Size(double.infinity, 50),
+                    ),
+                  ),
+                )
+              else if (challenge.isCompleted!)
+                SizedBox.shrink()
+              else
+                // Join Button
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      context
+                          .read<ChallengeCubit>()
+                          .joinChallenge(challenge.challengeId!);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: AppSize.apVerticalPadding / 2),
+                      backgroundColor: AppColors.secondBackground,
+                      shape: RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.circular(AppSize.borderRadiusMedium),
                       ),
                     ),
+                    child: Text(
+                      'Join',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: AppSize.textSmall.sp,
+                          fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ),
             ],
           ),
         ),

@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:Tracio/core/constants/app_size.dart';
 import 'package:Tracio/domain/blog/entites/blog_entity.dart';
 import 'package:Tracio/presentation/blog/bloc/comment/comment_input_cubit.dart';
-import 'package:Tracio/presentation/blog/bloc/comment/comment_input_state.dart';
 import 'package:Tracio/presentation/blog/widget/post_blog.dart';
 import 'package:Tracio/presentation/blog/widget/react_blog.dart';
 import '../../../common/bloc/generic_data_cubit.dart';
@@ -23,7 +22,6 @@ class NewFeeds extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final commentCubit = context.read<GetCommentCubit>();
-    final reacCubit = context.read<GenericDataCubit>();
     return Column(
       children: [
         PostBlog(

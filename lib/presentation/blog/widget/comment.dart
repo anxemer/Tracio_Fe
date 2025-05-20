@@ -110,7 +110,6 @@ class _CommentState extends State<Comment> {
               );
             },
             (success) {
-              // Giả sử success là ReplyCommentEntity hoặc một đối tượng chứa dữ liệu trả lời
               final newReply = ReplyCommentEntity(
                   replyId: success.replyId,
                   cyclistId: success.cyclistId,
@@ -140,6 +139,7 @@ class _CommentState extends State<Comment> {
         if (inputData.commentId != null) {
           var result = await sl<RepCommentUsecase>().call(
             ReplyCommentReq(
+
               commentId: inputData.commentId!,
               content: content,
               mediaFiles: files,
@@ -154,7 +154,6 @@ class _CommentState extends State<Comment> {
               );
             },
             (success) {
-              // Giả sử success là ReplyCommentEntity
               final newReply = ReplyCommentEntity(
                   replyId: success.replyId,
                   cyclistId: success.cyclistId,
@@ -257,11 +256,15 @@ class _CommentState extends State<Comment> {
                       padding: EdgeInsets.symmetric(
                           horizontal: 20.h, vertical: 10.h),
                       child: CommentItem(
+                        onReply: (reply) async {
+                          _commentInputCubit.updateToReplyToReply(reply);
+                          FocusScope.of(context).requestFocus(FocusNode());
+                        },
                         comment: comment,
                         replyCount: comment.replyCount,
                         onViewMoreReviewTap: () async {},
                         onReact: () async {},
-                        onReply: () async {
+                        onCmt: () async {
                           _commentInputCubit.updateToReplyComment(comment);
                           FocusScope.of(context).requestFocus(FocusNode());
                         },

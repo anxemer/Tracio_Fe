@@ -16,6 +16,7 @@ import 'package:Tracio/presentation/profile/widgets/user_Information.dart';
 import 'package:Tracio/presentation/profile/widgets/user_blog_list.dart';
 
 import '../../../domain/user/entities/user_profile_entity.dart';
+import '../../groups/cubit/challenge_cubit.dart';
 
 class UserProfilePage extends StatefulWidget {
   const UserProfilePage({super.key, this.userId, this.myProfile = true});
@@ -46,6 +47,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
         BlocProvider(
           create: (context) => GetBlogCubit()..getBookmarkBlog(GetBlogReq()),
         ),
+        BlocProvider(
+          create: (context) => ChallengeCubit(),
+        )
       ],
       child: Scaffold(
         backgroundColor: Colors.grey.shade300,
@@ -114,96 +118,96 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   userEntity = state.userProfileEntity;
                   return Column(
                     children: [
-                    Userinformation(
+                      Userinformation(
                         myProfile: widget.myProfile,
                         user: state.userProfileEntity,
                       ),
                       SizedBox(
                         height: 10.h,
                       ),
-                      userEntity.isPublic!
-                          ? Container(
-                              width: double.infinity,
-                              // height: 400.w,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(20),
-                                  color:
-                                      const Color.fromARGB(255, 255, 255, 255)),
-                              child: Column(
-                                children: [
-                                  ListTile(
-                                    leading: Text(
-                                      'Activities',
-                                      style: TextStyle(
-                                          fontSize: AppSize.textLarge.sp,
-                                          fontWeight: FontWeight.w600),
-                                    ),
-                                    trailing: Icon(Icons.navigate_next),
-                                  ),
-                                  Container(
-                                    width: 600.w,
-                                    height: 3.h,
-                                    color: Colors.grey.shade500,
-                                  ),
-                                  ListTile(
-                                    leading: Text(
-                                      'Statistics',
-                                      style: TextStyle(
-                                          fontSize: AppSize.textLarge.sp.sp,
-                                          fontWeight: FontWeight.w600),
-                                    ),
-                                    trailing: Icon(Icons.navigate_next),
-                                  ),
-                                  Container(
-                                    width: 600.w,
-                                    height: 3.h,
-                                    color: Colors.grey.shade500,
-                                  ),
-                                  ListTile(
-                                    leading: Text(
-                                      'Routes',
-                                      style: TextStyle(
-                                          fontSize: AppSize.textLarge.sp.sp,
-                                          fontWeight: FontWeight.w600),
-                                    ),
-                                    trailing: Icon(Icons.navigate_next),
-                                  ),
-                                  Container(
-                                    width: 600.w,
-                                    height: 3.h,
-                                    color: Colors.grey.shade500,
-                                  ),
-                                  Builder(builder: (context) {
-                                    return InkWell(
-                                      onTap: () {
-                                        AppNavigator.push(
-                                            context,
-                                            UserBlogList(
-                                              userId: userEntity.userId!,
-                                              userName: userEntity.userName!,
-                                            ));
-                                      },
-                                      child: ListTile(
-                                        leading: Text(
-                                          'Blogs',
-                                          style: TextStyle(
-                                              fontSize: AppSize.textLarge.sp.sp,
-                                              fontWeight: FontWeight.w600),
-                                        ),
-                                        trailing: Icon(Icons.navigate_next),
-                                      ),
-                                    );
-                                  })
-
-                                  // Container(
-                                  //   width: 600.w,
-                                  //   height: 3.h,
-                                  //   color: Colors.grey.shade500,
-                                  // ),
-                                ],
+                      if (userEntity.isPublic! || widget.myProfile)
+                        Container(
+                          width: double.infinity,
+                          // height: 400.w,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: const Color.fromARGB(255, 255, 255, 255)),
+                          child: Column(
+                            children: [
+                              ListTile(
+                                leading: Text(
+                                  'Activities',
+                                  style: TextStyle(
+                                      fontSize: AppSize.textLarge.sp,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                                trailing: Icon(Icons.navigate_next),
                               ),
-                            )
-                          : SizedBox.shrink()
+                              Container(
+                                width: 600.w,
+                                height: 3.h,
+                                color: Colors.grey.shade500,
+                              ),
+                              ListTile(
+                                leading: Text(
+                                  'Statistics',
+                                  style: TextStyle(
+                                      fontSize: AppSize.textLarge.sp.sp,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                                trailing: Icon(Icons.navigate_next),
+                              ),
+                              Container(
+                                width: 600.w,
+                                height: 3.h,
+                                color: Colors.grey.shade500,
+                              ),
+                              ListTile(
+                                leading: Text(
+                                  'Routes',
+                                  style: TextStyle(
+                                      fontSize: AppSize.textLarge.sp.sp,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                                trailing: Icon(Icons.navigate_next),
+                              ),
+                              Container(
+                                width: 600.w,
+                                height: 3.h,
+                                color: Colors.grey.shade500,
+                              ),
+                              Builder(builder: (context) {
+                                return InkWell(
+                                  onTap: () {
+                                    AppNavigator.push(
+                                        context,
+                                        UserBlogList(
+                                          userId: userEntity.userId!,
+                                          userName: userEntity.userName!,
+                                        ));
+                                  },
+                                  child: ListTile(
+                                    leading: Text(
+                                      'Blogs',
+                                      style: TextStyle(
+                                          fontSize: AppSize.textLarge.sp.sp,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                    trailing: Icon(Icons.navigate_next),
+                                  ),
+                                );
+                              })
+
+                              // Container(
+                              //   width: 600.w,
+                              //   height: 3.h,
+                              //   color: Colors.grey.shade500,
+                              // ),
+                            ],
+                          ),
+                        )
+                      else
+                        SizedBox.shrink()
                     ],
                   );
                 }

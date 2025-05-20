@@ -1,3 +1,4 @@
+import 'package:Tracio/data/user/models/send_fcm_req.dart';
 import 'package:dartz/dartz.dart';
 import 'package:Tracio/core/erorr/failure.dart';
 import 'package:Tracio/core/usecase/usecase.dart';
@@ -13,6 +14,7 @@ abstract class AuthRepository {
   Future<Either<Failure, bool>> registerWithEmailAndPassword(RegisterReq user);
   Future<Either<Failure, String>> verifyEmail(String email);
   Future<Either<Failure, bool>> checkEmailVerified();
+  Future<Either<Failure, bool>> sendFcm(SendFcmReq fcm);
   Future<Either<Failure, AuthenticationResponseEntity>> login(LoginReq login);
   Future<Either<Failure, AuthenticationResponseModel>> loginGoogle();
   Future<Either<Failure, AuthenticationResponseEntity>> changeRole(

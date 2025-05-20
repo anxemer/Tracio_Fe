@@ -1,5 +1,11 @@
+import 'package:Tracio/core/erorr/failure.dart';
+import 'package:Tracio/core/network/dio_client.dart';
 import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
+import '../../../../core/constants/api_url.dart';
+import '../../../../service_locator.dart';
 
 abstract class AuthFirebaseService {
   Future<String> verifyEmail(String email);
@@ -9,29 +15,27 @@ abstract class AuthFirebaseService {
 
 class AuthFirebaseServiceImpl extends AuthFirebaseService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-
   @override
   Future<String> verifyEmail(String email) async {
     try {
-      String firebaseId;
+      final formData = FormData.fromMap({
+        "email": email,
+      });
 
-      UserCredential userCredential = await _firebaseAuth
-          .createUserWithEmailAndPassword(email: email, password: '12345678');
-      User? user = userCredential.user;
-      await user?.reload(); // Refresh user
-      await Future.delayed(Duration(seconds: 2));
-      await _firebaseAuth.signInWithEmailAndPassword(
-          email: email, password: '12345678');
-      if (user != null && !user.emailVerified) {
-        firebaseId = user.uid;
-        await user.sendEmailVerification();
-        return firebaseId;
+      var response =
+          await sl<DioClient>().post(ApiUrl.sendVerifyEmail, data: formData);
+
+      if (response.statusCode == 400) {
+        throw CredentialFailure('Email is already verified.');
       }
-      return 'Verify email failed';
-    } on FirebaseAuthException {
-      String errorMessage = 'Lỗi không xác định.';
 
-      return errorMessage;
+      final String firebaseId = response.data['result']['uid'];
+
+      return firebaseId;
+    } on DioException catch (e) {
+      throw Exception("Lỗi API: ${e.message}");
+    } catch (e) {
+      throw Exception("Lỗi không xác định: $e");
     }
   }
 
@@ -56,13 +60,13 @@ class AuthFirebaseServiceImpl extends AuthFirebaseService {
   @override
   Future<Either> changePasswordFirebase(String pass) async {
     try {
-      User user = await _firebaseAuth.currentUser!;
+      User user = _firebaseAuth.currentUser!;
 
-      var result = await user.updatePassword(pass);
+      await user.updatePassword(pass);
 
-      return right('Change password success');
+      return Right('Change password success');
     } on FirebaseAuthException catch (e) {
-      return left('Try again');
+      return Left('Try again');
     }
   }
 }

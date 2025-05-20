@@ -1,7 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:Tracio/common/bloc/generic_data_cubit.dart';
 import 'package:Tracio/common/widget/button/loading.dart';
-import 'package:Tracio/core/configs/theme/app_colors.dart';
 import 'package:Tracio/core/usecase/usecase.dart';
 import 'package:Tracio/data/user/models/resolve_follow_request_req.dart';
 import 'package:Tracio/domain/user/entities/follow_request_entity.dart';
@@ -19,7 +18,6 @@ import '../../../common/helper/notification/notification_model.dart';
 import '../../../service_locator.dart';
 import '../bloc/notification_bloc.dart';
 import '../bloc/notification_event.dart';
-import '../bloc/notification_state.dart';
 import '../widget/follow_request_card.dart';
 
 class NotificationsPage extends StatefulWidget {
