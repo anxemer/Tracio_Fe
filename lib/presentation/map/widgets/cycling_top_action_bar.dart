@@ -1,6 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:Tracio/common/helper/navigator/app_navigator.dart';
+import 'package:Tracio/core/services/location/location_service.dart';
+import 'package:Tracio/service_locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,9 +17,7 @@ import 'package:Tracio/presentation/map/bloc/get_direction_cubit.dart';
 import 'package:Tracio/presentation/map/bloc/map_cubit.dart';
 import 'package:Tracio/presentation/map/bloc/map_state.dart';
 import 'package:Tracio/presentation/map/pages/search_location.dart';
-
-import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
-    as bg;
+import 'package:geolocator/geolocator.dart' as geo;
 
 class CyclingTopActionBar extends StatefulWidget {
   final bool isRiding;
@@ -241,12 +241,12 @@ class _CyclingTopActionBarState extends State<CyclingTopActionBar> {
         await _getMarkerBytes('assets/images/search_location_marker.png');
     context.read<MapCubit>().addPointAnnotation(
         Position(place.longitude, place.latitude), imageData);
-    bg.Location location = await bg.BackgroundGeolocation.getCurrentPosition();
+    geo.Position? position = await sl<LocationService>().getCurrentLocation();
 
     List<Coordinate> coordinates = [
       Coordinate(
-        location.coords.longitude,
-        location.coords.latitude,
+        position!.longitude,
+        position.latitude,
       ),
       Coordinate(
         place.longitude,

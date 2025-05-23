@@ -12,7 +12,7 @@ final class TrackingInitial extends TrackingState {}
 final class TrackingInProgress extends TrackingState {
   final bool isPaused;
   final List<LatLng> polyline;
-  final bg.Location? position;
+  final Position? position;
   final double? speed;
   final double? odometerKm;
   final double? altitude;
@@ -47,7 +47,7 @@ final class TrackingInProgress extends TrackingState {
   TrackingInProgress copyWith({
     bool? isPaused,
     List<LatLng>? polyline,
-    bg.Location? position,
+    Position? position,
     double? speed,
     double? odometerKm,
     double? altitude,
@@ -99,3 +99,25 @@ final class TrackingInProgress extends TrackingState {
         matchedUsers,
       ];
 }
+
+final class TrackingFinished extends TrackingState {
+  final RouteDetailEntity route;
+
+  const TrackingFinished(this.route);
+
+  @override
+  List<Object?> get props => [route];
+}
+
+final class TrackingError extends TrackingState {
+  final String message;
+
+  const TrackingError(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
+final class TrackingStarting extends TrackingState {}
+
+final class TrackingFinishing extends TrackingState {}

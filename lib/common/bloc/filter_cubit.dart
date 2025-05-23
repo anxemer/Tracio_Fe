@@ -1,7 +1,8 @@
+import 'package:Tracio/core/services/location/location_service.dart';
+import 'package:Tracio/service_locator.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
-    as bg;
+
 import 'package:Tracio/data/shop/models/get_service_req.dart';
 import 'package:Tracio/domain/blog/entites/category.dart';
 
@@ -39,12 +40,12 @@ class FilterCubit extends Cubit<GetServiceReq> {
   }
 
   void updateDistance(double end) async {
-    bg.Location location = await bg.BackgroundGeolocation.getCurrentPosition();
+    final origin = await sl<LocationService>().getCurrentLocation();
 
     emit(state.copyWith(
         distance: end,
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude));
+        latitude: origin!.latitude,
+        longitude: origin.longitude));
   }
 
   // int getFiltersCount() {

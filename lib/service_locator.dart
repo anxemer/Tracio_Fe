@@ -1,3 +1,4 @@
+import 'package:Tracio/core/services/location/location_service.dart';
 import 'package:Tracio/core/services/signalR/implement/notification_hub_service.dart';
 import 'package:Tracio/data/blog/repositories/blog_repository_impl.dart';
 import 'package:Tracio/data/challenge/models/request/create_challenge_req.dart';
@@ -232,6 +233,7 @@ Future<void> initializeDependencies() async {
     () => TrackingGrpcService(),
   );
   sl.registerLazySingleton<ITrackingHubService>(() => TrackingHubService());
+  sl.registerLazySingleton<LocationService>(() => LocationService());
 
   //when hub services is depended on SignalRCoreService
   sl.registerLazySingleton(
@@ -364,7 +366,8 @@ Future<void> initializeDependencies() async {
   sl.registerFactory<EditRouteTrackingUsecase>(
       () => EditRouteTrackingUsecase());
   sl.registerFactory<GetOngoingRouteUsecase>(() => GetOngoingRouteUsecase());
-  sl.registerFactory<UpdateGroupRouteStatusUsecase>(() => UpdateGroupRouteStatusUsecase());
+  sl.registerFactory<UpdateGroupRouteStatusUsecase>(
+      () => UpdateGroupRouteStatusUsecase());
 
   await sl.allReady();
   sl.registerFactory<EditBlogUseCase>(() => EditBlogUseCase());
