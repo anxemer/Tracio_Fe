@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:Tracio/core/services/location/location_service.dart';
 import 'package:Tracio/core/services/signalR/implement/notification_hub_service.dart';
 import 'package:Tracio/presentation/notifications/bloc/notification_bloc.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -46,9 +47,6 @@ import 'presentation/service/bloc/service_bloc/review_service_cubit/get_reviewcu
 import 'presentation/shop_owner/bloc/resolve_booking/resolve_booking_cubit.dart';
 import 'presentation/shop_owner/bloc/service_management/service_management_cubit.dart';
 import 'service_locator.dart' as di;
-import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
-    as bg;
-import 'service_locator.dart';
 
 final RouteObserver<ModalRoute<void>> routeObserver =
     RouteObserver<ModalRoute<void>>();
@@ -75,7 +73,10 @@ Future<void> main() async {
   }
   // await SignalRService().initConnection();
   await di.initializeDependencies();
-
+  final locationReady = await di.sl<LocationService>().initialize();
+  if (!locationReady) {
+    debugPrint("❌ Location not available at launch.");
+  }
   await _requestPermissions();
 
   await INotificationService.init();
@@ -109,7 +110,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final _notiService = sl<NotificationHubService>();
+  final _notiService = di.sl<NotificationHubService>();
   late final StreamSubscription<NotificationModel> _messageSubscription;
 
   static final GlobalKey<NavigatorState> navigatorKey =
@@ -118,7 +119,6 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
 
-    _initBackgroundGeolocationState();
     Future.microtask(() async {
       await _notiService.connect();
       _messageSubscription = _notiService.onMessageUpdate.listen((message) {
@@ -205,13 +205,6 @@ class _MyAppState extends State<MyApp> {
     super.dispose();
   }
 
-  // This widget is the root of your application
-
-  void _initBackgroundGeolocationState() async {
-    bg.BackgroundGeolocation.stop();
-    await bg.BackgroundGeolocation.removeListeners();
-  }
-
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
@@ -230,7 +223,8 @@ class _MyAppState extends State<MyApp> {
 
           BlocProvider(create: (context) => AuthCubit()),
           BlocProvider(create: (context) => GenericDataCubit()),
-          BlocProvider(create: (context) => TrackingBloc()),
+          BlocProvider(
+              create: (context) => TrackingBloc(di.sl<LocationService>())),
           BlocProvider(create: (context) => RouteCubit()),
           BlocProvider(create: (context) => GroupCubit()),
           BlocProvider(create: (context) => ThemeCubit()),

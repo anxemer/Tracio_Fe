@@ -26,12 +26,12 @@ class EndTracking extends TrackingEvent {}
 class UpdateTime extends TrackingEvent {}
 
 class UpdateTrackingData extends TrackingEvent {
-  final bg.Location location;
+  final TrackingDataModel trackingData;
 
-  const UpdateTrackingData(this.location);
+  const UpdateTrackingData(this.trackingData);
 
   @override
-  List<Object?> get props => [location];
+  List<Object?> get props => [trackingData];
 }
 
 class AddMatchedUser extends TrackingEvent {
@@ -50,4 +50,12 @@ class RemoveMatchedUser extends TrackingEvent {
 
   @override
   List<Object?> get props => [userId];
+}
+
+class RequestStartTracking extends TrackingEvent {
+  const RequestStartTracking();
+}
+
+class RequestFinishTracking extends TrackingEvent {
+  const RequestFinishTracking();
 }

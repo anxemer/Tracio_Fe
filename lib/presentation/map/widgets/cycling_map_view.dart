@@ -4,9 +4,8 @@ import 'package:Tracio/presentation/map/bloc/route_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' as mapbox;
-import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
-    as bg;
 import 'package:Tracio/common/helper/custom_paint/numbered_circle_painter.dart';
 import 'dart:ui' as ui;
 import 'package:Tracio/core/services/signalR/implement/group_route_hub_service.dart';
@@ -30,7 +29,7 @@ class CyclingMapView extends StatefulWidget {
 class _CyclingMapViewState extends State<CyclingMapView>
     with TickerProviderStateMixin {
   List<mapbox.Position> routePoints = [];
-  List<bg.Location> tempRouteList = [];
+  List<Position> tempRouteList = [];
   bool isMapInitialized = false;
   mapbox.Position? _lastDrawnPoint;
 
@@ -192,20 +191,17 @@ class _CyclingMapViewState extends State<CyclingMapView>
                         state.position != null) {
                       final location = state.position!;
                       final newPoint = mapbox.Position(
-                        location.coords.longitude,
-                        location.coords.latitude,
+                        location.longitude,
+                        location.latitude,
                       );
                       mapCubit.mapboxMap?.flyTo(
                         mapbox.CameraOptions(
                           center: mapbox.Point(coordinates: newPoint),
-                          bearing: location.coords.heading,
+                          bearing: location.heading,
                         ),
                         mapbox.MapAnimationOptions(
                             duration: 100, startDelay: 0),
                       );
-                      setState(() {
-                        tempRouteList.add(location);
-                      });
 
                       if (_lastDrawnPoint != null) {
                         final segment = mapbox.LineString(coordinates: [
@@ -217,16 +213,20 @@ class _CyclingMapViewState extends State<CyclingMapView>
                       }
 
                       _lastDrawnPoint = newPoint;
+
+                      setState(() {
+                        tempRouteList.add(location);
+                      });
                       if (routeId != null && tempRouteList.length >= 20) {
                         final grpcLocations = tempRouteList.map((pos) {
-                          final dateTime = DateTime.parse(pos.timestamp);
+                          final dateTime = pos.timestamp;
                           return {
-                            "latitude": pos.coords.latitude,
-                            "longitude": pos.coords.longitude,
-                            "altitude": pos.coords.ellipsoidalAltitude,
+                            "latitude": pos.latitude,
+                            "longitude": pos.longitude,
+                            "altitude": pos.altitude,
                             "timestamp": dateTime.millisecondsSinceEpoch,
-                            "speed": pos.coords.speed * 18 / 5,
-                            "distance": pos.odometer / 1000,
+                            "speed": pos.speed * 18 / 5,
+                            "distance": state.odometerKm,
                           };
                         }).toList();
 
@@ -243,7 +243,12 @@ class _CyclingMapViewState extends State<CyclingMapView>
                     key: const ValueKey("mapWidget"),
                     cameraOptions: mapCubit.camera,
                     onMapCreated: (map) async {
-                      mapCubit.initializeMap(map);
+                      mapCubit.initializeMap(map,
+                          locationSetting: mapbox.LocationComponentSettings(
+                            enabled: true,
+                            showAccuracyRing: true,
+                            puckBearingEnabled: true,
+                          ));
 
                       isMapInitialized = true;
                       WidgetsBinding.instance.addPostFrameCallback((_) {

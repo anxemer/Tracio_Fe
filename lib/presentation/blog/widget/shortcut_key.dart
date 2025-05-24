@@ -57,8 +57,11 @@ class ShortcutKey extends StatelessWidget {
                       borderRadius:
                           BorderRadius.circular(AppSize.borderRadiusMedium)),
                   child: InkWell(
-                    onTap: () =>
-                        AppNavigator.push(context, BottomNavBarManager()),
+                    onTap: () => AppNavigator.push(
+                        context,
+                        BottomNavBarManager(
+                          selectedIndex: 3,
+                        )),
                     child: Icon(
                       Icons.radar_rounded,
                       size: AppSize.iconLarge,

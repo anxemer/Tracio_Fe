@@ -48,9 +48,9 @@ class CyclingTakePictureButton extends StatelessWidget {
       final mediaReq = PostRouteMediaReq(
         routeId: routeId,
         mediaFile: File(image!.path),
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-        altitude: location.coords.altitude,
+        latitude: location.latitude,
+        longitude: location.longitude,
+        altitude: location.altitude,
       );
 
       await context.read<RouteCubit>().uploadMediaWithLocation(mediaReq);

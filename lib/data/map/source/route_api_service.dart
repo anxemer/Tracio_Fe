@@ -48,6 +48,7 @@ abstract class RouteApiService {
   Future<Either<Failure, RouteMediaEntity>> postRouteMediaFiles(
       PostRouteMediaReq request);
   Future<Either<Failure, dynamic>> deleteRouteMediaFiles(int pictureId);
+  Future<Either<Failure, dynamic>> deleteRoute(int routeId);
 }
 
 class RouteApiServiceImpl extends RouteApiService {
@@ -123,6 +124,10 @@ class RouteApiServiceImpl extends RouteApiService {
         return right(response.data["result"] != null
             ? RouteDetailModel.fromMap(response.data["result"])
             : null);
+      } else if (response.statusCode == 400 &&
+          response.data["result"] == null &&
+          (response.data["message"] as String).contains("500m")) {
+        return right(null);
       } else if (response.statusCode == 403) {
         return Left(AuthorizationFailure(
             'You do not have permission to perform this action.', 403));
@@ -430,6 +435,28 @@ class RouteApiServiceImpl extends RouteApiService {
 
       if (response.statusCode == 201) {
         return right(RouteMediaModel.fromMap(response.data["result"]));
+      } else {
+        return left(ExceptionFailure('Error: ${response.statusCode}'));
+      }
+    } on DioException catch (e) {
+      return left(
+          ExceptionFailure(e.response?.data['message'] ?? 'An error occurred'));
+    } catch (e) {
+      return left(ExceptionFailure('An unexpected error occurred: $e'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, dynamic>> deleteRoute(int routeId) async {
+    try {
+      String apiUrl = "${ApiUrl.urlDeleteRoute.toString()}/$routeId";
+
+      var response = await sl<DioClient>().delete(apiUrl);
+
+      if (response == null) {
+        return right(null);
+      } else if (response.statusCode == 200) {
+        return right(response.data["result"]);
       } else {
         return left(ExceptionFailure('Error: ${response.statusCode}'));
       }
