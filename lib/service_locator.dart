@@ -1,3 +1,4 @@
+import 'package:Tracio/core/services/location/location_service.dart';
 import 'package:Tracio/core/services/signalR/implement/notification_hub_service.dart';
 import 'package:Tracio/data/blog/repositories/blog_repository_impl.dart';
 import 'package:Tracio/domain/auth/usecases/send_fcm.dart';
@@ -7,6 +8,7 @@ import 'package:Tracio/domain/challenge/usecase/delete_challenge.dart';
 import 'package:Tracio/domain/challenge/usecase/leave_challenge.dart';
 import 'package:Tracio/domain/groups/usecases/update_group_route_status_usecase.dart';
 import 'package:Tracio/domain/map/usecase/delete_route_media_usecase.dart';
+import 'package:Tracio/domain/map/usecase/delete_route_usecase.dart';
 import 'package:Tracio/domain/map/usecase/edit_route_tracking_usecase.dart';
 import 'package:Tracio/domain/map/usecase/get_ongoing_route_usecase.dart';
 import 'package:Tracio/domain/map/usecase/get_route_media_usecase.dart';
@@ -233,6 +235,7 @@ Future<void> initializeDependencies() async {
     () => TrackingGrpcService(),
   );
   sl.registerLazySingleton<ITrackingHubService>(() => TrackingHubService());
+  sl.registerLazySingleton<LocationService>(() => LocationService());
 
   //when hub services is depended on SignalRCoreService
   sl.registerLazySingleton(
@@ -376,6 +379,7 @@ Future<void> initializeDependencies() async {
   sl.registerFactory<ResolveFollowUserUseCase>(
       () => ResolveFollowUserUseCase());
   sl.registerFactory<RequestChallengeUseCase>(() => RequestChallengeUseCase());
+
   sl.registerFactory<CreateChallengeUseCase>(() => CreateChallengeUseCase());
   sl.registerFactory<SendFcmUseCase>(() => SendFcmUseCase());
   sl.registerFactory<LeaveChallengeUseCase>(() => LeaveChallengeUseCase());
@@ -383,4 +387,7 @@ Future<void> initializeDependencies() async {
   sl.registerFactory<GetFollowerUseCase>(() => GetFollowerUseCase());
   sl.registerFactory<GetFollowingUseCase>(() => GetFollowingUseCase());
   sl.registerFactory<UpdateAvatarUseCase>(() => UpdateAvatarUseCase());
+
+  sl.registerFactory<DeleteRouteUsecase>(() => DeleteRouteUsecase());
+
 }

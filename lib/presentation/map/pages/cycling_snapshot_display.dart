@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:Tracio/common/widget/navbar/bottom_nav_bar_manager.dart';
 import 'package:Tracio/data/map/models/request/post_route_media_req.dart';
 import 'package:Tracio/data/map/models/request/update_route_req.dart';
 import 'package:Tracio/presentation/library/pages/route_detail.dart';
@@ -366,7 +367,9 @@ class _CyclingSnapshotDisplayState extends State<CyclingSnapshotDisplay> {
                                       );
 
                                       if (shouldDelete == true) {
-                                        // Call delete logic here
+                                        context
+                                            .read<RouteCubit>()
+                                            .deleteRoute(widget.route.routeId);
                                       }
                                     },
                                     child: Ink(
@@ -422,7 +425,60 @@ class _CyclingSnapshotDisplayState extends State<CyclingSnapshotDisplay> {
                             style: TextStyle(color: Colors.white)),
                       ),
                     ),
-                  )
+                  ),
+                  BlocConsumer<RouteCubit, RouteState>(
+                    listener: (context, state) {
+                      if (state is DeleteRouteSuccess) {
+                        Navigator.of(context).pop();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text("Deleted successfully"),
+                            duration: const Duration(seconds: 2),
+                            backgroundColor: Colors.green,
+                          ),
+                        );
+                        Future.delayed(
+                          const Duration(seconds: 2),
+                          () {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => BlocProvider.value(
+                                    value: context.read<MapCubit>(),
+                                    child: const BottomNavBarManager(
+                                      selectedIndex: 2,
+                                      isNavVisible: false,
+                                    )),
+                              ),
+                            );
+                          },
+                        );
+                      } else if (state is DeleteRouteFailure) {
+                        Navigator.of(context).pop();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(state.errorMessage),
+                            backgroundColor: Colors.redAccent,
+                          ),
+                        );
+                      }
+                    },
+                    builder: (context, state) {
+                      final isLoading = state is DeleteRouteLoading;
+                      if (!isLoading) return const SizedBox.shrink();
+
+                      return Stack(
+                        children: const [
+                          Opacity(
+                            opacity: 0.6,
+                            child: ModalBarrier(
+                                dismissible: false, color: Colors.black),
+                          ),
+                          Center(child: CircularProgressIndicator()),
+                        ],
+                      );
+                    },
+                  ),
                 ],
               );
             },

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:Tracio/core/configs/theme/app_colors.dart';
 import 'package:Tracio/core/constants/app_size.dart';
-import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
-    as bg;
 
 class RangeSliderExample extends StatefulWidget {
   final double initMin;

@@ -2,6 +2,7 @@ import 'package:Tracio/data/map/models/request/post_route_media_req.dart';
 import 'package:Tracio/data/map/models/request/update_route_req.dart';
 import 'package:Tracio/domain/map/entities/route_media.dart';
 import 'package:Tracio/domain/map/repositories/route_repository.dart';
+import 'package:Tracio/domain/map/usecase/delete_route_usecase.dart';
 import 'package:Tracio/domain/map/usecase/edit_route_tracking_usecase.dart';
 import 'package:Tracio/domain/map/usecase/post_route_media_usecase.dart';
 import 'package:dartz/dartz.dart';
@@ -318,5 +319,15 @@ class RouteCubit extends Cubit<RouteState> {
       isSucceed: true,
       successMessage: 'Route updated and media files uploaded successfully.',
     ));
+  }
+
+  Future<void> deleteRoute(int routeId) async {
+    emit(DeleteRouteLoading());
+    var data = await sl<DeleteRouteUsecase>().call(routeId);
+    data.fold((error) {
+      emit(DeleteRouteFailure(errorMessage: error.message));
+    }, (data) async {
+      emit(DeleteRouteSuccess());
+    });
   }
 }
