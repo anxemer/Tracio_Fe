@@ -1,5 +1,5 @@
-class FollowRequestEntity {
-  FollowRequestEntity({
+class FollowEntity {
+  FollowEntity({
     required this.followerId,
     required this.followerName,
     required this.followerAvatarUrl,
@@ -14,6 +14,4 @@ class FollowRequestEntity {
   final String? status;
   final DateTime? createdAt;
   final DateTime? updatedAt;
-
-
 }

@@ -17,7 +17,8 @@ class DetailInformationChallenge extends StatefulWidget {
       required this.isSystem,
       required this.isPublic,
       required this.myChallenge,
-      required this.challengeId});
+      required this.challengeId,
+      this.isPening = false});
   final int challengeId;
   final String totalGoal;
   final String participants;
@@ -28,6 +29,7 @@ class DetailInformationChallenge extends StatefulWidget {
   final bool isSystem;
   final bool isPublic;
   final bool myChallenge;
+  final bool isPening;
   @override
   State<DetailInformationChallenge> createState() =>
       _DetailInformationChallengeState();
@@ -36,11 +38,12 @@ class DetailInformationChallenge extends StatefulWidget {
 class _DetailInformationChallengeState
     extends State<DetailInformationChallenge> {
   late bool _isPublic;
-  bool _isPendingApproval = false;
+  late bool _isPendingApproval;
 
   @override
   void initState() {
     _isPublic = widget.isPublic;
+    _isPendingApproval = widget.isPening;
     super.initState();
   }
 

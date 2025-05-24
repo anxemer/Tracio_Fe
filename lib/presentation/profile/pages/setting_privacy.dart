@@ -3,7 +3,6 @@ import 'package:Tracio/common/widget/appbar/app_bar.dart';
 import 'package:Tracio/core/configs/theme/app_colors.dart';
 import 'package:Tracio/core/constants/app_size.dart';
 import 'package:Tracio/data/user/models/edit_user_profile_req.dart';
-import 'package:Tracio/domain/user/entities/user_profile_entity.dart';
 import 'package:Tracio/domain/user/usecase/edit_profile.dart';
 import 'package:Tracio/service_locator.dart';
 import 'package:flutter/material.dart';

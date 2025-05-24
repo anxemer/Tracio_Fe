@@ -32,14 +32,8 @@ class TabMorePage extends StatefulWidget {
 class _TabMorePageState extends State<TabMorePage> {
   @override
   Widget build(BuildContext context) {
-    final state = context.read<AuthCubit>().state;
-    UserEntity? user;
+    UserEntity? user = sl<AuthLocalSource>().getUser();
 
-    if (state is AuthLoaded) {
-      user = state.user;
-    } else if (state is AuthChangeRole) {
-      user = state.user;
-    }
     return BlocListener<AuthCubit, AuthState>(
       listener: (context, state) {
         if (state is AuthChangeRole) {

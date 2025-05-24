@@ -1,7 +1,9 @@
+import 'dart:io';
+import 'package:path/path.dart' as p;
+
 import 'package:Tracio/core/erorr/failure.dart';
 import 'package:Tracio/data/user/models/daily_activity_model.dart';
-import 'package:Tracio/data/user/models/follow_request_model.dart'
-    show FollowRequestModel;
+import 'package:Tracio/data/user/models/follow_model.dart' show FollowModel;
 import 'package:Tracio/data/user/models/resolve_follow_request_req.dart';
 import 'package:Tracio/data/user/models/send_fcm_req.dart';
 import 'package:dartz/dartz.dart';
@@ -20,9 +22,12 @@ abstract class UserApiSource {
   Future<Either> resolveFollowRequestUser(ResolveFollowRequestReq resolve);
   Future<Either> unFollowUser(int userId);
   Future<UserprofileModel> editProfile(EditUserProfileReq userProfile);
+  Future<UserprofileModel> updateAvatar(File avatar);
   Future<Either> sendFcm(SendFcmReq fcm);
   Future<DailyActivityModel> getDailyActivity();
-  Future<List<FollowRequestModel>> getFollowRequest();
+  Future<List<FollowModel>> getFollowRequest();
+  Future<List<FollowModel>> getFollower(int userId);
+  Future<List<FollowModel>> getFollowing(int userId);
 }
 
 class UserApiSourceImpl extends UserApiSource {
@@ -53,6 +58,8 @@ class UserApiSourceImpl extends UserApiSource {
         await sl<DioClient>().put(ApiUrl.userProfile, data: userProfile);
     if (response.statusCode == 200) {
       return UserprofileModel.fromJson(response.data['result']);
+    } else if (response.statusCode == 401) {
+      throw AuthenticationFailure('Unauthentication');
     } else {
       throw ServerException();
     }
@@ -94,30 +101,28 @@ class UserApiSourceImpl extends UserApiSource {
     if (response.statusCode == 200) {
       final result = response.data['result'];
 
-      if (result is List && result.isNotEmpty) {
-        return DailyActivityModel.fromJson(result[0]);
-      } else if (result is Map && result.containsKey('items')) {
+      if (result is Map && result.containsKey('items')) {
         final items = result['items'];
         if (items is List && items.isNotEmpty) {
           return DailyActivityModel.fromJson(items[0]);
         }
       }
 
-      // Nếu không có dữ liệu phù hợp
-      throw Exception("No activity found.");
+      // Trả về instance rỗng thay vì null
+      return DailyActivityModel.empty();
     } else {
       throw ServerException();
     }
   }
 
   @override
-  Future<List<FollowRequestModel>> getFollowRequest() async {
+  Future<List<FollowModel>> getFollowRequest() async {
     var response =
         await sl<DioClient>().get('${ApiUrl.follow}/follow-requests/pending');
 
     if (response.statusCode == 200) {
-      return List<FollowRequestModel>.from(response.data['result']['items']
-          .map((x) => FollowRequestModel.fromJson(x)));
+      return List<FollowModel>.from(
+          response.data['result']['items'].map((x) => FollowModel.fromJson(x)));
     } else {
       throw ServerException();
     }
@@ -137,6 +142,61 @@ class UserApiSourceImpl extends UserApiSource {
         data: formData);
     if (response.statusCode == 200) {
       return Right(true);
+    } else {
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<List<FollowModel>> getFollower(int userId) async {
+    var response =
+        await sl<DioClient>().get('${ApiUrl.follow}/followers/$userId');
+
+    if (response.statusCode == 200) {
+      return List<FollowModel>.from(
+          response.data['result']['items'].map((x) => FollowModel.fromJson(x)));
+    } else if (response.statusCode == 401) {
+      throw AuthenticationFailure('Unauthentication');
+    } else {
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<List<FollowModel>> getFollowing(int userId) async {
+    var response =
+        await sl<DioClient>().get('${ApiUrl.follow}/following/$userId');
+
+    if (response.statusCode == 200) {
+      return List<FollowModel>.from(
+          response.data['result']['items'].map((x) => FollowModel.fromJson(x)));
+    } else if (response.statusCode == 401) {
+      throw AuthenticationFailure('Unauthentication');
+    } else {
+      throw ServerException();
+    }
+  }
+
+  @override
+  Future<UserprofileModel> updateAvatar(File avatar) async {
+    if (!await avatar.exists()) {
+      throw Exception('⚠️ Avatar file does not exist: ${avatar.path}');
+    }
+
+    final image = p.extension(avatar.path).toLowerCase().replaceFirst('.', '');
+
+    final multipartFile = await MultipartFile.fromFile(avatar.path,
+        filename: avatar.path.split('/').last,
+        contentType: DioMediaType.parse('image/$image'));
+    final formData = FormData.fromMap({
+      "file": multipartFile,
+    });
+    var response = await sl<DioClient>()
+        .patch('${ApiUrl.userProfile}/avatar', data: formData);
+    if (response.statusCode == 200) {
+      return UserprofileModel.fromJson(response.data['result']);
+    } else if (response.statusCode == 401) {
+      throw AuthenticationFailure('Unauthentication');
     } else {
       throw ServerException();
     }

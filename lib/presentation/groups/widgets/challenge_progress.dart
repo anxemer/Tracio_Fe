@@ -79,29 +79,43 @@ class _ChallengeProgressScreenState extends State<ChallengeProgressScreen> {
                             //     ));
                           }),
                       actions: [
-                        PopupMenuButton<int>(
-                          icon: const Icon(Icons.more_vert),
-                          onSelected: (int result) {
-                            if (result == 0) {
-                            } else if (result == 1) {
-                              // handle delete
-                            }
-                          },
-                          itemBuilder: (BuildContext context) =>
-                              <PopupMenuEntry<int>>[
-                            PopupMenuItem<int>(
-                              value: 0,
-                              child: Row(
-                                children: const [
-                                  Icon(Icons.delete_outline_outlined,
-                                      color: Colors.black),
-                                  SizedBox(width: 8),
-                                  Text('Delete Challenge'),
+                        challenge.isCreator!
+                            ? PopupMenuButton<int>(
+                                icon: const Icon(Icons.more_vert),
+                                onSelected: (int result) {
+                                  if (result == 0) {
+                                    DialogConfirm(
+                                            btnLeft: () {
+                                              Navigator.pop(context);
+                                              context
+                                                  .read<ChallengeCubit>()
+                                                  .deleteChallenge(
+                                                      challenge.challengeId!);
+                                            },
+                                            btnRight: () {
+                                              Navigator.pop(context);
+                                            },
+                                            notification:
+                                                'Are you sure you want to delete this challenge?')
+                                        .showDialogConfirmation(context);
+                                  }
+                                },
+                                itemBuilder: (BuildContext context) =>
+                                    <PopupMenuEntry<int>>[
+                                  PopupMenuItem<int>(
+                                    value: 0,
+                                    child: Row(
+                                      children: const [
+                                        Icon(Icons.delete_outline_outlined,
+                                            color: Colors.black),
+                                        SizedBox(width: 8),
+                                        Text('Delete Challenge'),
+                                      ],
+                                    ),
+                                  ),
                                 ],
-                              ),
-                            ),
-                          ],
-                        )
+                              )
+                            : SizedBox.shrink()
                       ],
                       flexibleSpace: FlexibleSpaceBar(
                         background: CachedNetworkImage(
@@ -271,6 +285,7 @@ class _ChallengeProgressScreenState extends State<ChallengeProgressScreen> {
                             const SizedBox(height: 10),
 
                             DetailInformationChallenge(
+                              isPening: challenge.publicStatus == 'Pending',
                               challengeId: challenge.challengeId!,
                               myChallenge: challenge.isCreator!,
                               isPublic: challenge.isPublic!,

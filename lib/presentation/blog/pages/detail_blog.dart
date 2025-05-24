@@ -103,6 +103,7 @@ class _DetailBlogPageState extends State<DetailBlogPage> {
             (success) {
               // Giả sử success là ReplyCommentEntity hoặc một đối tượng chứa dữ liệu trả lời
               final newReply = ReplyCommentEntity(
+                userAvatar: success.userAvatar,
                   replyId: success.replyId,
                   cyclistId: success.cyclistId,
                   commentId: success.commentId,
@@ -147,6 +148,7 @@ class _DetailBlogPageState extends State<DetailBlogPage> {
             (success) {
               // Giả sử success là ReplyCommentEntity
               final newReply = ReplyCommentEntity(
+                userAvatar: success.userAvatar,
                   replyId: success.replyId,
                   cyclistId: success.cyclistId,
                   commentId: success.commentId,

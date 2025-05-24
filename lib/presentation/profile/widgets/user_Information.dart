@@ -5,6 +5,8 @@ import 'package:Tracio/common/widget/button/loading.dart';
 import 'package:Tracio/domain/challenge/entities/challenge_reward.dart';
 import 'package:Tracio/presentation/groups/widgets/challenge_progress.dart';
 import 'package:Tracio/presentation/map/widgets/challenge_reward.dart';
+import 'package:Tracio/presentation/profile/bloc/follow_cubit/follow_cubit.dart';
+import 'package:Tracio/presentation/profile/pages/all_reward.dart';
 import 'package:Tracio/presentation/profile/pages/follower.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -148,13 +150,21 @@ class _UserinformationState extends State<Userinformation> {
           // ),
           const SizedBox(height: 8),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 40),
-            child: InkWell(
-              onTap: () => AppNavigator.push(context, FollowersScreen()),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text.rich(TextSpan(
+            padding: EdgeInsets.symmetric(horizontal: 40),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                InkWell(
+                  onTap: () {
+                    AppNavigator.push(
+                        context,
+                        BlocProvider(
+                          create: (context) =>
+                              FollowCubit()..getFollower(widget.user.userId!),
+                          child: FollowersScreen(),
+                        ));
+                  },
+                  child: Text.rich(TextSpan(
                     text: 'Follower: ',
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
@@ -167,7 +177,18 @@ class _UserinformationState extends State<Userinformation> {
                               fontSize: AppSize.textLarge))
                     ],
                   )),
-                  Text.rich(TextSpan(
+                ),
+                InkWell(
+                  onTap: () {
+                    AppNavigator.push(
+                        context,
+                        BlocProvider(
+                          create: (context) =>
+                              FollowCubit()..getFollowing(widget.user.userId!),
+                          child: FollowersScreen(),
+                        ));
+                  },
+                  child: Text.rich(TextSpan(
                     text: 'Following: ',
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
@@ -180,8 +201,8 @@ class _UserinformationState extends State<Userinformation> {
                               fontSize: AppSize.textLarge))
                     ],
                   )),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 24),
@@ -253,7 +274,8 @@ class _UserinformationState extends State<Userinformation> {
               // Item cuối là nút mũi tên
               return GestureDetector(
                 onTap: () {
-                  // Điều hướng đến màn hình hiển thị tất cả rewards
+                  AppNavigator.push(
+                      context, AllReward(reward: widget.user.rewards?? []));
                 },
                 child: Container(
                   width: 60.w,

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -30,11 +32,16 @@ class FilterServicePage extends StatefulWidget {
 
 class _FilterServicePageState extends State<FilterServicePage> {
   bool isFilter = false;
+  late ScrollController _scrollController;
+  Timer? _scrollDebounce;
 
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
   @override
   void initState() {
+    _scrollController = ScrollController();
+    _scrollController.addListener(_scrollListener);
+
     if (widget.shouldFetchAllServices) {
       context.read<GetServiceCubit>().getService(GetServiceReq());
     }
@@ -47,8 +54,27 @@ class _FilterServicePageState extends State<FilterServicePage> {
     super.initState();
   }
 
+  void _scrollListener() {
+    double maxScroll = _scrollController.position.maxScrollExtent;
+    double currentScroll = _scrollController.position.pixels;
+    double scrollPercentage = 0.7;
+
+    if (currentScroll > (maxScroll * scrollPercentage)) {
+      if (_scrollDebounce?.isActive ?? false) _scrollDebounce!.cancel();
+
+      _scrollDebounce = Timer(const Duration(milliseconds: 500), () {
+        final blogState = context.read<GetServiceCubit>().state;
+        if (blogState is GetServiceLoaded) {
+          context.read<GetServiceCubit>().getMoreService();
+        }
+      });
+    }
+  }
+
   @override
   void dispose() {
+    _scrollController.removeListener(_scrollListener);
+    _scrollController.dispose();
     _searchController.dispose();
     _searchFocusNode.dispose();
     super.dispose();
@@ -59,149 +85,157 @@ class _FilterServicePageState extends State<FilterServicePage> {
     var isDark = context.isDarkMode;
     return BlocProvider(
       create: (context) => FilterCubit(),
-      child: Scaffold(
-        body: SafeArea(
-            child: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.symmetric(
-                  vertical: AppSize.apVerticalPadding.h, horizontal: 4.w),
+      child: RefreshIndicator(
+        onRefresh: () async {
+          context.read<GetServiceCubit>().getService(GetServiceReq());
+        },
+        child: Scaffold(
+          body: SafeArea(
               child: Column(
-                children: [
-                  Row(
-                    children: [
-                      IconButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          icon: Icon(Icons.arrow_back_rounded)),
-                      // SizedBox(
-                      //   width: 8.w,
-                      // ),
-                      Expanded(
-                        child: BlocBuilder<FilterCubit, GetServiceReq>(
-                          builder: (context, state) {
-                            return TextField(
-                              focusNode: _searchFocusNode,
-                              // autofocus: true,
-                              // onTap: () =>
-                              //     AppNavigator.push(context, FilterServicePage()),
-                              controller:
-                                  context.read<FilterCubit>().searchController,
-                              onTapOutside: (event) {
-                                FocusManager.instance.primaryFocus?.unfocus();
-                              },
-                              onChanged: (value) => setState(() {}),
-                              onSubmitted: (value) {
-                                setState(() {});
-                                context.read<GetServiceCubit>().getService(
-                                    GetServiceReq(
-                                        keyword: value, shopId: widget.shopId));
-                              },
-                              decoration: InputDecoration(
-                                fillColor: Colors.transparent,
-                                prefixIcon: IconButton(
-                                  onPressed: () {},
-                                  icon: const Icon(Icons.search_outlined),
-                                ),
-                                suffixIcon: _searchController.text.isNotEmpty
-                                    ? IconButton(
-                                        onPressed: () {
-                                          context
-                                              .read<FilterCubit>()
-                                              .searchController
-                                              .clear();
-                                          setState(() {});
-                                        },
-                                        icon: const Icon(Icons.close),
-                                      )
-                                    : null,
-                                hintText: "Search service",
-                                hintStyle: TextStyle(
-                                    color: context.isDarkMode
-                                        ? Colors.white
-                                        : Colors.grey[400]),
-                                contentPadding: EdgeInsets.symmetric(
-                                    vertical: 10.h, horizontal: 10.w),
-                                border: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(20.0.r)),
-                                ),
-                                enabledBorder: OutlineInputBorder(
+            children: [
+              Padding(
+                padding: EdgeInsets.symmetric(
+                    vertical: AppSize.apVerticalPadding.h, horizontal: 4.w),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        IconButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            icon: Icon(Icons.arrow_back_rounded)),
+                        // SizedBox(
+                        //   width: 8.w,
+                        // ),
+                        Expanded(
+                          child: BlocBuilder<FilterCubit, GetServiceReq>(
+                            builder: (context, state) {
+                              return TextField(
+                                focusNode: _searchFocusNode,
+                                // autofocus: true,
+                                // onTap: () =>
+                                //     AppNavigator.push(context, FilterServicePage()),
+                                controller: context
+                                    .read<FilterCubit>()
+                                    .searchController,
+                                onTapOutside: (event) {
+                                  FocusManager.instance.primaryFocus?.unfocus();
+                                },
+                                onChanged: (value) => setState(() {}),
+                                onSubmitted: (value) {
+                                  setState(() {});
+                                  context.read<GetServiceCubit>().getService(
+                                      GetServiceReq(
+                                          keyword: value,
+                                          shopId: widget.shopId));
+                                },
+                                decoration: InputDecoration(
+                                  fillColor: Colors.transparent,
+                                  prefixIcon: IconButton(
+                                    onPressed: () {},
+                                    icon: const Icon(Icons.search_outlined),
+                                  ),
+                                  suffixIcon: _searchController.text.isNotEmpty
+                                      ? IconButton(
+                                          onPressed: () {
+                                            context
+                                                .read<FilterCubit>()
+                                                .searchController
+                                                .clear();
+                                            setState(() {});
+                                          },
+                                          icon: const Icon(Icons.close),
+                                        )
+                                      : null,
+                                  hintText: "Search service",
+                                  hintStyle: TextStyle(
+                                      color: context.isDarkMode
+                                          ? Colors.white
+                                          : Colors.grey[400]),
+                                  contentPadding: EdgeInsets.symmetric(
+                                      vertical: 10.h, horizontal: 10.w),
+                                  border: OutlineInputBorder(
                                     borderRadius: BorderRadius.all(
                                         Radius.circular(20.0.r)),
-                                    borderSide: BorderSide(
-                                        color: isDark
-                                            ? Colors.white
-                                            : Colors.grey.shade600)),
-                                focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.all(
-                                        Radius.circular(20.0.r)),
-                                    borderSide: BorderSide(
-                                        color: isDark
-                                            ? AppColors.secondBackground
-                                            : AppColors.background)),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                      SizedBox(
-                        width: 4.w,
-                      ),
-                      InkWell(
-                        onTap: () {
-                          setState(() {
-                            isFilter = !isFilter;
-                          });
-                        },
-                        child: Container(
-                          height: 32.h,
-                          width: 32.h,
-                          decoration: BoxDecoration(
-                            color: isDark
-                                ? AppColors.darkGrey
-                                : Colors.grey.shade300,
-                            borderRadius: BorderRadius.circular(20.r),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(20.0.r)),
+                                      borderSide: BorderSide(
+                                          color: isDark
+                                              ? Colors.white
+                                              : Colors.grey.shade600)),
+                                  focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(20.0.r)),
+                                      borderSide: BorderSide(
+                                          color: isDark
+                                              ? AppColors.secondBackground
+                                              : AppColors.background)),
+                                ),
+                              );
+                            },
                           ),
-                          child: Center(
-                            child: Icon(
-                              Icons.tune,
+                        ),
+                        SizedBox(
+                          width: 4.w,
+                        ),
+                        InkWell(
+                          onTap: () {
+                            setState(() {
+                              isFilter = !isFilter;
+                            });
+                          },
+                          child: Container(
+                            height: 32.h,
+                            width: 32.h,
+                            decoration: BoxDecoration(
                               color: isDark
-                                  ? AppColors.secondBackground
-                                  : AppColors.background,
-                              size: AppSize.iconMedium.sp,
+                                  ? AppColors.darkGrey
+                                  : Colors.grey.shade300,
+                              borderRadius: BorderRadius.circular(20.r),
+                            ),
+                            child: Center(
+                              child: Icon(
+                                Icons.tune,
+                                color: isDark
+                                    ? AppColors.secondBackground
+                                    : AppColors.background,
+                                size: AppSize.iconMedium.sp,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  isFilter ? FilterView() : Container()
-                ],
+                      ],
+                    ),
+                    isFilter ? FilterView() : Container()
+                  ],
+                ),
               ),
-            ),
-            SizedBox(
-              height: 10.h,
-            ),
-            Expanded(
-              child: BlocBuilder<GetServiceCubit, GetServiceState>(
-                builder: (context, state) {
-                  if (state is GetServiceLoaded) {
-                    return _buildSearchResults(state.service);
-                    // return Center(child: Text("Search Service"));
-                    // Hiển thị danh sách
-                  } else if (state is GetServiceLoading) {
-                    return Center(
-                        child: CircularProgressIndicator()); // Hiển thị loading
-                  } else {
-                    return Center(child: Text("Search Service"));
-                  }
-                },
+              SizedBox(
+                height: 10.h,
               ),
-            )
-          ],
-        )),
+              Expanded(
+                child: BlocBuilder<GetServiceCubit, GetServiceState>(
+                  builder: (context, state) {
+                    if (state is GetServiceLoaded) {
+                      return _buildSearchResults(state.service);
+                      // return Center(child: Text("Search Service"));
+                      // Hiển thị danh sách
+                    } else if (state is GetServiceLoading) {
+                      return Center(
+                          child:
+                              CircularProgressIndicator()); // Hiển thị loading
+                    } else {
+                      return Center(child: Text("Search Service"));
+                    }
+                  },
+                ),
+              )
+            ],
+          )),
+        ),
       ),
     );
   }
@@ -209,6 +243,7 @@ class _FilterServicePageState extends State<FilterServicePage> {
   // Giao diện hiển thị kết quả tìm kiếm
   Widget _buildSearchResults(List<ShopServiceEntity> services) {
     return CustomScrollView(
+      controller: _scrollController,
       scrollDirection: Axis.vertical,
       slivers: [
         SliverPadding(
@@ -216,7 +251,7 @@ class _FilterServicePageState extends State<FilterServicePage> {
           sliver: SliverGrid(
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 1,
-              childAspectRatio: 3,
+              childAspectRatio: 2.6,
               mainAxisSpacing: 16.h,
             ),
             delegate: SliverChildBuilderDelegate(

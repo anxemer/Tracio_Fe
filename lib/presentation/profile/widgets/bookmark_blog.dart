@@ -7,8 +7,8 @@ import '../../blog/bloc/get_blog_state.dart';
 import '../../blog/widget/new_feed.dart';
 
 class BookmarkBlogTab extends StatefulWidget {
-  const BookmarkBlogTab({super.key});
-
+  const BookmarkBlogTab({super.key, required this.userId});
+  final int userId;
   @override
   State<BookmarkBlogTab> createState() => _BookmarkBlogTabState();
 }
@@ -48,7 +48,7 @@ class _BookmarkBlogTabState extends State<BookmarkBlogTab>
     super.initState();
     scrollController = ScrollController();
     scrollController.addListener(_scrollListener);
-    _fetchBookmarkBlogs();
+    // _fetchBookmarkBlogs();
   }
 
   @override
@@ -75,12 +75,13 @@ class _BookmarkBlogTabState extends State<BookmarkBlogTab>
     return BlocBuilder<GetBlogCubit, GetBlogState>(
       builder: (context, state) {
         if (state is GetBlogBookmarkLoaded) {
-          if (state.blogs!.isEmpty) {
+          if (state.blogs.isEmpty) {
             return const Center(child: Text('Havent Blog Bookmark Yet'));
           }
           return RefreshIndicator(
             onRefresh: () async {
               await context.read<GetBlogCubit>().getBookmarkBlog(GetBlogReq(
+                    userId: widget.userId.toString(),
                     pageSize: 2,
                     pageNumber: 1,
                   ));
@@ -89,16 +90,15 @@ class _BookmarkBlogTabState extends State<BookmarkBlogTab>
               physics: const AlwaysScrollableScrollPhysics(),
               scrollDirection: Axis.vertical,
               controller: scrollController,
-              itemCount:
-                  state.blogs!.length + (state.isLoading ?? false ? 1 : 0),
+              itemCount: state.blogs.length + (state.isLoading ? 1 : 0),
               itemBuilder: (context, index) {
-                if (index == state.blogs!.length && state.isLoading!) {
+                if (index == state.blogs.length && state.isLoading) {
                   return const Padding(
                     padding: EdgeInsets.symmetric(vertical: 16.0),
                     child: Center(child: CircularProgressIndicator()),
                   );
                 }
-                if (index < state.blogs!.length) {
+                if (index < state.blogs.length) {
                   return Container(
                     decoration: BoxDecoration(
                       border: Border(
@@ -110,7 +110,7 @@ class _BookmarkBlogTabState extends State<BookmarkBlogTab>
                     ),
                     child: NewFeeds(
                       isPersonal: true,
-                      key: ValueKey('blog_${state.blogs![index].blogId}'),
+                      key: ValueKey('blog_${state.blogs[index].blogId}'),
                       blogs: state.blogs![index],
                     ),
                   );
@@ -122,23 +122,21 @@ class _BookmarkBlogTabState extends State<BookmarkBlogTab>
         } else if (state is GetBlogLoading) {
           return const Center(child: CircularProgressIndicator());
         } else if (state is GetBlogFailure) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                    'Lỗi tải danh sách bài viết đã lưu: ${state.errorMessage}'),
-                ElevatedButton(
-                  onPressed: () {
-                    print('Retrying fetch bookmark blogs');
-                    context.read<GetBlogCubit>().getBookmarkBlog(GetBlogReq(
-                          pageSize: 2,
-                          pageNumber: 1,
-                        ));
-                  },
-                  child: const Text('Thử lại'),
-                ),
-              ],
+          return RefreshIndicator(
+           onRefresh: () async {
+              await context.read<GetBlogCubit>().getBookmarkBlog(GetBlogReq(
+                    userId: widget.userId.toString(),
+                    pageSize: 2,
+                    pageNumber: 1,
+                  ));
+            },
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Error loading saved article list'),
+                ],
+              ),
             ),
           );
         } else {
@@ -146,17 +144,7 @@ class _BookmarkBlogTabState extends State<BookmarkBlogTab>
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text('Không thể tải danh sách bài viết đã lưu'),
-                ElevatedButton(
-                  onPressed: () {
-                    print('Retrying fetch bookmark blogs');
-                    context.read<GetBlogCubit>().getBookmarkBlog(GetBlogReq(
-                          pageSize: 2,
-                          pageNumber: 1,
-                        ));
-                  },
-                  child: const Text('Thử lại'),
-                ),
+                const Text('Unable to load saved article list'),
               ],
             ),
           );

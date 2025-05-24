@@ -133,6 +133,7 @@ class _CommentItemState extends State<CommentItem> {
               );
             },
             replyContent: (context, reply) {
+              
               if (!isReplyOpened) {
                 return _buildReplyCount(widget.comment.replyCount);
               }

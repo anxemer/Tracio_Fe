@@ -75,7 +75,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
                           if (item == ItemUser.edit) {
                             AppNavigator.push(
                                 context, EditProfilePage(user: userEntity));
-                          } else if (item == ItemUser.delete) {
                           } else if (item == ItemUser.accountPrivacy) {
                             AppNavigator.push(
                                 context,
@@ -89,8 +88,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
                             <PopupMenuEntry<ItemUser>>[
                           const PopupMenuItem<ItemUser>(
                               value: ItemUser.edit, child: Text('Edit')),
-                          const PopupMenuItem<ItemUser>(
-                              value: ItemUser.delete, child: Text('Delete')),
                           const PopupMenuItem<ItemUser>(
                               value: ItemUser.accountPrivacy,
                               child: Text('Account Privacy')),

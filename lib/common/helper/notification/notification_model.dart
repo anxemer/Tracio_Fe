@@ -27,7 +27,7 @@ class NotificationModel {
     return NotificationModel(
       notificationId: map['notificationId']?.toString() ?? '',
       senderName: map['senderName']?.toString() ?? 'System',
-      senderAvatar: map['senderAvatar']?.toString(),
+    senderAvatar: map['senderAvatar']?.toString(),
       entityId: int.tryParse(map['entityId'].toString()) ?? 0,
       entityType: int.tryParse(map['entityType'].toString()) ?? 0,
       message: map['message']?.toString() ?? '',

@@ -234,8 +234,11 @@ class _ShopProfileManagementScreenState
       final image = _pickedImageFile;
       final openTime = _openTimeController.text;
       final closeTime = _closeTimeController.text;
-
+      final long = longitude;
+      final lat = latitude;
       if (widget.isEditing) {
+        print('Long: $longitude');
+        print('Lat: $latitude');
         await context.read<ShopProfileManageCubit>().editShop(
             CreateShopProfileReq(
                 contactNumber: contactNumber,
@@ -245,8 +248,8 @@ class _ShopProfileManagementScreenState
                 profilePicture: image != null ? [image] : null,
                 city: city,
                 district: district,
-                latitude: latitude,
-                longitude: longitude,
+                latitude: lat,
+                longitude: long,
                 openTime: openTime,
                 closedTime: closeTime));
       } else {
@@ -436,13 +439,13 @@ class _ShopProfileManagementScreenState
                                 _addressController.text = address;
                                 _districtController.text = district;
                                 _cityController.text = city;
-                                latitude = searchedCoordinate.latitude;
-                                longitude = searchedCoordinate.longitude;
+
                                 final position = mapbox.Position(
                                   searchedCoordinate.longitude,
                                   searchedCoordinate.latitude,
                                 );
-
+                                latitude = searchedCoordinate.latitude;
+                                longitude = searchedCoordinate.longitude;
                                 final mapCubit = context.read<MapCubit>();
                                 mapCubit.animateCamera(position);
 

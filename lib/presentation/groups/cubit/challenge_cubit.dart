@@ -1,4 +1,5 @@
 import 'package:Tracio/data/challenge/models/request/create_challenge_req.dart';
+import 'package:Tracio/domain/challenge/usecase/delete_challenge.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:Tracio/core/erorr/failure.dart';
@@ -49,6 +50,15 @@ class ChallengeCubit extends Cubit<ChallengeState> {
 
   void leaveChallenge(int params) async {
     var result = await sl<LeaveChallengeUseCase>().call(params);
+    result.fold((error) {
+      emit(ChallengeFailure(error.message, error));
+    }, (data) {
+      emit(LeaveChallengeLoaded());
+    });
+  }
+
+  void deleteChallenge(int params) async {
+    var result = await sl<DeleteChallengeUseCase>().call(params);
     result.fold((error) {
       emit(ChallengeFailure(error.message, error));
     }, (data) {

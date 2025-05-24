@@ -1,7 +1,7 @@
-import 'package:Tracio/domain/user/entities/follow_request_entity.dart';
+import 'package:Tracio/domain/user/entities/follow_entity.dart';
 
-class FollowRequestModel extends FollowRequestEntity {
-  FollowRequestModel(
+class FollowModel extends FollowEntity {
+  FollowModel(
       {required super.followerId,
       required super.followerName,
       required super.followerAvatarUrl,
@@ -9,11 +9,11 @@ class FollowRequestModel extends FollowRequestEntity {
       required super.createdAt,
       required super.updatedAt});
 
-  factory FollowRequestModel.fromJson(Map<String, dynamic> json) {
-    return FollowRequestModel(
-      followerId: json["followerId"],
-      followerName: json["followerName"],
-      followerAvatarUrl: json["followerAvatarUrl"],
+  factory FollowModel.fromJson(Map<String, dynamic> json) {
+    return FollowModel(
+      followerId: json["followId"],
+      followerName: json["followName"],
+      followerAvatarUrl: json["followAvatarUrl"],
       status: json["status"],
       createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
       updatedAt: DateTime.tryParse(json["updatedAt"] ?? ""),
@@ -21,9 +21,9 @@ class FollowRequestModel extends FollowRequestEntity {
   }
 
   Map<String, dynamic> toJson() => {
-        "followerId": followerId,
-        "followerName": followerName,
-        "followerAvatarUrl": followerAvatarUrl,
+        "followId": followerId,
+        "followName": followerName,
+        "followAvatarUrl": followerAvatarUrl,
         "status": status,
         "createdAt": createdAt?.toIso8601String(),
         "updatedAt": updatedAt?.toIso8601String(),

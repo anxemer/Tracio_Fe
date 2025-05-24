@@ -3,7 +3,7 @@ import 'package:Tracio/common/bloc/generic_data_cubit.dart';
 import 'package:Tracio/common/widget/button/loading.dart';
 import 'package:Tracio/core/usecase/usecase.dart';
 import 'package:Tracio/data/user/models/resolve_follow_request_req.dart';
-import 'package:Tracio/domain/user/entities/follow_request_entity.dart';
+import 'package:Tracio/domain/user/entities/follow_entity.dart';
 import 'package:Tracio/domain/user/usecase/get_follow_request.dart';
 import 'package:Tracio/domain/user/usecase/resolve_follow_request.dart';
 import 'package:flutter/material.dart';
@@ -28,7 +28,7 @@ class NotificationsPage extends StatefulWidget {
 }
 
 class _NotificationsPageState extends State<NotificationsPage> {
-  List<FollowRequestEntity> followList = [];
+  List<FollowEntity> followList = [];
   void _acceptRequest(int followId) {
     sl<ResolveFollowUserUseCase>()
         .call(ResolveFollowRequestReq(followerId: followId, isApproved: true));
@@ -56,7 +56,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
   @override
   void initState() {
     super.initState();
-    // Tải danh sách thông báo khi khởi tạo
+    
     context.read<NotificationBloc>().add(LoadNotifications());
   }
 
@@ -64,7 +64,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
     final entityId = notification.entityId;
     final entityType = notification.entityType;
 
-    // Điều hướng dựa trên entityType
+  
     switch (entityType) {
       case 5: // Like blog
       case 6: // Comment on blog
@@ -112,7 +112,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => GenericDataCubit()
-        ..getData<List<FollowRequestEntity>>(sl<GetFollowRequestUseCase>(),
+        ..getData<List<FollowEntity>>(sl<GetFollowRequestUseCase>(),
             params: NoParams()),
       child: Scaffold(
           appBar: BasicAppbar(

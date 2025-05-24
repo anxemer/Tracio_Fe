@@ -1,5 +1,4 @@
-import 'dart:async';
-
+import 'package:Tracio/common/widget/blog/blog_holder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../data/blog/models/request/get_blog_req.dart';
@@ -40,26 +39,28 @@ class _BlogListViewState extends State<BlogListView>
     return BlocBuilder<GetBlogCubit, GetBlogState>(
       builder: (context, state) {
         if (state is GetBlogLoaded) {
-          if (state.blogs.isEmpty) {
-            return RefreshIndicator(
-              onRefresh: () async {
-                await context
-                    .read<GetBlogCubit>()
-                    .getBlog(GetBlogReq(isSeen: true));
-              },
-              child: ListView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                children: const [
-                  Padding(
-                    padding: EdgeInsets.symmetric(vertical: 100.0),
-                    child: Center(
-                      child: Text(
-                          'You have viewed the entire blog, Pull to refresh'),
-                    ),
-                  ),
-                ],
-              ),
-            );
+          if (state.blogs.isEmpty && state.metaData.isSeen!) {
+            context.read<GetBlogCubit>().getBlog(GetBlogReq(isSeen: true));
+
+            // return RefreshIndicator(
+            //   onRefresh: () async {
+            //     await context
+            //         .read<GetBlogCubit>()
+            //         .getBlog(GetBlogReq(isSeen: true));
+            //   },
+            //   child: ListView(
+            //     physics: const AlwaysScrollableScrollPhysics(),
+            //     children: const [
+            //       Padding(
+            //         padding: EdgeInsets.symmetric(vertical: 100.0),
+            //         child: Center(
+            //           child: Text(
+            //               'You have viewed the entire blog, Pull to refresh'),
+            //         ),
+            //       ),
+            //     ],
+            //   ),
+            // );
           }
           return RefreshIndicator(
             onRefresh: () async {
@@ -106,7 +107,7 @@ class _BlogListViewState extends State<BlogListView>
             ),
           );
         } else if (state is GetBlogLoading) {
-          return const Center(child: CircularProgressIndicator());
+          return BlogHolder();
         } else {
           return const Center(child: Text('Cannot load blog'));
         }

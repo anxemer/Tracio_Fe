@@ -20,7 +20,6 @@ import '../bloc/comment/comment_input_state.dart';
 import '../bloc/comment/get_comment_state.dart';
 import '../bloc/comment/get_comment_cubit.dart';
 import '../bloc/comment/comment_input_cubit.dart';
-import '../bloc/get_blog_cubit.dart';
 import 'comment_input.dart';
 
 class Comment extends StatefulWidget {
@@ -111,6 +110,7 @@ class _CommentState extends State<Comment> {
             },
             (success) {
               final newReply = ReplyCommentEntity(
+                  userAvatar: success.userAvatar,
                   replyId: success.replyId,
                   cyclistId: success.cyclistId,
                   commentId: success.commentId,
@@ -139,7 +139,6 @@ class _CommentState extends State<Comment> {
         if (inputData.commentId != null) {
           var result = await sl<RepCommentUsecase>().call(
             ReplyCommentReq(
-
               commentId: inputData.commentId!,
               content: content,
               mediaFiles: files,
@@ -155,6 +154,7 @@ class _CommentState extends State<Comment> {
             },
             (success) {
               final newReply = ReplyCommentEntity(
+                  userAvatar: success.userAvatar,
                   replyId: success.replyId,
                   cyclistId: success.cyclistId,
                   commentId: success.commentId,

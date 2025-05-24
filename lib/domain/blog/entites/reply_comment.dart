@@ -13,6 +13,7 @@ class ReplyCommentEntity extends BaseCommentEntity {
   final String? reReplyCyclistName;
   final List<MediaFile> mediaFiles;
   ReplyCommentEntity({
+    
     required this.replyId,
     required this.cyclistId,
     required super.commentId,
@@ -24,13 +25,13 @@ class ReplyCommentEntity extends BaseCommentEntity {
     required this.mediaFiles,
     required super.createdAt,
     required super.tagUserNames,
+    required super.userAvatar,
     required super.mediaUrls,
     required super.likeCount,
     required super.replyCount,
   }) : super(
           userId: cyclistId,
           userName: cyclistName,
-          userAvatar: '',
         );
 }
 
