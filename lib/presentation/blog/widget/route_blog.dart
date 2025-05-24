@@ -6,12 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:Tracio/common/widget/blog/blog_holder.dart';
-import 'package:Tracio/core/constants/app_size.dart';
-import 'package:Tracio/presentation/blog/bloc/get_blog_cubit.dart';
-import 'package:Tracio/presentation/blog/widget/new_feed.dart';
-import '../../../core/configs/theme/assets/app_images.dart';
-import '../../../data/blog/models/request/get_blog_req.dart';
-import '../bloc/get_blog_state.dart';
+
+import '../../../main.dart';
 
 class RouteBLog extends StatefulWidget {
   final ScrollController scrollController;
@@ -23,7 +19,7 @@ class RouteBLog extends StatefulWidget {
 }
 
 class _RouteBLogState extends State<RouteBLog>
-    with AutomaticKeepAliveClientMixin {
+    with AutomaticKeepAliveClientMixin, RouteAware {
   @override
   bool get wantKeepAlive => true;
   Timer? _scrollDebounce;
@@ -32,6 +28,17 @@ class _RouteBLogState extends State<RouteBLog>
   void initState() {
     super.initState();
     widget.scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context)!);
+  }
+
+  @override
+  void didPopNext() {
+    context.read<RouteCubit>().getRouteBlogList();
   }
 
   void _onScroll() {
@@ -88,7 +95,9 @@ class _RouteBLogState extends State<RouteBLog>
         physics: const AlwaysScrollableScrollPhysics(),
         child: BlocBuilder<RouteCubit, RouteState>(
           builder: (context, state) {
-            if (state is GetRouteBlogLoading || state is GetRouteInitial) {
+            if (state is GetRouteBlogLoading ||
+                state is GetRouteInitial ||
+                state is GetRouteDetailLoading) {
               return BlogHolder();
             }
 
@@ -143,7 +152,8 @@ class _RouteBLogState extends State<RouteBLog>
               );
             }
 
-            return _buildEmptyOrErrorUI('No blogs yet. Pull down to refresh.');
+            return _buildEmptyOrErrorUI(
+                'No Route blogs yet. Pull down to refresh.');
           },
         ),
       ),

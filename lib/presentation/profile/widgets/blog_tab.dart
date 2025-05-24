@@ -45,10 +45,10 @@ class _BlogTabState extends State<BlogTab> with AutomaticKeepAliveClientMixin {
     scrollController = ScrollController();
     scrollController.addListener(_scrollListener);
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final cubit = context.read<GetBlogCubit>();
-      cubit.getBlog(GetBlogReq());
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   final cubit = context.read<GetBlogCubit>();
+    //   cubit.getBlog(GetBlogReq());
+    // });
   }
 
   @override
@@ -64,20 +64,20 @@ class _BlogTabState extends State<BlogTab> with AutomaticKeepAliveClientMixin {
     super.build(context);
     return BlocBuilder<GetBlogCubit, GetBlogState>(
       builder: (context, state) {
-        print('Building BlogTab with state: ${state.runtimeType}');
         if (state is GetBlogLoaded) {
           return RefreshIndicator(
             onRefresh: () async {
-              print('Refreshing blogs for userId: ${widget.userId}');
-              await context.read<GetBlogCubit>().getBlog(GetBlogReq());
+              await context
+                  .read<GetBlogCubit>()
+                  .getBlog(GetBlogReq(userId: widget.userId.toString()));
             },
             child: ListView.builder(
               physics: const AlwaysScrollableScrollPhysics(),
               scrollDirection: Axis.vertical,
               controller: scrollController,
-              itemCount: state.blogs.length + (state.isLoading! ? 1 : 0),
+              itemCount: state.blogs.length + (state.isLoading ? 1 : 0),
               itemBuilder: (context, index) {
-                if (index == state.blogs.length && state.isLoading!) {
+                if (index == state.blogs.length && state.isLoading) {
                   return const Padding(
                     padding: EdgeInsets.symmetric(vertical: 16.0),
                     child: Center(child: CircularProgressIndicator()),
@@ -96,7 +96,7 @@ class _BlogTabState extends State<BlogTab> with AutomaticKeepAliveClientMixin {
                     ),
                     child: NewFeeds(
                       isPersonal: true,
-                      key: ValueKey('blog_${state.blogs![index].blogId}'),
+                      key: ValueKey('blog_${state.blogs[index].blogId}'),
                       blogs: state.blogs[index],
                     ),
                   );

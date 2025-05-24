@@ -20,7 +20,6 @@ import '../bloc/comment/comment_input_state.dart';
 import '../bloc/comment/get_comment_state.dart';
 import '../bloc/comment/get_comment_cubit.dart';
 import '../bloc/comment/comment_input_cubit.dart';
-import '../bloc/get_blog_cubit.dart';
 import 'comment_input.dart';
 
 class Comment extends StatefulWidget {
@@ -110,8 +109,8 @@ class _CommentState extends State<Comment> {
               );
             },
             (success) {
-              // Giả sử success là ReplyCommentEntity hoặc một đối tượng chứa dữ liệu trả lời
               final newReply = ReplyCommentEntity(
+                  userAvatar: success.userAvatar,
                   replyId: success.replyId,
                   cyclistId: success.cyclistId,
                   commentId: success.commentId,
@@ -154,8 +153,8 @@ class _CommentState extends State<Comment> {
               );
             },
             (success) {
-              // Giả sử success là ReplyCommentEntity
               final newReply = ReplyCommentEntity(
+                  userAvatar: success.userAvatar,
                   replyId: success.replyId,
                   cyclistId: success.cyclistId,
                   commentId: success.commentId,
@@ -257,11 +256,15 @@ class _CommentState extends State<Comment> {
                       padding: EdgeInsets.symmetric(
                           horizontal: 20.h, vertical: 10.h),
                       child: CommentItem(
+                        onReply: (reply) async {
+                          _commentInputCubit.updateToReplyToReply(reply);
+                          FocusScope.of(context).requestFocus(FocusNode());
+                        },
                         comment: comment,
                         replyCount: comment.replyCount,
                         onViewMoreReviewTap: () async {},
                         onReact: () async {},
-                        onReply: () async {
+                        onCmt: () async {
                           _commentInputCubit.updateToReplyComment(comment);
                           FocusScope.of(context).requestFocus(FocusNode());
                         },

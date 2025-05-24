@@ -1,3 +1,4 @@
+import 'package:Tracio/presentation/blog/bloc/create_blog_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:Tracio/common/helper/navigator/app_navigator.dart';
@@ -13,6 +14,7 @@ import '../../../common/widget/button/button.dart';
 import '../../../common/widget/input_text_form_field.dart';
 import '../../../core/configs/theme/assets/app_images.dart';
 import '../../../core/constants/app_size.dart';
+import '../../../core/erorr/failure.dart';
 import '../widgets/button_auth.dart';
 
 class RegisterPage extends StatelessWidget {
@@ -132,6 +134,7 @@ class RegisterPage extends StatelessWidget {
                             height: 20.h,
                           ),
                           InputTextFormField(
+                            maxLine: 1,
                             controller: _passwordCon,
                             labelText: 'Password',
                             hint: 'Password',
@@ -200,36 +203,6 @@ class RegisterPage extends StatelessWidget {
     );
   }
 
-  Widget _phoneField(
-    BuildContext context,
-  ) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-      child: Container(
-        // color: AppColors.secondBackground,
-        // height: MediaQuery.of(context).size.height,
-        decoration: BoxDecoration(boxShadow: [
-          BoxShadow(
-              color: Colors.black.withOpacity(.2),
-              blurRadius: 15,
-              spreadRadius: 2,
-              offset: Offset(0, 15))
-        ]),
-        child: TextField(
-          decoration: InputDecoration(
-              filled: true,
-              prefixIcon: Icon(
-                Icons.phone,
-                color: Colors.black,
-              ),
-              hintText: 'Phone Number',
-              fillColor: Colors.white,
-              contentPadding: EdgeInsets.symmetric(vertical: 15)),
-        ),
-      ),
-    );
-  }
-
   Widget _buttonRegister(BuildContext context) {
     return GestureDetector(
         onTap: () async {
@@ -245,17 +218,32 @@ class RegisterPage extends StatelessWidget {
           }
 
           result.fold((l) {
-            var snackbar = SnackBar(
-              content: Text('Register Failure! Please try again'),
-              behavior: SnackBarBehavior.floating,
-            );
+            late SnackBar snackbar;
+
+            if (l is CredentialFailure) {
+              snackbar = SnackBar(
+                content: Text(
+                    'Your email is not verified, please check your email or verify again.'),
+                behavior: SnackBarBehavior.floating,
+              );
+            } else if (l is ExceptionFailure) {
+              snackbar = SnackBar(
+                content:
+                    Text(l.message ?? 'Register failed with unexpected error'),
+                behavior: SnackBarBehavior.floating,
+              );
+            } else {
+              snackbar = SnackBar(
+                content: Text('Register Failure! Please try again'),
+                behavior: SnackBarBehavior.floating,
+              );
+            }
+
             ScaffoldMessenger.of(context).showSnackBar(snackbar);
           }, (r) {
-            Future.microtask(
-              () {
-                AppNavigator.pushReplacement(context, LoginPage());
-              },
-            );
+            Future.microtask(() {
+              AppNavigator.pushReplacement(context, LoginPage());
+            });
           });
         },
         child:
@@ -298,19 +286,6 @@ class RegisterPage extends StatelessWidget {
           fillColor: Colors.white,
           textColor: Colors.black,
           borderColor: Colors.green,
-          iconSize: AppSize.iconSmall,
-          fontSize: AppSize.textMedium,
-        ),
-        SizedBox(height: 20.h),
-        ButtonDesign(
-          ontap: () {
-            AppNavigator.push(context, LoginPhone());
-          },
-          text: "Phone Number",
-          image: AppImages.logoPhone,
-          fillColor: Colors.white,
-          textColor: Colors.black,
-          borderColor: Colors.black,
           iconSize: AppSize.iconSmall,
           fontSize: AppSize.textMedium,
         ),

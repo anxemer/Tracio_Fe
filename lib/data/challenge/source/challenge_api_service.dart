@@ -18,6 +18,7 @@ abstract class ChallengeApiService {
   Future<List<ChallengeRewardEntity>> getRewardUser(int userId);
   Future<int> joinChallenge(int challengeId);
   Future<Either> leaveChallenge(int challengeId);
+  Future<Either> deleteChallenge(int challengeId);
   Future<ChallengeModel> creteChallenge(CreateChallengeReq challenge);
   Future<Either> requestChallenge(int challengeId);
   Future<ParticipantsResponseModel> getParticipant(int challengeId);
@@ -153,7 +154,18 @@ class ChallengeApiServiceImpl extends ChallengeApiService {
   @override
   Future<Either> requestChallenge(int challengeId) async {
     try {
-      await sl<DioClient>().delete('${ApiUrl.requestChallenge}/$challengeId');
+      await sl<DioClient>().patch('${ApiUrl.requestChallenge}/$challengeId');
+
+      return Right(true);
+    } on DioException catch (e) {
+      throw ServerFailure(e.toString());
+    }
+  }
+
+  @override
+  Future<Either> deleteChallenge(int challengeId) async {
+    try {
+      await sl<DioClient>().delete('${ApiUrl.apiChallenge}/$challengeId');
 
       return Right(true);
     } on DioException catch (e) {

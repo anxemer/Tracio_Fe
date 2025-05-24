@@ -1,7 +1,9 @@
+import 'dart:io';
+
 import 'package:Tracio/data/user/models/edit_user_profile_req.dart';
 import 'package:Tracio/data/user/models/resolve_follow_request_req.dart';
 import 'package:Tracio/domain/user/entities/daily_activity_entity.dart';
-import 'package:Tracio/domain/user/entities/follow_request_entity.dart';
+import 'package:Tracio/domain/user/entities/follow_entity.dart';
 import 'package:dartz/dartz.dart';
 import 'package:Tracio/core/erorr/exception.dart';
 import 'package:Tracio/data/user/source/user_api_source.dart';
@@ -75,7 +77,7 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
   }
 
   @override
-  Future<Either<Failure, List<FollowRequestEntity>>> getFollowRequest() async {
+  Future<Either<Failure, List<FollowEntity>>> getFollowRequest() async {
     try {
       final follow = await dataSource.getFollowRequest();
       return Right(follow);
@@ -94,6 +96,42 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
       return Left(ServerFailure('Get User profile failure'));
     } on AuthenticationFailure {
       throw AuthenticationFailure('UnAuthentication');
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<FollowEntity>>> getFollower(int userId) async {
+    try {
+      final follow = await dataSource.getFollower(userId);
+      return Right(follow);
+    } on ServerException {
+      return Left(ServerFailure('Get User profile failure'));
+    } on AuthenticationFailure {
+      return Left(AuthenticationFailure('Unauthentication'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<FollowEntity>>> getFollowing(int userId) async {
+    try {
+      final follow = await dataSource.getFollowing(userId);
+      return Right(follow);
+    } on ServerException {
+      return Left(ServerFailure('Get User profile failure'));
+    } on AuthenticationFailure {
+      return Left(AuthenticationFailure('Unauthentication'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, UserProfileEntity>> updateAvatar(File avatar) async {
+    try {
+      final userProfile = await dataSource.updateAvatar(avatar);
+      return Right(userProfile);
+    } on ServerException {
+      return Left(ServerFailure('Get User profile failure'));
+    } on AuthenticationFailure {
+      return Left(AuthenticationFailure('UnAuthentication'));
     }
   }
 }

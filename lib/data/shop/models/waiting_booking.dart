@@ -56,7 +56,7 @@ class ConfirmBookingModel {
       "userNote": userNote,
       "shopNote": shopNote,
       "reason": reason,
-      "readjustPriceReasonason": adjustPriceReason,
+      "adjustPriceReason": adjustPriceReason,
       "price": price,
       "bookingId": bookingId,
     };

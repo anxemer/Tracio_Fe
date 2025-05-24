@@ -40,7 +40,7 @@ final class GetServiceLoaded extends GetServiceState {
 final class GetServiceFailure extends GetServiceState {
   final String message;
   const GetServiceFailure(
-      super.service, super.metaData, super.params, super.shop, this.message);
+      super.service, super.shop, super.metaData, super.params, this.message);
 
   @override
   List<Object> get props => [];

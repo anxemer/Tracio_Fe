@@ -1,4 +1,6 @@
+import 'package:Tracio/data/auth/sources/auth_local_source/auth_local_source.dart';
 import 'package:Tracio/domain/auth/entities/user.dart' show UserEntity;
+import 'package:Tracio/service_locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:Tracio/common/helper/navigator/app_navigator.dart';
@@ -10,22 +12,22 @@ import 'package:Tracio/presentation/library/pages/library.dart';
 import 'package:Tracio/presentation/auth/pages/login.dart';
 import 'package:Tracio/presentation/map/pages/route_planner.dart';
 
-import '../../../common/helper/placeholder/service_card.dart';
 import '../../auth/bloc/authCubit/auth_cubit.dart';
 import '../../auth/bloc/authCubit/auth_state.dart';
+import '../../profile/pages/user_profile.dart';
 
 class MorePage extends StatelessWidget {
   const MorePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // final state = context.read<AuthCubit>().state;
-    // UserEntity? user;
+    final state = context.read<AuthCubit>().state;
+    UserEntity? user = sl<AuthLocalSource>().getUser();
 
     // if (state is AuthLoaded) {
-    //   user = state.user;
+    //   user = state.user!;
     // } else if (state is AuthChangeRole) {
-    //   user = state.user;
+    //   user = state.user!;
     // }
     return Scaffold(
         appBar: BasicAppbar(
@@ -40,31 +42,40 @@ class MorePage extends StatelessWidget {
           hideBack: true,
         ),
         body: ListView(children: [
-          // ListTile(
-          //   leading: CirclePicture(
-          //       imageUrl: user!.profilePicture!, imageSize: AppSize.iconLarge),
-          //   // CircleAvatar(
-          //   //   backgroundImage:
-          //   //       NetworkImage(user.profilePicture),
-          //   //   radius: 20.w,
-          //   // ),
-          //   title: Column(
-          //     crossAxisAlignment: CrossAxisAlignment.start,
-          //     children: [
-          //       Text('My Profile'),
-          //       Text(
-          //         user.email!,
-          //         style: TextStyle(
-          //           fontSize: AppSize.textSmall.sp,
-          //           color: Colors.black54,
-          //         ),
-          //       ),
-          //     ],
-          //   ),
-          //   onTap: () {
-          //     Navigator.pushNamed(context, '/profile');
-          //   },
-          // ),
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 8),
+            child: ListTile(
+              leading: CirclePicture(
+                  imageUrl: user?.profilePicture ?? '',
+                  imageSize: AppSize.iconLarge),
+              // CircleAvatar(
+              //   backgroundImage:
+              //       NetworkImage(user.profilePicture),
+              //   radius: 20.w,
+              // ),
+              title: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('My Profile'),
+                  Text(
+                    user?.email ?? '',
+                    style: TextStyle(
+                      fontSize: AppSize.textSmall.sp,
+                      color: Colors.black54,
+                    ),
+                  ),
+                ],
+              ),
+              onTap: () {
+                AppNavigator.push(
+                    context,
+                    UserProfilePage(
+                      userId: user?.userId,
+                      myProfile: true,
+                    ));
+              },
+            ),
+          ),
           Divider(),
           ListTile(
             leading: Icon(Icons.library_books, color: Colors.black54),

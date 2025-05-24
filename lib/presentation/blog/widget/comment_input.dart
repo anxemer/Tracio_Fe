@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:Tracio/data/auth/sources/auth_local_source/auth_local_source.dart';
+import 'package:Tracio/service_locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -139,14 +141,8 @@ class _CommentInputWidgetState extends State<CommentInputWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final state = context.read<AuthCubit>().state;
-    UserEntity? user;
+    UserEntity? user = sl<AuthLocalSource>().getUser();
 
-    if (state is AuthLoaded) {
-      user = state.user;
-    } else if (state is AuthChangeRole) {
-      user = state.user;
-    }
     final inputData = widget.inputData;
 
     return Container(

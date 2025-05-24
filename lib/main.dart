@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:Tracio/core/services/location/location_service.dart';
 import 'package:Tracio/core/services/signalR/implement/notification_hub_service.dart';
 import 'package:Tracio/presentation/notifications/bloc/notification_bloc.dart';
-import 'package:Tracio/presentation/notifications/page/notifications.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -17,9 +16,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:Tracio/common/bloc/filter_cubit.dart';
 import 'package:Tracio/common/bloc/generic_data_cubit.dart';
-import 'package:Tracio/core/services/notifications/notification_service.dart';
 import 'package:Tracio/core/configs/theme/app_theme.dart';
-import 'package:Tracio/core/signalr_service.dart';
 import 'package:Tracio/firebase_options.dart';
 import 'package:Tracio/presentation/chat/bloc/bloc/conversation_bloc.dart';
 import 'package:Tracio/presentation/groups/cubit/group_cubit.dart';
@@ -134,7 +131,7 @@ class _MyAppState extends State<MyApp> {
           'senderAvatar': message.senderAvatar, // Thêm senderAvatar
           'message': message.message, // Thêm message
           'isRead': message.isRead, // Thêm isRead
-          'createdAt': message.createdAt, // Thêm createdAt
+          'createdAt': message.createdAt.toIso8601String(),
           'messageId': message.messageId, // Thêm messageId
         });
 
@@ -224,7 +221,7 @@ class _MyAppState extends State<MyApp> {
           ),
           BlocProvider(create: (context) => GetReviewCubit()),
 
-          BlocProvider(create: (context) => AuthCubit()..checkUser()),
+          BlocProvider(create: (context) => AuthCubit()),
           BlocProvider(create: (context) => GenericDataCubit()),
           BlocProvider(
               create: (context) => TrackingBloc(di.sl<LocationService>())),

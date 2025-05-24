@@ -36,10 +36,10 @@ class AuthApiServiceImpl extends AuthApiService {
     await sl<AuthFirebaseService>().changePasswordFirebase(params.password);
     if (response.statusCode == 201) {
       return Right(true);
-    } else if (response.data == 400) {
+    } else if (response.statusCode == 400) {
       throw CredentialFailure(response.data['message']);
     } else {
-      throw ServerException();
+      throw ExceptionFailure(response.data['message']);
     }
   }
 
@@ -75,7 +75,7 @@ class AuthApiServiceImpl extends AuthApiService {
     } else if (response.statusCode == 400) {
       throw CredentialFailure("Lỗi server: ${response.data['message']}");
     } else {
-      throw ServerException();
+      throw AuthenticationFailure('UnAuthentication');
     }
   }
 

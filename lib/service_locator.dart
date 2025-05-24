@@ -1,10 +1,11 @@
 import 'package:Tracio/core/services/location/location_service.dart';
 import 'package:Tracio/core/services/signalR/implement/notification_hub_service.dart';
 import 'package:Tracio/data/blog/repositories/blog_repository_impl.dart';
-import 'package:Tracio/data/challenge/models/request/create_challenge_req.dart';
+import 'package:Tracio/domain/auth/usecases/send_fcm.dart';
 import 'package:Tracio/domain/blog/usecase/edit_blog.dart';
 import 'package:Tracio/domain/challenge/usecase/create_challenge.dart';
-import 'package:Tracio/domain/challenge/usecase/get_user_reward.dart';
+import 'package:Tracio/domain/challenge/usecase/delete_challenge.dart';
+import 'package:Tracio/domain/challenge/usecase/leave_challenge.dart';
 import 'package:Tracio/domain/groups/usecases/update_group_route_status_usecase.dart';
 import 'package:Tracio/domain/map/usecase/delete_route_media_usecase.dart';
 import 'package:Tracio/domain/map/usecase/delete_route_usecase.dart';
@@ -16,8 +17,10 @@ import 'package:Tracio/domain/challenge/usecase/request_challenge.dart';
 import 'package:Tracio/domain/user/usecase/edit_profile.dart';
 import 'package:Tracio/domain/user/usecase/get_daily_activity.dart';
 import 'package:Tracio/domain/user/usecase/get_follow_request.dart';
+import 'package:Tracio/domain/user/usecase/get_follower.dart';
 import 'package:Tracio/domain/user/usecase/resolve_follow_request.dart';
 import 'package:Tracio/domain/user/usecase/unfollow_user..dart';
+import 'package:Tracio/domain/user/usecase/update_avatar.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
@@ -27,11 +30,9 @@ import 'package:Tracio/core/services/signalR/implement/chat_hub_service.dart';
 import 'package:Tracio/core/services/signalR/implement/group_route_hub_service.dart';
 import 'package:Tracio/core/services/signalR/implement/matching_hub_service.dart';
 import 'package:Tracio/core/services/signalR/signalr_core_service.dart';
-import 'package:Tracio/core/signalr_service.dart';
 import 'package:Tracio/data/auth/repositories/auth_repositoty_impl.dart';
 import 'package:Tracio/data/auth/sources/auth_remote_source/auth_api_service.dart';
 import 'package:Tracio/data/auth/sources/auth_remote_source/auth_firebase_service.dart';
-import 'package:Tracio/data/blog/repositories/blog_repository_impl.dart';
 import 'package:Tracio/data/blog/source/blog_api_service.dart';
 import 'package:Tracio/data/chat/repositories/chat_repository_impl.dart';
 import 'package:Tracio/data/chat/source/chat_api_service.dart';
@@ -171,7 +172,7 @@ import 'core/network/dio_client.dart';
 import 'data/auth/sources/auth_local_source/auth_local_source.dart';
 import 'domain/blog/usecase/rep_comment.dart';
 import 'domain/blog/usecase/un_react_blog.dart';
-import 'domain/challenge/usecase/leave_challenge.dart';
+import 'domain/user/usecase/get_following.dart';
 
 final sl = GetIt.instance;
 
@@ -229,7 +230,7 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton<ChallengeRepository>(
       () => ChallengeRepositoryImpl(remoteDataSource: sl()));
   // * gRPC & Hubs
-  sl.registerLazySingleton(() => SignalRCoreService());
+  sl.registerSingleton(SignalRCoreService());
   sl.registerLazySingleton<ITrackingGrpcService>(
     () => TrackingGrpcService(),
   );
@@ -378,5 +379,15 @@ Future<void> initializeDependencies() async {
   sl.registerFactory<ResolveFollowUserUseCase>(
       () => ResolveFollowUserUseCase());
   sl.registerFactory<RequestChallengeUseCase>(() => RequestChallengeUseCase());
+
+  sl.registerFactory<CreateChallengeUseCase>(() => CreateChallengeUseCase());
+  sl.registerFactory<SendFcmUseCase>(() => SendFcmUseCase());
+  sl.registerFactory<LeaveChallengeUseCase>(() => LeaveChallengeUseCase());
+  sl.registerFactory<DeleteChallengeUseCase>(() => DeleteChallengeUseCase());
+  sl.registerFactory<GetFollowerUseCase>(() => GetFollowerUseCase());
+  sl.registerFactory<GetFollowingUseCase>(() => GetFollowingUseCase());
+  sl.registerFactory<UpdateAvatarUseCase>(() => UpdateAvatarUseCase());
+
   sl.registerFactory<DeleteRouteUsecase>(() => DeleteRouteUsecase());
+
 }

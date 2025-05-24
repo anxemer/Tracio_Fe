@@ -58,7 +58,7 @@ class PlanServiceIcon extends StatelessWidget {
               },
               child: Icon(Icons.edit_calendar_rounded,
                   color: isActive ? AppColors.primary : Colors.grey.shade600,
-                  size: AppSize.iconSmall),
+                  size: AppSize.iconMedium),
             ),
             //  IconButton(
             //   padding: EdgeInsets.zero,

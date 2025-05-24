@@ -92,8 +92,8 @@ class _DetailServicePageState extends State<DetailServicePage> {
                                   state.detailService.service.serviceName!,
                                   state.detailService.service.formattedDuration,
                                   state.detailService.service.formattedPrice,
-                                  state
-                                      .detailService.service.formattedDistance),
+                                  state.detailService.service.formattedDistance,
+                                  state.detailService.service.categoryName!),
                               SizedBox(
                                 height: 10.h,
                               ),
@@ -364,8 +364,8 @@ class _DetailServicePageState extends State<DetailServicePage> {
     );
   }
 
-  Padding buildTitle(
-      String serviceName, String duration, String price, String distance) {
+  Padding buildTitle(String serviceName, String duration, String price,
+      String distance, String category) {
     var isDark = context.isDarkMode;
     return Padding(
         padding: EdgeInsets.symmetric(horizontal: 16),
@@ -433,6 +433,39 @@ class _DetailServicePageState extends State<DetailServicePage> {
                     ],
                   ),
                 ],
+              ),
+              SizedBox(height: 10.h),
+              Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: AppSize.apHorizontalPadding * .8.h,
+                ),
+                height: 28,
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  border: Border.all(color: AppColors.secondBackground),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.card_travel_rounded,
+                      color: isDark
+                          ? AppColors.secondBackground
+                          : AppColors.background,
+                      size: AppSize.iconSmall,
+                    ),
+                    SizedBox(width: 4.w),
+                    Text(
+                      category,
+                      style: TextStyle(
+                        color: isDark ? Colors.grey.shade300 : Colors.black87,
+                        fontWeight: FontWeight.w600,
+                        fontSize: AppSize.textSmall,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),

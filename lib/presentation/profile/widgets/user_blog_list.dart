@@ -1,3 +1,4 @@
+import 'package:Tracio/data/blog/models/request/get_blog_req.dart';
 import 'package:Tracio/presentation/blog/bloc/comment/get_comment_cubit.dart';
 import 'package:Tracio/presentation/blog/bloc/get_blog_cubit.dart';
 import 'package:Tracio/presentation/service/bloc/get_booking/get_booking_cubit.dart';
@@ -24,25 +25,16 @@ class _UserBlogListState extends State<UserBlogList> {
   @override
   Widget build(BuildContext context) {
     var isDark = context.isDarkMode;
-    print(
-        'Building UserBlogList for userId: ${widget.userId}, userName: ${widget.userName}');
+
     return MultiBlocProvider(
       providers: [
         BlocProvider(
           create: (context) {
-            print('Creating GetBlogCubit');
-            return GetBlogCubit();
-          },
-        ),
-        BlocProvider(
-          create: (context) {
-            print('Creating GetBookingCubit');
             return GetBookingCubit();
           },
         ),
         BlocProvider(
           create: (context) {
-            print('Creating GetCommentCubit');
             return GetCommentCubit();
           },
         ),
@@ -106,9 +98,21 @@ class _UserBlogListState extends State<UserBlogList> {
               ),
               Expanded(
                 child: TabBarView(
+                  physics: NeverScrollableScrollPhysics(),
                   children: [
-                    BlogTab(userId: widget.userId),
-                    BookmarkBlogTab(),
+                    BlocProvider(
+                      create: (context) => GetBlogCubit()
+                        ..getBlog(GetBlogReq(userId: widget.userId.toString())),
+                      child: BlogTab(userId: widget.userId),
+                    ),
+                    BlocProvider(
+                      create: (context) => GetBlogCubit()
+                        ..getBookmarkBlog(
+                            GetBlogReq(userId: widget.userId.toString())),
+                      child: BookmarkBlogTab(
+                        userId: widget.userId,
+                      ),
+                    ),
                   ],
                 ),
               ),

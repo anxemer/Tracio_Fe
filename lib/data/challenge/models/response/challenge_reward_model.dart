@@ -18,7 +18,8 @@ class ChallengeRewardModel extends ChallengeRewardEntity {
       name: json["name"],
       description: json["description"],
       imageUrl: json["imageUrl"],
-      createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
+      createdAt:
+          json["earnedAt"] != null ? DateTime.tryParse(json["earnedAt"]) : null,
     );
   }
 
@@ -29,6 +30,6 @@ class ChallengeRewardModel extends ChallengeRewardEntity {
         "name": name,
         "description": description,
         "imageUrl": imageUrl,
-        "createdAt": createdAt?.toIso8601String(),
+        "earnedAt": createdAt?.toIso8601String(),
       };
 }

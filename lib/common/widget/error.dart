@@ -5,7 +5,8 @@ import '../../core/configs/theme/assets/app_images.dart';
 import '../../core/constants/app_size.dart';
 
 class ErrorPage extends StatelessWidget {
-  const ErrorPage({super.key});
+  const ErrorPage({super.key, this.text});
+  final String? text;
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +21,7 @@ class ErrorPage extends StatelessWidget {
               width: AppSize.imageLarge,
             ),
             SizedBox(height: 16.h),
-            Text('No blogs yet. Pull down to refresh.'),
+            Text(text ?? 'No blogs yet. Pull down to refresh.'),
           ],
         ),
       ),
