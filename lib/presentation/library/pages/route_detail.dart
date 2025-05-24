@@ -68,11 +68,20 @@ class _RouteDetailScreenState extends State<RouteDetailScreen> with RouteAware {
                 if (state is GetRouteDetailLoaded &&
                     context.read<MapCubit>().mapboxMap != null) {
                   await context.read<MapCubit>().clearAnnotations();
+                  //Border
+                  await context.read<MapCubit>().addPolylineRoute(
+                      _getLineString(state.route.polyline),
+                      lineOpacity: 1,
+                      lineColor: Colors.white,
+                      lineWidth: 6);
+                  //Polyline
                   await context.read<MapCubit>().addPolylineRoute(
                       _getLineString(state.route.polyline),
                       lineOpacity: 1,
                       lineColor: AppColors.primary,
-                      lineWidth: 10);
+                      lineBorderWidth: 0,
+                      lineWidth: 4);
+
                   moveToFitOriginDestination(
                       state.route.origin, state.route.destination);
                 }
