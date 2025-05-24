@@ -7,6 +7,7 @@ import 'package:Tracio/domain/challenge/usecase/create_challenge.dart';
 import 'package:Tracio/domain/challenge/usecase/get_user_reward.dart';
 import 'package:Tracio/domain/groups/usecases/update_group_route_status_usecase.dart';
 import 'package:Tracio/domain/map/usecase/delete_route_media_usecase.dart';
+import 'package:Tracio/domain/map/usecase/delete_route_usecase.dart';
 import 'package:Tracio/domain/map/usecase/edit_route_tracking_usecase.dart';
 import 'package:Tracio/domain/map/usecase/get_ongoing_route_usecase.dart';
 import 'package:Tracio/domain/map/usecase/get_route_media_usecase.dart';
@@ -377,4 +378,5 @@ Future<void> initializeDependencies() async {
   sl.registerFactory<ResolveFollowUserUseCase>(
       () => ResolveFollowUserUseCase());
   sl.registerFactory<RequestChallengeUseCase>(() => RequestChallengeUseCase());
+  sl.registerFactory<DeleteRouteUsecase>(() => DeleteRouteUsecase());
 }

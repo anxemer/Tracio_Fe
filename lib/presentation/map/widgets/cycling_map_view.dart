@@ -202,9 +202,6 @@ class _CyclingMapViewState extends State<CyclingMapView>
                         mapbox.MapAnimationOptions(
                             duration: 100, startDelay: 0),
                       );
-                      setState(() {
-                        tempRouteList.add(location);
-                      });
 
                       if (_lastDrawnPoint != null) {
                         final segment = mapbox.LineString(coordinates: [
@@ -216,6 +213,10 @@ class _CyclingMapViewState extends State<CyclingMapView>
                       }
 
                       _lastDrawnPoint = newPoint;
+
+                      setState(() {
+                        tempRouteList.add(location);
+                      });
                       if (routeId != null && tempRouteList.length >= 20) {
                         final grpcLocations = tempRouteList.map((pos) {
                           final dateTime = pos.timestamp;
@@ -242,7 +243,12 @@ class _CyclingMapViewState extends State<CyclingMapView>
                     key: const ValueKey("mapWidget"),
                     cameraOptions: mapCubit.camera,
                     onMapCreated: (map) async {
-                      mapCubit.initializeMap(map);
+                      mapCubit.initializeMap(map,
+                          locationSetting: mapbox.LocationComponentSettings(
+                            enabled: true,
+                            showAccuracyRing: true,
+                            puckBearingEnabled: true,
+                          ));
 
                       isMapInitialized = true;
                       WidgetsBinding.instance.addPostFrameCallback((_) {

@@ -44,4 +44,5 @@ abstract class RouteRepository {
   Future<Either<Failure, RouteMediaEntity>> postRouteMediaFiles(
       PostRouteMediaReq request);
   Future<Either<Failure, dynamic>> deleteRouteMediaFiles(int pictureId);
+  Future<Either<Failure, dynamic>> deleteRoute(int routeId);
 }

@@ -51,8 +51,6 @@ import 'presentation/shop_owner/bloc/resolve_booking/resolve_booking_cubit.dart'
 import 'presentation/shop_owner/bloc/service_management/service_management_cubit.dart';
 import 'service_locator.dart' as di;
 
-import 'service_locator.dart';
-
 final RouteObserver<ModalRoute<void>> routeObserver =
     RouteObserver<ModalRoute<void>>();
 
@@ -78,7 +76,7 @@ Future<void> main() async {
   }
   // await SignalRService().initConnection();
   await di.initializeDependencies();
-  final locationReady = await sl<LocationService>().initialize();
+  final locationReady = await di.sl<LocationService>().initialize();
   if (!locationReady) {
     debugPrint("❌ Location not available at launch.");
   }
@@ -115,7 +113,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final _notiService = sl<NotificationHubService>();
+  final _notiService = di.sl<NotificationHubService>();
   late final StreamSubscription<NotificationModel> _messageSubscription;
 
   static final GlobalKey<NavigatorState> navigatorKey =
@@ -229,7 +227,7 @@ class _MyAppState extends State<MyApp> {
           BlocProvider(create: (context) => AuthCubit()..checkUser()),
           BlocProvider(create: (context) => GenericDataCubit()),
           BlocProvider(
-              create: (context) => TrackingBloc(sl<LocationService>())),
+              create: (context) => TrackingBloc(di.sl<LocationService>())),
           BlocProvider(create: (context) => RouteCubit()),
           BlocProvider(create: (context) => GroupCubit()),
           BlocProvider(create: (context) => ThemeCubit()),

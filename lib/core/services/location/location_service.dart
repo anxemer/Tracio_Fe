@@ -131,7 +131,7 @@ class LocationService {
     // 3️⃣ Throttle filter adjustment
     EasyThrottle.throttle(
       'distance-filter-throttle',
-      const Duration(seconds: 10),
+      const Duration(seconds: 5),
       () => _adjustDistanceFilter(speedKmh),
     );
 
@@ -235,7 +235,7 @@ class LocationService {
     if (defaultTargetPlatform == TargetPlatform.android) {
       return AndroidSettings(
         accuracy: LocationAccuracy.high,
-        distanceFilter: 1,
+        distanceFilter: 0,
         forceLocationManager: _forceLocationManager,
         foregroundNotificationConfig: const ForegroundNotificationConfig(
           notificationText:
@@ -250,20 +250,20 @@ class LocationService {
       return AppleSettings(
         accuracy: LocationAccuracy.high,
         activityType: ActivityType.fitness,
-        distanceFilter: 1,
+        distanceFilter: 0,
         pauseLocationUpdatesAutomatically: true,
         showBackgroundLocationIndicator: false,
       );
     } else if (kIsWeb) {
       return WebSettings(
         accuracy: LocationAccuracy.high,
-        distanceFilter: 1,
+        distanceFilter: 0,
         maximumAge: Duration(minutes: 5),
       );
     } else {
       return LocationSettings(
         accuracy: LocationAccuracy.high,
-        distanceFilter: 1,
+        distanceFilter: 0,
       );
     }
   }
@@ -292,13 +292,13 @@ class LocationService {
 
   int calculateAdaptiveDistanceFilter(double speedKmh) {
     if (speedKmh < 5) {
-      return 3; // walking or idle
+      return 0; // walking or idle
     } else if (speedKmh < 15) {
-      return 5; // jogging
+      return 2; // jogging
     } else if (speedKmh < 30) {
-      return 7; // cycling
+      return 5; // cycling
     } else {
-      return 9; // driving/motorbike
+      return 5; // driving/motorbike
     }
   }
 

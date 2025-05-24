@@ -42,6 +42,19 @@ class _CyclingPageState extends State<CyclingPage> {
   bool isLocked = false;
   CarouselSliderController carouselController = CarouselSliderController();
 
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final state = context.read<TrackingBloc>().state;
+      if (state is TrackingInProgress) {
+        setState(() {
+          showHoldOptions = state.isPaused;
+        });
+      }
+    });
+  }
+
   void _onStartPressed() async {
     context.read<TrackingBloc>().add(RequestStartTracking());
   }
@@ -71,6 +84,9 @@ class _CyclingPageState extends State<CyclingPage> {
       final groupRouteId = joinedGroupRoutes.first;
       await sl<GroupRouteHubService>().leaveGroupRoute(groupRouteId);
     }
+    setState(() {
+      showHoldOptions = false;
+    });
   }
 
   @override
@@ -219,8 +235,8 @@ class _CyclingPageState extends State<CyclingPage> {
                                   route.origin.latitude),
                               mp.Position(route.destination.longitude,
                                   route.destination.latitude),
-                              width: 400,
-                              height: 400,
+                              width: MediaQuery.of(context).size.width.toInt(),
+                              height: 180.h.toInt(),
                             ),
                           child: BlocProvider.value(
                             value: context.read<RouteCubit>(),
@@ -302,6 +318,14 @@ class _CyclingPageState extends State<CyclingPage> {
 
                   //Show when tracking
                   BlocBuilder<TrackingBloc, TrackingState>(
+                    buildWhen: (prev, curr) {
+                      if (prev is TrackingInProgress &&
+                          curr is TrackingInProgress) {
+                        return prev.isPaused != curr.isPaused ||
+                            prev.polyline != curr.polyline;
+                      }
+                      return prev.runtimeType != curr.runtimeType;
+                    },
                     builder: (context, state) {
                       if (state is TrackingInProgress) {
                         return Positioned(

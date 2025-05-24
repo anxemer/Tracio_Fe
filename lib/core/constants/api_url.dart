@@ -399,4 +399,6 @@ class ApiUrl {
     return Uri.parse(
         "$portGroup/api/group/$groupId/route/$groupRouteId/status");
   }
+
+  static Uri urlDeleteRoute = Uri.parse("$portRoute/api/route");
 }

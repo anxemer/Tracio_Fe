@@ -214,4 +214,14 @@ class RouteRepositoryImpl extends RouteRepository {
       return right(data);
     });
   }
+
+  @override
+  Future<Either<Failure, dynamic>> deleteRoute(int routeId) async {
+    var returnedData = await sl<RouteApiService>().deleteRoute(routeId);
+    return returnedData.fold((error) {
+      return left(error);
+    }, (data) {
+      return right(data);
+    });
+  }
 }

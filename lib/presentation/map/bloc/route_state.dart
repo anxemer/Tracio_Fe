@@ -159,3 +159,12 @@ class UpdateRouteFailure extends RouteState {
   final String errorMessage;
   UpdateRouteFailure({required this.errorMessage});
 }
+
+class DeleteRouteLoading extends RouteState {}
+
+class DeleteRouteSuccess extends RouteState {}
+
+class DeleteRouteFailure extends RouteState {
+  final String errorMessage;
+  DeleteRouteFailure({required this.errorMessage});
+}

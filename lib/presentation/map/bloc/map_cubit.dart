@@ -156,8 +156,9 @@ class MapCubit extends Cubit<MapCubitState> {
       Color lineBorderColor = Colors.white,
       double lineBorderWidth = 1.0}) async {
     try {
-      polylineAnnotationManager ??=
-          await mapboxMap?.annotations.createPolylineAnnotationManager();
+      polylineAnnotationManager ??= await mapboxMap?.annotations
+          .createPolylineAnnotationManager(
+              id: "polyline-layer", below: "mapbox-location-indicator-layer");
 
       final polylineOptions = PolylineAnnotationOptions(
         geometry: lineString,
