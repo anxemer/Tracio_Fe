@@ -1,0 +1,2 @@
+D:/SEMESTER9/CAPSTONE/FE/tracio_fe/android/app/.cxx/RelWithDebInfo/a2q3j2a3/x86/CMakeFiles/edit_cache.dir
+D:/SEMESTER9/CAPSTONE/FE/tracio_fe/android/app/.cxx/RelWithDebInfo/a2q3j2a3/x86/CMakeFiles/rebuild_cache.dir
