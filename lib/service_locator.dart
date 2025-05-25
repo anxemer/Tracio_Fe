@@ -379,7 +379,6 @@ Future<void> initializeDependencies() async {
   sl.registerFactory<ResolveFollowUserUseCase>(
       () => ResolveFollowUserUseCase());
   sl.registerFactory<RequestChallengeUseCase>(() => RequestChallengeUseCase());
-
   sl.registerFactory<CreateChallengeUseCase>(() => CreateChallengeUseCase());
   sl.registerFactory<SendFcmUseCase>(() => SendFcmUseCase());
   sl.registerFactory<LeaveChallengeUseCase>(() => LeaveChallengeUseCase());
@@ -387,7 +386,5 @@ Future<void> initializeDependencies() async {
   sl.registerFactory<GetFollowerUseCase>(() => GetFollowerUseCase());
   sl.registerFactory<GetFollowingUseCase>(() => GetFollowingUseCase());
   sl.registerFactory<UpdateAvatarUseCase>(() => UpdateAvatarUseCase());
-
   sl.registerFactory<DeleteRouteUsecase>(() => DeleteRouteUsecase());
-
 }
