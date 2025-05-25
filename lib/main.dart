@@ -151,51 +151,51 @@ class _MyAppState extends State<MyApp> {
       NotificationModel message, NotificationType type) {
     switch (type) {
       case NotificationType.commentBlog:
-        return 'New Blog Comment';
+        return 'New Comment';
       case NotificationType.blogReplyReReply:
-        return 'Reply to Your Comment';
+        return 'New Reply';
       case NotificationType.blogReplyComment:
-        return 'Reply to Blog Comment';
+        return 'Replied to Comment';
       case NotificationType.reactionComment:
-        return 'Comment Reaction';
+        return 'Comment Reacted';
       case NotificationType.reactionBlog:
-        return 'Blog Reaction';
+        return 'Blog Reacted';
       case NotificationType.blogReactionReply:
-        return 'Reply Reaction';
+        return 'Reply Reacted';
       case NotificationType.reviewService:
-        return 'Service Review';
+        return 'New Review';
       case NotificationType.replyReview:
-        return 'Reply to Review';
+        return 'Review Replied';
       case NotificationType.bookingService:
-        return 'Booking Update';
+        return 'Booking Updated';
       case NotificationType.reviewRoute:
-        return 'Route Review';
+        return 'Route Reviewed';
       case NotificationType.routeReactionRoute:
-        return 'Route Reaction';
+        return 'Route Reacted';
       case NotificationType.routeReplyReview:
-        return 'Reply to Route Review';
+        return 'Reply to Review';
       case NotificationType.routeReplyReReply:
-        return 'Reply to Route Comment';
+        return 'New Route Reply';
       case NotificationType.reactionReview:
-        return 'Review Reaction';
+        return 'Review Reacted';
       case NotificationType.routeReactionReply:
-        return 'Route Reply Reaction';
+        return 'Reply Reacted';
       case NotificationType.message:
         return 'New Message';
       case NotificationType.subscription:
-        return 'System Update';
+        return 'Subscription Notice';
       case NotificationType.route:
-        return 'Route Update';
+        return 'Route Notice';
       case NotificationType.user:
-        return 'User Action';
+        return 'Notification';
       case NotificationType.challenge:
         return 'New Challenge';
       case NotificationType.groupInvitation:
-        return 'Group Invitation';
+        return 'Group Invite';
       case NotificationType.group:
-        return 'Group Update';
+        return 'Group Notice';
       default:
-        return 'New Notification';
+        return 'Notification';
     }
   }
 

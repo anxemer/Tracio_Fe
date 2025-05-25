@@ -152,15 +152,15 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
     if (participants.listParticipants.isEmpty) {
       return const Center(child: Text("Leadboard Empty."));
     }
-
+    
     return Column(
       children: [
         Expanded(
           child: ListView.builder(
             itemCount: participants.listParticipants.length,
             itemBuilder: (context, index) {
-              return _buildLeaderboardRow(participants
-                  .listParticipants[index]); // Xây dựng widget cho mỗi hàng
+              return _buildLeaderboardRow(participants.listParticipants[index],
+                  true); // Xây dựng widget cho mỗi hàng
             },
           ),
         ),
@@ -169,14 +169,16 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
           height: 2,
           thickness: 10,
         ),
-        participants.currentUser.challengeRank! > 10
-            ? SizedBox.shrink()
-            : _buildLeaderboardRow(participants.currentUser)
+        if (participants.currentUser.challengeRank! > 10 ||
+            participants.currentUser.challengeRank! == 0)
+          _buildLeaderboardRow(participants.currentUser, false)
+        else
+          SizedBox.shrink()
       ],
-    );
+    );  
   }
 
-  Widget _buildLeaderboardRow(ParticipantsEntity participant) {
+  Widget _buildLeaderboardRow(ParticipantsEntity participant, bool inTop) {
     int? currentValue = (participant.progress != null)
         ? (participant.progress! * widget.goalValue).round()
         : null;
@@ -203,7 +205,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
           ),
           Expanded(
             child: Container(
-                color: rowColor,
+                color: inTop ? rowColor : null,
                 child: ListTile(
                   leading: CirclePicture(
                       imageUrl: participant.cyclistAvatarUrl!,
@@ -239,73 +241,5 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
         ],
       ),
     );
-
-    // Column(
-    //   mainAxisSize: MainAxisSize.min,
-    //   children: [
-    //     Padding(
-    //       padding:
-    //           const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
-    //       child: Row(
-    //         crossAxisAlignment: CrossAxisAlignment.center,
-    //         children: [
-    //           // Cột Thứ hạng
-    //           SizedBox(
-    //             width: 35,
-    //             child: Text(
-    //               participant.challengeRank.toString(),
-    //               style: TextStyle(
-    //                   fontSize: AppSize.textMedium.sp,
-    //                   color: Colors.grey.shade700,
-    //                   fontWeight: FontWeight.w500),
-    //             ),
-    //           ),
-    //           const SizedBox(width: 10), // Khoảng cách
-
-    //           // Cột Avatar
-    //           CirclePicture(
-    //               imageUrl: participant.cyclistAvatarUrl!,
-    //               imageSize: AppSize.iconSmall.sp),
-    //           const SizedBox(width: 12), // Khoảng cách
-
-    //           Expanded(
-    //             child: Text(
-    //               participant.cyclistName!,
-    //               maxLines: 1,
-    //               overflow: TextOverflow.ellipsis,
-    //               style: TextStyle(
-    //                   fontSize: AppSize.textMedium,
-    //                   fontWeight: nameWeight,
-    //                   color: Colors.black87),
-    //             ),
-    //           ),
-    //           const SizedBox(width: 12), // Khoảng cách
-
-    //           Text(
-    //             currentValue.toString(),
-    //             style: TextStyle(
-    //                 fontSize: AppSize.textLarge,
-    //                 fontWeight: FontWeight.w500,
-    //                 color: Colors.black87),
-    //           ),
-    //         ],
-    //       ),
-    //     ),
-    //     Padding(
-    //       padding: const EdgeInsets.only(
-    //           left: 60.0, right: 0), // Thụt lề trái qua hạng và avatar
-    //       child: ClipRRect(
-    //         borderRadius: BorderRadius.circular(10.0),
-    //         child: LinearProgressIndicator(
-    //           value: participant.progress,
-    //           minHeight: 8,
-    //           backgroundColor: Colors.grey.shade300,
-    //           valueColor:
-    //               AlwaysStoppedAnimation<Color>(AppColors.secondBackground),
-    //         ),
-    //       ),
-    //     )
-    //   ],
-    // ),
   }
 }

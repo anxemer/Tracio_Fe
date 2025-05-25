@@ -34,7 +34,7 @@ class ParticipantsModels extends ParticipantsEntity {
           ? DateTime.tryParse(json["completedAt"])
           : null,
       isRewardClaimed: json["isRewardClaimed"],
-      isCurrentUser: json["isRewardClaimed"],
+      isCurrentUser: json["isCurrentUser"],
     );
   }
 
