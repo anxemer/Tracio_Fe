@@ -20,7 +20,7 @@ import 'package:Tracio/main.dart';
 
 class RouteDetailScreen extends StatefulWidget {
   final int routeId;
-  const RouteDetailScreen({super.key, required this.routeId});
+  const RouteDetailScreen({super.key, required this.routeId}); 
 
   @override
   State<RouteDetailScreen> createState() => _RouteDetailScreenState();

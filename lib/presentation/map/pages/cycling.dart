@@ -56,6 +56,13 @@ class _CyclingPageState extends State<CyclingPage> {
   }
 
   void _onStartPressed() async {
+    // Reset any existing state before starting
+    setState(() {
+      showHoldOptions = false;
+      isLocked = false;
+    });
+
+    // Request start tracking
     context.read<TrackingBloc>().add(RequestStartTracking());
   }
 
@@ -74,24 +81,23 @@ class _CyclingPageState extends State<CyclingPage> {
   }
 
   void _onFinishPressed() async {
+    // First pause tracking to ensure clean state
+    context.read<TrackingBloc>().add(PauseTracking());
+
+    // Then request finish
     context.read<TrackingBloc>().add(RequestFinishTracking());
 
     //Leave group route hub
     final joinedGroupRoutes = sl<GroupRouteHubService>().joinedGroupRouteIds;
-    if (joinedGroupRoutes.isEmpty) {
-      debugPrint("❌ No joined group route ID available.");
-    } else {
+    if (joinedGroupRoutes.isNotEmpty) {
       final groupRouteId = joinedGroupRoutes.first;
       await sl<GroupRouteHubService>().leaveGroupRoute(groupRouteId);
     }
+
     setState(() {
       showHoldOptions = false;
+      isLocked = false; // Reset lock state
     });
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 
   Widget _buildStartButton() {
@@ -224,6 +230,12 @@ class _CyclingPageState extends State<CyclingPage> {
                       mp.LineString(coordinates: decodedPolyline);
 
                   if (context.mounted) {
+                    // Reset state before navigating
+                    setState(() {
+                      showHoldOptions = false;
+                      isLocked = false;
+                    });
+
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -245,6 +257,21 @@ class _CyclingPageState extends State<CyclingPage> {
                         ),
                       ),
                     );
+                  }
+                } else if (state is TrackingInitial) {
+                  // Reset state when tracking is initialized
+                  setState(() {
+                    showHoldOptions = false;
+                    isLocked = false;
+                  });
+                }
+
+                if (state is TrackingInProgress) {
+                  if (state.isPaused == true) {
+                    setState(() {
+                      showHoldOptions = true;
+                      isLocked = false;
+                    });
                   }
                 }
                 if (state is TrackingError) {

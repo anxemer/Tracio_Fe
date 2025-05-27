@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:ui' as ui;
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +11,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:Tracio/core/configs/utils/color_utils.dart';
 import 'package:Tracio/core/constants/api_url.dart';
 import 'package:Tracio/core/constants/app_urls.dart';
-import 'package:Tracio/core/network/dio_client.dart';
 import 'package:Tracio/domain/map/usecase/get_image_url_usecase.dart';
 import 'package:Tracio/presentation/map/bloc/map_state.dart';
 import 'package:Tracio/service_locator.dart';
@@ -38,6 +38,12 @@ class MapCubit extends Cubit<MapCubitState> {
   final Map<String, PointAnnotation> _userAnnotations = {};
   final Map<String, PointAnnotationManager> _managers = {};
   final Map<String, Uint8List> _imageCache = {};
+
+  // Track active route layers
+  String? _activeRouteSourceId;
+  String? _activeRouteLayerId;
+
+  final List<Map<String, String>> _routeSegments = [];
 
   Future<void> initializeMap(MapboxMap mapboxMap,
       {LocationComponentSettings? locationSetting,
@@ -453,6 +459,233 @@ class MapCubit extends Cubit<MapCubitState> {
       }
     } catch (e) {
       throw Exception('Error fetching image: $e');
+    }
+  }
+
+  Future<void> addRouteSegment(LineString lineString, String segmentId,
+      {double lineWidth = 5.0,
+      Color lineColor = Colors.deepOrange,
+      double lineOpacity = 0.6,
+      Color lineBorderColor = Colors.white,
+      double lineBorderWidth = 1.0}) async {
+    try {
+      if (mapboxMap == null) {
+        throw Exception('Map not initialized');
+      }
+
+      // Generate unique IDs for this segment
+      final sourceId = 'route_source_$segmentId';
+      final layerId = 'route_layer_$segmentId';
+
+      // Create a new source for this segment
+
+      final feature = Feature(
+        id: "segment_feature",
+        geometry: lineString,
+      );
+
+      final geoJsonFeatureCollection = jsonEncode({
+        "type": "FeatureCollection",
+        "features": [feature.toJson()],
+      });
+      final source = GeoJsonSource(
+        id: sourceId,
+        data: geoJsonFeatureCollection,
+      );
+      await mapboxMap!.style.addSource(source);
+
+      // Create a new layer for this segment
+      final layer = LineLayer(
+        id: layerId,
+        sourceId: sourceId,
+        lineWidth: lineWidth,
+        lineColor: lineColor.value,
+        lineOpacity: lineOpacity,
+        lineBorderColor: lineBorderColor.value,
+        lineBorderWidth: lineBorderWidth,
+      );
+      await mapboxMap!.style.addLayer(layer);
+      await mapboxMap?.style.moveStyleLayer(
+          layerId, LayerPosition(below: "mapbox-location-indicator-layer"));
+
+      // Store the segment IDs for later cleanup if needed
+      _routeSegments.add({
+        'sourceId': sourceId,
+        'layerId': layerId,
+      });
+    } catch (e, stackTrace) {
+      debugPrint('❌ Error in addRouteSegment: $e');
+      debugPrint('Stack trace: $stackTrace');
+    }
+  }
+
+  Future<void> removeRouteSegment(String segmentId) async {
+    try {
+      if (mapboxMap == null) return;
+
+      final segment = _routeSegments.firstWhere(
+        (s) => s['sourceId'] == 'route_source_$segmentId',
+        orElse: () => {},
+      );
+
+      if (segment.isNotEmpty) {
+        await mapboxMap!.style.removeStyleLayer(segment['layerId']!);
+        await mapboxMap!.style.removeStyleSource(segment['sourceId']!);
+        _routeSegments.remove(segment);
+      }
+    } catch (e) {
+      debugPrint('❌ Error removing route segment: $e');
+    }
+  }
+
+  Future<void> removeAllRouteSegments() async {
+    try {
+      if (mapboxMap == null) return;
+
+      for (final segment in _routeSegments) {
+        await mapboxMap!.style.removeStyleLayer(segment['layerId']!);
+        await mapboxMap!.style.removeStyleSource(segment['sourceId']!);
+      }
+      _routeSegments.clear();
+    } catch (e) {
+      debugPrint('❌ Error removing all route segments: $e');
+    }
+  }
+
+  Future<void> addRouteLine(LineString lineString,
+      {double lineWidth = 5.0,
+      Color lineColor = Colors.deepOrange,
+      double lineOpacity = 0.6,
+      Color lineBorderColor = Colors.white,
+      double lineBorderWidth = 1.0}) async {
+    try {
+      // Wait for mapboxMap to be initialized
+      if (mapboxMap == null) {
+        throw Exception('Map not initialized');
+      }
+
+      // Generate unique IDs for this route
+      final sourceId = "route-source-${DateTime.now().millisecondsSinceEpoch}";
+      final layerId = "route-layer-${DateTime.now().millisecondsSinceEpoch}";
+
+      debugPrint(
+          '🔄 Starting route line addition with sourceId: $sourceId and layerId: $layerId');
+
+      // Remove previous route if exists
+      if (_activeRouteLayerId != null) {
+        try {
+          await mapboxMap?.style.removeStyleLayer(_activeRouteLayerId!);
+          debugPrint('✅ Removed previous layer: $_activeRouteLayerId');
+        } catch (e) {
+          debugPrint('❌ Error removing previous layer: $e');
+        }
+      }
+      if (_activeRouteSourceId != null) {
+        try {
+          await mapboxMap?.style.removeStyleSource(_activeRouteSourceId!);
+          debugPrint('✅ Removed previous source: $_activeRouteSourceId');
+        } catch (e) {
+          debugPrint('❌ Error removing previous source: $e');
+        }
+      }
+
+      // Create a Feature with the LineString
+      final feature = Feature(
+        id: "route_feature",
+        geometry: lineString,
+      );
+
+      final geoJsonFeatureCollection = jsonEncode({
+        "type": "FeatureCollection",
+        "features": [feature.toJson()],
+      });
+
+      debugPrint(
+          '📝 Created feature with coordinates: ${lineString.coordinates.length} points');
+
+      // Create source for the route
+      try {
+        // Create the GeoJSON source
+        final source = GeoJsonSource(
+          id: sourceId,
+          data: geoJsonFeatureCollection,
+        );
+
+        // Add the source to the style
+        await mapboxMap?.style.addSource(source);
+        debugPrint('✅ Successfully added source: $sourceId');
+
+        // Add the line layer
+        final layer = LineLayer(
+          id: layerId,
+          sourceId: sourceId,
+          lineColor: lineColor.toInt(),
+          lineWidth: lineWidth,
+          lineOpacity: lineOpacity,
+          lineBorderColor: lineBorderColor.toInt(),
+          lineBorderWidth: lineBorderWidth,
+          lineJoin: LineJoin.ROUND,
+          lineCap: LineCap.ROUND,
+        );
+        await mapboxMap?.style.addLayer(layer);
+        debugPrint('✅ Successfully added layer: $layerId');
+
+        // Move layer below location indicator
+        await mapboxMap?.style.moveStyleLayer(
+            layerId, LayerPosition(below: "mapbox-location-indicator-layer"));
+        debugPrint('✅ Successfully moved layer below location indicator');
+
+        // Update active route IDs
+        _activeRouteSourceId = sourceId;
+        _activeRouteLayerId = layerId;
+        debugPrint('✅ Route line addition completed successfully');
+      } catch (e) {
+        debugPrint('❌ Failed to add source/layer: $e');
+        debugPrint('Source data: ${feature.toJson().toString()}');
+        rethrow;
+      }
+    } catch (e, stackTrace) {
+      debugPrint('❌ Error in addRouteLine: $e');
+      debugPrint('Stack trace: $stackTrace');
+    }
+  }
+
+  Future<void> updateRouteLine(LineString lineString) async {
+    try {
+      if (_activeRouteSourceId != null) {
+        // Create a Feature with the updated LineString
+        final feature = Feature(
+          id: "route_feature",
+          geometry: lineString,
+        );
+
+        // Update the source with the new feature
+        await mapboxMap?.style.setStyleSourceProperty(
+          _activeRouteSourceId!,
+          "data",
+          jsonEncode({
+            "type": "FeatureCollection",
+            "features": [feature.toJson()],
+          }),
+        );
+      }
+    } catch (e) {
+      debugPrint('❌ Error updating route line: $e');
+    }
+  }
+
+  Future<void> removeRouteLine() async {
+    try {
+      if (_activeRouteLayerId != null) {
+        await mapboxMap?.style.removeStyleLayer(_activeRouteLayerId!);
+        _activeRouteLayerId = null;
+      }
+      if (_activeRouteSourceId != null) {
+        await mapboxMap?.style.removeStyleSource(_activeRouteSourceId!);
+        _activeRouteSourceId = null;
+      }
+    } catch (e) {
+      debugPrint('Error removing route line: $e');
     }
   }
 }

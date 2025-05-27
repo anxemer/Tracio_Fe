@@ -32,6 +32,9 @@ class _CyclingMapViewState extends State<CyclingMapView>
   List<Position> tempRouteList = [];
   bool isMapInitialized = false;
   mapbox.Position? _lastDrawnPoint;
+  static const int _maxRoutePoints = 30;
+  int _segmentCounter = 0;
+  int _pointsSinceLastSegment = 0;
 
   final groupRouteHub = sl<GroupRouteHubService>();
   final matchingHub = sl<MatchingHubService>();
@@ -39,10 +42,20 @@ class _CyclingMapViewState extends State<CyclingMapView>
   StreamSubscription? _locationUpdateSub;
   StreamSubscription? _matchedUserUpdateSub;
 
+  void _resetTrackingState() {
+    _lastDrawnPoint = null;
+    routePoints.clear();
+    tempRouteList.clear();
+    _pointsSinceLastSegment = 0;
+    _segmentCounter = 0;
+  }
+
   @override
   void dispose() {
     _locationUpdateSub?.cancel();
     _matchedUserUpdateSub?.cancel();
+    _resetTrackingState();
+    context.read<TrackingBloc>().add(ResetTracking());
     super.dispose();
   }
 
@@ -79,6 +92,38 @@ class _CyclingMapViewState extends State<CyclingMapView>
       final image = await _createNumberedImage(index + 1);
       final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
       return bytes!.buffer.asUint8List();
+    }
+  }
+
+  void _updateRouteLine(List<mapbox.Position> points) async {
+    if (points.isEmpty) return;
+    final lineString = mapbox.LineString(coordinates: points);
+    await context.read<MapCubit>().updateRouteLine(lineString);
+  }
+
+  Future<void> _manageRoutePoints(mapbox.Position newPoint) async {
+    routePoints.add(newPoint);
+    _pointsSinceLastSegment++;
+
+    if (_pointsSinceLastSegment >= _maxRoutePoints) {
+      // Extract full segment
+      final segmentString =
+          mapbox.LineString(coordinates: List.from(routePoints));
+
+      // Add as static segment
+      await context.read<MapCubit>().addRouteSegment(
+            segmentString,
+            'route_segment_${_segmentCounter++}',
+            lineWidth: 5.0,
+            lineColor: Colors.deepOrange,
+            lineOpacity: 1.0,
+            lineBorderColor: Colors.white,
+            lineBorderWidth: 1.0,
+          );
+
+      // Reset: keep only the last point to start a new segment
+      routePoints = [routePoints.last];
+      _pointsSinceLastSegment = 0;
     }
   }
 
@@ -186,71 +231,90 @@ class _CyclingMapViewState extends State<CyclingMapView>
               children: [
                 BlocListener<TrackingBloc, TrackingState>(
                   listener: (context, state) async {
-                    if (state is TrackingInProgress &&
-                        !state.isPaused &&
-                        state.position != null) {
-                      final location = state.position!;
-                      final newPoint = mapbox.Position(
-                        location.longitude,
-                        location.latitude,
-                      );
-                      mapCubit.mapboxMap?.flyTo(
-                        mapbox.CameraOptions(
-                          center: mapbox.Point(coordinates: newPoint),
-                          bearing: location.heading,
-                        ),
-                        mapbox.MapAnimationOptions(
-                            duration: 100, startDelay: 0),
-                      );
+                    if (state is TrackingInProgress) {
+                      if (state.isPaused) {
+                        _updateRouteLine(routePoints);
+                      } else if (state.position != null) {
+                        final location = state.position!;
+                        final newPoint = mapbox.Position(
+                          location.longitude,
+                          location.latitude,
+                        );
 
-                      if (_lastDrawnPoint != null) {
-                        final segment = mapbox.LineString(coordinates: [
-                          _lastDrawnPoint!,
-                          newPoint,
-                        ]);
-                        await mapCubit.addPolylineRoute(segment,
-                            lineOpacity: 1);
+                        // Add initial line layer if it's the first point
+                        if (_lastDrawnPoint == null) {
+                          final initialLineString =
+                              mapbox.LineString(coordinates: [newPoint]);
+                          await mapCubit.addRouteLine(initialLineString,
+                              lineWidth: 5.0,
+                              lineColor: Colors.deepOrange,
+                              lineOpacity: 1.0,
+                              lineBorderColor: Colors.white,
+                              lineBorderWidth: 1.0);
+                        }
+
+                        mapCubit.mapboxMap?.flyTo(
+                          mapbox.CameraOptions(
+                            center: mapbox.Point(coordinates: newPoint),
+                            bearing: location.heading,
+                          ),
+                          mapbox.MapAnimationOptions(
+                              duration: 100, startDelay: 0),
+                        );
+
+                        _lastDrawnPoint = newPoint;
+                        await _manageRoutePoints(newPoint);
+                        _updateRouteLine(routePoints);
+
+                        setState(() {
+                          tempRouteList.add(location);
+                        });
+
+                        if (routeId != null &&
+                            tempRouteList.length >= _maxRoutePoints) {
+                          final grpcLocations = tempRouteList.map((pos) {
+                            final dateTime = pos.timestamp;
+                            return {
+                              "latitude": pos.latitude,
+                              "longitude": pos.longitude,
+                              "altitude": pos.altitude,
+                              "timestamp": dateTime.millisecondsSinceEpoch,
+                              "speed": pos.speed * 18 / 5,
+                              "distance": state.odometerKm,
+                            };
+                          }).toList();
+
+                          unawaited(sl<ITrackingGrpcService>().sendLocations(
+                            routeId: routeId,
+                            locations: grpcLocations,
+                          ));
+
+                          setState(() {
+                            tempRouteList.clear();
+                          });
+                        }
                       }
-
-                      _lastDrawnPoint = newPoint;
-
-                      setState(() {
-                        tempRouteList.add(location);
-                      });
-                      if (routeId != null && tempRouteList.length >= 20) {
-                        final grpcLocations = tempRouteList.map((pos) {
-                          final dateTime = pos.timestamp;
-                          return {
-                            "latitude": pos.latitude,
-                            "longitude": pos.longitude,
-                            "altitude": pos.altitude,
-                            "timestamp": dateTime.millisecondsSinceEpoch,
-                            "speed": pos.speed * 18 / 5,
-                            "distance": state.odometerKm,
-                          };
-                        }).toList();
-
-                        unawaited(sl<ITrackingGrpcService>().sendLocations(
-                          routeId: routeId,
-                          locations: grpcLocations,
-                        ));
-
-                        setState(() => tempRouteList.clear());
-                      }
+                    } else if (state is TrackingFinished ||
+                        state is TrackingInitial) {
+                      // When tracking is finished or reset, remove the route line
+                      await mapCubit.removeRouteLine();
+                      await mapCubit.removeAllRouteSegments();
+                      _resetTrackingState();
                     }
                   },
                   child: mapbox.MapWidget(
                     key: const ValueKey("mapWidget"),
                     cameraOptions: mapCubit.camera,
                     onMapCreated: (map) async {
-                      mapCubit.initializeMap(map,
+                      await mapCubit.initializeMap(map,
                           locationSetting: mapbox.LocationComponentSettings(
                             enabled: true,
                             showAccuracyRing: true,
                             puckBearingEnabled: true,
                           ));
-
-                      isMapInitialized = true;
+                      setState(() {
+                        isMapInitialized = true;
+                      });
                       WidgetsBinding.instance.addPostFrameCallback((_) {
                         _locationUpdateSub =
                             groupRouteHub.onLocationUpdate.listen((data) async {

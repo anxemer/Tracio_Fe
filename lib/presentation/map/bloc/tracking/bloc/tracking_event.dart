@@ -59,3 +59,7 @@ class RequestStartTracking extends TrackingEvent {
 class RequestFinishTracking extends TrackingEvent {
   const RequestFinishTracking();
 }
+
+class ResetTracking extends TrackingEvent {
+  const ResetTracking();
+}
