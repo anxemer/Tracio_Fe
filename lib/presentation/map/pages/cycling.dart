@@ -24,6 +24,7 @@ import 'package:Tracio/presentation/map/widgets/cycling_take_picture_button.dart
 import 'package:Tracio/presentation/map/widgets/cycling_top_action_bar.dart';
 import 'package:Tracio/presentation/map/widgets/slide_to_unlock.dart';
 import 'package:Tracio/service_locator.dart';
+import 'package:Tracio/presentation/map/widgets/cycling_recenter_button.dart';
 
 class CyclingPage extends StatefulWidget {
   const CyclingPage({super.key});
@@ -36,33 +37,48 @@ class _CyclingPageState extends State<CyclingPage> {
   final double _fabHeightStart = 150;
   final double _fabHeightTracking = 200;
   final double _fabHeightLocked = 180;
+  final double _fabHeightInit = 20;
 
   bool showHoldOptions = false;
-
   bool isLocked = false;
+  double _currentFabHeight = 60; // Initial state
+
   CarouselSliderController carouselController = CarouselSliderController();
+  bool _isCentered = true;
+
+  void _updateFabHeight() {
+    setState(() {
+      if (showHoldOptions) {
+        _currentFabHeight = _fabHeightStart;
+      } else if (isLocked) {
+        _currentFabHeight = _fabHeightLocked;
+      } else {
+        _currentFabHeight = _fabHeightTracking;
+      }
+    });
+  }
 
   @override
   void initState() {
     super.initState();
+    _currentFabHeight = _fabHeightInit + 40;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final state = context.read<TrackingBloc>().state;
       if (state is TrackingInProgress) {
         setState(() {
           showHoldOptions = state.isPaused;
+          _updateFabHeight();
         });
       }
     });
   }
 
   void _onStartPressed() async {
-    // Reset any existing state before starting
     setState(() {
       showHoldOptions = false;
       isLocked = false;
+      _updateFabHeight();
     });
-
-    // Request start tracking
     context.read<TrackingBloc>().add(RequestStartTracking());
   }
 
@@ -70,6 +86,7 @@ class _CyclingPageState extends State<CyclingPage> {
     context.read<TrackingBloc>().add(PauseTracking());
     setState(() {
       showHoldOptions = true;
+      _updateFabHeight();
     });
   }
 
@@ -77,17 +94,14 @@ class _CyclingPageState extends State<CyclingPage> {
     context.read<TrackingBloc>().add(ResumeTracking());
     setState(() {
       showHoldOptions = false;
+      _updateFabHeight();
     });
   }
 
   void _onFinishPressed() async {
-    // First pause tracking to ensure clean state
     context.read<TrackingBloc>().add(PauseTracking());
-
-    // Then request finish
     context.read<TrackingBloc>().add(RequestFinishTracking());
 
-    //Leave group route hub
     final joinedGroupRoutes = sl<GroupRouteHubService>().joinedGroupRouteIds;
     if (joinedGroupRoutes.isNotEmpty) {
       final groupRouteId = joinedGroupRoutes.first;
@@ -96,7 +110,20 @@ class _CyclingPageState extends State<CyclingPage> {
 
     setState(() {
       showHoldOptions = false;
-      isLocked = false; // Reset lock state
+      isLocked = false;
+      _currentFabHeight = _fabHeightInit + 40;
+    });
+  }
+
+  void _handleCenteredChanged(bool isCentered) {
+    setState(() {
+      _isCentered = isCentered;
+    });
+  }
+
+  void _handleRecenterPressed() {
+    setState(() {
+      _isCentered = true;
     });
   }
 
@@ -197,6 +224,46 @@ class _CyclingPageState extends State<CyclingPage> {
     );
   }
 
+  // Helper for floating map control buttons
+  Widget _mapControlButton({
+    required IconData icon,
+    required VoidCallback onPressed,
+    Color iconColor = Colors.black,
+    double size = 24,
+    double left = 0,
+    double right = 0,
+    double bottom = 0,
+  }) {
+    return Positioned(
+      left: left > 0 ? left : null,
+      right: right > 0 ? right : null,
+      bottom: bottom,
+      child: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              spreadRadius: 1,
+              blurRadius: 3,
+              offset: const Offset(0, 1),
+            ),
+          ],
+        ),
+        child: Center(
+          child: IconButton(
+            padding: EdgeInsets.zero,
+            icon: Icon(icon, size: size, color: iconColor),
+            onPressed: onPressed,
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return PopScope(
@@ -234,6 +301,7 @@ class _CyclingPageState extends State<CyclingPage> {
                     setState(() {
                       showHoldOptions = false;
                       isLocked = false;
+                      _currentFabHeight = _fabHeightInit + 40;
                     });
 
                     Navigator.push(
@@ -263,6 +331,7 @@ class _CyclingPageState extends State<CyclingPage> {
                   setState(() {
                     showHoldOptions = false;
                     isLocked = false;
+                    _currentFabHeight = _fabHeightInit + 40;
                   });
                 }
 
@@ -271,6 +340,7 @@ class _CyclingPageState extends State<CyclingPage> {
                     setState(() {
                       showHoldOptions = true;
                       isLocked = false;
+                      _updateFabHeight();
                     });
                   }
                 }
@@ -289,7 +359,10 @@ class _CyclingPageState extends State<CyclingPage> {
               child: Stack(
                 children: [
                   /// Map View
-                  CyclingMapView(),
+                  CyclingMapView(
+                    isCentered: _isCentered,
+                    onCenteredChanged: _handleCenteredChanged,
+                  ),
 
                   /// Cycling Top Bar
                   BlocBuilder<TrackingBloc, TrackingState>(
@@ -422,7 +495,7 @@ class _CyclingPageState extends State<CyclingPage> {
                         );
                       } else {
                         return Positioned(
-                          bottom: 20,
+                          bottom: _fabHeightInit,
                           left: 0,
                           right: 0,
                           child: Align(
@@ -433,6 +506,88 @@ class _CyclingPageState extends State<CyclingPage> {
                       }
                     },
                   ),
+
+                  // Map style button
+                  Builder(builder: (context) {
+                    return _mapControlButton(
+                      icon: Icons.layers,
+                      onPressed: () {
+                        final mapCubit = context.read<MapCubit>();
+                        _showStyleDialog(
+                          context,
+                          (style) => mapCubit.changeMapStyle(style),
+                        );
+                      },
+                      left: 16,
+                      bottom: _currentFabHeight.h + 20 + 20 + 30,
+                    );
+                  }),
+                  // Recenter button (uses CyclingRecenterButton for icon logic)
+                  Positioned(
+                    left: 16,
+                    bottom: _currentFabHeight.h + 20,
+                    child: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            spreadRadius: 1,
+                            blurRadius: 3,
+                            offset: const Offset(0, 1),
+                          ),
+                        ],
+                      ),
+                      child: CyclingRecenterButton(
+                        isCentered: _isCentered,
+                        onPressed: _handleRecenterPressed,
+                      ),
+                    ),
+                  ),
+                  // Zoom in button
+                  _mapControlButton(
+                    icon: Icons.add,
+                    onPressed: () async {
+                      var camera = await context
+                          .read<MapCubit>()
+                          .mapboxMap
+                          ?.getCameraState();
+                      context.read<MapCubit>().mapboxMap?.flyTo(
+                            mp.CameraOptions(
+                              center: mp.Point(
+                                  coordinates: camera!.center.coordinates),
+                              zoom: camera.zoom + 1,
+                            ),
+                            mp.MapAnimationOptions(duration: 200),
+                          );
+                    },
+                    right: 16,
+                    bottom: _currentFabHeight.h + 30 + 20 + 20,
+                  ),
+                  // Zoom out button
+                  _mapControlButton(
+                    icon: Icons.remove,
+                    onPressed: () async {
+                      var camera = await context
+                          .read<MapCubit>()
+                          .mapboxMap
+                          ?.getCameraState();
+                      context.read<MapCubit>().mapboxMap?.flyTo(
+                            mp.CameraOptions(
+                              center: mp.Point(
+                                  coordinates: camera!.center.coordinates),
+                              zoom: camera.zoom - 1,
+                            ),
+                            mp.MapAnimationOptions(duration: 200),
+                          );
+                    },
+                    right: 16,
+                    bottom: _currentFabHeight.h + 20,
+                  ),
+
                   BlocBuilder<TrackingBloc, TrackingState>(
                     builder: (context, state) {
                       final isLoading = state is TrackingStarting ||
@@ -457,6 +612,41 @@ class _CyclingPageState extends State<CyclingPage> {
           ),
         ),
       ),
+    );
+  }
+
+  List<String> mapStyles = [
+    "Mapbox Streets",
+    "Mapbox Outdoors",
+    "Mapbox Light",
+    "Mapbox Dark",
+    "Mapbox Satellite",
+    "Goong Map",
+    "Terrain-v2",
+  ];
+
+  Future<dynamic> _showStyleDialog(
+      BuildContext context, void Function(String style) onStyleSelected) {
+    return showDialog(
+      context: context,
+      builder: (_) {
+        return AlertDialog(
+          title: const Text("Select Map Style"),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: mapStyles.map((style) {
+                return ListTile(
+                  title: Text(style),
+                  onTap: () {
+                    onStyleSelected(style);
+                    Navigator.of(context).pop();
+                  },
+                );
+              }).toList(),
+            ),
+          ),
+        );
+      },
     );
   }
 }

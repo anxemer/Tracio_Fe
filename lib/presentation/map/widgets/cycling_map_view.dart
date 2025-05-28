@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:Tracio/presentation/map/bloc/map_state.dart';
 import 'package:Tracio/presentation/map/bloc/route_cubit.dart';
 import 'package:Tracio/presentation/map/bloc/route_state.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +21,14 @@ import 'package:Tracio/presentation/map/widgets/match_request_banner.dart';
 import 'package:Tracio/service_locator.dart';
 
 class CyclingMapView extends StatefulWidget {
-  const CyclingMapView({super.key});
+  final bool isCentered;
+  final Function(bool) onCenteredChanged;
+
+  const CyclingMapView({
+    super.key,
+    required this.isCentered,
+    required this.onCenteredChanged,
+  });
 
   @override
   State<CyclingMapView> createState() => _CyclingMapViewState();
@@ -41,6 +49,94 @@ class _CyclingMapViewState extends State<CyclingMapView>
 
   StreamSubscription? _locationUpdateSub;
   StreamSubscription? _matchedUserUpdateSub;
+  StreamSubscription? _currentPositionUpdateSub;
+
+  bool _isCentered = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _startPositionUpdates();
+    _isCentered = widget.isCentered;
+  }
+
+  @override
+  void didUpdateWidget(CyclingMapView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.isCentered != widget.isCentered) {
+      setState(() {
+        _isCentered = widget.isCentered;
+      });
+    }
+  }
+
+  Future<void> _handleInitialPosition() async {
+    try {
+      // Try to get cached position first
+      final cachedPosition = await Geolocator.getLastKnownPosition();
+      if (cachedPosition != null && mounted) {
+        // Move map to cached position instantly
+        context.read<MapCubit>().mapboxMap?.flyTo(
+              mapbox.CameraOptions(
+                center: mapbox.Point(
+                  coordinates: mapbox.Position(
+                    cachedPosition.longitude,
+                    cachedPosition.latitude,
+                  ),
+                ),
+                bearing: cachedPosition.heading,
+              ),
+              mapbox.MapAnimationOptions(
+                  duration: 0), // Instant move for cached position
+            );
+      }
+    } catch (e) {
+      debugPrint('❌ Error getting cached position: $e');
+    }
+  }
+
+  void _startPositionUpdates() async {
+    // Cancel any existing subscription
+    _currentPositionUpdateSub?.cancel();
+
+    // Try to get initial position first
+    await _handleInitialPosition();
+
+    // Then start live updates
+    _currentPositionUpdateSub = Geolocator.getPositionStream(
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.high,
+        distanceFilter: 0,
+      ),
+    ).listen(
+      _handlePositionUpdate,
+      onError: (error) {
+        debugPrint('❌ Error in position stream: $error');
+      },
+    );
+  }
+
+  void _handlePositionUpdate(Position position) {
+    if (!mounted) return;
+
+    if (_isCentered) {
+      context.read<MapCubit>().mapboxMap?.flyTo(
+            mapbox.CameraOptions(
+              center: mapbox.Point(
+                coordinates: mapbox.Position(
+                  position.longitude,
+                  position.latitude,
+                ),
+              ),
+              bearing: position.heading,
+            ),
+            mapbox.MapAnimationOptions(
+              duration: 200,
+              startDelay: 0,
+            ),
+          );
+    }
+  }
 
   void _resetTrackingState() {
     _lastDrawnPoint = null;
@@ -54,6 +150,7 @@ class _CyclingMapViewState extends State<CyclingMapView>
   void dispose() {
     _locationUpdateSub?.cancel();
     _matchedUserUpdateSub?.cancel();
+    _currentPositionUpdateSub?.cancel();
     _resetTrackingState();
     context.read<TrackingBloc>().add(ResetTracking());
     super.dispose();
@@ -125,6 +222,13 @@ class _CyclingMapViewState extends State<CyclingMapView>
       routePoints = [routePoints.last];
       _pointsSinceLastSegment = 0;
     }
+  }
+
+  void setIsCentered(bool value) {
+    setState(() {
+      _isCentered = value;
+    });
+    widget.onCenteredChanged(value);
   }
 
   @override
@@ -232,7 +336,9 @@ class _CyclingMapViewState extends State<CyclingMapView>
                 BlocListener<TrackingBloc, TrackingState>(
                   listener: (context, state) async {
                     if (state is TrackingInProgress) {
+                      _currentPositionUpdateSub?.cancel();
                       if (state.isPaused) {
+                        _startPositionUpdates();
                         _updateRouteLine(routePoints);
                       } else if (state.position != null) {
                         final location = state.position!;
@@ -253,14 +359,22 @@ class _CyclingMapViewState extends State<CyclingMapView>
                               lineBorderWidth: 1.0);
                         }
 
-                        mapCubit.mapboxMap?.flyTo(
-                          mapbox.CameraOptions(
-                            center: mapbox.Point(coordinates: newPoint),
-                            bearing: location.heading,
-                          ),
-                          mapbox.MapAnimationOptions(
-                              duration: 100, startDelay: 0),
-                        );
+                        // Only update camera if map is centered
+                        if (_isCentered) {
+                          mapCubit.mapboxMap?.flyTo(
+                            mapbox.CameraOptions(
+                              center: mapbox.Point(
+                                coordinates: mapbox.Position(
+                                  location.longitude,
+                                  location.latitude,
+                                ),
+                              ),
+                              bearing: location.heading,
+                            ),
+                            mapbox.MapAnimationOptions(
+                                duration: 100, startDelay: 0),
+                          );
+                        }
 
                         _lastDrawnPoint = newPoint;
                         await _manageRoutePoints(newPoint);
@@ -299,53 +413,94 @@ class _CyclingMapViewState extends State<CyclingMapView>
                       // When tracking is finished or reset, remove the route line
                       await mapCubit.removeRouteLine();
                       await mapCubit.removeAllRouteSegments();
+                      _startPositionUpdates();
                       _resetTrackingState();
                     }
                   },
-                  child: mapbox.MapWidget(
-                    key: const ValueKey("mapWidget"),
-                    cameraOptions: mapCubit.camera,
-                    onMapCreated: (map) async {
-                      await mapCubit.initializeMap(map,
-                          locationSetting: mapbox.LocationComponentSettings(
-                            enabled: true,
-                            showAccuracyRing: true,
-                            puckBearingEnabled: true,
-                          ));
-                      setState(() {
-                        isMapInitialized = true;
-                      });
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        _locationUpdateSub =
-                            groupRouteHub.onLocationUpdate.listen((data) async {
-                          await context.read<MapCubit>().updateUserMarker(
-                                id: data.userId.toString(),
-                                imageUrl: data.profilePicture,
-                                newPosition: mapbox.Position(
-                                    data.longitude, data.latitude),
-                              );
-                        });
-                      });
-                      _matchedUserUpdateSub =
-                          matchingHub.onUpdatedMatchedUser.listen((data) async {
-                        if (!mounted) return;
-
-                        try {
-                          context
-                              .read<TrackingBloc>()
-                              .add(AddMatchedUser(data));
-                          await context.read<MapCubit>().updateUserMarker(
-                                id: data.userId.toString(),
-                                imageUrl: data.avatar,
-                                newPosition: mapbox.Position(
-                                    data.longitude, data.latitude),
-                              );
-                        } catch (e, stack) {
-                          debugPrint(
-                              "❌ Error updating marker for user ${data.userId}: $e\n$stack");
-                        }
-                      });
+                  child: Listener(
+                    onPointerDown: (_) {
+                      if (_isCentered && mounted) {
+                        setIsCentered(false);
+                      }
                     },
+                    child: BlocListener<MapCubit, MapCubitState>(
+                      listener: (context, state) {
+                        if (state is MapCubitStyleLoaded) {
+                          _changeMapStyle(state.styleUri, context);
+                        }
+                      },
+                      child: mapbox.MapWidget(
+                        key: const ValueKey("mapWidget"),
+                        cameraOptions: mapCubit.camera,
+                        onMapCreated: (map) async {
+                          await mapCubit.initializeMap(map,
+                              locationSetting: mapbox.LocationComponentSettings(
+                                enabled: true,
+                                showAccuracyRing: true,
+                                puckBearingEnabled: true,
+                              ),
+                              gesturesSetting: mapbox.GesturesSettings(
+                                scrollEnabled: true,
+                                pitchEnabled: false,
+                              ),
+                              compassSetting: mapbox.CompassSettings(
+                                enabled: false,
+                              ),
+                              logoSetting: mapbox.LogoSettings(
+                                  position:
+                                      mapbox.OrnamentPosition.BOTTOM_RIGHT,
+                                  marginBottom: 80),
+                              attributionSetting: mapbox.AttributionSettings(
+                                  position:
+                                      mapbox.OrnamentPosition.BOTTOM_RIGHT,
+                                  marginRight: 90,
+                                  marginBottom: 80));
+
+                          setState(() {
+                            isMapInitialized = true;
+                          });
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            // Group route location updates
+                            _locationUpdateSub = groupRouteHub.onLocationUpdate
+                                .listen((data) async {
+                              if (!mounted) return;
+                              try {
+                                await context.read<MapCubit>().updateUserMarker(
+                                      id: data.userId.toString(),
+                                      imageUrl: data.profilePicture,
+                                      newPosition: mapbox.Position(
+                                          data.longitude, data.latitude),
+                                    );
+                              } catch (e, stack) {
+                                debugPrint(
+                                    "❌ Error updating group route marker for user ${data.userId}: $e\n$stack");
+                              }
+                            });
+
+                            // Matched user updates
+                            _matchedUserUpdateSub = matchingHub
+                                .onUpdatedMatchedUser
+                                .listen((data) async {
+                              if (!mounted) return;
+                              try {
+                                context
+                                    .read<TrackingBloc>()
+                                    .add(AddMatchedUser(data));
+                                await context.read<MapCubit>().updateUserMarker(
+                                      id: data.userId.toString(),
+                                      imageUrl: data.avatar,
+                                      newPosition: mapbox.Position(
+                                          data.longitude, data.latitude),
+                                    );
+                              } catch (e, stack) {
+                                debugPrint(
+                                    "❌ Error updating matched user marker for user ${data.userId}: $e\n$stack");
+                              }
+                            });
+                          });
+                        },
+                      ),
+                    ),
                   ),
                 ),
                 BlocBuilder<MatchRequestCubit, MatchRequestState>(
@@ -379,5 +534,10 @@ class _CyclingMapViewState extends State<CyclingMapView>
         ),
       ],
     );
+  }
+
+  Future<void> _changeMapStyle(String styleUri, BuildContext context) async {
+    final mapCubit = BlocProvider.of<MapCubit>(context);
+    mapCubit.mapboxMap?.loadStyleURI(styleUri);
   }
 }

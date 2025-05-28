@@ -93,7 +93,7 @@ class LocationService {
       15.0; // meters (increased to match typical GPS accuracy)
   static const int _stationaryTimeThreshold = 5; // seconds
   static const double _speedAccuracyThreshold =
-      2.0; // m/s (increased to match typical speed accuracy)
+      2.0; // m/s (increased to match typical speed accuracy) 
   static const int _speedWindowSize = 5;
   static const double _bearingSmoothingFactor = 0.3;
   static const double _adaptiveSmoothingMinFactor = 0.1;
