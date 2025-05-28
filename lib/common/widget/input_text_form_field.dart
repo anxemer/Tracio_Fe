@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:Tracio/common/helper/is_dark_mode.dart';
+import 'package:flutter/services.dart';
 
 class InputTextFormField extends StatefulWidget {
   final TextEditingController controller;
@@ -71,6 +72,11 @@ class _InputTextFormFieldState extends State<InputTextFormField> {
         });
       },
       child: TextFormField(
+        inputFormatters: [
+          FilteringTextInputFormatter.allow(
+            RegExp(r'[a-zA-ZÀ-ỹà-ỹ0-9\s\.\,\!\?\-@#\$%&\*\(\)]'),
+          ),
+        ],
         maxLines: widget.maxLine,
         keyboardType: widget.keyBoardType,
         onTap: widget.ontap != null ? () => widget.ontap!() : null,

@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:Tracio/common/helper/navigator/app_navigator.dart';
+import 'package:Tracio/presentation/shop_owner/page/dash_board.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -98,8 +100,8 @@ class _ShopProfileManagementScreenState
       _cityController.text = data.city ?? '';
       _districtController.text = data.district ?? '';
       _existingImageUrl = data.profilePicture;
-      latitude = data.coordinate!.latitude!; // Lưu URL ảnh cũ
-      longitude = data.coordinate!.longitude!; // Lưu URL ảnh cũ
+      latitude = data.coordinate!.latitude!;
+      longitude = data.coordinate!.longitude!;
 
       // if (_selectedOpenTime != null) {
       //   _openTimeController.text =
@@ -232,8 +234,11 @@ class _ShopProfileManagementScreenState
       final image = _pickedImageFile;
       final openTime = _openTimeController.text;
       final closeTime = _closeTimeController.text;
-
+      final long = longitude;
+      final lat = latitude;
       if (widget.isEditing) {
+        print('Long: $longitude');
+        print('Lat: $latitude');
         await context.read<ShopProfileManageCubit>().editShop(
             CreateShopProfileReq(
                 contactNumber: contactNumber,
@@ -243,8 +248,8 @@ class _ShopProfileManagementScreenState
                 profilePicture: image != null ? [image] : null,
                 city: city,
                 district: district,
-                latitude: latitude,
-                longitude: longitude,
+                latitude: lat,
+                longitude: long,
                 openTime: openTime,
                 closedTime: closeTime));
       } else {
@@ -262,8 +267,6 @@ class _ShopProfileManagementScreenState
                 openTime: openTime,
                 closedTime: closeTime));
       }
-    } else {
-      print("Form invalid");
     }
   }
 
@@ -277,7 +280,7 @@ class _ShopProfileManagementScreenState
     return BlocListener<ShopProfileManageCubit, ShopProfileManageState>(
         listener: (context, state) {
           if (state is ShopProfileManageSuccess) {
-            Navigator.pop(context, state.success);
+            AppNavigator.push(context, DashboardScreen());
           }
           if (state is ShopProfileManageFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -436,13 +439,13 @@ class _ShopProfileManagementScreenState
                                 _addressController.text = address;
                                 _districtController.text = district;
                                 _cityController.text = city;
-                                latitude = searchedCoordinate.latitude;
-                                longitude = searchedCoordinate.longitude;
+
                                 final position = mapbox.Position(
                                   searchedCoordinate.longitude,
                                   searchedCoordinate.latitude,
                                 );
-
+                                latitude = searchedCoordinate.latitude;
+                                longitude = searchedCoordinate.longitude;
                                 final mapCubit = context.read<MapCubit>();
                                 mapCubit.animateCamera(position);
 

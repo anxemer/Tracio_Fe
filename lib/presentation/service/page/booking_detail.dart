@@ -94,50 +94,55 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
                                       SizedBox(
                                         width: 10.w,
                                       ),
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            state.bookingdetail.serviceName!,
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: AppSize.textLarge,
-                                                color: isDark
-                                                    ? Colors.grey.shade300
-                                                    : Colors.black87),
-                                          ),
-                                          SizedBox(
-                                            height: 10.h,
-                                          ),
-                                          Row(
-                                            // crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Icon(
-                                                Icons.location_on_outlined,
-                                                size: AppSize.iconMedium,
-                                                color: isDark
-                                                    ? AppColors.secondBackground
-                                                    : AppColors.background,
-                                              ),
-                                              SizedBox(
-                                                width: 4.w,
-                                              ),
-                                              Text(
-                                                ' ${state.bookingdetail.district} - ${state.bookingdetail.city} ',
-                                                style: TextStyle(
-                                                    fontSize:
-                                                        AppSize.textMedium,
-                                                    color: isDark
-                                                        ? Colors.white
-                                                        : Colors.black),
-                                              ),
-                                            ],
-                                          ),
-                                          SizedBox(
-                                            height: 10.w,
-                                          ),
-                                        ],
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              state.bookingdetail.serviceName!,
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: AppSize.textLarge,
+                                                  color: isDark
+                                                      ? Colors.grey.shade300
+                                                      : Colors.black87),
+                                            ),
+                                            SizedBox(
+                                              height: 10.h,
+                                            ),
+                                            Row(
+                                              // crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Icon(
+                                                  Icons.location_on_outlined,
+                                                  size: AppSize.iconMedium,
+                                                  color: isDark
+                                                      ? AppColors
+                                                          .secondBackground
+                                                      : AppColors.background,
+                                                ),
+                                                SizedBox(
+                                                  width: 4.w,
+                                                ),
+                                                Expanded(
+                                                  child: Text(
+                                                    overflow:
+                                                        TextOverflow.visible,
+                                                    maxLines: 2,
+                                                    ' ${state.bookingdetail.district} - ${state.bookingdetail.city} ',
+                                                    style: TextStyle(
+                                                        fontSize:
+                                                            AppSize.textMedium,
+                                                        color: isDark
+                                                            ? Colors.white
+                                                            : Colors.black),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
                                       )
                                     ],
                                   ),
@@ -629,7 +634,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
                                 fontSize: AppSize.textMedium,
                                 color: Colors.grey)),
                         Text(
-                          '$price \VNĐ',
+                          '$price VNĐ',
                           style: TextStyle(
                             fontSize: AppSize.textLarge,
                             fontWeight: FontWeight.bold,

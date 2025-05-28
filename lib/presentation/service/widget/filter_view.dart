@@ -21,7 +21,6 @@ class _FilterViewState extends State<FilterView> {
   Map<FilterType, String?> selectedFilters = {
     FilterType.category: null,
     FilterType.price: null,
-    FilterType.location: null,
   };
   int? selectIndex;
   // String? cateSelected;
@@ -229,7 +228,7 @@ class _FilterViewState extends State<FilterView> {
           Text(
             "Price Range",
             style: TextStyle(
-              fontSize: 18,
+              fontSize: AppSize.textMedium,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -237,14 +236,14 @@ class _FilterViewState extends State<FilterView> {
             builder: (context, state) {
               return RangeSliderExample(
                 initMin: state.priceFrom ?? 0,
-                initMax: state.priceTo ?? 100,
+                initMax: state.priceTo ?? 1000000,
                 onChanged: (double start, double end) {
                   context.read<FilterCubit>().updateRangePrice(start, end);
 
                   // context.read<GetServiceCubit>().getService(GetServiceReq(
                   //     categoryId: selectIndex! + 1, priceFrom: 0, priceTo: 50));
                 },
-                max: 100,
+                max: 1000000,
               );
             },
           ),
@@ -265,7 +264,7 @@ class _FilterViewState extends State<FilterView> {
                 //                   .getService(GetServiceReq(categoryId: selectIndex,priceFrom: ));
                 setState(() {
                   selectedFilters[FilterType.price] =
-                      "\$${filterState.priceFrom?.toInt()} - \$${filterState.priceTo?.toInt()}";
+                      "${filterState.priceFrom?.toInt()}VNĐ - ${filterState.priceTo?.toInt()} VNĐ";
                   _expandedIndex = null;
                 });
               },
@@ -280,5 +279,4 @@ class _FilterViewState extends State<FilterView> {
 enum FilterType {
   category,
   price,
-  location,
 }

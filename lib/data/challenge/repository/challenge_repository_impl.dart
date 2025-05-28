@@ -10,7 +10,6 @@ import 'package:Tracio/domain/challenge/repository/challenge_repository.dart';
 
 import '../../../domain/challenge/entities/challenge_reward.dart';
 import '../../../domain/challenge/entities/participants_response_entity.dart';
-import '../models/response/challenge_model.dart';
 
 class ChallengeRepositoryImpl extends ChallengeRepository {
   final ChallengeApiService remoteDataSource;
@@ -85,7 +84,7 @@ class ChallengeRepositoryImpl extends ChallengeRepository {
   @override
   Future<Either<Failure, bool>> leaveChallenge(int challengeId) async {
     try {
-      var returnedData = await remoteDataSource.leaveChallenge(challengeId);
+      await remoteDataSource.leaveChallenge(challengeId);
       return Right(true);
     } on ServerFailure {
       return Left(ServerFailure(''));
@@ -111,6 +110,18 @@ class ChallengeRepositoryImpl extends ChallengeRepository {
   Future<Either<Failure, bool>> requestChallenge(int challengeId) async {
     try {
       await remoteDataSource.requestChallenge(challengeId);
+      return Right(true);
+    } on ServerFailure {
+      return Left(ServerFailure(''));
+    } on AuthenticationFailure {
+      return Left(AuthenticationFailure('UnAuthenticated'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> deleteChallenge(int challengeId) async {
+    try {
+      await remoteDataSource.deleteChallenge(challengeId);
       return Right(true);
     } on ServerFailure {
       return Left(ServerFailure(''));

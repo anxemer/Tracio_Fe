@@ -1,3 +1,4 @@
+import 'package:Tracio/domain/shop/entities/response/shop_service_entity.dart';
 import 'package:bloc/bloc.dart';
 
 import 'package:Tracio/domain/shop/entities/response/pagination_service_data_entity.dart';
@@ -30,7 +31,54 @@ class GetServiceCubit extends Cubit<GetServiceState> {
     }
   }
 
-  void getMoreService(GetServiceReq params) async {}
+  void getMoreService() async {
+    final currentState = state;
+
+    if (currentState is GetServiceLoaded) {
+      try {
+        final nextPage = currentState.metaData.pageNumberService! + 1;
+
+        final result = await sl<GetServiceUseCase>().call(
+          GetServiceReq(
+            pageNumberService: nextPage,
+            pageSizeService: currentState.params.pageSizeService,
+          ),
+        );
+
+        result.fold((error) {
+          emit(GetServiceFailure(
+            currentState.service,
+            currentState.shop,
+            currentState.metaData,
+            currentState.params,
+            error.message,
+          ));
+        }, (data) {
+          final updatedService =
+              List<ShopServiceEntity>.from(currentState.service);
+          updatedService.addAll(data.service);
+
+          emit(GetServiceLoaded(
+            updatedService,
+            currentState.shop,
+            data.paginationMetaData,
+            GetServiceReq(
+              pageNumberService: nextPage,
+              pageSizeService: currentState.params.pageSizeService,
+            ),
+          ));
+        });
+      } catch (e) {
+        emit(GetServiceFailure(
+          currentState.service,
+          currentState.shop,
+          currentState.metaData,
+          currentState.params,
+          e.toString(),
+        ));
+      }
+    }
+  }
 
   void resetState() {
     emit(GetServiceInitial(

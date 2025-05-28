@@ -19,6 +19,7 @@ class ChallengeEntity {
     required this.isSystem,
     required this.isPublic,
     required this.status,
+    required this.publicStatus,
     required this.progress,
     required this.challengeRank,
     this.totalParticipants,
@@ -43,6 +44,7 @@ class ChallengeEntity {
   final bool? isSystem;
   final bool? isPublic;
   final String status;
+  final String publicStatus;
   final double? progress;
   final int challengeRank;
   final int? totalParticipants;

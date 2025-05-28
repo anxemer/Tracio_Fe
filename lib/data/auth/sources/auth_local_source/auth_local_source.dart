@@ -38,11 +38,10 @@ class AuthLocalSourceImp extends AuthLocalSource {
   @override
   UserEntity? getUser() {
     final jsonString = sl<SharedPreferences>().getString(cachedUser);
-    if (jsonString != null) {
+    if (jsonString != null && jsonString.isNotEmpty) {
       return UserModel.fromJson(jsonString);
-    } else {
-      throw CacheException();
     }
+    return null;
   }
 
   @override

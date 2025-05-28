@@ -1,12 +1,12 @@
 import 'package:Tracio/common/widget/picture/circle_picture.dart';
 import 'package:Tracio/core/configs/theme/app_colors.dart';
 import 'package:Tracio/core/constants/app_size.dart';
-import 'package:Tracio/domain/user/entities/follow_request_entity.dart';
+import 'package:Tracio/domain/user/entities/follow_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class FollowRequestCard extends StatelessWidget {
-  final FollowRequestEntity follow;
+  final FollowEntity follow;
   final VoidCallback onAccept;
   final VoidCallback onDelete;
 

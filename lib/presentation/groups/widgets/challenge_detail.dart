@@ -42,6 +42,8 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
       }
     }, builder: (context, state) {
       if (state is ChallengeDetailLoaded) {
+        final isRequested = state.challenge.status == 'Requested';
+        final isCompleted = state.challenge.isCompleted;
         return Scaffold(
           backgroundColor: Colors.white,
           body: CustomScrollView(
@@ -51,7 +53,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                 expandedHeight: 180.0,
                 backgroundColor: AppColors.secondBackground,
                 leading: IconButton(
-                  icon: Icon(Icons.arrow_back, color: AppColors.primary),
+                  icon: Icon(Icons.arrow_back, color: Colors.black),
                   onPressed: () => Navigator.of(context).pop(),
                 ),
                 // actions: [
@@ -116,6 +118,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                       ),
                       const SizedBox(height: 16),
                       DetailInformationChallenge(
+                        challengeId: state.challenge.challengeId!,
                         myChallenge: state.challenge.isCreator!,
                         participants:
                             state.challenge.totalParticipants.toString(),
@@ -172,26 +175,50 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                 ),
               ],
             ),
-            child: ElevatedButton(
-              onPressed: () {
-                context
-                    .read<ChallengeCubit>()
-                    .joinChallenge(widget.challengeId);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
-                padding: EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius:
-                      BorderRadius.circular(AppSize.borderRadiusMedium),
-                ),
-                textStyle: TextStyle(
-                    fontSize: AppSize.textLarge, fontWeight: FontWeight.bold),
-                minimumSize: const Size(double.infinity, 50),
-              ),
-              child: Text('Join challenge'),
-            ),
+            child: isRequested
+                ? ElevatedButton.icon(
+                    onPressed: null, // disable button
+                    icon: const Icon(Icons.hourglass_top),
+                    label: const Text('Waiting for admin approval'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.grey,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.circular(AppSize.borderRadiusMedium),
+                      ),
+                      textStyle: TextStyle(
+                        fontSize: AppSize.textLarge,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      minimumSize: const Size(double.infinity, 50),
+                    ),
+                  )
+                : isCompleted!
+                    ? SizedBox.shrink()
+                    : ElevatedButton(
+                        onPressed: () {
+                          context
+                              .read<ChallengeCubit>()
+                              .joinChallenge(widget.challengeId);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                AppSize.borderRadiusMedium),
+                          ),
+                          textStyle: TextStyle(
+                            fontSize: AppSize.textLarge,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          minimumSize: const Size(double.infinity, 50),
+                        ),
+                        child: const Text('Join challenge'),
+                      ),
           ),
         );
       }

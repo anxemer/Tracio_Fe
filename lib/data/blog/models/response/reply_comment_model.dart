@@ -20,6 +20,7 @@ class ReplyCommentModel extends ReplyCommentEntity {
     required super.mediaUrls,
     required super.likeCount,
     required super.replyCount,
+    required super.userAvatar,
   });
   factory ReplyCommentModel.fromJson(Map<String, dynamic> json) {
     return ReplyCommentModel(
@@ -45,6 +46,7 @@ class ReplyCommentModel extends ReplyCommentEntity {
       mediaUrls: [],
       likeCount: json["likeCount"],
       replyCount: 0,
+      userAvatar: json["cyclistAvatar"],
     );
   }
 }

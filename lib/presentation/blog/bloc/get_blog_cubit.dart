@@ -64,7 +64,7 @@ class GetBlogCubit extends Cubit<GetBlogState> {
             metaData: state.metaData,
             params: state.params));
       }, (data) {
-        emit(GetBlogLoaded(
+        emit(GetBlogBookmarkLoaded(
             blogs: data.blogs,
             isLoading: false,
             params: state.params,
@@ -151,7 +151,7 @@ class GetBlogCubit extends Cubit<GetBlogState> {
         }, (data) {
           final updatedBlogs = List<BlogEntity>.from(currentState.blogs!);
           updatedBlogs.addAll(data.blogs);
-          emit(GetBlogLoaded(
+          emit(GetBlogBookmarkLoaded(
               blogs: updatedBlogs,
               metaData: data.paginationMetaDataEntity,
               params: GetBlogReq(),

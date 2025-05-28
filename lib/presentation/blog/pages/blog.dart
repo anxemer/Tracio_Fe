@@ -3,13 +3,10 @@ import 'dart:async';
 import 'package:Tracio/common/bloc/generic_data_cubit.dart';
 import 'package:Tracio/common/widget/button/loading.dart';
 import 'package:Tracio/presentation/blog/widget/route_blog.dart';
-import 'package:Tracio/presentation/library/widgets/route_blog_item.dart';
 import 'package:Tracio/presentation/map/bloc/route_cubit.dart';
-import 'package:Tracio/presentation/map/bloc/route_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:Tracio/data/blog/models/request/get_blog_req.dart';
 import 'package:Tracio/presentation/blog/bloc/get_blog_cubit.dart';
 import 'package:Tracio/presentation/blog/widget/blog_list_view.dart';
 import 'package:Tracio/presentation/blog/widget/create_blog_header.dart';
@@ -59,7 +56,9 @@ class _BlogPageState extends State<BlogPage> with TickerProviderStateMixin {
 
       _scrollDebounce = Timer(const Duration(milliseconds: 500), () {
         final blogState = context.read<GetBlogCubit>().state;
-        if (blogState is GetBlogLoaded && blogState.isLoading == false) {
+        if (blogState is GetBlogLoaded &&
+            blogState.isLoading == false &&
+            blogState.metaData.hasNextPage!) {
           context.read<GetBlogCubit>().getMoreBlogs();
         }
       });

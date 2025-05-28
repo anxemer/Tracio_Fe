@@ -1,3 +1,5 @@
+import 'package:Tracio/domain/challenge/usecase/request_challenge.dart';
+import 'package:Tracio/service_locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:Tracio/common/helper/is_dark_mode.dart';
@@ -14,7 +16,10 @@ class DetailInformationChallenge extends StatefulWidget {
       this.create,
       required this.isSystem,
       required this.isPublic,
-      required this.myChallenge});
+      required this.myChallenge,
+      required this.challengeId,
+      this.isPening = false});
+  final int challengeId;
   final String totalGoal;
   final String participants;
   final String startDate;
@@ -24,6 +29,7 @@ class DetailInformationChallenge extends StatefulWidget {
   final bool isSystem;
   final bool isPublic;
   final bool myChallenge;
+  final bool isPening;
   @override
   State<DetailInformationChallenge> createState() =>
       _DetailInformationChallengeState();
@@ -32,9 +38,12 @@ class DetailInformationChallenge extends StatefulWidget {
 class _DetailInformationChallengeState
     extends State<DetailInformationChallenge> {
   late bool _isPublic;
+  late bool _isPendingApproval;
+
   @override
   void initState() {
     _isPublic = widget.isPublic;
+    _isPendingApproval = widget.isPening;
     super.initState();
   }
 
@@ -53,36 +62,68 @@ class _DetailInformationChallengeState
           widget.isSystem
               ? SizedBox.shrink()
               : _buildDetailRow('Creater', widget.create ?? '', '', context),
+
+          // Switch
           widget.myChallenge
-              ? Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Icon(
-                          _isPublic ? Icons.public : Icons.lock,
-                          color: Colors.grey[600],
+                        Row(
+                          children: [
+                            Icon(
+                              _isPublic ? Icons.public : Icons.lock,
+                              color: Colors.grey[600],
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              _isPublic
+                                  ? 'Public'
+                                  : _isPendingApproval
+                                      ? 'Pending approval'
+                                      : 'Private',
+                              style: TextStyle(
+                                  fontSize: AppSize.textLarge,
+                                  color: Colors.grey.shade700),
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: 8),
-                        Text(
-                          _isPublic ? 'Public' : 'Private',
-                          style: TextStyle(
-                              fontSize: AppSize.textLarge,
-                              color: Colors.grey.shade700),
+                        Switch(
+                          value: _isPublic || _isPendingApproval,
+                          onChanged: (_isPublic || _isPendingApproval)
+                              ? null
+                              : (newValue) async {
+                                  if (newValue) {
+                                    var result =
+                                        await sl<RequestChallengeUseCase>()
+                                            .call(widget.challengeId);
+                                    // Gửi request ở đây nếu cần
+                                    result.fold((error) {}, (data) {
+                                      setState(() {
+                                        _isPendingApproval = true;
+                                      });
+                                    });
+                                  }
+                                },
                         ),
                       ],
                     ),
-                    Switch(
-                      value: _isPublic,
-                      onChanged: (newValue) {
-                        setState(() {
-                          _isPublic = newValue;
-                        });
-                      },
-                    ),
+                    if (_isPendingApproval)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4.0, left: 4.0),
+                        child: Text(
+                          'Waiting for admin approval...',
+                          style: TextStyle(
+                              fontSize: AppSize.textSmall,
+                              fontStyle: FontStyle.italic,
+                              color: Colors.orange),
+                        ),
+                      ),
                   ],
                 )
-              : SizedBox.shrink()
+              : SizedBox.shrink(),
         ],
       ),
     );

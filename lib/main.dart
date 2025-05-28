@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:Tracio/core/services/location/location_service.dart';
 import 'package:Tracio/core/services/signalR/implement/notification_hub_service.dart';
 import 'package:Tracio/presentation/notifications/bloc/notification_bloc.dart';
-import 'package:Tracio/presentation/notifications/page/notifications.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -17,9 +16,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:Tracio/common/bloc/filter_cubit.dart';
 import 'package:Tracio/common/bloc/generic_data_cubit.dart';
-import 'package:Tracio/core/services/notifications/notification_service.dart';
 import 'package:Tracio/core/configs/theme/app_theme.dart';
-import 'package:Tracio/core/signalr_service.dart';
 import 'package:Tracio/firebase_options.dart';
 import 'package:Tracio/presentation/chat/bloc/bloc/conversation_bloc.dart';
 import 'package:Tracio/presentation/groups/cubit/group_cubit.dart';
@@ -134,7 +131,7 @@ class _MyAppState extends State<MyApp> {
           'senderAvatar': message.senderAvatar, // Thêm senderAvatar
           'message': message.message, // Thêm message
           'isRead': message.isRead, // Thêm isRead
-          'createdAt': message.createdAt, // Thêm createdAt
+          'createdAt': message.createdAt.toIso8601String(),
           'messageId': message.messageId, // Thêm messageId
         });
 
@@ -154,51 +151,51 @@ class _MyAppState extends State<MyApp> {
       NotificationModel message, NotificationType type) {
     switch (type) {
       case NotificationType.commentBlog:
-        return 'New Blog Comment';
+        return 'New Comment';
       case NotificationType.blogReplyReReply:
-        return 'Reply to Your Comment';
+        return 'New Reply';
       case NotificationType.blogReplyComment:
-        return 'Reply to Blog Comment';
+        return 'Replied to Comment';
       case NotificationType.reactionComment:
-        return 'Comment Reaction';
+        return 'Comment Reacted';
       case NotificationType.reactionBlog:
-        return 'Blog Reaction';
+        return 'Blog Reacted';
       case NotificationType.blogReactionReply:
-        return 'Reply Reaction';
+        return 'Reply Reacted';
       case NotificationType.reviewService:
-        return 'Service Review';
+        return 'New Review';
       case NotificationType.replyReview:
-        return 'Reply to Review';
+        return 'Review Replied';
       case NotificationType.bookingService:
-        return 'Booking Update';
+        return 'Booking Updated';
       case NotificationType.reviewRoute:
-        return 'Route Review';
+        return 'Route Reviewed';
       case NotificationType.routeReactionRoute:
-        return 'Route Reaction';
+        return 'Route Reacted';
       case NotificationType.routeReplyReview:
-        return 'Reply to Route Review';
+        return 'Reply to Review';
       case NotificationType.routeReplyReReply:
-        return 'Reply to Route Comment';
+        return 'New Route Reply';
       case NotificationType.reactionReview:
-        return 'Review Reaction';
+        return 'Review Reacted';
       case NotificationType.routeReactionReply:
-        return 'Route Reply Reaction';
+        return 'Reply Reacted';
       case NotificationType.message:
         return 'New Message';
       case NotificationType.subscription:
-        return 'System Update';
+        return 'Subscription Notice';
       case NotificationType.route:
-        return 'Route Update';
+        return 'Route Notice';
       case NotificationType.user:
-        return 'User Action';
+        return 'Notification';
       case NotificationType.challenge:
         return 'New Challenge';
       case NotificationType.groupInvitation:
-        return 'Group Invitation';
+        return 'Group Invite';
       case NotificationType.group:
-        return 'Group Update';
+        return 'Group Notice';
       default:
-        return 'New Notification';
+        return 'Notification';
     }
   }
 
@@ -224,7 +221,7 @@ class _MyAppState extends State<MyApp> {
           ),
           BlocProvider(create: (context) => GetReviewCubit()),
 
-          BlocProvider(create: (context) => AuthCubit()..checkUser()),
+          BlocProvider(create: (context) => AuthCubit()),
           BlocProvider(create: (context) => GenericDataCubit()),
           BlocProvider(
               create: (context) => TrackingBloc(di.sl<LocationService>())),

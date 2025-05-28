@@ -1,3 +1,4 @@
+import 'package:Tracio/core/erorr/failure.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:Tracio/common/helper/navigator/app_navigator.dart';
@@ -20,7 +21,9 @@ class SplashPage extends StatefulWidget {
 class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
-    context.read<AuthCubit>().refreshToken();
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<AuthCubit>().refreshToken();
+    });
     super.initState();
   }
 
@@ -33,6 +36,8 @@ class _SplashPageState extends State<SplashPage> {
             AppNavigator.pushReplacement(context, LoginPage());
           }
           if (state is AuthLoaded) {
+            context.read<AuthCubit>().sendFcm();
+
             if (state.user?.role == 'user') {
               AppNavigator.pushReplacement(context, BottomNavBarManager());
             } else if (state.user?.role == 'shop_owner') {

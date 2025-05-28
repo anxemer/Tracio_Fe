@@ -78,6 +78,32 @@ class DioClient {
     }
   }
 
+// PATCH METHOD
+Future<Response> patch(
+  String url, {
+  dynamic data,
+  Map<String, dynamic>? queryParameters,
+  Options? options,
+  CancelToken? cancelToken,
+  ProgressCallback? onSendProgress,
+  ProgressCallback? onReceiveProgress,
+}) async {
+  try {
+    final Response response = await _dio.patch(
+      url,
+      data: data,
+      queryParameters: queryParameters,
+      options: options,
+      cancelToken: cancelToken,
+      onSendProgress: onSendProgress,
+      onReceiveProgress: onReceiveProgress,
+    );
+    return response;
+  } catch (e) {
+    rethrow;
+  }
+}
+
   // PUT METHOD
   Future<Response> put(
     String url, {

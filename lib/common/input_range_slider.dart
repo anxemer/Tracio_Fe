@@ -70,14 +70,16 @@ class _RangeSliderExampleState extends State<RangeSliderExample> {
         alignment: Alignment.topLeft,
         child: Text(
           _currentRangeValues.start.round().toString(),
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          style: TextStyle(
+              fontSize: AppSize.textMedium, fontWeight: FontWeight.bold),
         ),
       ),
       Align(
         alignment: Alignment.topRight,
         child: Text(
           _currentRangeValues.end.round().toString(),
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          style: TextStyle(
+              fontSize: AppSize.textMedium, fontWeight: FontWeight.bold),
         ),
       ),
     ]);

@@ -401,7 +401,7 @@ class ShopApiServiceImpl extends ShopApiService {
     try {
       FormData formData = await createShop.toFormData();
       var response = await sl<DioClient>().put(ApiUrl.editShop, data: formData);
-      if (response.statusCode == 201) {
+      if (response.statusCode == 200) {
         return Right(true);
       }
       if (response.statusCode == 401) {

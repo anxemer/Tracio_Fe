@@ -27,27 +27,24 @@ class FirebaseMessagingService {
       carPlay: true,
       criticalAlert: true,
     );
-    Future<String?> _getId() async {
-      var deviceInfo = DeviceInfoPlugin();
-      if (Platform.isIOS) {
-        // import 'dart:io'
-        var iosDeviceInfo = await deviceInfo.iosInfo;
-        return iosDeviceInfo.identifierForVendor; // unique ID on iOS
-      } else if (Platform.isAndroid) {
-        var androidDeviceInfo = await deviceInfo.androidInfo;
-        return AndroidId().getId(); // unique ID on Android
-      }
-    }
+    // Future<String?> _getId() async {
+    //   var deviceInfo = DeviceInfoPlugin();
+    //   if (Platform.isIOS) {
+    //     // import 'dart:io'
+    //     var iosDeviceInfo = await deviceInfo.iosInfo;
+    //     return iosDeviceInfo.identifierForVendor; // unique ID on iOS
+    //   } else if (Platform.isAndroid) {
+    //     var androidDeviceInfo = await deviceInfo.androidInfo;
+    //     return AndroidId().getId(); // unique ID on Android
+    //   }
+    // }
 
-    // Lấy token
-    final deviceId = await _getId();
-    final token = await _firebaseMessaging.getToken();
-    print("FCM Token: $token"); // Gửi token này lên server để push notification
-    print(
-        "device Token: $deviceId"); // Gửi token này lên server để push notification
-    sl<UserApiSource>()
-        .sendFcm(SendFcmReq(deviceId: deviceId ?? '', fcmToken: token ?? ''));
-    // Handle khi app đang mở
+    // final deviceId = await _getId();
+    // final token = await _firebaseMessaging.getToken();
+
+    // sl<UserApiSource>()
+    //     .sendFcm(SendFcmReq(deviceId: deviceId ?? '', fcmToken: token ?? ''));
+    // // Handle khi app đang mở
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       _handleMessage(message);
     });

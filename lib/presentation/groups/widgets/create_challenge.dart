@@ -1,7 +1,6 @@
 import 'package:Tracio/common/helper/navigator/app_navigator.dart';
 import 'package:Tracio/data/challenge/models/request/create_challenge_req.dart';
 import 'package:Tracio/presentation/groups/cubit/challenge_cubit.dart';
-import 'package:Tracio/presentation/groups/widgets/challenge_detail.dart';
 import 'package:Tracio/presentation/groups/widgets/challenge_progress.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -99,25 +98,12 @@ class _CreateChallengeScreenState extends State<CreateChallengeScreen> {
             endDate: formattedEndDate,
           ));
 
-      // Hiển thị thông báo thành công (tùy chọn)
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Create Challenge Success')),
       );
 
-      // Có thể reset form sau khi tạo thành công
-      // _formKey.currentState!.reset();
-      // setState(() {
-      //   _challengeNameController.clear();
-      //   _goalValueController.clear();
-      //   _selectedGoalType = null;
-      //   _startDate = null;
-      //   _endDate = null;
-      // });
-
-      // Hoặc điều hướng đi đâu đó
-      // Navigator.pop(context);
+   
     } else {
-      // Hiển thị thông báo nếu form không hợp lệ (validation tự động hiển thị lỗi dưới field)
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please fill in valid information.')),
       );

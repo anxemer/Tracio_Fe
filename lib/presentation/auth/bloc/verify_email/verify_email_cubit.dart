@@ -20,6 +20,7 @@ class VerifyEmailCubit extends Cubit<VerifyEmailState> {
   }
 
   Future<void> checkEmailVerified(String email, String firebaseId) async {
+    emit(VerifyEmailLoading()); // Add this line to show waiting indicator again
     var result = await sl<CheckEmailVerifiedUseCase>().call(NoParams());
     result.fold((error) {
       emit(VerifyEmailFailure(message: 'Email chưa được xác minh'));

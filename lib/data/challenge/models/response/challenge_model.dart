@@ -24,7 +24,8 @@ class ChallengeModel extends ChallengeEntity {
       required super.startDate,
       required super.endDate,
       required super.createdAt,
-      required super.challengeRewardMappings});
+      required super.challengeRewardMappings,
+      required super.publicStatus});
   factory ChallengeModel.fromJson(Map<String, dynamic> json) {
     return ChallengeModel(
       challengeId: json["challengeId"] as int?,
@@ -56,6 +57,7 @@ class ChallengeModel extends ChallengeEntity {
           [],
       totalParticipants: json["totalParticipants"] as int? ?? 0,
       isCreator: json["isCreator"] as bool? ?? false,
+      publicStatus: json["publicStatus"] as String? ?? '',
     );
   }
 }

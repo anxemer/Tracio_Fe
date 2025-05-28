@@ -1,6 +1,9 @@
 import 'dart:ffi';
+import 'dart:io';
 
+import 'package:Tracio/data/user/models/send_fcm_req.dart';
 import 'package:dartz/dartz.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
@@ -18,6 +21,7 @@ import 'package:Tracio/domain/auth/repositories/auth_repository.dart';
 
 import '../../../domain/auth/entities/authentication_response_entity.dart';
 import '../../../service_locator.dart';
+import '../../user/source/user_api_source.dart';
 import '../models/change_role_req.dart';
 import '../sources/auth_local_source/auth_local_source.dart';
 
@@ -38,7 +42,7 @@ class AuthRepositotyImpl extends AuthRepository {
         return Left(e);
       }
     } else {
-      return Left(NetworkFailure('Không có kết nối mạng'));
+      return Left(ExceptionFailure('Không có kết nối mạng'));
     }
   }
 
@@ -185,5 +189,16 @@ class AuthRepositotyImpl extends AuthRepository {
       // Gửi ID Token Firebase về server
       return await sl<AuthApiService>().loginWithGoogleIdToken(firebaseIdToken);
     });
+  }
+
+  @override
+  Future<Either<Failure, bool>> sendFcm(SendFcmReq fcm) async {
+    try {
+      await sl<UserApiSource>().sendFcm(fcm);
+
+      return Right(true);
+    } on Failure catch (e) {
+      return Left(e);
+    }
   }
 }
