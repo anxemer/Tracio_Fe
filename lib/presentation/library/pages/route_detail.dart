@@ -17,10 +17,11 @@ import 'package:Tracio/presentation/map/bloc/map_cubit.dart';
 import 'package:Tracio/presentation/map/bloc/route_cubit.dart';
 import 'package:Tracio/presentation/map/bloc/route_state.dart';
 import 'package:Tracio/main.dart';
+import 'package:Tracio/presentation/library/widgets/detail/route_detail_participants.dart';
 
 class RouteDetailScreen extends StatefulWidget {
   final int routeId;
-  const RouteDetailScreen({super.key, required this.routeId}); 
+  const RouteDetailScreen({super.key, required this.routeId});
 
   @override
   State<RouteDetailScreen> createState() => _RouteDetailScreenState();
@@ -128,6 +129,12 @@ class _RouteDetailScreenState extends State<RouteDetailScreen> with RouteAware {
                                 ),
                                 RouteDetailInformation(
                                     routeEntity: state.route),
+                                RouteDetailParticipants(
+                                  routeDetail: state.route,
+                                  matchedUsers: state.route.matchedUsers,
+                                  participants: state.route.participants,
+                                  isOwner: state.route.isOwner,
+                                ),
                                 Container(
                                   height: 16.h,
                                   color: Colors.grey.shade300,

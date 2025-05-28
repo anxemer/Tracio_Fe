@@ -13,6 +13,9 @@ class RouteDetailEntity extends RouteEntity {
   double maxSpeed;
   double highestElevation;
   double lowestElevation;
+  bool isOwner;
+  List<MatchedUser> matchedUsers;
+  List<Participant> participants;
 
   RouteDetailEntity({
     required this.speeds,
@@ -49,6 +52,9 @@ class RouteDetailEntity extends RouteEntity {
     required super.isPlanned,
     required super.createdAt,
     required super.updatedAt,
+    required this.isOwner,
+    required this.matchedUsers,
+    required this.participants,
   });
 
   @override
@@ -87,6 +93,9 @@ class RouteDetailEntity extends RouteEntity {
     bool? isPlanned,
     DateTime? createdAt,
     DateTime? updatedAt,
+    bool? isOwner,
+    List<MatchedUser>? matchedUsers,
+    List<Participant>? participants,
   }) {
     return RouteDetailEntity(
       speeds: speeds ?? this.speeds,
@@ -123,6 +132,81 @@ class RouteDetailEntity extends RouteEntity {
       isPlanned: isPlanned ?? this.isPlanned,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      isOwner: isOwner ?? this.isOwner,
+      matchedUsers: matchedUsers ?? this.matchedUsers,
+      participants: participants ?? this.participants,
     );
+  }
+}
+
+class MatchedUser {
+  final int matchId;
+  final int userId;
+  final String userName;
+  final String userAvatar;
+  final String status;
+  final DateTime matchedAt;
+
+  const MatchedUser({
+    required this.matchId,
+    required this.userId,
+    required this.userName,
+    required this.userAvatar,
+    required this.status,
+    required this.matchedAt,
+  });
+
+  factory MatchedUser.fromJson(Map<String, dynamic> json) {
+    return MatchedUser(
+      matchId: json['matchId'] as int,
+      userId: json['userId'] as int,
+      userName: json['userName'] as String,
+      userAvatar: json['userAvatar'] as String,
+      status: json['status'] as String,
+      matchedAt: DateTime.parse(json['matchedAt'] as String),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'matchId': matchId,
+      'userId': userId,
+      'userName': userName,
+      'userAvatar': userAvatar,
+      'status': status,
+      'matchedAt': matchedAt.toIso8601String(),
+    };
+  }
+}
+
+class Participant {
+  final int userId;
+  final int routeId;
+  final String userName;
+  final String userAvatar;
+
+  const Participant({
+    required this.userId,
+    required this.routeId,
+    required this.userName,
+    required this.userAvatar,
+  });
+
+  factory Participant.fromJson(Map<String, dynamic> json) {
+    return Participant(
+      userId: json['userId'] as int,
+      routeId: json['routeId'] as int,
+      userName: json['userName'] as String,
+      userAvatar: json['userAvatar'] as String,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'userId': userId,
+      'routeId': routeId,
+      'userName': userName,
+      'userAvatar': userAvatar,
+    };
   }
 }

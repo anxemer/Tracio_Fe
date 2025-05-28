@@ -182,7 +182,7 @@ class _LineChartWidgetState extends State<LineChartWidget> {
             getTitlesWidget: (value, meta) {
               if (value == 0) return Container();
               return Text(
-                '${value.toInt()}km',
+                '${value.toInt()}${widget.unitX}',
                 style: TextStyle(
                     fontSize: AppSize.textSmall * 1.1.sp,
                     color: widget.legendTextColor),
@@ -198,12 +198,15 @@ class _LineChartWidgetState extends State<LineChartWidget> {
             interval: intervalY,
             getTitlesWidget: (value, meta) {
               if (value == 0) {
-                return Text(
-                  "km/h",
-                  style: TextStyle(
-                      fontSize: AppSize.textSmall * 1.1.sp,
-                      color: widget.legendTextColor),
-                );
+                return Padding(
+                    padding: const EdgeInsets.only(right: 4),
+                    child: Text(
+                      widget.unitY,
+                      textAlign: TextAlign.right,
+                      style: TextStyle(
+                          fontSize: AppSize.textSmall * 1.1.sp,
+                          color: widget.legendTextColor),
+                    ));
               }
               return Padding(
                 padding: const EdgeInsets.only(right: 4),
