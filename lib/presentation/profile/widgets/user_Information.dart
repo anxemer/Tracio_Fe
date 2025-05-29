@@ -2,6 +2,8 @@ import 'package:Tracio/common/bloc/generic_data_cubit.dart';
 import 'package:Tracio/common/helper/is_dark_mode.dart';
 import 'package:Tracio/common/helper/navigator/app_navigator.dart';
 import 'package:Tracio/common/widget/button/loading.dart';
+import 'package:Tracio/core/configs/theme/app_colors.dart';
+import 'package:Tracio/data/user/models/get_follow_req.dart';
 import 'package:Tracio/domain/challenge/entities/challenge_reward.dart';
 import 'package:Tracio/presentation/groups/widgets/challenge_progress.dart';
 import 'package:Tracio/presentation/map/widgets/challenge_reward.dart';
@@ -97,10 +99,10 @@ class _UserinformationState extends State<Userinformation> {
             style: TextStyle(color: Colors.grey.shade700),
           ),
           const SizedBox(height: 20),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (!widget.myProfile)
+          if (!widget.myProfile)
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
                 AnimatedFollowButton(
                   alwaysVisible: isAlreadyFollowed,
                   initiallyFollowed: isAlreadyFollowed,
@@ -111,12 +113,18 @@ class _UserinformationState extends State<Userinformation> {
                       !context.isDarkMode ? Colors.black87 : Colors.white,
                   width: 160.w,
                   height: 30.h,
-                )
-              // else if (isAlreadyFollowed)
-              //   const Text(
-              //       "Followed") // Hoặc ButtonDesign với trạng thái "Unfollow"
-            ],
-          ),
+                ),
+                IconButton(
+                    onPressed: () {},
+                    icon: Icon(
+                      Icons.message_rounded,
+                      color: AppColors.primary,
+                    ))
+                // else if (isAlreadyFollowed)
+                //   const Text(
+                //       "Followed") // Hoặc ButtonDesign với trạng thái "Unfollow"
+              ],
+            ),
 
           // Padding(
           //   padding: const EdgeInsets.symmetric(horizontal: 40),
@@ -159,9 +167,12 @@ class _UserinformationState extends State<Userinformation> {
                     AppNavigator.push(
                         context,
                         BlocProvider(
-                          create: (context) =>
-                              FollowCubit()..getFollower(widget.user.userId!),
-                          child: FollowersScreen(),
+                          create: (context) => FollowCubit()
+                            ..getFollower(GetFollowReq(
+                                userId: widget.user.userId!,
+                                pageNumber: 1,
+                                pageSize: 10)),
+                          child: FollowersScreen(userId: widget.user.userId!,isFollower: true),
                         ));
                   },
                   child: Text.rich(TextSpan(
@@ -183,9 +194,12 @@ class _UserinformationState extends State<Userinformation> {
                     AppNavigator.push(
                         context,
                         BlocProvider(
-                          create: (context) =>
-                              FollowCubit()..getFollowing(widget.user.userId!),
-                          child: FollowersScreen(),
+                          create: (context) => FollowCubit()
+                            ..getFollowing(GetFollowReq(
+                                userId: widget.user.userId!,
+                                pageNumber: 1,
+                                pageSize: 10)),
+                          child: FollowersScreen(userId: widget.user.userId!,isFollower: false),
                         ));
                   },
                   child: Text.rich(TextSpan(
@@ -275,7 +289,7 @@ class _UserinformationState extends State<Userinformation> {
               return GestureDetector(
                 onTap: () {
                   AppNavigator.push(
-                      context, AllReward(reward: widget.user.rewards?? []));
+                      context, AllReward(reward: widget.user.rewards ?? []));
                 },
                 child: Container(
                   width: 60.w,

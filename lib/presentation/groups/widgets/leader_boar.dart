@@ -1,3 +1,5 @@
+import 'package:Tracio/common/helper/navigator/app_navigator.dart';
+import 'package:Tracio/presentation/profile/pages/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -152,7 +154,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
     if (participants.listParticipants.isEmpty) {
       return const Center(child: Text("Leadboard Empty."));
     }
-    
+
     return Column(
       children: [
         Expanded(
@@ -175,7 +177,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
         else
           SizedBox.shrink()
       ],
-    );  
+    );
   }
 
   Widget _buildLeaderboardRow(ParticipantsEntity participant, bool inTop) {
@@ -183,7 +185,8 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
         ? (participant.progress! * widget.goalValue).round()
         : null;
     final bool isCurrentUser = participant.isCurrentUser!;
-    final Color? rowColor = isCurrentUser ? AppColors.background : null;
+    final Color? rowColor =
+        isCurrentUser ? AppColors.background.withValues(alpha: .2) : null;
 
     final FontWeight nameWeight =
         isCurrentUser ? FontWeight.bold : FontWeight.normal;
@@ -192,53 +195,65 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
       padding: EdgeInsets.symmetric(
         horizontal: AppSize.apHorizontalPadding * .8.w,
       ),
-      child: Row(
-        children: [
-          SizedBox(
-            child: Text(
-              '${participant.challengeRank == 0 ? '--' : participant.challengeRank}',
-              style: TextStyle(
-                  fontSize: AppSize.textMedium.sp,
-                  color: Colors.grey.shade700,
-                  fontWeight: FontWeight.w500),
+      child: InkWell(
+        onTap: () => AppNavigator.push(
+            context,
+            UserProfilePage(
+              myProfile: false,
+              userId: participant.cyclistId,
+            )),
+        child: Row(
+          children: [
+            SizedBox(
+              child: Text(
+                '${participant.challengeRank == 0 ? '--' : participant.challengeRank}',
+                style: TextStyle(
+                    fontSize: AppSize.textMedium.sp,
+                    color: Colors.grey.shade700,
+                    fontWeight: FontWeight.w500),
+              ),
             ),
-          ),
-          Expanded(
-            child: Container(
-                color: inTop ? rowColor : null,
-                child: ListTile(
-                  leading: CirclePicture(
-                      imageUrl: participant.cyclistAvatarUrl!,
-                      imageSize: AppSize.iconSmall.sp),
-                  title: Text(
-                    participant.cyclistName!,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                        fontSize: AppSize.textMedium,
-                        fontWeight: nameWeight,
-                        color: Colors.black87),
+            Expanded(
+              child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius:
+                        BorderRadius.circular(AppSize.borderRadiusLarge),
+                    color: inTop ? rowColor : null,
                   ),
-                  subtitle: ClipRRect(
-                    borderRadius: BorderRadius.circular(10.0),
-                    child: LinearProgressIndicator(
-                      value: participant.progress,
-                      minHeight: 8,
-                      backgroundColor: Colors.grey.shade300,
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                          AppColors.secondBackground),
+                  child: ListTile(
+                    leading: CirclePicture(
+                        imageUrl: participant.cyclistAvatarUrl!,
+                        imageSize: AppSize.iconSmall.sp),
+                    title: Text(
+                      participant.cyclistName!,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                          fontSize: AppSize.textMedium,
+                          fontWeight: nameWeight,
+                          color: Colors.black87),
                     ),
-                  ),
-                  trailing: Text(
-                    currentValue.toString(),
-                    style: TextStyle(
-                        fontSize: AppSize.textLarge,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black87),
-                  ),
-                )),
-          ),
-        ],
+                    subtitle: ClipRRect(
+                      borderRadius: BorderRadius.circular(10.0),
+                      child: LinearProgressIndicator(
+                        value: participant.progress,
+                        minHeight: 8,
+                        backgroundColor: Colors.grey.shade300,
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                            AppColors.secondBackground),
+                      ),
+                    ),
+                    trailing: Text(
+                      currentValue.toString(),
+                      style: TextStyle(
+                          fontSize: AppSize.textLarge,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black87),
+                    ),
+                  )),
+            ),
+          ],
+        ),
       ),
     );
   }

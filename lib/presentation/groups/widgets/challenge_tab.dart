@@ -64,6 +64,8 @@ class _ChallengeTabState extends State<ChallengeTab> with RouteAware {
                 state.challengeOverview.activeChallenges;
             List<ChallengeEntity> recommendChallenge =
                 state.challengeOverview.suggestedChallenges;
+            List<ChallengeEntity> myChallenge =
+                state.challengeOverview.myChallenges;
             return SingleChildScrollView(
               scrollDirection: Axis.vertical,
               physics: AlwaysScrollableScrollPhysics(),
@@ -162,6 +164,42 @@ class _ChallengeTabState extends State<ChallengeTab> with RouteAware {
                   const SizedBox(
                     height: AppSize.apVerticalPadding,
                   ),
+                  myChallenge.isEmpty
+                      ? SizedBox.shrink()
+                      : Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: AppSize.apHorizontalPadding),
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                spacing: AppSize.apHorizontalPadding / 2,
+                                children: [
+                                  Icon(
+                                    Icons.local_attraction_rounded,
+                                    size: AppSize.iconMedium,
+                                  ),
+                                  Text("My Challenges",
+                                      style: TextStyle(
+                                          fontSize: AppSize.textSmall.sp,
+                                          fontWeight: FontWeight.w600)),
+                                ],
+                              ),
+
+                              // List of recommended groups
+                              SizedBox(height: 16),
+                            ],
+                          ),
+                        ),
+                  Wrap(
+                    spacing: AppSize.apHorizontalPadding / 4,
+                    runSpacing: AppSize.apHorizontalPadding / 4,
+                    children: myChallenge.map((challenge) {
+                      return RecommendChallengeItem(
+                        challenge: challenge,
+                      );
+                    }).toList(),
+                  ),
                   Padding(
                     padding: const EdgeInsets.symmetric(
                         horizontal: AppSize.apHorizontalPadding),
@@ -197,50 +235,50 @@ class _ChallengeTabState extends State<ChallengeTab> with RouteAware {
                     }).toList(),
                   ),
 
-                  // const SizedBox(
-                  //   height: AppSize.apVerticalPadding,
-                  // ),
+                  const SizedBox(
+                    height: AppSize.apVerticalPadding,
+                  ),
 
-                  // Padding(
-                  //   padding: const EdgeInsets.symmetric(
-                  //       horizontal: AppSize.apHorizontalPadding),
-                  //   child: Column(
-                  //     children: [
-                  //       Row(
-                  //         mainAxisAlignment: MainAxisAlignment.start,
-                  //         spacing: AppSize.apHorizontalPadding / 2,
-                  //         children: [
-                  //           Icon(
-                  //             Icons.done_outline_rounded,
-                  //             size: AppSize.iconMedium,
-                  //           ),
-                  //           Text("Previous Challenges",
-                  //               style: TextStyle(
-                  //                   fontSize: AppSize.textSmall.sp,
-                  //                   fontWeight: FontWeight.w600)),
-                  //         ],
-                  //       ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: AppSize.apHorizontalPadding),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          spacing: AppSize.apHorizontalPadding / 2,
+                          children: [
+                            Icon(
+                              Icons.done_outline_rounded,
+                              size: AppSize.iconMedium,
+                            ),
+                            Text("Previous Challenges",
+                                style: TextStyle(
+                                    fontSize: AppSize.textSmall.sp,
+                                    fontWeight: FontWeight.w600)),
+                          ],
+                        ),
 
-                  //       // List of recommended groups
-                  //       SizedBox(height: 16),
-                  //     ],
-                  //   ),
-                  // ),
-                  // state.challengeOverview.previousChallenges.isNotEmpty
-                  //     ? Wrap(
-                  //         spacing: AppSize.apHorizontalPadding / 4,
-                  //         runSpacing: AppSize.apHorizontalPadding / 4,
-                  //         children: List.generate(
-                  //           state.challengeOverview.previousChallenges.length,
-                  //           (index) {
-                  //             return RecommendChallengeItem(
-                  //               challenge: state.challengeOverview
-                  //                   .previousChallenges[index],
-                  //             );
-                  //           },
-                  //         ),
-                  //       )
-                  //     : SizedBox.shrink(),
+                        // List of recommended groups
+                        SizedBox(height: 16),
+                      ],
+                    ),
+                  ),
+                  state.challengeOverview.previousChallenges.isNotEmpty
+                      ? Wrap(
+                          spacing: AppSize.apHorizontalPadding / 4,
+                          runSpacing: AppSize.apHorizontalPadding / 4,
+                          children: List.generate(
+                            state.challengeOverview.previousChallenges.length,
+                            (index) {
+                              return RecommendChallengeItem(
+                                challenge: state.challengeOverview
+                                    .previousChallenges[index],
+                              );
+                            },
+                          ),
+                        )
+                      : SizedBox.shrink(),
 
                   const SizedBox(
                     height: AppSize.apVerticalPadding,

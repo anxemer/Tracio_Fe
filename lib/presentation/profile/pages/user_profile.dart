@@ -179,6 +179,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                     AppNavigator.push(
                                         context,
                                         UserBlogList(
+                                          myProfile: widget.myProfile,
                                           userId: userEntity.userId!,
                                           userName: userEntity.userName!,
                                         ));

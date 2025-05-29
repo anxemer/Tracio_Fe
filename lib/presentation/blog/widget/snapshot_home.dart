@@ -54,8 +54,7 @@ class WeeklySnapshotCard extends StatelessWidget {
               children: [
                 statItem(
                   'Distance',
-                  activity.totalDistance?.toStringAsFixed(2) ??
-                      '0', // Format distance
+                  activity.formatDistanceFlexible(), // Format distance
                   'Km', // Use the provided unit
                   valueStyle,
                   labelStyle,
@@ -64,7 +63,7 @@ class WeeklySnapshotCard extends StatelessWidget {
                 // --- Duration ---
                 statItem(
                   'Time',
-                  activity.totalDuration?.toString() ?? '0', // Format distance
+                  activity.formatDuration(),   // Format distance
                   'Hour', // Use the provided unit
                   valueStyle,
                   labelStyle,

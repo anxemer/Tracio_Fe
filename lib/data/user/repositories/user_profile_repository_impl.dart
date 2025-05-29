@@ -4,6 +4,7 @@ import 'package:Tracio/data/user/models/edit_user_profile_req.dart';
 import 'package:Tracio/data/user/models/resolve_follow_request_req.dart';
 import 'package:Tracio/domain/user/entities/daily_activity_entity.dart';
 import 'package:Tracio/domain/user/entities/follow_entity.dart';
+import 'package:Tracio/domain/user/entities/follow_response_entity.dart';
 import 'package:dartz/dartz.dart';
 import 'package:Tracio/core/erorr/exception.dart';
 import 'package:Tracio/data/user/source/user_api_source.dart';
@@ -11,6 +12,7 @@ import 'package:Tracio/domain/user/entities/user_profile_entity.dart';
 import 'package:Tracio/domain/user/repositories/user_profile_repository.dart';
 
 import '../../../core/erorr/failure.dart';
+import '../models/get_follow_req.dart';
 
 class UserProfileRepositoryImpl implements UserProfileRepository {
   final UserApiSource dataSource;
@@ -100,9 +102,10 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
   }
 
   @override
-  Future<Either<Failure, List<FollowEntity>>> getFollower(int userId) async {
+  Future<Either<Failure, FollowResponseEntity>> getFollower(
+      GetFollowReq params) async {
     try {
-      final follow = await dataSource.getFollower(userId);
+      final follow = await dataSource.getFollower(params);
       return Right(follow);
     } on ServerException {
       return Left(ServerFailure('Get User profile failure'));
@@ -112,9 +115,10 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
   }
 
   @override
-  Future<Either<Failure, List<FollowEntity>>> getFollowing(int userId) async {
+  Future<Either<Failure, FollowResponseEntity>> getFollowing(
+      GetFollowReq params) async {
     try {
-      final follow = await dataSource.getFollowing(userId);
+      final follow = await dataSource.getFollowing(params);
       return Right(follow);
     } on ServerException {
       return Left(ServerFailure('Get User profile failure'));
