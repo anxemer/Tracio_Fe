@@ -224,8 +224,7 @@ class ApiUrl {
   //Challenge Api
   static const getChallengeOverview = '$portUser/api/challenge/overview';
   static const apiChallenge = '$portUser/api/challenge';
-  static const requestChallenge =
-      '$portUser/api/challenge/update-status-public';
+  static const requestChallenge = '$portUser/api/challenge';
   // static const apiChallengeReward = '$portUser/api/challenge-reward';
   static Uri apiChallengeReward([Map<String, String>? params]) {
     return Uri.parse('$portUser/api/challenge-reward')

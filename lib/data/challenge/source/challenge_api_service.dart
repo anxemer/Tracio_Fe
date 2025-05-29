@@ -154,7 +154,8 @@ class ChallengeApiServiceImpl extends ChallengeApiService {
   @override
   Future<Either> requestChallenge(int challengeId) async {
     try {
-      await sl<DioClient>().patch('${ApiUrl.requestChallenge}/$challengeId');
+      await sl<DioClient>()
+          .patch('${ApiUrl.requestChallenge}/$challengeId/public');
 
       return Right(true);
     } on DioException catch (e) {

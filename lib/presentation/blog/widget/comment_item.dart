@@ -133,7 +133,6 @@ class _CommentItemState extends State<CommentItem> {
               );
             },
             replyContent: (context, reply) {
-              
               if (!isReplyOpened) {
                 return _buildReplyCount(widget.comment.replyCount);
               }
@@ -300,14 +299,16 @@ class _CommentItemState extends State<CommentItem> {
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: isReacted
                     ? Icon(Icons.favorite, color: Colors.red)
-                    : Text("Like",
-                        style: TextStyle(color: Colors.grey.shade500)),
+                    : Icon(Icons.favorite_border, color: Colors.black),
               ),
             ),
             InkWell(
               onTap: onCmt,
-              child:
-                  Text("Reply", style: TextStyle(color: Colors.grey.shade500)),
+              child: Icon(
+                Icons.comment_outlined,
+                color: context.isDarkMode ? Colors.white : Colors.black,
+                size: AppSize.iconSmall,
+              ),
             ),
             Spacer(),
             if (likeCount > 0)

@@ -5,7 +5,8 @@ class ChallengeOverviewResponseModel extends ChallengeOverviewResponseEntity {
   ChallengeOverviewResponseModel(
       {required super.activeChallenges,
       required super.suggestedChallenges,
-      required super.previousChallenges});
+      required super.previousChallenges,
+      required super.myChallenges});
 
   factory ChallengeOverviewResponseModel.fromMap(Map<String, dynamic> map) {
     return ChallengeOverviewResponseModel(
@@ -20,6 +21,10 @@ class ChallengeOverviewResponseModel extends ChallengeOverviewResponseEntity {
         previousChallenges: map['previousChallenges']['items'] != null
             ? List<ChallengeModel>.from(map['previousChallenges']['items']
                 .map((x) => ChallengeModel.fromJson(x as Map<String, dynamic>)))
+            : [],
+        myChallenges: map['myChallenges']['items'] != null
+            ? List<ChallengeModel>.from(
+                map['myChallenges']['items'].map((x) => ChallengeModel.fromJson(x as Map<String, dynamic>)))
             : []);
   }
 }

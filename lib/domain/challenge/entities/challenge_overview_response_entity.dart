@@ -5,9 +5,11 @@ class ChallengeOverviewResponseEntity {
   final List<ChallengeEntity> activeChallenges;
   final List<ChallengeEntity> suggestedChallenges;
   final List<ChallengeEntity> previousChallenges;
+  final List<ChallengeEntity> myChallenges;
   ChallengeOverviewResponseEntity({
     required this.activeChallenges,
     required this.suggestedChallenges,
     required this.previousChallenges,
+    required this.myChallenges,
   });
 }

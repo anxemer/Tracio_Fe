@@ -344,31 +344,30 @@ class _ChallengeProgressScreenState extends State<ChallengeProgressScreen> {
               ),
               if (challenge.isCreator!)
                 Positioned(
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                          vertical: AppSize.apVerticalPadding,
-                          horizontal: AppSize.apHorizontalPadding),
-                      child: ElevatedButton(
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.black,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                                AppSize.borderRadiusMedium),
-                          ),
-                          textStyle: TextStyle(
-                              fontSize: AppSize.textLarge,
-                              fontWeight: FontWeight.bold),
-                          minimumSize: const Size(double.infinity,
-                              50), // Nút chiếm toàn bộ chiều rộn
-                        ),
-                        child: Text('Invite Friends'),
-                      ),
-                    ))
+                    bottom: 0, left: 0, right: 0, child: SizedBox.shrink()
+                    //  Padding(
+                    //   padding: EdgeInsets.symmetric(
+                    //       vertical: AppSize.apVerticalPadding,
+                    //       horizontal: AppSize.apHorizontalPadding),
+                    //   child: ElevatedButton(
+                    //     onPressed: () {},
+                    //     style: ElevatedButton.styleFrom(
+                    //       backgroundColor: Colors.black,
+                    //       foregroundColor: Colors.white,
+                    //       shape: RoundedRectangleBorder(
+                    //         borderRadius:
+                    //             BorderRadius.circular(AppSize.borderRadiusMedium),
+                    //       ),
+                    //       textStyle: TextStyle(
+                    //           fontSize: AppSize.textLarge,
+                    //           fontWeight: FontWeight.bold),
+                    //       minimumSize: const Size(
+                    //           double.infinity, 50), // Nút chiếm toàn bộ chiều rộn
+                    //     ),
+                    //     child: Text('Invite Friends'),
+                    //   ),
+                    // ),
+                    )
               // else if (challenge.isCompleted!)
               //   Center(child: Text('Lỗi nè'))
               else if (!challenge.isCompleted!)

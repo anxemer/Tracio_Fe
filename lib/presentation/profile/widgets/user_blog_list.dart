@@ -13,9 +13,14 @@ import '../../../core/constants/app_size.dart';
 import '../../../common/widget/appbar/app_bar.dart';
 
 class UserBlogList extends StatefulWidget {
-  const UserBlogList({super.key, required this.userId, required this.userName});
+  const UserBlogList(
+      {super.key,
+      required this.userId,
+      required this.userName,
+      required this.myProfile});
   final int userId;
   final String userName;
+  final bool myProfile;
 
   @override
   State<UserBlogList> createState() => _UserBlogListState();
@@ -40,86 +45,88 @@ class _UserBlogListState extends State<UserBlogList> {
         ),
       ],
       child: Scaffold(
-        appBar: BasicAppbar(
-          centralTitle: true,
-          height: 100.h,
-          hideBack: false,
-          title: Text(
-            widget.userName,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: AppSize.textHeading.sp,
-              color: Colors.white,
+          appBar: BasicAppbar(
+            centralTitle: true,
+            height: 100.h,
+            hideBack: false,
+            title: Text(
+              widget.userName,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: AppSize.textHeading.sp,
+                color: Colors.white,
+              ),
+            ),
+            action: Row(
+              children: [
+                // FloatingButton(
+                //   elevation: 0,
+                //   backgroundColor: Colors.transparent,
+                //   onPressed: () {},
+                //   action: Icon(
+                //     Icons.more_vert_outlined,
+                //     color: Colors.black,
+                //   ),
+                // ),
+              ],
             ),
           ),
-          action: Row(
-            children: [
-              // FloatingButton(
-              //   elevation: 0,
-              //   backgroundColor: Colors.transparent,
-              //   onPressed: () {},
-              //   action: Icon(
-              //     Icons.more_vert_outlined,
-              //     color: Colors.black,
-              //   ),
-              // ),
-            ],
-          ),
-        ),
-        body: DefaultTabController(
-          length: 2,
-          initialIndex: 0,
-          child: Column(
-            children: [
-              TabBar(
-                padding: EdgeInsets.only(left: 0),
-                labelStyle: TextStyle(
-                  fontSize: AppSize.textMedium,
-                  fontWeight: FontWeight.w600,
-                ),
-                unselectedLabelColor:
-                    isDark ? Colors.white70 : Colors.grey.shade500,
-                labelColor: isDark ? AppColors.primary : Colors.black,
-                indicatorColor: AppColors.primary,
-                tabs: [
-                  Tab(
-                    icon: Icon(
-                      Icons.photo_size_select_large_rounded,
-                      size: AppSize.iconMedium,
-                    ),
+          body: DefaultTabController(
+            length: widget.myProfile ? 2 : 1,
+            initialIndex: 0,
+            child: Column(
+              children: [
+                TabBar(
+                  padding: EdgeInsets.only(left: 0),
+                  labelStyle: TextStyle(
+                    fontSize: AppSize.textMedium,
+                    fontWeight: FontWeight.w600,
                   ),
-                  Tab(
-                    icon: Icon(
-                      Icons.bookmark_added,
-                      size: AppSize.iconMedium,
-                    ),
-                  ),
-                ],
-              ),
-              Expanded(
-                child: TabBarView(
-                  physics: NeverScrollableScrollPhysics(),
-                  children: [
-                    BlocProvider(
-                      create: (context) => GetBlogCubit()
-                        ..getBlog(GetBlogReq(userId: widget.userId.toString())),
-                      child: BlogTab(userId: widget.userId),
-                    ),
-                    BlocProvider(
-                      create: (context) => GetBlogCubit()
-                        ..getBookmarkBlog(
-                            GetBlogReq(userId: widget.userId.toString())),
-                      child: BookmarkBlogTab(
-                        userId: widget.userId,
+                  unselectedLabelColor:
+                      isDark ? Colors.white70 : Colors.grey.shade500,
+                  labelColor: isDark ? AppColors.primary : Colors.black,
+                  indicatorColor: AppColors.primary,
+                  tabs: [
+                    Tab(
+                      icon: Icon(
+                        Icons.photo_size_select_large_rounded,
+                        size: AppSize.iconMedium,
                       ),
                     ),
+                    if (widget.myProfile)
+                      Tab(
+                        icon: Icon(
+                          Icons.bookmark_added,
+                          size: AppSize.iconMedium,
+                        ),
+                      ),
                   ],
                 ),
-              ),
-            ],
-          ),
-        ),
-      ),
+                Expanded(
+                  child: TabBarView(
+                    physics: NeverScrollableScrollPhysics(),
+                    children: [
+                      BlocProvider(
+                        create: (context) => GetBlogCubit()
+                          ..getBlog(
+                              GetBlogReq(userId: widget.userId.toString())),
+                        child: BlogTab(userId: widget.userId),
+                      ),
+                      if (widget.myProfile)
+                        BlocProvider(
+                          create: (context) => GetBlogCubit()
+                            ..getBookmarkBlog(
+                                GetBlogReq(userId: widget.userId.toString())),
+                          child: BookmarkBlogTab(
+                            userId: widget.userId,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          )),
     );
   }
 }
