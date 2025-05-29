@@ -103,7 +103,7 @@ class _DetailBlogPageState extends State<DetailBlogPage> {
             (success) {
               // Giả sử success là ReplyCommentEntity hoặc một đối tượng chứa dữ liệu trả lời
               final newReply = ReplyCommentEntity(
-                userAvatar: success.userAvatar,
+                  userAvatar: success.userAvatar,
                   replyId: success.replyId,
                   cyclistId: success.cyclistId,
                   commentId: success.commentId,
@@ -148,7 +148,7 @@ class _DetailBlogPageState extends State<DetailBlogPage> {
             (success) {
               // Giả sử success là ReplyCommentEntity
               final newReply = ReplyCommentEntity(
-                userAvatar: success.userAvatar,
+                  userAvatar: success.userAvatar,
                   replyId: success.replyId,
                   cyclistId: success.cyclistId,
                   commentId: success.commentId,
@@ -235,7 +235,7 @@ class _DetailBlogPageState extends State<DetailBlogPage> {
                 physics: AlwaysScrollableScrollPhysics(),
                 slivers: [
                   SliverAppBar(
-                    expandedHeight: 300.h,
+                    expandedHeight: 320.h,
                     automaticallyImplyLeading: false,
                     backgroundColor: Colors.transparent,
                     elevation: 0,
