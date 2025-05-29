@@ -97,7 +97,7 @@ class _RouteDetailMapViewState extends State<RouteDetailMapView> {
               );
 
               pointAnnotationManager = await map.annotations
-                  .createPointAnnotationManager(below: "route");
+                  .createPointAnnotationManager(below: "polyline-layer");
               pointAnnotationManager?.setIconAllowOverlap(true);
               pointAnnotationManager?.setIconIgnorePlacement(true);
             },

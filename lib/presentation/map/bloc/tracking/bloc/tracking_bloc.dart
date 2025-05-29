@@ -14,11 +14,13 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:battery_plus/battery_plus.dart';
 part 'tracking_event.dart';
 part 'tracking_state.dart';
 
 class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
   final LocationService _locationService;
+  final Battery _battery = Battery();
 
   DateTime? _startTime;
   DateTime? _movingStartTime;
@@ -38,10 +40,28 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
     on<RemoveMatchedUser>(_onRemoveMatchedUser);
     on<RequestStartTracking>(_onRequestStartTracking);
     on<RequestFinishTracking>(_onRequestFinishTracking);
+    on<ResetTracking>(_onResetTracking);
+  }
+
+  Future<double?> _getBatteryLevel() async {
+    try {
+      final batteryLevel = await _battery.batteryLevel;
+      return batteryLevel.toDouble();
+    } catch (e) {
+      debugPrint('Error getting battery level: $e');
+      return null;
+    }
   }
 
   void _onStartTracking(
       StartTracking event, Emitter<TrackingState> emit) async {
+    // Ensure any existing tracking is cleaned up first
+    await _locationStream?.cancel();
+    _locationStream = null;
+    _ticker?.cancel();
+    _ticker = null;
+
+    // Reset state variables
     _startTime = DateTime.now();
     _movingStartTime = DateTime.now();
     _totalElevationGain = 0;
@@ -53,10 +73,12 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
       add(UpdateTrackingData(data));
     });
 
-    _ticker?.cancel();
     _ticker = Timer.periodic(const Duration(seconds: 1), (_) {
       add(UpdateTime());
     });
+
+    // Get initial battery level
+    final batteryLevel = await _getBatteryLevel();
 
     emit(TrackingInProgress(
       isPaused: false,
@@ -70,7 +92,7 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
       movingTime: Duration.zero,
       avgSpeed: 0,
       currentTime: DateTime.now(),
-      battery: null,
+      battery: batteryLevel,
       routeId: event.routeId,
       groupRouteId: event.groupRouteId,
     ));
@@ -85,9 +107,24 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
   }
 
   void _onEndTracking(EndTracking event, Emitter<TrackingState> emit) async {
+    // Cancel all subscriptions and timers
     await _locationStream?.cancel();
-    await _locationService.stopTracking();
+    _locationStream = null;
     _ticker?.cancel();
+    _ticker = null;
+
+    // Stop location service
+    await _locationService.stopTracking();
+
+    // Reset all state variables
+    _startTime = null;
+    _movingStartTime = null;
+    _totalElevationGain = 0;
+    _totalMovingTime = Duration.zero;
+
+    // Reset location service
+    _locationService.reset();
+
     emit(TrackingInitial());
   }
 
@@ -106,17 +143,46 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
   }
 
   void _onUpdateTrackingData(
-      UpdateTrackingData event, Emitter<TrackingState> emit) {
+      UpdateTrackingData event, Emitter<TrackingState> emit) async {
     if (state is! TrackingInProgress) return;
     final currentState = state as TrackingInProgress;
     if (currentState.isPaused) return;
 
     final data = event.trackingData;
 
+    // If stationary, only update time and other metrics, but not position
+    if (data.isStationary) {
+      // Update battery level periodically
+      double? batteryLevel = currentState.battery;
+      if (DateTime.now().difference(currentState.currentTime).inMinutes >= 5) {
+        batteryLevel = await _getBatteryLevel();
+      }
+
+      emit(currentState.copyWith(
+        speed: 0.0, // Set speed to 0 when stationary
+        duration: data.totalDuration,
+        movingTime: data.movingTime,
+        currentTime: DateTime.now(),
+        battery: batteryLevel, // Fix battery percentage calculation
+      ));
+      return;
+    }
+
+    // Calculate elevation gain
+    if (data.altitude > 0 && currentState.altitude != null) {
+      final elevationChange = data.altitude - currentState.altitude!;
+      if (elevationChange > 0) {
+        _totalElevationGain += elevationChange;
+      }
+    }
+
     final updatedPolyline = List<LatLng>.from(currentState.polyline)
       ..add(LatLng(data.position.latitude, data.position.longitude));
-    if (updatedPolyline.length > 1000) {
-      updatedPolyline.removeAt(0);
+
+    // Update battery level periodically
+    double? batteryLevel = currentState.battery;
+    if (DateTime.now().difference(currentState.currentTime).inMinutes >= 5) {
+      batteryLevel = await _getBatteryLevel();
     }
 
     emit(currentState.copyWith(
@@ -125,11 +191,12 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
       speed: data.speedKmH,
       odometerKm: data.odometer / 1000,
       altitude: data.altitude,
-      elevationGain: data.elevationGain,
+      elevationGain: _totalElevationGain,
       duration: data.totalDuration,
       movingTime: data.movingTime,
       avgSpeed: data.speedKmH,
       currentTime: DateTime.now(),
+      battery: batteryLevel,
     ));
   }
 
@@ -236,16 +303,36 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
 
     result.fold((error) {
       emit(TrackingError(error.message));
-      add(EndTracking()); // optional: cleanup
-    }, (response) {
+      add(EndTracking()); // Ensure cleanup happens
+    }, (response) async {
       if (response == null) {
         emit(const TrackingError("Route too short to save (under 500m)."));
-        add(EndTracking());
+        add(EndTracking()); // Ensure cleanup happens
         return;
       }
-
-      // emit route detail success
       emit(TrackingFinished(response));
+      // Add EndTracking after a short delay to ensure state is properly cleaned up
+      await Future.delayed(const Duration(milliseconds: 100));
+      add(EndTracking());
     });
+  }
+
+  void _onResetTracking(ResetTracking event, Emitter<TrackingState> emit) {
+    // Cancel all subscriptions and timers
+    _locationStream?.cancel();
+    _locationStream = null;
+    _ticker?.cancel();
+    _ticker = null;
+
+    // Reset all state variables
+    _startTime = null;
+    _movingStartTime = null;
+    _totalElevationGain = 0;
+    _totalMovingTime = Duration.zero;
+
+    // Reset location service
+    _locationService.reset();
+
+    emit(TrackingInitial());
   }
 }

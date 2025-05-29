@@ -17,6 +17,7 @@ import 'package:Tracio/presentation/map/bloc/map_cubit.dart';
 import 'package:Tracio/presentation/map/bloc/route_cubit.dart';
 import 'package:Tracio/presentation/map/bloc/route_state.dart';
 import 'package:Tracio/main.dart';
+import 'package:Tracio/presentation/library/widgets/detail/route_detail_participants.dart';
 
 class RouteDetailScreen extends StatefulWidget {
   final int routeId;
@@ -68,11 +69,20 @@ class _RouteDetailScreenState extends State<RouteDetailScreen> with RouteAware {
                 if (state is GetRouteDetailLoaded &&
                     context.read<MapCubit>().mapboxMap != null) {
                   await context.read<MapCubit>().clearAnnotations();
+                  //Border
+                  await context.read<MapCubit>().addPolylineRoute(
+                      _getLineString(state.route.polyline),
+                      lineOpacity: 1,
+                      lineColor: Colors.white,
+                      lineWidth: 6);
+                  //Polyline
                   await context.read<MapCubit>().addPolylineRoute(
                       _getLineString(state.route.polyline),
                       lineOpacity: 1,
                       lineColor: AppColors.primary,
-                      lineWidth: 10);
+                      lineBorderWidth: 0,
+                      lineWidth: 4);
+
                   moveToFitOriginDestination(
                       state.route.origin, state.route.destination);
                 }
@@ -119,6 +129,12 @@ class _RouteDetailScreenState extends State<RouteDetailScreen> with RouteAware {
                                 ),
                                 RouteDetailInformation(
                                     routeEntity: state.route),
+                                RouteDetailParticipants(
+                                  routeDetail: state.route,
+                                  matchedUsers: state.route.matchedUsers,
+                                  participants: state.route.participants,
+                                  isOwner: state.route.isOwner,
+                                ),
                                 Container(
                                   height: 16.h,
                                   color: Colors.grey.shade300,

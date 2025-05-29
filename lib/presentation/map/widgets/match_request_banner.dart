@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:Tracio/core/configs/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:Tracio/presentation/map/bloc/match/cubit/match_request_cubit.dart';
 
 class MatchRequestBanner extends StatefulWidget {
   final String userName;
@@ -32,8 +34,16 @@ class _MatchRequestBannerState extends State<MatchRequestBanner> {
   void initState() {
     super.initState();
     _remaining = widget.durationSeconds;
+    _startTimer();
+  }
 
+  void _startTimer() {
+    _timer?.cancel();
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
       if (_remaining == 0) {
         timer.cancel();
       } else {
@@ -52,65 +62,82 @@ class _MatchRequestBannerState extends State<MatchRequestBanner> {
 
   @override
   Widget build(BuildContext context) {
-    final progress = _remaining / widget.durationSeconds;
+    return BlocBuilder<MatchRequestCubit, MatchRequestState>(
+      builder: (context, state) {
+        final progress = _remaining / widget.durationSeconds;
 
-    return Material(
-      elevation: 6,
-      color: AppColors.secondBackground,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          LinearProgressIndicator(
-            value: progress,
-            minHeight: 4,
-            backgroundColor: Colors.white.withValues(alpha: .5),
-            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-          ),
-          Padding(
-            padding:
-                const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
-            child: Row(
-              children: [
-                CircleAvatar(
-                  radius: 20,
-                  backgroundColor: Colors.white,
-                  child: ClipOval(
-                    child: CachedNetworkImage(
-                      imageUrl: widget.avatar,
-                      width: 40,
-                      height: 40,
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) =>
-                          const CircularProgressIndicator(strokeWidth: 2),
-                      errorWidget: (context, url, error) =>
-                          const Icon(Icons.person),
+        return Material(
+          elevation: 6,
+          color: AppColors.secondBackground,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              LinearProgressIndicator(
+                value: progress,
+                minHeight: 4,
+                backgroundColor: Colors.white.withOpacity(0.5),
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                    vertical: 12.0, horizontal: 16.0),
+                child: Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 20,
+                      backgroundColor: Colors.white,
+                      child: ClipOval(
+                        child: CachedNetworkImage(
+                          imageUrl: widget.avatar,
+                          width: 40,
+                          height: 40,
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) =>
+                              const CircularProgressIndicator(strokeWidth: 2),
+                          errorWidget: (context, url, error) =>
+                              const Icon(Icons.person),
+                        ),
+                      ),
                     ),
-                  ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        state is MatchRequestLoading
+                            ? 'Processing...'
+                            : state is MatchRequestError
+                                ? state.message
+                                : 'Hey! ${widget.userName} is cycling on your route. Would you like to ride together?',
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    if (state is! MatchRequestLoading) ...[
+                      TextButton(
+                        onPressed: state is MatchRequestError
+                            ? widget.onCancel
+                            : widget.onCancel,
+                        child: const Text("Cancel",
+                            style: TextStyle(color: Colors.white)),
+                      ),
+                      ElevatedButton(
+                        onPressed: state is MatchRequestError
+                            ? widget.onAccept
+                            : widget.onAccept,
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white),
+                        child: const Text("Match",
+                            style: TextStyle(color: Colors.orangeAccent)),
+                      ),
+                    ] else
+                      const CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      ),
+                  ],
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    '${widget.userName} is on the same route with you. Match?',
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ),
-                TextButton(
-                  onPressed: widget.onCancel,
-                  child: const Text("Cancel",
-                      style: TextStyle(color: Colors.white)),
-                ),
-                ElevatedButton(
-                  onPressed: widget.onAccept,
-                  style:
-                      ElevatedButton.styleFrom(backgroundColor: Colors.white),
-                  child: const Text("Match",
-                      style: TextStyle(color: Colors.orangeAccent)),
-                )
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

@@ -36,7 +36,10 @@ class RouteDetailModel extends RouteDetailEntity {
       required super.privacyLevel,
       required super.isPlanned,
       required super.createdAt,
-      required super.updatedAt});
+      required super.updatedAt,
+      required super.isOwner,
+      required super.matchedUsers,
+      required super.participants});
   factory RouteDetailModel.fromMap(Map<String, dynamic> map) {
     return RouteDetailModel(
       speeds: (map['speeds'] as List<dynamic>?)
@@ -84,6 +87,15 @@ class RouteDetailModel extends RouteDetailEntity {
       isPlanned: map['isPlanned'] ?? false,
       createdAt: DateTime.parse(map['createdAt']),
       updatedAt: DateTime.parse(map['updatedAt']),
+      isOwner: map['isOwner'] ?? false,
+      matchedUsers: (map['matchedUsers'] as List<dynamic>?)
+              ?.map((e) => MatchedUser.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [],
+      participants: (map['participants'] as List<dynamic>?)
+              ?.map((e) => Participant.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [],
     );
   }
   static int _parseMood(dynamic value) {

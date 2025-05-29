@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:Tracio/presentation/map/bloc/map_state.dart';
 import 'package:Tracio/presentation/map/bloc/route_cubit.dart';
 import 'package:Tracio/presentation/map/bloc/route_state.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +21,14 @@ import 'package:Tracio/presentation/map/widgets/match_request_banner.dart';
 import 'package:Tracio/service_locator.dart';
 
 class CyclingMapView extends StatefulWidget {
-  const CyclingMapView({super.key});
+  final bool isCentered;
+  final Function(bool) onCenteredChanged;
+
+  const CyclingMapView({
+    super.key,
+    required this.isCentered,
+    required this.onCenteredChanged,
+  });
 
   @override
   State<CyclingMapView> createState() => _CyclingMapViewState();
@@ -32,17 +40,119 @@ class _CyclingMapViewState extends State<CyclingMapView>
   List<Position> tempRouteList = [];
   bool isMapInitialized = false;
   mapbox.Position? _lastDrawnPoint;
+  static const int _maxRoutePoints = 30;
+  int _segmentCounter = 0;
+  int _pointsSinceLastSegment = 0;
 
   final groupRouteHub = sl<GroupRouteHubService>();
   final matchingHub = sl<MatchingHubService>();
 
   StreamSubscription? _locationUpdateSub;
   StreamSubscription? _matchedUserUpdateSub;
+  StreamSubscription? _currentPositionUpdateSub;
+
+  bool _isCentered = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _startPositionUpdates();
+    _isCentered = widget.isCentered;
+  }
+
+  @override
+  void didUpdateWidget(CyclingMapView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.isCentered != widget.isCentered) {
+      setState(() {
+        _isCentered = widget.isCentered;
+      });
+    }
+  }
+
+  Future<void> _handleInitialPosition() async {
+    try {
+      // Try to get cached position first
+      final cachedPosition = await Geolocator.getLastKnownPosition();
+      if (cachedPosition != null && mounted) {
+        // Move map to cached position instantly
+        context.read<MapCubit>().mapboxMap?.flyTo(
+              mapbox.CameraOptions(
+                center: mapbox.Point(
+                  coordinates: mapbox.Position(
+                    cachedPosition.longitude,
+                    cachedPosition.latitude,
+                  ),
+                ),
+                bearing: cachedPosition.heading,
+              ),
+              mapbox.MapAnimationOptions(
+                  duration: 0), // Instant move for cached position
+            );
+      }
+    } catch (e) {
+      debugPrint('❌ Error getting cached position: $e');
+    }
+  }
+
+  void _startPositionUpdates() async {
+    // Cancel any existing subscription
+    _currentPositionUpdateSub?.cancel();
+
+    // Try to get initial position first
+    await _handleInitialPosition();
+
+    // Then start live updates
+    _currentPositionUpdateSub = Geolocator.getPositionStream(
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.high,
+        distanceFilter: 0,
+      ),
+    ).listen(
+      _handlePositionUpdate,
+      onError: (error) {
+        debugPrint('❌ Error in position stream: $error');
+      },
+    );
+  }
+
+  void _handlePositionUpdate(Position position) {
+    if (!mounted) return;
+
+    if (_isCentered) {
+      context.read<MapCubit>().mapboxMap?.flyTo(
+            mapbox.CameraOptions(
+              center: mapbox.Point(
+                coordinates: mapbox.Position(
+                  position.longitude,
+                  position.latitude,
+                ),
+              ),
+              bearing: position.heading,
+            ),
+            mapbox.MapAnimationOptions(
+              duration: 200,
+              startDelay: 0,
+            ),
+          );
+    }
+  }
+
+  void _resetTrackingState() {
+    _lastDrawnPoint = null;
+    routePoints.clear();
+    tempRouteList.clear();
+    _pointsSinceLastSegment = 0;
+    _segmentCounter = 0;
+  }
 
   @override
   void dispose() {
     _locationUpdateSub?.cancel();
     _matchedUserUpdateSub?.cancel();
+    _currentPositionUpdateSub?.cancel();
+    _resetTrackingState();
+    context.read<TrackingBloc>().add(ResetTracking());
     super.dispose();
   }
 
@@ -80,6 +190,45 @@ class _CyclingMapViewState extends State<CyclingMapView>
       final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
       return bytes!.buffer.asUint8List();
     }
+  }
+
+  void _updateRouteLine(List<mapbox.Position> points) async {
+    if (points.isEmpty) return;
+    final lineString = mapbox.LineString(coordinates: points);
+    await context.read<MapCubit>().updateRouteLine(lineString);
+  }
+
+  Future<void> _manageRoutePoints(mapbox.Position newPoint) async {
+    routePoints.add(newPoint);
+    _pointsSinceLastSegment++;
+
+    if (_pointsSinceLastSegment >= _maxRoutePoints) {
+      // Extract full segment
+      final segmentString =
+          mapbox.LineString(coordinates: List.from(routePoints));
+
+      // Add as static segment
+      await context.read<MapCubit>().addRouteSegment(
+            segmentString,
+            'route_segment_${_segmentCounter++}',
+            lineWidth: 5.0,
+            lineColor: Colors.deepOrange,
+            lineOpacity: 1.0,
+            lineBorderColor: Colors.white,
+            lineBorderWidth: 1.0,
+          );
+
+      // Reset: keep only the last point to start a new segment
+      routePoints = [routePoints.last];
+      _pointsSinceLastSegment = 0;
+    }
+  }
+
+  void setIsCentered(bool value) {
+    setState(() {
+      _isCentered = value;
+    });
+    widget.onCenteredChanged(value);
   }
 
   @override
@@ -186,102 +335,172 @@ class _CyclingMapViewState extends State<CyclingMapView>
               children: [
                 BlocListener<TrackingBloc, TrackingState>(
                   listener: (context, state) async {
-                    if (state is TrackingInProgress &&
-                        !state.isPaused &&
-                        state.position != null) {
-                      final location = state.position!;
-                      final newPoint = mapbox.Position(
-                        location.longitude,
-                        location.latitude,
-                      );
-                      mapCubit.mapboxMap?.flyTo(
-                        mapbox.CameraOptions(
-                          center: mapbox.Point(coordinates: newPoint),
-                          bearing: location.heading,
-                        ),
-                        mapbox.MapAnimationOptions(
-                            duration: 100, startDelay: 0),
-                      );
+                    if (state is TrackingInProgress) {
+                      _currentPositionUpdateSub?.cancel();
+                      if (state.isPaused) {
+                        _startPositionUpdates();
+                        _updateRouteLine(routePoints);
+                      } else if (state.position != null) {
+                        final location = state.position!;
+                        final newPoint = mapbox.Position(
+                          location.longitude,
+                          location.latitude,
+                        );
 
-                      if (_lastDrawnPoint != null) {
-                        final segment = mapbox.LineString(coordinates: [
-                          _lastDrawnPoint!,
-                          newPoint,
-                        ]);
-                        await mapCubit.addPolylineRoute(segment,
-                            lineOpacity: 1);
-                      }
+                        // Add initial line layer if it's the first point
+                        if (_lastDrawnPoint == null) {
+                          final initialLineString =
+                              mapbox.LineString(coordinates: [newPoint]);
+                          await mapCubit.addRouteLine(initialLineString,
+                              lineWidth: 5.0,
+                              lineColor: Colors.deepOrange,
+                              lineOpacity: 1.0,
+                              lineBorderColor: Colors.white,
+                              lineBorderWidth: 1.0);
+                        }
 
-                      _lastDrawnPoint = newPoint;
+                        // Only update camera if map is centered
+                        if (_isCentered) {
+                          mapCubit.mapboxMap?.flyTo(
+                            mapbox.CameraOptions(
+                              center: mapbox.Point(
+                                coordinates: mapbox.Position(
+                                  location.longitude,
+                                  location.latitude,
+                                ),
+                              ),
+                              bearing: location.heading,
+                            ),
+                            mapbox.MapAnimationOptions(
+                                duration: 100, startDelay: 0),
+                          );
+                        }
 
-                      setState(() {
-                        tempRouteList.add(location);
-                      });
-                      if (routeId != null && tempRouteList.length >= 20) {
-                        final grpcLocations = tempRouteList.map((pos) {
-                          final dateTime = pos.timestamp;
-                          return {
-                            "latitude": pos.latitude,
-                            "longitude": pos.longitude,
-                            "altitude": pos.altitude,
-                            "timestamp": dateTime.millisecondsSinceEpoch,
-                            "speed": pos.speed * 18 / 5,
-                            "distance": state.odometerKm,
-                          };
-                        }).toList();
+                        _lastDrawnPoint = newPoint;
+                        await _manageRoutePoints(newPoint);
+                        _updateRouteLine(routePoints);
 
-                        unawaited(sl<ITrackingGrpcService>().sendLocations(
-                          routeId: routeId,
-                          locations: grpcLocations,
-                        ));
+                        setState(() {
+                          tempRouteList.add(location);
+                        });
 
-                        setState(() => tempRouteList.clear());
-                      }
-                    }
-                  },
-                  child: mapbox.MapWidget(
-                    key: const ValueKey("mapWidget"),
-                    cameraOptions: mapCubit.camera,
-                    onMapCreated: (map) async {
-                      mapCubit.initializeMap(map,
-                          locationSetting: mapbox.LocationComponentSettings(
-                            enabled: true,
-                            showAccuracyRing: true,
-                            puckBearingEnabled: true,
+                        if (routeId != null &&
+                            tempRouteList.length >= _maxRoutePoints) {
+                          final grpcLocations = tempRouteList.map((pos) {
+                            final dateTime = pos.timestamp;
+                            return {
+                              "latitude": pos.latitude,
+                              "longitude": pos.longitude,
+                              "altitude": pos.altitude,
+                              "timestamp": dateTime.millisecondsSinceEpoch,
+                              "speed": pos.speed * 18 / 5,
+                              "distance": state.odometerKm,
+                            };
+                          }).toList();
+
+                          unawaited(sl<ITrackingGrpcService>().sendLocations(
+                            routeId: routeId,
+                            locations: grpcLocations,
                           ));
 
-                      isMapInitialized = true;
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        _locationUpdateSub =
-                            groupRouteHub.onLocationUpdate.listen((data) async {
-                          await context.read<MapCubit>().updateUserMarker(
-                                id: data.userId.toString(),
-                                imageUrl: data.profilePicture,
-                                newPosition: mapbox.Position(
-                                    data.longitude, data.latitude),
-                              );
-                        });
-                      });
-                      _matchedUserUpdateSub =
-                          matchingHub.onUpdatedMatchedUser.listen((data) async {
-                        if (!mounted) return;
-
-                        try {
-                          context
-                              .read<TrackingBloc>()
-                              .add(AddMatchedUser(data));
-                          await context.read<MapCubit>().updateUserMarker(
-                                id: data.userId.toString(),
-                                imageUrl: data.avatar,
-                                newPosition: mapbox.Position(
-                                    data.longitude, data.latitude),
-                              );
-                        } catch (e, stack) {
-                          debugPrint(
-                              "❌ Error updating marker for user ${data.userId}: $e\n$stack");
+                          setState(() {
+                            tempRouteList.clear();
+                          });
                         }
-                      });
+                      }
+                    } else if (state is TrackingFinished ||
+                        state is TrackingInitial) {
+                      // When tracking is finished or reset, remove the route line
+                      await mapCubit.removeRouteLine();
+                      await mapCubit.removeAllRouteSegments();
+                      _startPositionUpdates();
+                      _resetTrackingState();
+                    }
+                  },
+                  child: Listener(
+                    onPointerDown: (_) {
+                      if (_isCentered && mounted) {
+                        setIsCentered(false);
+                      }
                     },
+                    child: BlocListener<MapCubit, MapCubitState>(
+                      listener: (context, state) {
+                        if (state is MapCubitStyleLoaded) {
+                          _changeMapStyle(state.styleUri, context);
+                        }
+                      },
+                      child: mapbox.MapWidget(
+                        key: const ValueKey("mapWidget"),
+                        cameraOptions: mapCubit.camera,
+                        onMapCreated: (map) async {
+                          await mapCubit.initializeMap(map,
+                              locationSetting: mapbox.LocationComponentSettings(
+                                enabled: true,
+                                showAccuracyRing: true,
+                                puckBearingEnabled: true,
+                              ),
+                              gesturesSetting: mapbox.GesturesSettings(
+                                scrollEnabled: true,
+                                pitchEnabled: false,
+                              ),
+                              compassSetting: mapbox.CompassSettings(
+                                enabled: false,
+                              ),
+                              logoSetting: mapbox.LogoSettings(
+                                  position:
+                                      mapbox.OrnamentPosition.BOTTOM_RIGHT,
+                                  marginBottom: 80),
+                              attributionSetting: mapbox.AttributionSettings(
+                                  position:
+                                      mapbox.OrnamentPosition.BOTTOM_RIGHT,
+                                  marginRight: 90,
+                                  marginBottom: 80));
+
+                          setState(() {
+                            isMapInitialized = true;
+                          });
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            // Group route location updates
+                            _locationUpdateSub = groupRouteHub.onLocationUpdate
+                                .listen((data) async {
+                              if (!mounted) return;
+                              try {
+                                await context.read<MapCubit>().updateUserMarker(
+                                      id: data.userId.toString(),
+                                      imageUrl: data.profilePicture,
+                                      newPosition: mapbox.Position(
+                                          data.longitude, data.latitude),
+                                    );
+                              } catch (e, stack) {
+                                debugPrint(
+                                    "❌ Error updating group route marker for user ${data.userId}: $e\n$stack");
+                              }
+                            });
+
+                            // Matched user updates
+                            _matchedUserUpdateSub = matchingHub
+                                .onUpdatedMatchedUser
+                                .listen((data) async {
+                              if (!mounted) return;
+                              try {
+                                context
+                                    .read<TrackingBloc>()
+                                    .add(AddMatchedUser(data));
+                                await context.read<MapCubit>().updateUserMarker(
+                                      id: data.userId.toString(),
+                                      imageUrl: data.avatar,
+                                      newPosition: mapbox.Position(
+                                          data.longitude, data.latitude),
+                                    );
+                              } catch (e, stack) {
+                                debugPrint(
+                                    "❌ Error updating matched user marker for user ${data.userId}: $e\n$stack");
+                              }
+                            });
+                          });
+                        },
+                      ),
+                    ),
                   ),
                 ),
                 BlocBuilder<MatchRequestCubit, MatchRequestState>(
@@ -315,5 +534,10 @@ class _CyclingMapViewState extends State<CyclingMapView>
         ),
       ],
     );
+  }
+
+  Future<void> _changeMapStyle(String styleUri, BuildContext context) async {
+    final mapCubit = BlocProvider.of<MapCubit>(context);
+    mapCubit.mapboxMap?.loadStyleURI(styleUri);
   }
 }
