@@ -1,3 +1,4 @@
+import 'package:Tracio/core/erorr/failure.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -42,6 +43,14 @@ class _AddScheduleState extends State<AddSchedule> {
         EasyLoading.dismiss();
         AppNavigator.pushReplacement(context, MyBookingPage());
       } else if (state is BookingServiceFailure) {
+        if (state.failure is CredentialFailure) {
+          EasyLoading.dismiss();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text(
+                    'Shop is currently unavailable, please try again later.')),
+          );
+        }
         EasyLoading.dismiss();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Booking failed')),

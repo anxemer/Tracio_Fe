@@ -1,4 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:Tracio/core/erorr/failure.dart';
 import 'package:Tracio/domain/shop/entities/response/cart_item_entity.dart';
 
 import '../../../../common/helper/schedule_model.dart';
@@ -18,8 +19,10 @@ class BookingServiceSuccess extends BookingServiceState {
 
 class BookingServiceFailure extends BookingServiceState {
   final String message;
+  final Failure failure;
   BookingServiceFailure({
     required this.message,
+    required this.failure,
   });
 }
 

@@ -122,6 +122,9 @@ class ShopApiServiceImpl extends ShopApiService {
       if (response.statusCode == 201) {
         return Right(true);
       }
+      if (response.statusCode == 400) {
+        throw CredentialFailure('Shop is Inactive');
+      }
       return Right(false);
     } on DioException catch (e) {
       return Left(e);

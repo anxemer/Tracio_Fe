@@ -83,6 +83,8 @@ class ShopServiceRepositoryImpl extends ShopServiceRepository {
       return Right(true);
     } on ExceptionFailure catch (e) {
       return Left(ExceptionFailure(e.message));
+    } on CredentialFailure catch (e) {
+      return Left(CredentialFailure(e.message));
     }
   }
 
@@ -124,7 +126,8 @@ class ShopServiceRepositoryImpl extends ShopServiceRepository {
   }
 
   @override
-  Future<Either<Failure, bool>> cancelBooking(ConfirmBookingModel cancelBooking) async {
+  Future<Either<Failure, bool>> cancelBooking(
+      ConfirmBookingModel cancelBooking) async {
     try {
       await remoteDataSource.cancelBooking(cancelBooking);
       return Right(true);
@@ -232,7 +235,7 @@ class ShopServiceRepositoryImpl extends ShopServiceRepository {
 
   @override
   Future<Either<Failure, DetailServiceResponseEntity>> getServiceDetail(
-     GetDetailServiceReq serviced) async {
+      GetDetailServiceReq serviced) async {
     try {
       var returnedData = await remoteDataSource.getServiceDetail(serviced);
       return Right(returnedData);

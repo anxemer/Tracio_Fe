@@ -1,4 +1,6 @@
+import 'package:Tracio/common/helper/navigator/app_navigator.dart';
 import 'package:Tracio/domain/shop/entities/response/cart_item_entity.dart';
+import 'package:Tracio/presentation/service/page/detail_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -135,114 +137,124 @@ class _PlanServicePageState extends State<PlanServicePage>
                           return Stack(children: [
                             Padding(
                               padding: EdgeInsets.all(8.0),
-                              child: BookingCard(
-                                service: BookingCardViewModel(
-                                    imageUrl: state.cart[index].mediaUrl,
-                                    city: state.cart[index].city,
-                                    district: state.cart[index].district,
-                                    duration: state.cart[index].duration,
-                                    nameService: state.cart[index].serviceName!,
-                                    price: state.cart[index].price,
-                                    shopName: state.cart[index].shopName!),
-                                animationController: screenAnimationController,
-                                animation: animation,
-                                moreWidget: InkWell(
-                                  onTap: () {
-                                    if (!bookingCubit.selectedServices
-                                        .contains(service)) {
-                                      bookingCubit.addService(service);
-                                    } else {
-                                      bookingCubit.removeService(service);
-                                    }
-                                    setState(() {
-                                      isSelected = bookingCubit.selectedServices
-                                          .contains(service);
-                                    });
-                                    // if (!isSelected) {
-                                    //   setState(() {
-                                    //     selectedService.add(service);
-                                    //   });
-                                    // } else {
-                                    //   setState(() {
-                                    //     selectedService.remove(state.cart[index]);
-                                    //   });
-                                    // }
-                                  },
-                                  child: Column(
-                                    children: [
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 8, vertical: 4),
-                                        decoration: BoxDecoration(
-                                          color: !isSelected
-                                              ? Colors.blue.shade50
-                                              : Colors.green.shade50,
-                                          borderRadius: BorderRadius.circular(
-                                              AppSize.borderRadiusSmall),
-                                          border: Border.all(
+                              child: InkWell(
+                                onTap: () => AppNavigator.push(
+                                    context,
+                                    DetailServicePage(
+                                        serviceId:
+                                            state.cart[index].serviceId!)),
+                                child: BookingCard(
+                                  service: BookingCardViewModel(
+                                      imageUrl: state.cart[index].mediaUrl,
+                                      city: state.cart[index].city,
+                                      district: state.cart[index].district,
+                                      duration: state.cart[index].duration,
+                                      nameService:
+                                          state.cart[index].serviceName!,
+                                      price: state.cart[index].price,
+                                      shopName: state.cart[index].shopName!),
+                                  animationController:
+                                      screenAnimationController,
+                                  animation: animation,
+                                  moreWidget: InkWell(
+                                    onTap: () {
+                                      if (!bookingCubit.selectedServices
+                                          .contains(service)) {
+                                        bookingCubit.addService(service);
+                                      } else {
+                                        bookingCubit.removeService(service);
+                                      }
+                                      setState(() {
+                                        isSelected = bookingCubit
+                                            .selectedServices
+                                            .contains(service);
+                                      });
+                                      // if (!isSelected) {
+                                      //   setState(() {
+                                      //     selectedService.add(service);
+                                      //   });
+                                      // } else {
+                                      //   setState(() {
+                                      //     selectedService.remove(state.cart[index]);
+                                      //   });
+                                      // }
+                                    },
+                                    child: Column(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 8, vertical: 4),
+                                          decoration: BoxDecoration(
                                             color: !isSelected
-                                                ? Colors.blue.shade100
-                                                : Colors.green.shade100,
+                                                ? Colors.blue.shade50
+                                                : Colors.green.shade50,
+                                            borderRadius: BorderRadius.circular(
+                                                AppSize.borderRadiusSmall),
+                                            border: Border.all(
+                                              color: !isSelected
+                                                  ? Colors.blue.shade100
+                                                  : Colors.green.shade100,
+                                            ),
+                                          ),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              !isSelected
+                                                  ? Text(
+                                                      'Select',
+                                                      style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        fontSize:
+                                                            AppSize.textMedium,
+                                                        color: Colors
+                                                            .blue.shade500,
+                                                      ),
+                                                    )
+                                                  : Text(
+                                                      'Remove',
+                                                      style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        fontSize:
+                                                            AppSize.textMedium,
+                                                        color: Colors
+                                                            .green.shade500,
+                                                      ),
+                                                    ),
+                                              isSelected
+                                                  ? Icon(
+                                                      Icons
+                                                          .playlist_add_check_sharp,
+                                                      size: AppSize.iconSmall,
+                                                      color: Colors.black,
+                                                    )
+                                                  : Container()
+                                            ],
                                           ),
                                         ),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            !isSelected
-                                                ? Text(
-                                                    'Select',
-                                                    style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      fontSize:
-                                                          AppSize.textMedium,
-                                                      color:
-                                                          Colors.blue.shade500,
-                                                    ),
-                                                  )
-                                                : Text(
-                                                    'Remove',
-                                                    style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      fontSize:
-                                                          AppSize.textMedium,
-                                                      color:
-                                                          Colors.green.shade500,
-                                                    ),
-                                                  ),
-                                            isSelected
-                                                ? Icon(
-                                                    Icons
-                                                        .playlist_add_check_sharp,
-                                                    size: AppSize.iconSmall,
-                                                    color: Colors.black,
-                                                  )
-                                                : Container()
-                                          ],
+                                        SizedBox(
+                                          height: 10.h,
                                         ),
-                                      ),
-                                      SizedBox(
-                                        height: 10.h,
-                                      ),
-                                      isSelected
-                                          ? SizedBox(
-                                              // height: 50,
-                                              // width: 200,
-                                              child: InputTextFormField(
-                                                  controller: noteCon,
-                                                  labelText: 'Note',
-                                                  hint: 'Note',
-                                                  onFieldSubmitted: (value) {
-                                                    bookingCubit.updateNote(
-                                                        service.itemId
-                                                            .toString(),
-                                                        value);
-                                                  }),
-                                            )
-                                          : Container()
-                                    ],
+                                        isSelected
+                                            ? SizedBox(
+                                                // height: 50,
+                                                // width: 200,
+                                                child: InputTextFormField(
+                                                    controller: noteCon,
+                                                    labelText: 'Note',
+                                                    hint: 'Note',
+                                                    onFieldSubmitted: (value) {
+                                                      bookingCubit.updateNote(
+                                                          service.itemId
+                                                              .toString(),
+                                                          value);
+                                                    }),
+                                              )
+                                            : Container()
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
