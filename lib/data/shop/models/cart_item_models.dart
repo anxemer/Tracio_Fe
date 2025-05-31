@@ -16,6 +16,8 @@ class CartItemModel extends CartItemEntity {
     required super.serviceName,
     required super.price,
     required super.createdAt,
+    required super.serviceStatus,
+    required super.shopStatus,
   });
   factory CartItemModel.fromJson(Map<String, dynamic> json) {
     return CartItemModel(
@@ -33,9 +35,11 @@ class CartItemModel extends CartItemEntity {
       duration: json['duration'] != null ? json['duration'] as int : null,
       createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
       mediaUrl: json["mediaUrl"],
+      serviceStatus: json["serviceStatus"] ?? "",
+      shopStatus: json["shopStatus"] ?? "",
     );
   }
-
+  
   Map<String, dynamic> toJson() => {
         "itemId": itemId,
         "bookingQueueId": bookingQueueId,

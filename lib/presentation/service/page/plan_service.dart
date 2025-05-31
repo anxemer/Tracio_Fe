@@ -144,7 +144,9 @@ class _PlanServicePageState extends State<PlanServicePage>
                                         serviceId:
                                             state.cart[index].serviceId!)),
                                 child: BookingCard(
+                                  isCart: true,
                                   service: BookingCardViewModel(
+                                      status: state.cart[index].serviceStatus,
                                       imageUrl: state.cart[index].mediaUrl,
                                       city: state.cart[index].city,
                                       district: state.cart[index].district,

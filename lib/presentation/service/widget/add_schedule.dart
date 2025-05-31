@@ -50,11 +50,12 @@ class _AddScheduleState extends State<AddSchedule> {
                 content: Text(
                     'Shop is currently unavailable, please try again later.')),
           );
+        } else {
+          EasyLoading.dismiss();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Booking failed')),
+          );
         }
-        EasyLoading.dismiss();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Booking failed')),
-        );
       }
     }, builder: (context, state) {
       return Column(
