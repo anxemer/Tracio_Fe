@@ -104,12 +104,12 @@ class GetBlogCubit extends Cubit<GetBlogState> {
               params: currentState.params,
               isLoading: false));
         }, (data) {
-          final updatedBlogs = List<BlogEntity>.from(currentState.blogs!);
+          final updatedBlogs = List<BlogEntity>.from(currentState.blogs);
           updatedBlogs.addAll(data.blogs);
           emit(GetBlogLoaded(
               blogs: updatedBlogs,
               metaData: data.paginationMetaDataEntity,
-              params: GetBlogReq(),
+              params: currentState.params,
               isLoading: false));
         });
       } catch (e) {

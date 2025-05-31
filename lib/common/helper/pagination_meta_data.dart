@@ -11,27 +11,6 @@ class PaginationMetaData extends PaginationMetaDataEntity {
     required super.hasPreviousPage,
   });
 
-
-  PaginationMetaData copyWith({
-    bool? isSeen,
-    int? pageNumber,
-    int? pageSize,
-    int? totalSeenBlogs,
-    int? totalSeenBlogPages,
-    bool? hasNextPage,
-    bool? hasPreviousPage,
-  }) {
-    return PaginationMetaData(
-      isSeen: isSeen ?? this.isSeen,
-      pageNumber: pageNumber ?? this.pageNumber,
-      pageSize: pageSize ?? this.pageSize,
-      totalSeenBlogs: totalSeenBlogs ?? this.totalSeenBlogs,
-      totalSeenBlogPages: totalSeenBlogPages ?? this.totalSeenBlogPages,
-      hasNextPage: hasNextPage ?? this.hasNextPage,
-      hasPreviousPage: hasPreviousPage ?? this.hasPreviousPage,
-    );
-  }
-
   factory PaginationMetaData.fromJson(Map<String, dynamic> json) {
     return PaginationMetaData(
       isSeen: json["isSeen"],
@@ -39,8 +18,11 @@ class PaginationMetaData extends PaginationMetaDataEntity {
       pageSize: json["pageSize"],
       totalSeenBlogs: json["totalSeenBlogs"],
       totalSeenBlogPages: json["totalSeenBlogPages"],
-      hasNextPage: json["hasNextPage"],
-      hasPreviousPage: json["hasPreviousPage"],
+      hasPreviousPage: json['hasPreviousPage'] != null
+          ? json['hasPreviousPage'] as bool
+          : null,
+      hasNextPage:
+          json['hasNextPage'] != null ? json['hasNextPage'] as bool : null,
     );
   }
 
