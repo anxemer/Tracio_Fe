@@ -5,7 +5,7 @@
 		<key>CFBundleDevelopmentRegion</key>
 		<string>$(DEVELOPMENT_LANGUAGE)</string>
 		<key>CFBundleDisplayName</key>
-	<string>Tracio</string>
+		<string>Tracio</string>
 		<key>CFBundleExecutable</key>
 		<string>$(EXECUTABLE_NAME)</string>
 		<key>CFBundleIdentifier</key>
@@ -13,7 +13,7 @@
 		<key>CFBundleInfoDictionaryVersion</key>
 		<string>6.0</string>
 		<key>CFBundleName</key>
-	<string>Tracio</string>
+		<string>Tracio</string>
 		<key>CFBundlePackageType</key>
 		<string>APPL</string>
 		<key>CFBundleShortVersionString</key>
@@ -71,7 +71,7 @@
 			<string>location</string>
 		</array>
 		<key>NSMotionUsageDescription</key>
-		<string>Motion usage description</string>
+		<string>This app requires access to the barometer to provide altitude information.</string>
 		<!-- Permission options for the `camera` group -->
 		<key>NSCameraUsageDescription</key>
 		<string>camera</string><!-- gal: Required -->

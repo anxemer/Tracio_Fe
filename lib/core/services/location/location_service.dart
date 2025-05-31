@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:easy_debounce/easy_throttle.dart';
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
@@ -88,14 +87,14 @@ class LocationService {
   final JumpDetector _jumpDetector;
 
   // Enhanced filtering parameters
-  static const double _stationarySpeedThreshold = 0.2; // m/s
+  static const double _stationarySpeedThreshold = 0.1; // m/s
   static const double _stationaryAccuracyThreshold =
       15.0; // meters (increased to match typical GPS accuracy)
-  static const int _stationaryTimeThreshold = 5; // seconds
+  static const int _stationaryTimeThreshold = 3; // seconds
   static const double _speedAccuracyThreshold =
-      2.0; // m/s (increased to match typical speed accuracy) 
-  static const int _speedWindowSize = 5;
-  static const double _bearingSmoothingFactor = 0.3;
+      2.0; // m/s (increased to match typical speed accuracy)
+  static const int _speedWindowSize = 3;
+  static const double _bearingSmoothingFactor = 0.2;
   static const double _adaptiveSmoothingMinFactor = 0.1;
   static const double _adaptiveSmoothingMaxFactor = 0.4;
 
@@ -196,7 +195,7 @@ class LocationService {
     return _adaptiveSmoothingMaxFactor -
         (speed *
             (_adaptiveSmoothingMaxFactor - _adaptiveSmoothingMinFactor) /
-            30.0);
+            20.0);
   }
 
   double _smoothBearing(double bearing) {
@@ -256,26 +255,15 @@ class LocationService {
     // Convert speed to m/s if it's in km/h
     final speedInMs = speed > 10 ? speed / 3.6 : speed;
 
-    debugPrint('Stationary Check: Speed: ${speedInMs.toStringAsFixed(2)} m/s, '
-        'Avg Accuracy: ${avgAccuracy.toStringAsFixed(2)}m, '
-        'Speed Accuracy: ${position.speedAccuracy.toStringAsFixed(2)}m/s, '
-        'Stationary Count: $_stationaryCount');
-
     // More realistic conditions for stationary detection
     if (speedInMs < _stationarySpeedThreshold &&
         avgAccuracy < _stationaryAccuracyThreshold &&
         position.speedAccuracy < _speedAccuracyThreshold) {
       _stationaryCount++;
-      debugPrint(
-          'Stationary Check: Conditions met, count increased to $_stationaryCount');
     } else {
       // Only reset count if speed is significantly above threshold
       if (speedInMs > _stationarySpeedThreshold * 2) {
         _stationaryCount = 0;
-        debugPrint('Stationary Check: Speed too high, count reset to 0');
-      } else {
-        debugPrint(
-            'Stationary Check: Conditions not met but speed not high enough to reset');
       }
     }
 
@@ -443,7 +431,6 @@ class LocationService {
     // Cancel the stream to stop receiving updates
     _positionSubscription?.cancel();
     _positionSubscription = null;
-    EasyThrottle.cancel('distance-filter-throttle');
   }
 
   Future<void> resume({int distanceFilter = 1}) async {
@@ -468,7 +455,6 @@ class LocationService {
     _positionSubscription = null;
     _isPaused = false;
     _isDisposed = true;
-    EasyThrottle.cancel('distance-filter-throttle');
   }
 
   void reset() {
@@ -504,6 +490,7 @@ class LocationService {
           enableWakeLock: true,
         ),
         useMSLAltitude: true,
+        intervalDuration: Duration.zero,
       );
     } else if (defaultTargetPlatform == TargetPlatform.iOS ||
         defaultTargetPlatform == TargetPlatform.macOS) {
@@ -524,6 +511,7 @@ class LocationService {
       return LocationSettings(
         accuracy: LocationAccuracy.high,
         distanceFilter: 0,
+        timeLimit: Duration.zero,
       );
     }
   }
@@ -532,7 +520,6 @@ class LocationService {
     _isDisposed = true;
     _positionSubscription?.cancel();
     _dataController.close();
-    EasyThrottle.cancel('distance-filter-throttle');
   }
 
   // Add waypoint

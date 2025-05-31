@@ -47,7 +47,7 @@ class _CyclingMapViewState extends State<CyclingMapView>
   final groupRouteHub = sl<GroupRouteHubService>();
   final matchingHub = sl<MatchingHubService>();
 
-  StreamSubscription? _locationUpdateSub;
+  StreamSubscription? _groupParticipantUpdateSub;
   StreamSubscription? _matchedUserUpdateSub;
   StreamSubscription? _currentPositionUpdateSub;
 
@@ -148,7 +148,7 @@ class _CyclingMapViewState extends State<CyclingMapView>
 
   @override
   void dispose() {
-    _locationUpdateSub?.cancel();
+    _groupParticipantUpdateSub?.cancel();
     _matchedUserUpdateSub?.cancel();
     _currentPositionUpdateSub?.cancel();
     _resetTrackingState();
@@ -461,7 +461,8 @@ class _CyclingMapViewState extends State<CyclingMapView>
                           });
                           WidgetsBinding.instance.addPostFrameCallback((_) {
                             // Group route location updates
-                            _locationUpdateSub = groupRouteHub.onLocationUpdate
+                            _groupParticipantUpdateSub = groupRouteHub
+                                .onLocationUpdate
                                 .listen((data) async {
                               if (!mounted) return;
                               try {

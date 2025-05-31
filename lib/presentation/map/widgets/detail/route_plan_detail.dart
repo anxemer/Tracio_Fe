@@ -46,8 +46,6 @@ class _RoutePlanDetailState extends State<RoutePlanDetail> with RouteAware {
   @override
   void initState() {
     _fabHeight = _initFabHeight;
-    Future.microtask(
-        () => context.read<RouteCubit>().getRouteDetail(widget.routeId));
     super.initState();
   }
 
@@ -73,7 +71,6 @@ class _RoutePlanDetailState extends State<RoutePlanDetail> with RouteAware {
   @override
   Widget build(BuildContext context) {
     _panelHeightOpen = 300;
-    var isLoading = context.read<RouteCubit>().state is GetRouteDetailLoading;
     return Scaffold(
       body: SafeArea(
         child: MultiBlocProvider(
@@ -233,13 +230,6 @@ class _RoutePlanDetailState extends State<RoutePlanDetail> with RouteAware {
                 right: 20,
                 child: const RouteDetailTopActionBar(),
               ),
-
-              if (isLoading)
-                const Opacity(
-                  opacity: 0.6,
-                  child: ModalBarrier(dismissible: false, color: Colors.black),
-                ),
-              if (isLoading) const Center(child: CircularProgressIndicator()),
             ],
           ),
         ),
