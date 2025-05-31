@@ -17,6 +17,8 @@ class CartItemEntity {
     this.mediaUrl,
     this.price,
     this.createdAt,
+    this.serviceStatus,
+    this.shopStatus,
   });
 
   final int? itemId;
@@ -33,6 +35,8 @@ class CartItemEntity {
   final String? mediaUrl;
   final double? price;
   final DateTime? createdAt;
+  final String? serviceStatus;
+  final String? shopStatus;
 
   String get formattedDuration {
     int totalMinutes = duration!;
@@ -59,7 +63,8 @@ class CartItemEntity {
     final formatter = NumberFormat('#,###', 'vi_VN');
     return formatter.format(priceAsInt);
   }
-   int? get openHour {
+
+  int? get openHour {
     if (openTime == null || !openTime!.contains(':')) return null;
     return int.tryParse(openTime!.split(':')[0]);
   }

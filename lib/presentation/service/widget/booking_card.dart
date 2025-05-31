@@ -21,7 +21,8 @@ class BookingCard<T> extends StatefulWidget {
       this.useAnimation = true,
       this.imageSize,
       this.backgroundColor,
-      this.ontap});
+      this.ontap,
+      this.isCart = false});
   final AnimationController? animationController;
   final Animation<double>? animation;
   final Widget? moreWidget;
@@ -30,6 +31,7 @@ class BookingCard<T> extends StatefulWidget {
   final double? imageSize;
   final Color? backgroundColor;
   final VoidCallback? ontap;
+  final bool isCart;
   @override
   State<BookingCard> createState() => _BookingCardState();
 }
@@ -49,6 +51,7 @@ class _BookingCardState extends State<BookingCard> {
   }
 
   Widget _buildCardContent(bool isDark) {
+    bool isActive = widget.service.status == 'Active';
     return Card(
       color: widget.backgroundColor,
       margin: const EdgeInsets.all(0),
@@ -61,28 +64,58 @@ class _BookingCardState extends State<BookingCard> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(12.0),
-                    child: CachedNetworkImage(
-                      imageUrl: widget.service.imageUrl!,
-                      imageBuilder: (context, imageProvider) {
-                        return Container(
-                            width: AppSize.imageMedium.w,
-                            height: AppSize.imageMedium.h,
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                image: imageProvider,
-                                fit: BoxFit.cover,
-                              ),
-                            ));
-                      },
-                      placeholder: (context, url) =>
-                          LoadingAnimationWidget.fourRotatingDots(
-                        color: AppColors.secondBackground,
-                        size: AppSize.iconExtraLarge,
+                  Column(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(12.0),
+                        child: CachedNetworkImage(
+                          imageUrl: widget.service.imageUrl!,
+                          imageBuilder: (context, imageProvider) {
+                            return Container(
+                                width: AppSize.imageMedium.w,
+                                height: AppSize.imageMedium.h,
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                    image: imageProvider,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ));
+                          },
+                          placeholder: (context, url) =>
+                              LoadingAnimationWidget.fourRotatingDots(
+                            color: AppColors.secondBackground,
+                            size: AppSize.iconExtraLarge,
+                          ),
+                          errorWidget: (context, url, error) =>
+                              Icon(Icons.error),
+                        ),
                       ),
-                      errorWidget: (context, url, error) => Icon(Icons.error),
-                    ),
+                      SizedBox(
+                        height: 4.h,
+                      ),
+                      widget.isCart
+                          ? Container(
+                              height: 26,
+                              width: 100,
+                              decoration: BoxDecoration(
+                                  color: isActive
+                                      ? Colors.green.shade50
+                                      : Colors.red.shade50,
+                                  border: Border.all(
+                                      color: isActive
+                                          ? Colors.green.shade200
+                                          : Colors.red.shade200),
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: Center(
+                                  child: Text(
+                                '${widget.service.status}',
+                                style: TextStyle(
+                                    fontSize: AppSize.textMedium,
+                                    fontWeight: FontWeight.w600),
+                              )),
+                            )
+                          : SizedBox.shrink()
+                    ],
                   ),
                   SizedBox(
                     width: 10.w,

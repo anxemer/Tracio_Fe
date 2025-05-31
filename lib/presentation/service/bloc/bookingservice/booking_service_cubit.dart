@@ -18,12 +18,12 @@ class BookingServiceCubit extends Cubit<BookingServiceState> {
       emit(BookingServiceLoading());
       var response = await sl<BookingServiceUseCase>().call(params);
       response.fold((error) {
-        emit(BookingServiceFailure(message: error.message));
+        emit(BookingServiceFailure(message: error.message, failure: error));
       }, (data) {
         emit(BookingServiceSuccess(isSuccess: data));
       });
     } on ExceptionFailure catch (e) {
-      emit(BookingServiceFailure(message: e.message));
+      emit(BookingServiceFailure(message: e.message, failure: e));
     }
   }
 
