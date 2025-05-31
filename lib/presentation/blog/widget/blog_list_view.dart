@@ -72,7 +72,8 @@ class _BlogListViewState extends State<BlogListView>
               onNotification: (ScrollNotification scrollInfo) {
                 if (scrollInfo.metrics.pixels >=
                         scrollInfo.metrics.maxScrollExtent * 0.7 &&
-                    !(state.isLoading)) {
+                    !(state.isLoading) &&
+                    state.metaData.hasNextPage!) {
                   context.read<GetBlogCubit>().getMoreBlogs();
                 }
                 return false;

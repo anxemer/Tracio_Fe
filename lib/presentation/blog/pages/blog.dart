@@ -32,12 +32,12 @@ class _BlogPageState extends State<BlogPage> with TickerProviderStateMixin {
     _scrollController = ScrollController();
 
     _tabController = TabController(length: 2, vsync: this);
-    _scrollController.addListener(_scrollListener);
+    // _scrollController.addListener(_scrollListener);
   }
 
   @override
   void dispose() {
-    _scrollController.removeListener(_scrollListener);
+    // _scrollController.removeListener(_scrollListener);
     _scrollController.dispose();
     _tabController.dispose();
     super.dispose();
@@ -46,24 +46,25 @@ class _BlogPageState extends State<BlogPage> with TickerProviderStateMixin {
   late ScrollController _scrollController;
   Timer? _scrollDebounce;
 
-  void _scrollListener() {
-    double maxScroll = _scrollController.position.maxScrollExtent;
-    double currentScroll = _scrollController.position.pixels;
-    double scrollPercentage = 0.7;
+  // void _scrollListener() {
+  //   double maxScroll = _scrollController.position.maxScrollExtent;
+  //   double currentScroll = _scrollController.position.pixels;
+  //   double scrollPercentage = 0.7;
 
-    if (currentScroll > (maxScroll * scrollPercentage)) {
-      if (_scrollDebounce?.isActive ?? false) _scrollDebounce!.cancel();
+  //   if (currentScroll > (maxScroll * scrollPercentage)) {
+  //     if (_scrollDebounce?.isActive ?? false) _scrollDebounce!.cancel();
 
-      _scrollDebounce = Timer(const Duration(milliseconds: 500), () {
-        final blogState = context.read<GetBlogCubit>().state;
-        if (blogState is GetBlogLoaded &&
-            blogState.isLoading == false &&
-            blogState.metaData.hasNextPage!) {
-          context.read<GetBlogCubit>().getMoreBlogs();
-        }
-      });
-    }
-  }
+  //     _scrollDebounce = Timer(const Duration(milliseconds: 500), () {
+  //       final blogState = context.read<GetBlogCubit>().state;
+  //       if (blogState is GetBlogLoaded &&
+  //           blogState.isLoading == false &&
+  //           blogState.metaData.hasNextPage!) {
+  //         print(blogState.metaData.hasNextPage!);
+  //         context.read<GetBlogCubit>().getMoreBlogs();
+  //       }
+  //     });
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
