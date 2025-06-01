@@ -1,4 +1,3 @@
-import 'package:Tracio/core/erorr/failure.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:Tracio/common/helper/navigator/app_navigator.dart';
@@ -9,6 +8,8 @@ import 'package:Tracio/presentation/auth/pages/login.dart';
 import 'package:Tracio/presentation/shop_owner/page/dash_board.dart';
 import 'package:Tracio/common/widget/navbar/bottom_nav_bar_manager.dart';
 
+import '../../../core/services/signalR/implement/notification_hub_service.dart';
+import '../../../service_locator.dart';
 import '../../auth/bloc/authCubit/auth_state.dart';
 
 class SplashPage extends StatefulWidget {
@@ -21,9 +22,10 @@ class SplashPage extends StatefulWidget {
 class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
-  WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<AuthCubit>().refreshToken();
     });
+
     super.initState();
   }
 
@@ -37,6 +39,7 @@ class _SplashPageState extends State<SplashPage> {
           }
           if (state is AuthLoaded) {
             context.read<AuthCubit>().sendFcm();
+            sl<NotificationHubService>().connect();
 
             if (state.user?.role == 'user') {
               AppNavigator.pushReplacement(context, BottomNavBarManager());

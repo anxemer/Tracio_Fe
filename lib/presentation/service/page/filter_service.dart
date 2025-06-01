@@ -63,8 +63,8 @@ class _FilterServicePageState extends State<FilterServicePage> {
       if (_scrollDebounce?.isActive ?? false) _scrollDebounce!.cancel();
 
       _scrollDebounce = Timer(const Duration(milliseconds: 500), () {
-        final blogState = context.read<GetServiceCubit>().state;
-        if (blogState is GetServiceLoaded) {
+        final serviceState = context.read<GetServiceCubit>().state;
+        if (serviceState is GetServiceLoaded ) {
           context.read<GetServiceCubit>().getMoreService();
         }
       });

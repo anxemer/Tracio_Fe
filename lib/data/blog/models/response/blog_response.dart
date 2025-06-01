@@ -33,8 +33,8 @@ class BlogResponse extends BlogResponseEntity {
       pageSize: resultMap['pageSize'] ?? 5,
       isSeen: resultMap['isSeen'],
       totalSeenBlogPages: resultMap['totalSeenBlogPage'],
-      hasNextPage: null,
-      hasPreviousPage: null,
+      hasNextPage: resultMap['hasNextPage'],
+      hasPreviousPage: resultMap['hasPreviousPage'],
     );
     final List<dynamic> blogsList = resultMap['blogs'] ?? [];
     return BlogResponse(

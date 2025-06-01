@@ -37,12 +37,19 @@ class RecommendChallengeItem extends StatelessWidget {
       },
       child: InkWell(
         onTap: () async {
-          AppNavigator.push(
-            context,
-            ChallengeDetailScreen(
-              challengeId: challenge.challengeId!,
-            ),
-          );
+          (challenge.isCreator! || challenge.status == 'Joined')
+              ? AppNavigator.push(
+                  context,
+                  ChallengeProgressScreen(
+                    challengeId: challenge.challengeId!,
+                  ),
+                )
+              : AppNavigator.push(
+                  context,
+                  ChallengeDetailScreen(
+                    challengeId: challenge.challengeId!,
+                  ),
+                );
         },
         child: Container(
           padding: const EdgeInsets.all(AppSize.apHorizontalPadding * 0.7),
@@ -118,7 +125,7 @@ class RecommendChallengeItem extends StatelessWidget {
                     ),
                   ),
                 )
-              else if (challenge.isCompleted!)
+              else if (challenge.isCompleted! || challenge.isCreator!)
                 SizedBox.shrink()
               else
                 // Join Button

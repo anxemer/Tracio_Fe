@@ -110,7 +110,7 @@ class _MyBookingPageState extends State<MyBookingPage>
                               text: 'Completed',
                             ),
                             Tab(
-                              text: 'Canceled',
+                              text: 'Cancelled',
                             ),
                             Tab(
                               text: 'Not Arrive',

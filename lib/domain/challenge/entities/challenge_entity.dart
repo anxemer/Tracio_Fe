@@ -62,7 +62,8 @@ class ChallengeEntity {
     if (currentStatus == 'ENDED' ||
         currentStatus == 'COMPLETED' ||
         currentStatus == 'CANCELLED' ||
-        currentStatus == 'FAILED') {
+        currentStatus == 'FAILED' ||
+        isCompleted!) {
       return "Finished";
     }
 

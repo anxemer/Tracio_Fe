@@ -195,7 +195,7 @@ class _ChallengeDetailScreenState extends State<ChallengeDetailScreen> {
                       minimumSize: const Size(double.infinity, 50),
                     ),
                   )
-                : isCompleted!
+                : (isCompleted! || state.challenge.isCreator!)
                     ? SizedBox.shrink()
                     : ElevatedButton(
                         onPressed: () {

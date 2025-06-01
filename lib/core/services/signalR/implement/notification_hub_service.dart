@@ -11,20 +11,28 @@ class NotificationHubService {
   final SignalRCoreService _core;
   final _notificationStream = StreamController<NotificationModel>.broadcast();
   Stream<NotificationModel> get onMessageUpdate => _notificationStream.stream;
+  bool _isConnected = false;
 
   NotificationHubService(this._core);
 
   Future<void> connect() async {
+    if (_isConnected) {
+      return;
+    }
+
     var token = await sl<AuthLocalSource>().getToken();
+    if (token.isEmpty) {
+      signalrLogger
+          .w('[NotificationService] ❌ No token found. Skipping connect.');
+      return;
+    }
 
     signalrLogger
         .i('[NotificationService] 🔌 Connecting to ${ApiUrl.notiHubUrl}...');
     await _core.init('${ApiUrl.notiHubUrl}?token=$token');
-    signalrLogger.i('[NotificationService] ✅ Connected');
-
     _core.on('ReceiveNotification', _handleReceiveNotification);
-
-    signalrLogger.d('[NotificationHubService] 📡 Handlers registered');
+    _isConnected = true;
+    signalrLogger.i('[NotificationService] ✅ Connected and handler registered');
   }
 
   void _handleReceiveNotification(List<Object?>? data) {

@@ -349,17 +349,27 @@ class _DetailServicePageState extends State<DetailServicePage> {
   Widget buildImage(String imageUrl) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: AspectRatio(
-          aspectRatio: 1.4,
-          child: PictureCustom(
-            imageUrl: imageUrl,
-            width: AppSize.imageMedium,
-            height: AppSize.imageMedium,
-            borderRadius: AppSize.borderRadiusMedium,
+      child: Column(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: AspectRatio(
+              aspectRatio: 1.4,
+              child: PictureCustom(
+                imageUrl: imageUrl,
+                width: AppSize.imageMedium,
+                height: AppSize.imageMedium,
+                borderRadius: AppSize.borderRadiusMedium,
+              ),
+            ),
           ),
-        ),
+          Container(
+            height: 20,
+            width: 80,
+            color: Colors.white,
+            child: Text('data'),
+          )
+        ],
       ),
     );
   }

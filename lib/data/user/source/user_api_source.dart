@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:Tracio/data/user/models/follow_response_model.dart';
+import 'package:Tracio/data/user/models/get_follow_req.dart';
 import 'package:path/path.dart' as p;
 
 import 'package:Tracio/core/erorr/failure.dart';
@@ -26,8 +28,8 @@ abstract class UserApiSource {
   Future<Either> sendFcm(SendFcmReq fcm);
   Future<DailyActivityModel> getDailyActivity();
   Future<List<FollowModel>> getFollowRequest();
-  Future<List<FollowModel>> getFollower(int userId);
-  Future<List<FollowModel>> getFollowing(int userId);
+  Future<FollowResponseModel> getFollower(GetFollowReq params);
+  Future<FollowResponseModel> getFollowing(GetFollowReq params);
 }
 
 class UserApiSourceImpl extends UserApiSource {
@@ -148,13 +150,12 @@ class UserApiSourceImpl extends UserApiSource {
   }
 
   @override
-  Future<List<FollowModel>> getFollower(int userId) async {
-    var response =
-        await sl<DioClient>().get('${ApiUrl.follow}/followers/$userId');
+  Future<FollowResponseModel> getFollower(GetFollowReq params) async {
+    var response = await sl<DioClient>()
+        .get('${ApiUrl.follow}/followers/${params.userId}');
 
     if (response.statusCode == 200) {
-      return List<FollowModel>.from(
-          response.data['result']['items'].map((x) => FollowModel.fromJson(x)));
+      return FollowResponseModel.fromMap(response.data['result']);
     } else if (response.statusCode == 401) {
       throw AuthenticationFailure('Unauthentication');
     } else {
@@ -163,13 +164,13 @@ class UserApiSourceImpl extends UserApiSource {
   }
 
   @override
-  Future<List<FollowModel>> getFollowing(int userId) async {
-    var response =
-        await sl<DioClient>().get('${ApiUrl.follow}/following/$userId');
+  Future<FollowResponseModel> getFollowing(GetFollowReq params) async {
+    var response = await sl<DioClient>().get(
+        '${ApiUrl.follow}/following/${params.userId}',
+        queryParameters: params.toQueryParams());
 
     if (response.statusCode == 200) {
-      return List<FollowModel>.from(
-          response.data['result']['items'].map((x) => FollowModel.fromJson(x)));
+      return FollowResponseModel.fromMap(response.data['result']);
     } else if (response.statusCode == 401) {
       throw AuthenticationFailure('Unauthentication');
     } else {
