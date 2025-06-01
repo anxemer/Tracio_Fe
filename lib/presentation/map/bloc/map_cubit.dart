@@ -45,6 +45,7 @@ class MapCubit extends Cubit<MapCubitState> {
 
   final List<Map<String, String>> _routeSegments = [];
 
+
   Future<void> initializeMap(MapboxMap mapboxMap,
       {LocationComponentSettings? locationSetting,
       LogoSettings? logoSetting,

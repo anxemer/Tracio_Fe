@@ -3,12 +3,10 @@ import 'package:Tracio/presentation/map/bloc/map_state.dart';
 import 'package:Tracio/presentation/map/bloc/route_cubit.dart';
 import 'package:Tracio/presentation/map/bloc/route_state.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' as mapbox;
-import 'package:Tracio/common/helper/custom_paint/numbered_circle_painter.dart';
-import 'dart:ui' as ui;
+import 'package:location/location.dart' as loc;
 import 'package:Tracio/core/services/signalR/implement/group_route_hub_service.dart';
 import 'package:Tracio/core/services/signalR/implement/matching_hub_service.dart';
 import 'package:Tracio/data/map/source/tracking_grpc_service.dart';
@@ -37,12 +35,13 @@ class CyclingMapView extends StatefulWidget {
 class _CyclingMapViewState extends State<CyclingMapView>
     with TickerProviderStateMixin {
   List<mapbox.Position> routePoints = [];
-  List<Position> tempRouteList = [];
+  List<loc.LocationData> tempRouteList = [];
   bool isMapInitialized = false;
   mapbox.Position? _lastDrawnPoint;
   static const int _maxRoutePoints = 30;
   int _segmentCounter = 0;
   int _pointsSinceLastSegment = 0;
+  late loc.Location location;
 
   final groupRouteHub = sl<GroupRouteHubService>();
   final matchingHub = sl<MatchingHubService>();
@@ -56,7 +55,14 @@ class _CyclingMapViewState extends State<CyclingMapView>
   @override
   void initState() {
     super.initState();
+    location = loc.Location();
+    location.changeSettings(
+      accuracy: loc.LocationAccuracy.high,
+      distanceFilter: 0,
+      interval: 0,
+    );
     _startPositionUpdates();
+
     _isCentered = widget.isCentered;
   }
 
@@ -73,10 +79,18 @@ class _CyclingMapViewState extends State<CyclingMapView>
   Future<void> _handleInitialPosition() async {
     try {
       // Try to get cached position first
-      final cachedPosition = await Geolocator.getLastKnownPosition();
-      if (cachedPosition != null && mounted) {
-        // Move map to cached position instantly
-        context.read<MapCubit>().mapboxMap?.flyTo(
+      Position? cachedPosition;
+      try {
+        cachedPosition = await Geolocator.getLastKnownPosition();
+      } catch (e) {
+        debugPrint('❌ Error getting last known position: $e');
+      }
+
+      cachedPosition ??= await Geolocator.getCurrentPosition();
+
+      if (mounted) {
+        // Move map to position with smooth animation
+        await context.read<MapCubit>().mapboxMap?.flyTo(
               mapbox.CameraOptions(
                 center: mapbox.Point(
                   coordinates: mapbox.Position(
@@ -85,13 +99,30 @@ class _CyclingMapViewState extends State<CyclingMapView>
                   ),
                 ),
                 bearing: cachedPosition.heading,
+                zoom: 15.0, // Add default zoom level
+                padding: mapbox.MbxEdgeInsets(
+                    top: 100, left: 0, right: 0, bottom: 0),
               ),
               mapbox.MapAnimationOptions(
-                  duration: 0), // Instant move for cached position
+                duration: 500, // Smooth animation duration
+                startDelay: 0,
+              ),
             );
+      } else {
+        debugPrint('⚠️ No position available');
       }
     } catch (e) {
-      debugPrint('❌ Error getting cached position: $e');
+      debugPrint('❌ Error in _handleInitialPosition: $e');
+      // Optionally show a user-friendly error message
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+                'Unable to get your current location. Please check your location settings.'),
+            duration: Duration(seconds: 3),
+          ),
+        );
+      }
     }
   }
 
@@ -102,36 +133,30 @@ class _CyclingMapViewState extends State<CyclingMapView>
     // Try to get initial position first
     await _handleInitialPosition();
 
-    // Then start live updates
-    _currentPositionUpdateSub = Geolocator.getPositionStream(
-      locationSettings: const LocationSettings(
-        accuracy: LocationAccuracy.high,
-        distanceFilter: 0,
-      ),
-    ).listen(
-      _handlePositionUpdate,
-      onError: (error) {
-        debugPrint('❌ Error in position stream: $error');
-      },
-    );
+    _currentPositionUpdateSub =
+        location.onLocationChanged.listen((locationData) {
+      _handlePositionUpdate(locationData);
+    });
   }
 
-  void _handlePositionUpdate(Position position) {
+  void _handlePositionUpdate(loc.LocationData position) async {
     if (!mounted) return;
 
     if (_isCentered) {
-      context.read<MapCubit>().mapboxMap?.flyTo(
+      context.read<MapCubit>().mapboxMap?.easeTo(
             mapbox.CameraOptions(
               center: mapbox.Point(
                 coordinates: mapbox.Position(
-                  position.longitude,
-                  position.latitude,
+                  position.longitude!,
+                  position.latitude!,
                 ),
               ),
-              bearing: position.heading,
+              bearing: position.heading!,
+              padding:
+                  mapbox.MbxEdgeInsets(top: 100, left: 0, right: 0, bottom: 0),
             ),
             mapbox.MapAnimationOptions(
-              duration: 200,
+              duration: 300,
               startDelay: 0,
             ),
           );
@@ -154,42 +179,6 @@ class _CyclingMapViewState extends State<CyclingMapView>
     _resetTrackingState();
     context.read<TrackingBloc>().add(ResetTracking());
     super.dispose();
-  }
-
-  Future<ui.Image> _createNumberedImage(int number) async {
-    final recorder = ui.PictureRecorder();
-    final canvas = Canvas(recorder);
-
-    final size = ui.Size(80, 80);
-    final painter = NumberedCirclePainter(number);
-    painter.paint(canvas, size);
-
-    final picture = recorder.endRecording();
-    final image =
-        await picture.toImage(size.width.toInt(), size.height.toInt());
-
-    return image;
-  }
-
-  Future<Uint8List> _getMarkerBytes(String assetPath) async {
-    final ByteData bytes = await rootBundle.load(assetPath);
-    return bytes.buffer.asUint8List();
-  }
-
-  Future<Uint8List> _getImageDataForOrderedPoint(
-      int index, List<dynamic> pointAnnotations) async {
-    if (index == 0) {
-      // Start point
-      return await _getMarkerBytes('assets/images/start-flag.png');
-    } else if (index == pointAnnotations.length - 1) {
-      // End point
-      return await _getMarkerBytes('assets/images/end-flag.png');
-    } else {
-      // Middle points
-      final image = await _createNumberedImage(index + 1);
-      final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
-      return bytes!.buffer.asUint8List();
-    }
   }
 
   void _updateRouteLine(List<mapbox.Position> points) async {
@@ -308,19 +297,7 @@ class _CyclingMapViewState extends State<CyclingMapView>
           child: BlocConsumer<GetDirectionCubit, GetDirectionState>(
               listener: (context, state) async {
             if (state is GetDirectionLoaded) {
-              if (context.mounted) {
-                // Set order of waypoints
-                for (var waypoint in state.direction.geometry!.coordinates) {
-                  var imageData = await _getImageDataForOrderedPoint(
-                    state.direction.geometry!.coordinates.indexOf(waypoint),
-                    state.direction.geometry!.coordinates,
-                  );
-                  await mapCubit.addPointAnnotation(waypoint, imageData);
-                }
-
-                // After adding all points, add polyline
-                await mapCubit.addPolylineRoute(state.direction.geometry!);
-              }
+              if (context.mounted) {}
             } else if (state is GetDirectionFailure) {
               // Show error message
               if (context.mounted) {
@@ -336,15 +313,14 @@ class _CyclingMapViewState extends State<CyclingMapView>
                 BlocListener<TrackingBloc, TrackingState>(
                   listener: (context, state) async {
                     if (state is TrackingInProgress) {
-                      _currentPositionUpdateSub?.cancel();
                       if (state.isPaused) {
                         _startPositionUpdates();
                         _updateRouteLine(routePoints);
                       } else if (state.position != null) {
                         final location = state.position!;
                         final newPoint = mapbox.Position(
-                          location.longitude,
-                          location.latitude,
+                          location.longitude!,
+                          location.latitude!,
                         );
 
                         // Add initial line layer if it's the first point
@@ -358,24 +334,6 @@ class _CyclingMapViewState extends State<CyclingMapView>
                               lineBorderColor: Colors.white,
                               lineBorderWidth: 1.0);
                         }
-
-                        // Only update camera if map is centered
-                        if (_isCentered) {
-                          mapCubit.mapboxMap?.flyTo(
-                            mapbox.CameraOptions(
-                              center: mapbox.Point(
-                                coordinates: mapbox.Position(
-                                  location.longitude,
-                                  location.latitude,
-                                ),
-                              ),
-                              bearing: location.heading,
-                            ),
-                            mapbox.MapAnimationOptions(
-                                duration: 100, startDelay: 0),
-                          );
-                        }
-
                         _lastDrawnPoint = newPoint;
                         await _manageRoutePoints(newPoint);
                         _updateRouteLine(routePoints);
@@ -387,13 +345,13 @@ class _CyclingMapViewState extends State<CyclingMapView>
                         if (routeId != null &&
                             tempRouteList.length >= _maxRoutePoints) {
                           final grpcLocations = tempRouteList.map((pos) {
-                            final dateTime = pos.timestamp;
+                            final dateTime = pos.time!;
                             return {
                               "latitude": pos.latitude,
                               "longitude": pos.longitude,
                               "altitude": pos.altitude,
-                              "timestamp": dateTime.millisecondsSinceEpoch,
-                              "speed": pos.speed * 18 / 5,
+                              "timestamp": dateTime.toInt(),
+                              "speed": pos.speed! * 18 / 5,
                               "distance": state.odometerKm,
                             };
                           }).toList();

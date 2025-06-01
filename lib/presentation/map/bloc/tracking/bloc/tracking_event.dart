@@ -63,3 +63,34 @@ class RequestFinishTracking extends TrackingEvent {
 class ResetTracking extends TrackingEvent {
   const ResetTracking();
 }
+
+class AddGroupRouteId extends TrackingEvent {
+  final int groupRouteId;
+
+  const AddGroupRouteId(this.groupRouteId);
+
+  @override
+  List<Object?> get props => [groupRouteId];
+}
+
+class AddGroupParticipant extends TrackingEvent {
+  final Participant participant;
+
+  const AddGroupParticipant(this.participant);
+
+  @override
+  List<Object?> get props => [participant];
+}
+
+class RemoveGroupParticipant extends TrackingEvent {
+  final int userId;
+
+  const RemoveGroupParticipant(this.userId);
+
+  @override
+  List<Object?> get props => [userId];
+}
+
+class LeaveGroupRoute extends TrackingEvent {
+  const LeaveGroupRoute();
+}

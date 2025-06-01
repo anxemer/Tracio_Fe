@@ -205,15 +205,24 @@ class _GroupActivityDetailState extends State<GroupActivityDetail> {
               await groupRouteHub
                   .joinGroupRoute(widget.groupRouteId.toString());
 
+              if (!context.mounted) return;
+              
+              // Get the TrackingBloc before navigation
+              final trackingBloc = context.read<TrackingBloc>();
+              
+              // Navigate to cycling page
               Navigator.push(context, MaterialPageRoute(builder: (context) {
                 return BlocProvider.value(
-                  value: context.read<TrackingBloc>(),
+                  value: trackingBloc,
                   child: BottomNavBarManager(
                     selectedIndex: 2,
                     isNavVisible: false,
                   ),
                 );
               }));
+
+              // Add groupRouteId after navigation
+              trackingBloc.add(AddGroupRouteId(widget.groupRouteId));
             } catch (e, stack) {
               debugPrint("❌ Failed to start riding: $e\n$stack");
               if (context.mounted) {

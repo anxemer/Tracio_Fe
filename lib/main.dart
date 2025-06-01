@@ -73,10 +73,8 @@ Future<void> main() async {
   }
   // await SignalRService().initConnection();
   await di.initializeDependencies();
-  final locationReady = await di.sl<LocationService>().initialize();
-  if (!locationReady) {
-    debugPrint("❌ Location not available at launch.");
-  }
+  await di.sl<LocationService>().initialize();
+
   await _requestPermissions();
 
   await INotificationService.init();
@@ -94,7 +92,7 @@ Future<void> main() async {
 /// ✅ Request necessary permissions
 Future<void> _requestPermissions() async {
   await [
-    Permission.locationAlways,
+    Permission.locationWhenInUse,
     Permission.storage,
     Permission.accessNotificationPolicy,
     Permission.notification,

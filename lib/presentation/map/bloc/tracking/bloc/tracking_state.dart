@@ -7,12 +7,19 @@ sealed class TrackingState extends Equatable {
   List<Object?> get props => [];
 }
 
-final class TrackingInitial extends TrackingState {}
+final class TrackingInitial extends TrackingState {
+  final int? groupRouteId;
+
+  const TrackingInitial({this.groupRouteId});
+
+  @override
+  List<Object?> get props => [groupRouteId];
+}
 
 final class TrackingInProgress extends TrackingState {
   final bool isPaused;
   final List<LatLng> polyline;
-  final Position? position;
+  final LocationData? position;
   final double? speed;
   final double? odometerKm;
   final double? altitude;
@@ -25,6 +32,7 @@ final class TrackingInProgress extends TrackingState {
   final int? routeId;
   final int? groupRouteId;
   final List<MatchedUserEntity>? matchedUsers;
+  final List<Participant>? groupParticipants;
 
   const TrackingInProgress({
     required this.isPaused,
@@ -42,12 +50,13 @@ final class TrackingInProgress extends TrackingState {
     this.routeId,
     this.groupRouteId,
     this.matchedUsers,
+    this.groupParticipants,
   });
 
   TrackingInProgress copyWith({
     bool? isPaused,
     List<LatLng>? polyline,
-    Position? position,
+    LocationData? position,
     double? speed,
     double? odometerKm,
     double? altitude,
@@ -60,6 +69,7 @@ final class TrackingInProgress extends TrackingState {
     int? routeId,
     int? groupRouteId,
     List<MatchedUserEntity>? matchedUsers,
+    List<Participant>? groupParticipants,
   }) {
     return TrackingInProgress(
       isPaused: isPaused ?? this.isPaused,
@@ -77,6 +87,7 @@ final class TrackingInProgress extends TrackingState {
       routeId: routeId ?? this.routeId,
       groupRouteId: groupRouteId ?? this.groupRouteId,
       matchedUsers: matchedUsers ?? this.matchedUsers,
+      groupParticipants: groupParticipants ?? this.groupParticipants,
     );
   }
 
@@ -97,6 +108,7 @@ final class TrackingInProgress extends TrackingState {
         routeId,
         groupRouteId,
         matchedUsers,
+        groupParticipants,
       ];
 }
 
