@@ -30,28 +30,45 @@ class _AllRewardState extends State<AllReward> {
               ChallengeProgressScreen(
                   challengeId: widget.reward[index].challengeId!)),
           child: Padding(
-            padding: const EdgeInsets.symmetric(
-                horizontal: 10, vertical: AppSize.apVerticalPadding),
-            child: SizedBox(
-                height: 100.h,
-                width: 100.w,
+            padding: EdgeInsets.symmetric(
+                horizontal: 10, vertical: AppSize.apVerticalPadding * .2.h),
+            child: Card(
                 child: ListTile(
-                  leading: CirclePicture(
-                      imageUrl: widget.reward[index].imageUrl!,
-                      imageSize: AppSize.imageSmall * .6.sp),
-                  title: Text(
-                    widget.reward[index].name!,
+              leading: CirclePicture(
+                  imageUrl: widget.reward[index].imageUrl!,
+                  imageSize: AppSize.imageSmall * .6.sp),
+              title: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    widget.reward[index].name ?? '',
                     style: TextStyle(
-                        fontSize: AppSize.textLarge,
-                        fontWeight: FontWeight.bold),
+                      fontSize: AppSize.textLarge,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  subtitle: Text(widget.reward[index].description!),
-                  trailing: Text(
+                  Text(
                     timeago.format(
                         widget.reward[index].createdAt ?? DateTime.now()),
-                    style: TextStyle(fontSize: AppSize.textSmall.sp),
+                    style: TextStyle(
+                      fontSize: AppSize.textSmall.sp,
+                      color: Colors.grey,
+                    ),
                   ),
-                )),
+                  SizedBox(height: 4),
+                ],
+              ),
+
+              subtitle: Text(widget.reward[index].description!),
+              // trailing: Text(
+              //   timeago
+              //       .format(widget.reward[index].createdAt ?? DateTime.now()),
+              //   style: TextStyle(fontSize: AppSize.textSmall.sp),
+              // ),
+            )),
           ),
         ),
       ),

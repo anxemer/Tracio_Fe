@@ -22,7 +22,7 @@ class DailyActivityEntity {
   final DateTime? activityDate;
   final double? totalDistance;
   final int? totalDuration;
-  final int? totalElevationGain;
+  final double? totalElevationGain;
   final int? totalRides;
   final double? avgSpeed;
   final double? maxSpeed;

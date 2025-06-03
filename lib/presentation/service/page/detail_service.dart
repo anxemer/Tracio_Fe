@@ -363,12 +363,6 @@ class _DetailServicePageState extends State<DetailServicePage> {
               ),
             ),
           ),
-          Container(
-            height: 20,
-            width: 80,
-            color: Colors.white,
-            child: Text('data'),
-          )
         ],
       ),
     );

@@ -1,4 +1,7 @@
+import 'package:Tracio/common/helper/navigator/app_navigator.dart';
 import 'package:Tracio/common/widget/blog/blog_holder.dart';
+import 'package:Tracio/core/erorr/failure.dart';
+import 'package:Tracio/presentation/auth/pages/login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../data/blog/models/request/get_blog_req.dart';
@@ -108,10 +111,20 @@ class _BlogListViewState extends State<BlogListView>
             ),
           );
         } else if (state is GetBlogLoading) {
-          return BlogHolder();
+          return SingleChildScrollView(child: BlogHolder());
+        } else if (state is GetBlogFailure) {
+          if (state.failure is AuthenticationFailure) {
+            Future.microtask(
+              () {
+                AppNavigator.push(context, LoginPage());
+              },
+            );
+          }
         } else {
-          return const Center(child: Text('Cannot load blog'));
+          return SingleChildScrollView(
+              child: Center(child: Text('Cannot load blog')));
         }
+        return SizedBox.shrink();
       },
     );
   }
