@@ -130,13 +130,16 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
       }
     }
     PostMessageReq request = PostMessageReq(
-        conversationId: event.conversationId,
-        content: event.content,
-        blogId: event.blogId,
-        receiverId: event.receiverId,
-        routeId: event.routeId,
-        files: path != null ? File(path) : null);
+      conversationId: event.conversationId,
+      content: event.content,
+      blogId: event.blogId,
+      receiverId: event.receiverId,
+      routeId: event.routeId,
+      files: path != null ? File(path) : null,
+    );
+
     if (event.currentState != null) {
+      // Create the temporary message to show it's being sent
       final tempMessage = MessageEntity(
         conversationId: event.conversationId,
         content: event.content ?? "",
@@ -154,34 +157,42 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
             : [],
         statuses: [],
       );
+
+      // Add the temporary message to the state
       emit(event.currentState!.copyWith(
-          messages: [...event.currentState!.messages, tempMessage],
-          refreshKey: event.currentState!.refreshKey + 1,
-          postStatus: SendMessageStatus.sending));
+        messages: [...event.currentState!.messages, tempMessage],
+        refreshKey: event.currentState!.refreshKey + 1,
+        postStatus: SendMessageStatus.sending,
+      ));
+
+      // Wait for the response from the server
+      var response = await sl<PostMessageUsecase>().call(request);
+      response.fold(
+        (failure) {
+          emit(event.currentState!.copyWith(
+            messages: event.currentState!.messages,
+            refreshKey: event.currentState!.refreshKey + 2,
+            postStatus: SendMessageStatus.error,
+            errorType: SendErrorType.serverError,
+          ));
+        },
+        (data) async {
+          // Remove the last temporary message (it's replaced by the server's response)
+          final updatedMessages =
+              List<MessageEntity>.from(event.currentState!.messages);
+
+          // Add the actual message received from the server
+          updatedMessages.add(data);
+
+          emit(event.currentState!.copyWith(
+            messages: updatedMessages,
+            refreshKey: event.currentState!.refreshKey + 2,
+            postStatus: SendMessageStatus.sent,
+            errorType: SendErrorType.none,
+          ));
+        },
+      );
     }
-    var response = await sl<PostMessageUsecase>().call(request);
-    response.fold((failure) {
-      emit(event.currentState!.copyWith(
-          messages: event.currentState!.messages,
-          refreshKey: event.currentState!.refreshKey + 2,
-          postStatus: SendMessageStatus.error,
-          errorType: SendErrorType.serverError));
-    }, (data) async {
-      final updatedMessages =
-          List<MessageEntity>.from(event.currentState!.messages);
-
-      if (updatedMessages.isNotEmpty) {
-        updatedMessages.removeLast();
-      }
-
-      updatedMessages.add(data);
-
-      emit(event.currentState!.copyWith(
-          messages: updatedMessages,
-          refreshKey: event.currentState!.refreshKey + 2,
-          postStatus: SendMessageStatus.sent,
-          errorType: SendErrorType.none));
-    });
   }
 
   final allowedImageExtensions = [

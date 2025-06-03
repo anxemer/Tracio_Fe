@@ -86,7 +86,8 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return SafeArea(
+        child: Scaffold(
       backgroundColor: Colors.grey.shade100,
       appBar: ChatAppbar(
         conversation: widget.conversation,
@@ -177,7 +178,7 @@ class _ChatPageState extends State<ChatPage> {
           ],
         ),
       ),
-    );
+    ));
   }
 
   void _scrollToBottom() {
