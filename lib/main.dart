@@ -73,7 +73,12 @@ Future<void> main() async {
   }
   // await SignalRService().initConnection();
   await di.initializeDependencies();
-  await di.sl<LocationService>().initialize();
+  try {
+    await di.sl<LocationService>().initialize();
+  } catch (error, stackTrace) {
+    debugPrint('Error initializing location service: $error');
+    debugPrint('Stack trace: $stackTrace');
+  }
 
   await _requestPermissions();
 

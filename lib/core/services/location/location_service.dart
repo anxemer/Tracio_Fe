@@ -1,16 +1,19 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter/material.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 import 'package:location/location.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import '../route/route_processor.dart';
 import '../route/kalman_filter.dart';
 import '../route/stop_detector.dart';
 import '../route/jump_detector.dart';
+import 'location_service_handler.dart';
 
 class TrackingDataModel {
   final LocationData position;
@@ -153,29 +156,100 @@ class LocationService {
 
   Stream<TrackingDataModel> get trackingDataStream => _dataController.stream;
 
-  Future<void> initialize() async {
-    _location = Location();
+  Future<void> _requestPlatformPermissions() async {
+    // Android 13+, you need to allow notification permission to display foreground service notification.
+    // iOS: If you need notification, ask for permission.
+    final NotificationPermission notificationPermission =
+        await FlutterForegroundTask.checkNotificationPermission();
+    if (notificationPermission != NotificationPermission.granted) {
+      await FlutterForegroundTask.requestNotificationPermission();
+    }
 
-    if (await Permission.location.serviceStatus.isEnabled) {
-      bool serviceEnabled;
-      serviceEnabled = await _location.serviceEnabled();
-      if (!serviceEnabled) {
-        serviceEnabled = await _location.requestService();
-        if (!serviceEnabled) {
-          return;
+    if (Platform.isAndroid) {
+      // Android 12+, there are restrictions on starting a foreground service.
+      if (!await FlutterForegroundTask.isIgnoringBatteryOptimizations) {
+        await FlutterForegroundTask.requestIgnoreBatteryOptimization();
+      }
+
+      // For long-term survival services
+      if (!await FlutterForegroundTask.canScheduleExactAlarms) {
+        await FlutterForegroundTask.openAlarmsAndRemindersSettings();
+      }
+    }
+  }
+
+  Future<void> _requestLocationPermission() async {
+    if (!await Geolocator.isLocationServiceEnabled()) {
+      throw Exception('Location services is disabled.');
+    }
+
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+    }
+
+    if (permission == LocationPermission.denied ||
+        permission == LocationPermission.deniedForever) {
+      throw Exception('Location permission has been ${permission.name}.');
+    }
+  }
+
+  Future<void> initialize() async {
+    try {
+      _location = Location();
+
+      // Request platform-specific permissions first
+      await _requestPlatformPermissions();
+      // Then request location permissions
+      await _requestLocationPermission();
+
+      // Configure location settings
+      await _location.changeSettings(
+        interval: 1000, // 1 second
+        distanceFilter: 0, // meters
+      );
+    } catch (e) {
+      debugPrint('Error initializing location service: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> _initializeForegroundTask() async {
+    // Initialize foreground task
+    FlutterForegroundTask.initCommunicationPort();
+    FlutterForegroundTask.addTaskDataCallback((data) {
+      if (data is String) {
+        try {
+          var totalDuration =
+              DateTime.now().difference(_startTime ?? DateTime.now());
+          FlutterForegroundTask.updateService(
+            notificationTitle: 'Recording...',
+            notificationText:
+                'Duration: ${_formatDuration(totalDuration)}  Distance: ${(_totalDistance / 1000).toStringAsFixed(2)} km',
+          );
+          _handlePosition(jsonDecode(data));
+        } catch (e) {
+          debugPrint('Error processing location data: $e');
         }
       }
-      if (await Permission.locationAlways.serviceStatus.isEnabled) {
-        _location
-            .enableBackgroundMode(enable: true)
-            .onError((error, stackTrace) {
-          debugPrint('Error enabling background mode: $error');
-          return false;
-        });
-      }
-    } else {
-      await Permission.location.request();
-    }
+    });
+    FlutterForegroundTask.init(
+      androidNotificationOptions: AndroidNotificationOptions(
+        channelId: 'tracio_location_service',
+        channelName: 'TracioLocation Service',
+        channelDescription: 'This notification is used for location tracking.',
+      ),
+      iosNotificationOptions: const IOSNotificationOptions(
+        showNotification: true,
+        playSound: false,
+      ),
+      foregroundTaskOptions: ForegroundTaskOptions(
+        eventAction: ForegroundTaskEventAction.nothing(),
+        autoRunOnBoot: true,
+        allowWakeLock: true,
+        allowWifiLock: true,
+      ),
+    );
   }
 
   Future<void> startTracking({
@@ -183,19 +257,45 @@ class LocationService {
   }) async {
     if (_positionSubscription != null) return;
 
-    _isDisposed = false; // Reset disposed state when starting new tracking
+    try {
+      _isDisposed = false;
 
-    await initialize();
-    _location.changeSettings(interval: 1000);
-    _location.changeNotificationOptions(
-      channelName: 'Tracio Location Service',
-      title: 'Starting...',
-      subtitle: 'Duration: 00:00:00  Distance: 0.0 km',
-      iconName: 'notification_icon',
-      onTapBringToFront: true,
-    );
+      // Initialize foreground task only when starting tracking
+      await _initializeForegroundTask();
+      await initialize();
 
-    _positionSubscription = _location.onLocationChanged.listen(_handlePosition);
+      // Start foreground service with all available options
+      await FlutterForegroundTask.startService(
+        serviceId: 1,
+        notificationTitle: 'Tracio Location Service',
+        notificationText: 'Tracking your location...',
+        notificationIcon: NotificationIcon(
+          metaDataName: 'notification_icon',
+        ),
+        notificationButtons: [
+          NotificationButton(
+            id: 'pause_button',
+            text: 'Pause',
+          ),
+        ],
+        callback: startLocationService,
+      );
+
+      // Initialize location stream with error handling
+      _positionSubscription = _location.onLocationChanged.listen(
+        _handlePosition,
+        onError: (error) {
+          debugPrint('Error in location stream: $error');
+          // Attempt to restart the stream if it fails
+          if (!_isDisposed && !_isPaused) {
+            startTracking();
+          }
+        },
+      );
+    } catch (e) {
+      debugPrint('Error starting location tracking: $e');
+      throw Exception('Failed to start location tracking service: $e');
+    }
   }
 
   Future<LocationData?> getCurrentLocation() async {
@@ -246,14 +346,12 @@ class LocationService {
     final now = DateTime.now();
     if (_lastStationaryCheck == null) {
       _lastStationaryCheck = now;
-      debugPrint('Stationary Check: First check, returning false');
+
       return false;
     }
 
     final timeSinceLastCheck = now.difference(_lastStationaryCheck!).inSeconds;
     if (timeSinceLastCheck < 1) {
-      debugPrint(
-          'Stationary Check: Too soon since last check, returning $_isStationary');
       return _isStationary;
     }
 
@@ -282,7 +380,6 @@ class LocationService {
     }
 
     _isStationary = _stationaryCount >= _stationaryTimeThreshold;
-    debugPrint('Stationary Check: Final result: $_isStationary');
     return _isStationary;
   }
 
@@ -306,13 +403,8 @@ class LocationService {
       _recentSpeeds.removeAt(0);
     }
 
-    debugPrint(
-        'LocationData Update: Raw speed: ${newPos.speed!.toStringAsFixed(2)} m/s, '
-        'Speed accuracy: ${newPos.speedAccuracy!.toStringAsFixed(2)} m/s');
-
     // Check if stationary before processing
     final isStationary = _checkStationary(newPos, newPos.speed!);
-    debugPrint('LocationData Update: Stationary check result: $isStationary');
 
     if (isStationary) {
       // If stationary, only update time and emit minimal data
@@ -438,15 +530,6 @@ class LocationService {
           _waypoints.isEmpty ? null : List<Waypoint>.unmodifiable(_waypoints),
     );
 
-    _location.changeNotificationOptions(
-      channelName: 'Tracio Location Service',
-      title: 'Recording',
-      subtitle:
-          'Duration: ${_formatDuration(totalDuration)}  Distance: ${(_totalDistance / 1000).toStringAsFixed(2)} km',
-      iconName: 'notification_icon',
-      onTapBringToFront: true,
-    );
-
     _dataController.add(data);
   }
 
@@ -462,6 +545,17 @@ class LocationService {
     // Cancel the stream to stop receiving updates
     _positionSubscription?.cancel();
     _positionSubscription = null;
+
+    // Update notification to show paused state
+    FlutterForegroundTask.updateService(
+      notificationText: 'Paused - Tap to resume',
+      notificationButtons: [
+        NotificationButton(
+          id: 'resume_button',
+          text: 'Resume',
+        ),
+      ],
+    );
   }
 
   Future<void> resume({int distanceFilter = 1}) async {
@@ -477,6 +571,17 @@ class LocationService {
         _lastPosition!.speed! >= _movementThreshold) {
       _lastMovingTime = DateTime.now();
     }
+
+    // Update notification to show tracking state
+    FlutterForegroundTask.updateService(
+      notificationText: 'Tracking...',
+      notificationButtons: [
+        NotificationButton(
+          id: 'pause_button',
+          text: 'Pause',
+        ),
+      ],
+    );
   }
 
   Future<void> stopTracking() async {
@@ -484,6 +589,13 @@ class LocationService {
     _positionSubscription = null;
     _isPaused = false;
     _isDisposed = true;
+
+    // Stop foreground service
+    try {
+      await FlutterForegroundTask.stopService();
+    } catch (e) {
+      debugPrint('Error stopping foreground service: $e');
+    }
   }
 
   void reset() {
@@ -505,45 +617,6 @@ class LocationService {
     _stopDetector.reset();
     _jumpDetector.reset();
   }
-
-  // LocationSettings _setLocationSettings() {
-  //   if (defaultTargetPlatform == TargetPlatform.android) {
-  //     return AndroidSettings(
-  //       accuracy: LocationAccuracy.high,
-  //       distanceFilter: 0,
-  //       forceLocationManager: _forceLocationManager,
-  //       foregroundNotificationConfig: const ForegroundNotificationConfig(
-  //         notificationText:
-  //             "Tracio will continue to receive your location even when you aren't using it",
-  //         notificationTitle: "Running in Background",
-  //         enableWakeLock: true,
-  //       ),
-  //       useMSLAltitude: true,
-  //       intervalDuration: Duration.zero,
-  //     );
-  //   } else if (defaultTargetPlatform == TargetPlatform.iOS ||
-  //       defaultTargetPlatform == TargetPlatform.macOS) {
-  //     return AppleSettings(
-  //       accuracy: LocationAccuracy.high,
-  //       activityType: ActivityType.fitness,
-  //       distanceFilter: 0,
-  //       pauseLocationUpdatesAutomatically: true,
-  //       showBackgroundLocationIndicator: false,
-  //     );
-  //   } else if (kIsWeb) {
-  //     return WebSettings(
-  //       accuracy: LocationAccuracy.high,
-  //       distanceFilter: 0,
-  //       maximumAge: Duration(minutes: 5),
-  //     );
-  //   } else {
-  //     return LocationSettings(
-  //       accuracy: LocationAccuracy.high,
-  //       distanceFilter: 0,
-  //       timeLimit: Duration.zero,
-  //     );
-  //   }
-  // }
 
   void dispose() {
     _isDisposed = true;
