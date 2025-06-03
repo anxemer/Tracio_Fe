@@ -14,7 +14,6 @@ import 'package:Tracio/presentation/blog/widget/shortcut_key.dart';
 import 'package:Tracio/presentation/blog/widget/snapshot_home.dart';
 
 import '../../../common/bloc/generic_data_state.dart';
-import '../bloc/get_blog_state.dart';
 
 class BlogPage extends StatefulWidget {
   const BlogPage({super.key});
@@ -72,6 +71,7 @@ class _BlogPageState extends State<BlogPage> with TickerProviderStateMixin {
       length: 2,
       child: Scaffold(
         body: NestedScrollView(
+          floatHeaderSlivers: true,
           controller: _scrollController,
           headerSliverBuilder: (context, innerBoxIsScrolled) => [
             SliverAppBar(
@@ -110,6 +110,7 @@ class _BlogPageState extends State<BlogPage> with TickerProviderStateMixin {
               flexibleSpace: ShortcutKey(),
             ),
             SliverPersistentHeader(
+              
               pinned: true,
               delegate: _SliverAppBarDelegate(
                 TabBar(
@@ -123,7 +124,7 @@ class _BlogPageState extends State<BlogPage> with TickerProviderStateMixin {
             ),
           ],
           body: TabBarView(
-            physics: NeverScrollableScrollPhysics(),
+            // physics: NeverScrollableScrollPhysics(),
             controller: _tabController,
             children: [
               // Tab 1: Blogs

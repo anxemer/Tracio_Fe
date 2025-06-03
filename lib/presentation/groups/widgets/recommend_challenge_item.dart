@@ -129,7 +129,7 @@ class RecommendChallengeItem extends StatelessWidget {
                 SizedBox.shrink()
               else
                 // Join Button
-                SizedBox(
+                SizedBox( 
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () async {

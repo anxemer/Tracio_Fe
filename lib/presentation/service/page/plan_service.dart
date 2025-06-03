@@ -118,6 +118,10 @@ class _PlanServicePageState extends State<PlanServicePage>
                         scrollDirection: Axis.vertical,
                         itemCount: state.cart.length,
                         itemBuilder: (context, index) {
+                          String shopStatus = state.cart[index].shopStatus!;
+                          String serviceStatus =
+                              state.cart[index].serviceStatus!;
+
                           final service = state.cart[index];
                           final String serviceId = service.itemId.toString();
                           final noteCon = _controllers.putIfAbsent(
@@ -146,7 +150,9 @@ class _PlanServicePageState extends State<PlanServicePage>
                                 child: BookingCard(
                                   isCart: true,
                                   service: BookingCardViewModel(
-                                      status: state.cart[index].serviceStatus,
+                                      status: shopStatus == 'Inactive'
+                                          ? shopStatus
+                                          : serviceStatus,
                                       imageUrl: state.cart[index].mediaUrl,
                                       city: state.cart[index].city,
                                       district: state.cart[index].district,

@@ -110,7 +110,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final _notiService = di.sl<NotificationHubService>();
   late final StreamSubscription<NotificationModel> _messageSubscription;
 
   static final GlobalKey<NavigatorState> navigatorKey =
@@ -118,6 +117,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    final _notiService = di.sl<NotificationHubService>();
 
     Future.microtask(() async {
       await _notiService.connect();

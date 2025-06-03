@@ -1,7 +1,4 @@
-import 'package:Tracio/domain/shop/usecase/cancel_booking.dart';
-import 'package:Tracio/presentation/service/widget/resolve_booking.dart';
 import 'package:Tracio/presentation/shop_owner/bloc/resolve_booking/resolve_booking_cubit.dart';
-import 'package:Tracio/service_locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
