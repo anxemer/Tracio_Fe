@@ -91,6 +91,7 @@ class _ResolveBookingState extends State<ResolveBooking> {
                   context.read<ResolveOverlapServiceCubit>().markAction(
                       widget.booking.bookingDetailId!,
                       OverlapActionStatus.rescheduled);
+                  print("Booking Cubit Hash: ${bookingCubit.hashCode}");
                   bookingCubit
                       .addRescheduleBooking(widget.booking.bookingDetailId!);
                 },

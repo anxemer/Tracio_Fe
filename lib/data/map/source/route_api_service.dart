@@ -23,6 +23,8 @@ import 'package:Tracio/data/map/models/route_detail.dart';
 import 'package:Tracio/domain/map/entities/route_detail.dart';
 import 'package:Tracio/service_locator.dart';
 
+import '../models/route_reply.dart';
+
 abstract class RouteApiService {
   Future<Either> getRoutes(GetRouteReq request);
   Future<Either> postRoute(PostRouteReq request);
@@ -294,13 +296,14 @@ class RouteApiServiceImpl extends RouteApiService {
   }
 
   @override
-  Future<Either<Failure, dynamic>> postReview(PostReviewReq request) async {
+  Future<Either<Failure, RouteReplyModel>> postReview(PostReviewReq request) async {
     try {
-      var formData = request.toFormData();
+      var formData = await request.toFormData();
       var response = await sl<DioClient>().post(
         ApiUrl.urlPostRouteReview.toString(),
         data: formData,
-        options: Options(contentType: "multipart/form-data"),
+        // options: Options(contentType: "multipart/form-data"),
+        isMultipart: true,
       );
 
       if (response.statusCode == 201) {

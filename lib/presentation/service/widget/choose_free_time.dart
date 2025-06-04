@@ -10,10 +10,8 @@ import '../../../common/widget/blog/custom_bottomsheet.dart';
 import '../../../core/configs/theme/app_colors.dart';
 import '../../../core/constants/app_size.dart';
 import '../../../data/shop/models/booking_service_req.dart';
-import '../../../data/shop/models/reschedule_booking_model.dart';
 import '../bloc/bookingservice/booking_service_cubit.dart';
 import '../bloc/bookingservice/booking_service_state.dart';
-import '../bloc/bookingservice/reschedule_booking/cubit/reschedule_booking_cubit.dart';
 import 'custom_time_picker.dart';
 
 class ChooseFreeTime {
@@ -374,6 +372,8 @@ class ChooseFreeTime {
                               ));
 
                               bookingCubit.updateSchedules(_schedules);
+                              print(
+                                  "Booking Cubit Hash: ${bookingCubit.hashCode}");
                               // Thông báo ra bên ngoài nếu có callback
 
                               errorMessageNotifier.value =
@@ -545,16 +545,16 @@ class ChooseFreeTime {
                                   bookingCartCreateDtos: null,
                                   userScheduleCreateDtos: scheduleDtos));
                             } else if (bookingCubit.reschedule.isNotEmpty) {
-                              context
-                                  .read<RescheduleBookingCubit>()
-                                  .rescheduleBooking(RescheduleBookingModel(
-                                      bookingIds: bookingCubit.reschedule,
-                                      userScheduleCreateDtos: scheduleDtos));
+                              bookingCubit.rescheduleService(scheduleDtos);
+                              // context
+                              //     .read<RescheduleBookingCubit>()
+                              //     .rescheduleBooking(RescheduleBookingModel(
+                              //         bookingIds: bookingCubit.reschedule,
+                              //         userScheduleCreateDtos: scheduleDtos));
                             } else {
                               throw Exception("No valid booking data.");
                             }
 
-                            bookingCubit.reschedule.clear();
                             bookingCubit.updateSchedules([]);
                             Navigator.pop(context);
                           } catch (e) {

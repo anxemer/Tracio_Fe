@@ -1,3 +1,4 @@
+import 'package:Tracio/presentation/service/bloc/bookingservice/booking_service_cubit.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -35,6 +36,7 @@ class _ServicePageState extends State<ServicePage> {
               ))),
         BlocProvider(create: (context) => GetNearServiceCubit()..getNearShop()),
         BlocProvider(create: (context) => GetBookingDetailCubit()),
+        BlocProvider(create: (context) => BookingServiceCubit()),
       ],
       child: Scaffold(
         resizeToAvoidBottomInset: false,

@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:Tracio/data/auth/sources/auth_local_source/auth_local_source.dart';
 import 'package:Tracio/service_locator.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:Tracio/common/helper/is_dark_mode.dart';
@@ -12,11 +11,8 @@ import 'package:Tracio/core/constants/app_size.dart';
 import '../../../common/widget/blog/pick_image.dart';
 import '../../../common/widget/picture/circle_picture.dart';
 import '../../../core/configs/theme/app_colors.dart';
-import '../../../core/configs/theme/assets/app_images.dart';
 import '../../../domain/auth/entities/user.dart';
 import '../../../domain/blog/entites/comment_input_data.dart';
-import '../../auth/bloc/authCubit/auth_cubit.dart';
-import '../../auth/bloc/authCubit/auth_state.dart';
 
 class CommentInputWidget extends StatefulWidget {
   const CommentInputWidget({

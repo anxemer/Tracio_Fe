@@ -6,7 +6,7 @@ class PostReplyReq {
   final int reviewId;
   final int? replyId;
   final String? content;
-  final File? file;
+  final List<File>? file;
 
   PostReplyReq({
     required this.reviewId,
@@ -22,19 +22,27 @@ class PostReplyReq {
       if (content != null) 'content': content,
     };
 
-    if (file != null) {
-      final fileName = p.basename(file!.path);
-      final extension =
-          p.extension(fileName).toLowerCase().replaceFirst('.', '');
-      final mimeType = 'image/$extension';
+    if (file != null && file!.isNotEmpty) {
+      List<MultipartFile> files = []; // 👈 Đặt trong block này
 
-      map['files'] = await MultipartFile.fromFile(
-        file!.path,
-        filename: fileName,
-        contentType: DioMediaType.parse(mimeType),
-      );
+      for (var file in file!) {
+        if (await file.exists()) {
+          final image =
+              p.extension(file.path).toLowerCase().replaceFirst('.', '');
+          files.add(await MultipartFile.fromFile(
+            file.path,
+            filename: file.path.split('/').last,
+            contentType: DioMediaType.parse('image/$image'),
+          ));
+        } else {
+          print("⚠️ File không tồn tại: ${file.path}");
+        }
+      }
+
+      if (files.isNotEmpty) {
+        map['files'] = files;
+      }
     }
-
     return FormData.fromMap(map);
   }
 }

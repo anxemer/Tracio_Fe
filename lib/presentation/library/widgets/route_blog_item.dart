@@ -1,3 +1,4 @@
+import 'package:Tracio/presentation/blog/bloc/comment/comment_input_cubit.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -231,8 +232,12 @@ class _RouteBlogItemState extends State<RouteBlogItem> {
                             .getRouteBlogReviews(widget.routeId));
                         AppNavigator.push(
                             context,
-                            RouteBlogReviews(
-                                routeId: widget.routeId, route: widget.route));
+                            BlocProvider(
+                              create: (context) =>
+                                  CommentInputCubit.forRoute(widget.routeId),
+                              child: RouteBlogReviews(
+                                  routeId: widget.routeId, route: widget.route),
+                            ));
                       },
                       icon: Icon(
                         Icons.comment_outlined,
