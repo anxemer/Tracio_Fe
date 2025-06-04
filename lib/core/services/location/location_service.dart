@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:Tracio/core/services/notifications/i_notification_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter/material.dart';
@@ -198,11 +199,20 @@ class LocationService {
     try {
       _location = Location();
 
-      // Request platform-specific permissions first
-      await _requestPlatformPermissions();
+      // Enable location service first
+      bool serviceEnabled = await _location.serviceEnabled();
+      if (!serviceEnabled) {
+        serviceEnabled = await _location.requestService();
+        if (!serviceEnabled) {
+          throw Exception('Location services are disabled.');
+        }
+      }
+
       // Then request location permissions
       await _requestLocationPermission();
 
+      // Initialize foreground task only when starting tracking
+      await _initializeForegroundTask();
       // Configure location settings
       await _location.changeSettings(
         interval: 1000, // 1 second
@@ -217,22 +227,7 @@ class LocationService {
   Future<void> _initializeForegroundTask() async {
     // Initialize foreground task
     FlutterForegroundTask.initCommunicationPort();
-    FlutterForegroundTask.addTaskDataCallback((data) {
-      if (data is String) {
-        try {
-          var totalDuration =
-              DateTime.now().difference(_startTime ?? DateTime.now());
-          FlutterForegroundTask.updateService(
-            notificationTitle: 'Recording...',
-            notificationText:
-                'Duration: ${_formatDuration(totalDuration)}  Distance: ${(_totalDistance / 1000).toStringAsFixed(2)} km',
-          );
-          _handlePosition(jsonDecode(data));
-        } catch (e) {
-          debugPrint('Error processing location data: $e');
-        }
-      }
-    });
+
     FlutterForegroundTask.init(
       androidNotificationOptions: AndroidNotificationOptions(
         channelId: 'tracio_location_service',
@@ -245,7 +240,7 @@ class LocationService {
       ),
       foregroundTaskOptions: ForegroundTaskOptions(
         eventAction: ForegroundTaskEventAction.nothing(),
-        autoRunOnBoot: true,
+        autoRunOnBoot: false,
         allowWakeLock: true,
         allowWifiLock: true,
       ),
@@ -260,13 +255,15 @@ class LocationService {
     try {
       _isDisposed = false;
 
-      // Initialize foreground task only when starting tracking
-      await _initializeForegroundTask();
-      await initialize();
-
+      // Request platform-specific permissions first
+      await _requestPlatformPermissions();
       // Start foreground service with all available options
+
       await FlutterForegroundTask.startService(
-        serviceId: 1,
+        serviceId: 200,
+        serviceTypes: [
+          ForegroundServiceTypes.location,
+        ],
         notificationTitle: 'Tracio Location Service',
         notificationText: 'Tracking your location...',
         notificationIcon: NotificationIcon(
@@ -291,9 +288,14 @@ class LocationService {
             startTracking();
           }
         },
+        cancelOnError: false,
       );
+
+      _startTime = DateTime.now();
     } catch (e) {
       debugPrint('Error starting location tracking: $e');
+      // Clean up if initialization fails
+      await stopTracking();
       throw Exception('Failed to start location tracking service: $e');
     }
   }
@@ -389,6 +391,14 @@ class LocationService {
     String minutes = twoDigits(duration.inMinutes.remainder(60));
     String seconds = twoDigits(duration.inSeconds.remainder(60));
     return '$hours:$minutes:$seconds';
+  }
+
+  void _handleNotification() {
+    INotificationService.sendRideTrackingNotification(
+      "Recording...",
+      "Duration: ${_formatDuration(duration)}  Distance: ${(_totalDistance / 1000).toStringAsFixed(2)} km",
+      _startTime!,
+    );
   }
 
   void _handlePosition(LocationData newPos) {
@@ -531,6 +541,7 @@ class LocationService {
     );
 
     _dataController.add(data);
+    _handleNotification();
   }
 
   void pause() {
