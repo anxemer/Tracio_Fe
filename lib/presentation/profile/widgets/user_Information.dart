@@ -276,7 +276,6 @@ class _UserinformationState extends State<Userinformation> {
             title: 'Day Streak',
             value: widget.user.totalBlog.toString(),
           ),
-          BarChartSample3()
         ],
       ),
     );
