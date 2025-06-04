@@ -320,7 +320,10 @@ class _CyclingPageState extends State<CyclingPage> {
                             ),
                           child: BlocProvider.value(
                             value: context.read<RouteCubit>(),
-                            child: CyclingSnapshotDisplay(route: route),
+                            child: BlocProvider.value(
+                              value: context.read<TrackingBloc>(),
+                              child: CyclingSnapshotDisplay(route: route),
+                            ),
                           ),
                         ),
                       ),

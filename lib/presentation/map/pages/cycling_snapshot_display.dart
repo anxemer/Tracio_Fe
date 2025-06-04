@@ -1,10 +1,12 @@
 import 'dart:io';
 import 'package:Tracio/common/widget/navbar/bottom_nav_bar_manager.dart';
+import 'package:Tracio/data/auth/sources/auth_local_source/auth_local_source.dart';
 import 'package:Tracio/data/map/models/request/post_route_media_req.dart';
 import 'package:Tracio/data/map/models/request/update_route_req.dart';
 import 'package:Tracio/presentation/library/pages/route_detail.dart';
 import 'package:Tracio/presentation/map/bloc/route_cubit.dart';
 import 'package:Tracio/presentation/map/bloc/route_state.dart';
+import 'package:Tracio/presentation/map/bloc/tracking/bloc/tracking_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -79,9 +81,9 @@ class _CyclingSnapshotDisplayState extends State<CyclingSnapshotDisplay> {
           ),
         )
         .toList();
-
+    final rootContext = context;
     showDialog(
-      context: context,
+      context: rootContext,
       barrierDismissible: false,
       builder: (_) => BlocProvider.value(
         value: context.read<MapCubit>(),
@@ -90,27 +92,35 @@ class _CyclingSnapshotDisplayState extends State<CyclingSnapshotDisplay> {
           child: BlocConsumer<RouteCubit, RouteState>(
             listener: (context, state) async {
               if (state is UpdateRouteLoaded) {
-                if (Navigator.canPop(context)) {
-                  Navigator.of(context).pop();
+                if (Navigator.canPop(rootContext)) {
+                  Navigator.of(rootContext).pop();
                 }
+                if (!mounted) return;
                 FocusScope.of(context).unfocus();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.successMessage),
-                    backgroundColor: Colors.green,
+
+                final result = await Navigator.of(rootContext).push(
+                  MaterialPageRoute(
+                    builder: (_) => BlocProvider.value(
+                      value: context.read<MapCubit>(),
+                      child: BlocProvider.value(
+                        value: context.read<RouteCubit>()
+                          ..getRouteDetail(widget.route.routeId),
+                        child: RouteDetailScreen(routeId: widget.route.routeId),
+                      ),
+                    ),
                   ),
                 );
-                if (context.mounted) {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (_) => BlocProvider.value(
-                          value: context.read<MapCubit>(),
-                          child: BlocProvider.value(
-                            value: context.read<RouteCubit>()
-                              ..getRouteDetail(widget.route.routeId),
-                            child: RouteDetailScreen(
-                              routeId: widget.route.routeId,
-                            ),
-                          ))));
+                if (result == true) {
+                  if (Navigator.canPop(rootContext)) {
+                    Navigator.of(rootContext).pushReplacement(
+                      MaterialPageRoute(
+                        builder: (_) => BottomNavBarManager(
+                          selectedIndex: 0,
+                          isNavVisible: true,
+                        ),
+                      ),
+                    );
+                  }
                 }
               } else if (state is UpdateRouteFailure) {
                 Navigator.of(context).pop();
@@ -432,7 +442,7 @@ class _CyclingSnapshotDisplayState extends State<CyclingSnapshotDisplay> {
                   BlocConsumer<RouteCubit, RouteState>(
                     listener: (context, state) {
                       if (state is DeleteRouteSuccess) {
-                        Navigator.of(context).pop();
+                        // Navigator.of(context).pop();
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text("Deleted successfully"),
@@ -441,18 +451,20 @@ class _CyclingSnapshotDisplayState extends State<CyclingSnapshotDisplay> {
                           ),
                         );
                         Future.delayed(
-                          const Duration(seconds: 2),
+                          const Duration(seconds: 1),
                           () {
-                            Navigator.pushReplacement(
+                            Navigator.pushAndRemoveUntil(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => BlocProvider.value(
-                                    value: context.read<MapCubit>(),
-                                    child: const BottomNavBarManager(
-                                      selectedIndex: 2,
-                                      isNavVisible: false,
-                                    )),
+                                builder: (context) => BlocProvider(
+                                  create: (context) => MapCubit(),
+                                  child: const BottomNavBarManager(
+                                    selectedIndex: 2,
+                                    isNavVisible: false,
+                                  ),
+                                ),
                               ),
+                              (route) => false,
                             );
                           },
                         );
