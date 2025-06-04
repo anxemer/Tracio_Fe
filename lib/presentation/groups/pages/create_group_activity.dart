@@ -354,13 +354,13 @@ class _CreateGroupActivityState extends State<CreateGroupActivity>
                                       .submitCreateGroupActivity(
                                           widget.groupId);
 
-                                  if (context
-                                          .read<FormGroupActivityCubit>()
-                                          .state
-                                          .isSuccess ==
-                                      true) {
-                                    Navigator.pop(context, true);
-                                  }
+                                  // if (context
+                                  //         .read<FormGroupActivityCubit>()
+                                  //         .state
+                                  //         .isSuccess ==
+                                  //     true) {
+                                  //   Navigator.pop(context, true);
+                                  // }
 
                                   setState(() {});
                                 } else if (dateTimeError != null) {
