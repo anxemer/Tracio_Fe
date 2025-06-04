@@ -51,7 +51,12 @@ class SearchLocationResult extends StatelessWidget {
         }
         if (state is GetLocationDetailLoaded) {
           Future.microtask(() {
-            if (context.mounted) {
+            if (parentContext != null && 
+                parentContext!.mounted && 
+                !parentContext!.widget.toString().contains('ActivitySearchLocation')) {
+              Navigator.pop(parentContext!, state.placeDetail);
+            } else if (context.mounted && 
+                      !context.widget.toString().contains('ActivitySearchLocation')) {
               Navigator.pop(context, state.placeDetail);
             }
           });

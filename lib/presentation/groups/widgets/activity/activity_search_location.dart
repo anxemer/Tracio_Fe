@@ -2,14 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
-import 'package:Tracio/common/widget/drag_handle/drag_handle.dart';
 import 'package:Tracio/core/constants/app_size.dart';
 import 'package:Tracio/presentation/groups/cubit/form_group_activity_cubit.dart';
 import 'package:Tracio/presentation/groups/cubit/form_group_activity_state.dart';
 import 'package:Tracio/presentation/map/bloc/get_location_cubit.dart';
 import 'package:Tracio/presentation/map/bloc/get_location_state.dart';
 import 'package:Tracio/presentation/map/widgets/search_location_input.dart';
-import 'package:Tracio/presentation/map/widgets/search_location_result.dart';
 
 class ActivitySearchLocation extends StatefulWidget {
   final BuildContext bottomSheetContext;
@@ -41,6 +39,7 @@ class _ActivitySearchLocationState extends State<ActivitySearchLocation> {
                 state.placeDetail.latitude,
               ),
             );
+        Navigator.pop(widget.bottomSheetContext, state.placeDetail);
       } else if (state is GetLocationDetailFailure) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -56,22 +55,6 @@ class _ActivitySearchLocationState extends State<ActivitySearchLocation> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  AppSize.apHorizontalPadding,
-                  AppSize.apVerticalPadding / 2,
-                  AppSize.apHorizontalPadding,
-                  AppSize.apVerticalPadding / 2,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    DragHandle(height: 6, color: Colors.grey.shade400),
-                  ],
-                ),
-              ),
               SearchLocationInput(
                 searchedText: state.meetingAddress,
                 backgroundColor: Colors.white10,
@@ -95,9 +78,58 @@ class _ActivitySearchLocationState extends State<ActivitySearchLocation> {
                   return SizedBox.shrink();
                 }
               }),
-              SearchLocationResult(
-                parentContext: context,
-              ),
+              BlocBuilder<GetLocationCubit, GetLocationState>(
+                builder: (context, state) {
+                  if (state is GetLocationsAutoCompleteLoading) {
+                    return SizedBox(
+                      height: 120,
+                      child: const Center(
+                        child: CircularProgressIndicator(color: Colors.blue),
+                      ),
+                    );
+                  }
+
+                  if (state is GetLocationsAutoCompleteLoaded) {
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: state.places.length,
+                      itemBuilder: (context, index) {
+                        final place = state.places[index];
+                        return ListTile(
+                          leading:
+                              const Icon(Icons.location_on, color: Colors.blue),
+                          title: Text(place.mainText),
+                          subtitle: Text(place.secondaryText),
+                          onTap: () {
+                            context
+                                .read<GetLocationCubit>()
+                                .getLocationDetail(place.placeId);
+                          },
+                        );
+                      },
+                    );
+                  }
+                  if (state is GetLocationsAutoCompleteFailure) {
+                    return Center(
+                      child: Text(
+                        state.errorMessage,
+                        style: TextStyle(color: Colors.red, fontSize: 14.sp),
+                      ),
+                    );
+                  }
+                  if (state is GetLocationDetailFailure) {
+                    return Center(
+                      child: Text(
+                        state.errorMessage,
+                        style: TextStyle(color: Colors.red, fontSize: 14.sp),
+                      ),
+                    );
+                  }
+
+                  return const SizedBox.shrink();
+                },
+              )
             ],
           ),
         );

@@ -11,8 +11,8 @@ class RouteProcessor {
       0.2; // Reduced for sharper turns
   static const double _defaultMaxGapDistance = 50.0; // meters
   static const int _defaultMinPointsForSmoothing = 3;
-  static const int _defaultUpdateInterval = 2; // seconds - faster updates
-  static const int _defaultMinPointsForUpdate = 3; // Reduced for faster updates
+  static const int _defaultUpdateInterval = 1; // seconds - faster updates
+  static const int _defaultMinPointsForUpdate = 2; // Reduced for faster updates
   static const double _defaultDouglasPeuckerEpsilon = 0.00003; // ~3 meters
 
   // Configurable parameters

@@ -160,15 +160,18 @@ class _RouteItemState extends State<RouteItem> {
           context,
           MaterialPageRoute(
             builder: (context) => BlocProvider(
-              create: (context) => MapCubit(),
-              child: widget.routeData.isPlanned
-                  ? RoutePlanDetail(
-                      routeId: widget.routeData.routeId,
-                    )
-                  : RouteDetailScreen(
-                      routeId: widget.routeData.routeId,
-                    ),
-            ),
+                create: (context) => MapCubit(),
+                child: BlocProvider.value(
+                  value: context.read<RouteCubit>()
+                    ..getRouteDetail(widget.routeData.routeId),
+                  child: widget.routeData.isPlanned
+                      ? RoutePlanDetail(
+                          routeId: widget.routeData.routeId,
+                        )
+                      : RouteDetailScreen(
+                          routeId: widget.routeData.routeId,
+                        ),
+                )),
           ),
         );
         break;

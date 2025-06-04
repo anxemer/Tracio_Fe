@@ -179,7 +179,7 @@ class BottomNavBarManagerState extends State<BottomNavBarManager> {
                       ),
                       GButton(
                         icon: Icons.explore_outlined,
-                        text: 'Maps',
+                        text: 'Explore',
                       ),
                       GButton(
                         icon: Icons.directions_bike,

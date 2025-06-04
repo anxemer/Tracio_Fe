@@ -6,6 +6,7 @@ import 'package:Tracio/domain/blog/usecase/edit_blog.dart';
 import 'package:Tracio/domain/challenge/usecase/create_challenge.dart';
 import 'package:Tracio/domain/challenge/usecase/delete_challenge.dart';
 import 'package:Tracio/domain/challenge/usecase/leave_challenge.dart';
+import 'package:Tracio/domain/chat/usecases/post_conversation_usecase.dart';
 import 'package:Tracio/domain/groups/usecases/update_group_route_status_usecase.dart';
 import 'package:Tracio/domain/map/usecase/delete_route_media_usecase.dart';
 import 'package:Tracio/domain/map/usecase/delete_route_usecase.dart';
@@ -387,4 +388,5 @@ Future<void> initializeDependencies() async {
   sl.registerFactory<GetFollowingUseCase>(() => GetFollowingUseCase());
   sl.registerFactory<UpdateAvatarUseCase>(() => UpdateAvatarUseCase());
   sl.registerFactory<DeleteRouteUsecase>(() => DeleteRouteUsecase());
+  sl.registerFactory<PostConversationUsecase>(() => PostConversationUsecase());
 }

@@ -127,9 +127,9 @@ class PositionKalmanFilter {
   final bool adaptiveNoise;
 
   PositionKalmanFilter({
-    double processNoise = 0.1,
-    double measurementNoise = 0.1,
-    this.adaptiveNoise = false,
+    double processNoise = 0.2,
+    double measurementNoise = 0.05,
+    this.adaptiveNoise = true,
   })  : _latFilter = KalmanFilter(
           processNoise: processNoise,
           measurementNoise: measurementNoise,

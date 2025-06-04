@@ -45,6 +45,7 @@ class MapCubit extends Cubit<MapCubitState> {
 
   final List<Map<String, String>> _routeSegments = [];
 
+
   Future<void> initializeMap(MapboxMap mapboxMap,
       {LocationComponentSettings? locationSetting,
       LogoSettings? logoSetting,
@@ -307,6 +308,7 @@ class MapCubit extends Cubit<MapCubitState> {
     required String imageUrl,
     required Position newPosition,
   }) async {
+    if (mapboxMap == null) return;
     if (!_userAnnotations.containsKey(id) || !_managers.containsKey(id)) {
       debugPrint("🔍 No marker found for user $id — creating new one.");
       await addUserMarker(id: id, imageUrl: imageUrl, position: newPosition);
@@ -494,19 +496,29 @@ class MapCubit extends Cubit<MapCubitState> {
       );
       await mapboxMap!.style.addSource(source);
 
-      // Create a new layer for this segment
-      final layer = LineLayer(
-        id: layerId,
-        sourceId: sourceId,
-        lineWidth: lineWidth,
-        lineColor: lineColor.value,
-        lineOpacity: lineOpacity,
-        lineBorderColor: lineBorderColor.value,
-        lineBorderWidth: lineBorderWidth,
-      );
-      await mapboxMap!.style.addLayer(layer);
-      await mapboxMap?.style.moveStyleLayer(
-          layerId, LayerPosition(below: "mapbox-location-indicator-layer"));
+      final layerProperties = {
+        "id": layerId,
+        "type": "line",
+        "source": sourceId,
+        "layout": {"line-join": "bevel"},
+        "paint": {
+          "line-color": lineColor.toHex(),
+          "line-width": lineWidth,
+          "line-opacity": lineOpacity,
+          "line-border-color": lineBorderColor.toHex(),
+          "line-border-width": lineBorderWidth
+        }
+      };
+      final layerPropertiesString = jsonEncode(layerProperties);
+      try {
+        // Add the persistent layer with the string properties
+        await mapboxMap?.style.addPersistentStyleLayer(layerPropertiesString,
+            LayerPosition(below: "mapbox-location-indicator-layer"));
+        debugPrint('✅ Successfully added persistent layer: $layerId');
+      } catch (e) {
+        debugPrint('❌ Error adding persistent layer: $e');
+        debugPrint('Layer properties: $layerPropertiesString');
+      }
 
       // Store the segment IDs for later cleanup if needed
       _routeSegments.add({
@@ -615,25 +627,28 @@ class MapCubit extends Cubit<MapCubitState> {
         await mapboxMap?.style.addSource(source);
         debugPrint('✅ Successfully added source: $sourceId');
 
-        // Add the line layer
-        final layer = LineLayer(
-          id: layerId,
-          sourceId: sourceId,
-          lineColor: lineColor.toInt(),
-          lineWidth: lineWidth,
-          lineOpacity: lineOpacity,
-          lineBorderColor: lineBorderColor.toInt(),
-          lineBorderWidth: lineBorderWidth,
-          lineJoin: LineJoin.ROUND,
-          lineCap: LineCap.ROUND,
-        );
-        await mapboxMap?.style.addLayer(layer);
-        debugPrint('✅ Successfully added layer: $layerId');
-
-        // Move layer below location indicator
-        await mapboxMap?.style.moveStyleLayer(
-            layerId, LayerPosition(below: "mapbox-location-indicator-layer"));
-        debugPrint('✅ Successfully moved layer below location indicator');
+        final layerProperties = {
+          "id": layerId,
+          "type": "line",
+          "source": sourceId,
+          "paint": {
+            "line-color": lineColor.toHex(),
+            "line-width": lineWidth,
+            "line-opacity": lineOpacity,
+            "line-border-color": lineBorderColor.toHex(),
+            "line-border-width": lineBorderWidth
+          }
+        };
+        final layerPropertiesString = jsonEncode(layerProperties);
+        try {
+          // Add the persistent layer with the string properties
+          await mapboxMap?.style.addPersistentStyleLayer(layerPropertiesString,
+              LayerPosition(below: "mapbox-location-indicator-layer"));
+          debugPrint('✅ Successfully added persistent layer: $layerId');
+        } catch (e) {
+          debugPrint('❌ Error adding persistent layer: $e');
+          debugPrint('Layer properties: $layerPropertiesString');
+        }
 
         // Update active route IDs
         _activeRouteSourceId = sourceId;

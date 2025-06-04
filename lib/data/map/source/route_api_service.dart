@@ -156,8 +156,19 @@ class RouteApiServiceImpl extends RouteApiService {
       } else if (response.statusCode == 403) {
         return Left(AuthorizationFailure(
             'You do not have permission to perform this action.', 403));
+      } else if (response.statusCode == 400) {
+        // Handle group ride timing error
+        final message = response.data['message'] as String?;
+        if (message?.contains(
+                "You can only check in within 30 minutes before the group starts") ??
+            false) {
+          return left(ExceptionFailure(
+              "You can only start riding 30 minutes before the group activity begins"));
+        }
+        return left(ExceptionFailure(message ??
+            'Error: ${response.data["message"] ?? "Unknown error"}'));
       } else {
-        return left(ExceptionFailure('Error: ${response.statusCode}'));
+        return left(ExceptionFailure('Error: ${response.data["message"]}'));
       }
     } on DioException catch (e) {
       return left(ExceptionFailure(e.message ?? 'An error occurred'));

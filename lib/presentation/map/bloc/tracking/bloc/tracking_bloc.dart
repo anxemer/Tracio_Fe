@@ -11,7 +11,8 @@ import 'package:Tracio/domain/map/usecase/start_tracking_usecase.dart';
 import 'package:Tracio/service_locator.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
+
+import 'package:location/location.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:battery_plus/battery_plus.dart';
@@ -28,6 +29,9 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
   Timer? _ticker;
   Duration _totalMovingTime = Duration.zero;
   StreamSubscription? _locationStream;
+  int? _groupRouteId;
+
+  int? get groupRouteId => _groupRouteId;
 
   TrackingBloc(this._locationService) : super(TrackingInitial()) {
     on<StartTracking>(_onStartTracking);
@@ -41,6 +45,10 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
     on<RequestStartTracking>(_onRequestStartTracking);
     on<RequestFinishTracking>(_onRequestFinishTracking);
     on<ResetTracking>(_onResetTracking);
+    on<AddGroupRouteId>(_onAddGroupRouteId);
+    on<AddGroupParticipant>(_onAddGroupParticipant);
+    on<RemoveGroupParticipant>(_onRemoveGroupParticipant);
+    on<LeaveGroupRoute>(_onLeaveGroupRoute);
   }
 
   Future<double?> _getBatteryLevel() async {
@@ -80,6 +88,18 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
     // Get initial battery level
     final batteryLevel = await _getBatteryLevel();
 
+    // If we have a groupRouteId, ensure we're connected to the group
+    if (event.groupRouteId != null) {
+      try {
+        final groupRouteHub = sl<GroupRouteHubService>();
+        await groupRouteHub.connect();
+        await groupRouteHub.joinGroupRoute(event.groupRouteId.toString());
+      } catch (e) {
+        debugPrint('Error connecting to group route: $e');
+        // Continue with tracking even if group connection fails
+      }
+    }
+
     emit(TrackingInProgress(
       isPaused: false,
       polyline: [],
@@ -95,6 +115,8 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
       battery: batteryLevel,
       routeId: event.routeId,
       groupRouteId: event.groupRouteId,
+      matchedUsers: [],
+      groupParticipants: [],
     ));
   }
 
@@ -177,7 +199,7 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
     }
 
     final updatedPolyline = List<LatLng>.from(currentState.polyline)
-      ..add(LatLng(data.position.latitude, data.position.longitude));
+      ..add(LatLng(data.position.latitude!, data.position.longitude!));
 
     // Update battery level periodically
     double? batteryLevel = currentState.battery;
@@ -244,12 +266,8 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
   Future<void> _onRequestStartTracking(
       RequestStartTracking event, Emitter<TrackingState> emit) async {
     try {
-      final initialized = await _locationService.initialize();
-      if (!initialized) {
-        emit(const TrackingError(
-            "Location permission not granted or service disabled."));
-        return;
-      }
+      await _locationService.initialize();
+
       final origin = await _locationService.getCurrentLocation();
       if (origin == null) {
         emit(const TrackingError("Failed to get current location."));
@@ -264,20 +282,24 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
         },
       };
 
-      final joinedGroupRoutes = sl<GroupRouteHubService>().joinedGroupRouteIds;
-      if (joinedGroupRoutes.isNotEmpty) {
-        params["groupRouteId"] = joinedGroupRoutes.first;
+      // Add groupRouteId to params if available
+      if (_groupRouteId != null) {
+        params["groupRouteId"] = _groupRouteId;
       }
+
       emit(TrackingStarting());
       final result = await sl<StartTrackingUsecase>().call(params);
 
       result.fold(
         (error) {
-          emit(TrackingError("Failed to start tracking: ${error.message}"));
+          emit(TrackingError(error.message));
         },
         (response) async {
           final routeIdFromApi = response["result"]["routeId"];
-          add(StartTracking(routeId: routeIdFromApi));
+          add(StartTracking(
+            routeId: routeIdFromApi,
+            groupRouteId: _groupRouteId,
+          ));
           await sl<MatchingHubService>().connect();
           debugPrint("✅ Tracking started: $response");
         },
@@ -324,6 +346,9 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
     _ticker?.cancel();
     _ticker = null;
 
+    // Store current groupRouteId
+    final currentGroupRouteId = _groupRouteId;
+
     // Reset all state variables
     _startTime = null;
     _movingStartTime = null;
@@ -333,6 +358,62 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
     // Reset location service
     _locationService.reset();
 
-    emit(TrackingInitial());
+    emit(TrackingInitial(groupRouteId: currentGroupRouteId));
+  }
+
+  void _onAddGroupRouteId(AddGroupRouteId event, Emitter<TrackingState> emit) {
+    _groupRouteId = event.groupRouteId;
+    final currentState = state;
+    if (currentState is TrackingInProgress) {
+      emit(currentState.copyWith(groupRouteId: event.groupRouteId));
+    } else if (currentState is TrackingInitial) {
+      emit(TrackingInitial(groupRouteId: event.groupRouteId));
+    }
+  }
+
+  void _onAddGroupParticipant(
+      AddGroupParticipant event, Emitter<TrackingState> emit) {
+    final currentState = state;
+    if (currentState is TrackingInProgress) {
+      final updatedList = [...?currentState.groupParticipants];
+
+      if (!updatedList.any((p) => p.userId == event.participant.userId)) {
+        updatedList.add(event.participant);
+      }
+
+      emit(currentState.copyWith(groupParticipants: updatedList));
+    }
+  }
+
+  void _onRemoveGroupParticipant(
+      RemoveGroupParticipant event, Emitter<TrackingState> emit) {
+    final currentState = state;
+    if (currentState is TrackingInProgress) {
+      final updatedList = [...?currentState.groupParticipants]
+          .where((p) => p.userId != event.userId)
+          .toList();
+
+      emit(currentState.copyWith(groupParticipants: updatedList));
+    }
+  }
+
+  Future<void> _onLeaveGroupRoute(
+      LeaveGroupRoute event, Emitter<TrackingState> emit) async {
+    final currentState = state;
+    if (currentState is TrackingInProgress &&
+        currentState.groupRouteId != null) {
+      try {
+        final groupRouteHub = sl<GroupRouteHubService>();
+        await groupRouteHub
+            .leaveGroupRoute(currentState.groupRouteId.toString());
+
+        emit(currentState.copyWith(
+          groupRouteId: null,
+          groupParticipants: null,
+        ));
+      } catch (e) {
+        debugPrint('Error leaving group route: $e');
+      }
+    }
   }
 }

@@ -548,46 +548,50 @@ class _CyclingPageState extends State<CyclingPage> {
                     ),
                   ),
                   // Zoom in button
-                  _mapControlButton(
-                    icon: Icons.add,
-                    onPressed: () async {
-                      var camera = await context
-                          .read<MapCubit>()
-                          .mapboxMap
-                          ?.getCameraState();
-                      context.read<MapCubit>().mapboxMap?.flyTo(
-                            mp.CameraOptions(
-                              center: mp.Point(
-                                  coordinates: camera!.center.coordinates),
-                              zoom: camera.zoom + 1,
-                            ),
-                            mp.MapAnimationOptions(duration: 200),
-                          );
-                    },
-                    right: 16,
-                    bottom: _currentFabHeight.h + 30 + 20 + 20,
-                  ),
+                  Builder(builder: (context) {
+                    return _mapControlButton(
+                      icon: Icons.add,
+                      onPressed: () async {
+                        var camera = await context
+                            .read<MapCubit>()
+                            .mapboxMap
+                            ?.getCameraState();
+                        context.read<MapCubit>().mapboxMap?.flyTo(
+                              mp.CameraOptions(
+                                center: mp.Point(
+                                    coordinates: camera!.center.coordinates),
+                                zoom: camera.zoom + 1,
+                              ),
+                              mp.MapAnimationOptions(duration: 200),
+                            );
+                      },
+                      right: 16,
+                      bottom: _currentFabHeight.h + 30 + 20 + 20,
+                    );
+                  }),
                   // Zoom out button
-                  _mapControlButton(
-                    icon: Icons.remove,
-                    onPressed: () async {
-                      var camera = await context
-                          .read<MapCubit>()
-                          .mapboxMap
-                          ?.getCameraState();
-                      context.read<MapCubit>().mapboxMap?.flyTo(
-                            mp.CameraOptions(
-                              center: mp.Point(
-                                  coordinates: camera!.center.coordinates),
-                              zoom: camera.zoom - 1,
-                            ),
-                            mp.MapAnimationOptions(duration: 200),
-                          );
-                    },
-                    right: 16,
-                    bottom: _currentFabHeight.h + 20,
-                  ),
-
+                  Builder(builder: (context) {
+                    return _mapControlButton(
+                      icon: Icons.remove,
+                      onPressed: () async {
+                        var camera = await context
+                            .read<MapCubit>()
+                            .mapboxMap
+                            ?.getCameraState();
+                        context.read<MapCubit>().mapboxMap?.flyTo(
+                              mp.CameraOptions(
+                                center: mp.Point(
+                                    coordinates: camera!.center.coordinates),
+                                zoom: camera.zoom - 1,
+                              ),
+                              mp.MapAnimationOptions(duration: 200),
+                            );
+                      },
+                      right: 16,
+                      bottom: _currentFabHeight.h + 20,
+                    );
+                  }),
+                  // Loading indicator
                   BlocBuilder<TrackingBloc, TrackingState>(
                     builder: (context, state) {
                       final isLoading = state is TrackingStarting ||

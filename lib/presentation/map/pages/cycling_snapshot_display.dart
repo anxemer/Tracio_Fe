@@ -103,11 +103,14 @@ class _CyclingSnapshotDisplayState extends State<CyclingSnapshotDisplay> {
                 if (context.mounted) {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (_) => BlocProvider.value(
-                            value: context.read<MapCubit>(),
+                          value: context.read<MapCubit>(),
+                          child: BlocProvider.value(
+                            value: context.read<RouteCubit>()
+                              ..getRouteDetail(widget.route.routeId),
                             child: RouteDetailScreen(
                               routeId: widget.route.routeId,
                             ),
-                          )));
+                          ))));
                 }
               } else if (state is UpdateRouteFailure) {
                 Navigator.of(context).pop();

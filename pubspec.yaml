@@ -58,6 +58,7 @@ dependencies:
   # Maps
   mapbox_maps_flutter: ^2.6.0
   geolocator: ^13.0.3
+  location: ^8.0.0
   google_polyline_algorithm: ^3.1.0
   map_elevation: ^2.0.0
   latlong2: ^0.8.0
@@ -68,6 +69,7 @@ dependencies:
   flutter_local_notifications: ^18.0.1
   # Background Service
   flutter_background_service: ^5.1.0
+  flutter_foreground_task: ^9.1.0
   #Image saver
   gal: ^2.3.1
   #Handle debounce throttling

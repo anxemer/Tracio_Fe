@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:Tracio/domain/chat/usecases/post_conversation_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:image_picker/image_picker.dart';
@@ -84,11 +85,15 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
     GetMessages event,
     Emitter<ConversationState> emit,
   ) async {
-    ConversationLoaded? currentState;
-    if (state is ConversationLoaded) {
-      currentState = state as ConversationLoaded;
+    ChatLoaded? currentState;
+    if (state is ChatLoaded) {
+      currentState = state as ChatLoaded;
     }
-    emit(ChatLoading());
+
+    // Only emit loading state if it's the first page
+    if (event.pageNumber == 1) {
+      emit(ChatLoading());
+    }
 
     var request = GetMessagesUsecaseParams(
         conversationId: event.conversationId,
@@ -101,14 +106,31 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
       (result) {
         final MessagePaginationEntity messagePaginationEntity = result;
 
-        emit(ChatLoaded(
-          conversation: messagePaginationEntity.conversation,
-          messages: messagePaginationEntity.messages,
-          previousConversations: currentState?.conversations ?? [],
-          pagination: messagePaginationEntity,
-          pageNumber: event.pageNumber,
-          pageSize: event.pageSize,
-        ));
+        if (currentState != null) {
+          // Append new messages to existing ones
+          final updatedMessages = [
+            ...messagePaginationEntity.messages,
+            ...currentState.messages
+          ];
+          emit(ChatLoaded(
+              conversation: messagePaginationEntity.conversation,
+              messages: updatedMessages,
+              previousConversations: currentState.previousConversations,
+              pagination: messagePaginationEntity,
+              pageNumber: event.pageNumber,
+              pageSize: event.pageSize,
+              refreshKey: currentState.refreshKey + 1));
+        } else {
+          // First page load
+          emit(ChatLoaded(
+            conversation: messagePaginationEntity.conversation,
+            messages: messagePaginationEntity.messages,
+            previousConversations: [],
+            pagination: messagePaginationEntity,
+            pageNumber: event.pageNumber,
+            pageSize: event.pageSize,
+          ));
+        }
       },
     );
   }
@@ -130,13 +152,16 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
       }
     }
     PostMessageReq request = PostMessageReq(
-        conversationId: event.conversationId,
-        content: event.content,
-        blogId: event.blogId,
-        receiverId: event.receiverId,
-        routeId: event.routeId,
-        files: path != null ? File(path) : null);
+      conversationId: event.conversationId,
+      content: event.content,
+      blogId: event.blogId,
+      receiverId: event.receiverId,
+      routeId: event.routeId,
+      files: path != null ? File(path) : null,
+    );
+
     if (event.currentState != null) {
+      // Create the temporary message to show it's being sent
       final tempMessage = MessageEntity(
         conversationId: event.conversationId,
         content: event.content ?? "",
@@ -154,34 +179,42 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
             : [],
         statuses: [],
       );
+
+      // Add the temporary message to the state
       emit(event.currentState!.copyWith(
-          messages: [...event.currentState!.messages, tempMessage],
-          refreshKey: event.currentState!.refreshKey + 1,
-          postStatus: SendMessageStatus.sending));
+        messages: [...event.currentState!.messages, tempMessage],
+        refreshKey: event.currentState!.refreshKey + 1,
+        postStatus: SendMessageStatus.sending,
+      ));
+
+      // Wait for the response from the server
+      var response = await sl<PostMessageUsecase>().call(request);
+      response.fold(
+        (failure) {
+          emit(event.currentState!.copyWith(
+            messages: event.currentState!.messages,
+            refreshKey: event.currentState!.refreshKey + 2,
+            postStatus: SendMessageStatus.error,
+            errorType: SendErrorType.serverError,
+          ));
+        },
+        (data) async {
+          // Remove the last temporary message (it's replaced by the server's response)
+          final updatedMessages =
+              List<MessageEntity>.from(event.currentState!.messages);
+
+          // Add the actual message received from the server
+          updatedMessages.add(data);
+
+          emit(event.currentState!.copyWith(
+            messages: updatedMessages,
+            refreshKey: event.currentState!.refreshKey + 2,
+            postStatus: SendMessageStatus.sent,
+            errorType: SendErrorType.none,
+          ));
+        },
+      );
     }
-    var response = await sl<PostMessageUsecase>().call(request);
-    response.fold((failure) {
-      emit(event.currentState!.copyWith(
-          messages: event.currentState!.messages,
-          refreshKey: event.currentState!.refreshKey + 2,
-          postStatus: SendMessageStatus.error,
-          errorType: SendErrorType.serverError));
-    }, (data) async {
-      final updatedMessages =
-          List<MessageEntity>.from(event.currentState!.messages);
-
-      if (updatedMessages.isNotEmpty) {
-        updatedMessages.removeLast();
-      }
-
-      updatedMessages.add(data);
-
-      emit(event.currentState!.copyWith(
-          messages: updatedMessages,
-          refreshKey: event.currentState!.refreshKey + 2,
-          postStatus: SendMessageStatus.sent,
-          errorType: SendErrorType.none));
-    });
   }
 
   final allowedImageExtensions = [
@@ -263,7 +296,40 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
   Future<void> _onCreateConversation(
     CreateConversation event,
     Emitter<ConversationState> emit,
-  ) async {}
+  ) async {
+    emit(ChatLoading());
+
+    var response = await sl<PostConversationUsecase>().call(event.userId);
+
+    response.fold(
+      (failure) => {
+        if (failure.message == "You already have a conversation")
+          {add(GetConversations())},
+      },
+      (result) {
+        final MessagePaginationEntity messagePaginationEntity =
+            MessagePaginationEntity(
+          conversation: result,
+          messages: [],
+          totalCount: 0,
+          pageNumber: 1,
+          pageSize: 20,
+          totalPage: 0,
+          hasPreviousPage: false,
+          hasNextPage: false,
+        );
+        emit(ChatLoaded(
+          conversation: result,
+          messages: [],
+          previousConversations: [],
+          pagination: messagePaginationEntity,
+          pageNumber: 1,
+          pageSize: 20,
+        ));
+        add(GetConversations());
+      },
+    );
+  }
 
   Future<void> _onGetConversationByGroup(
     GetConversationByGroup event,

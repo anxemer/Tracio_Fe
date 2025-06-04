@@ -43,7 +43,7 @@ class ChatRepositoryImpl extends ChatRepository {
   }
 
   @override
-  Future<Either<Failure, dynamic>> postConversation(int userId) async {
+  Future<Either<Failure, ConversationEntity>> postConversation(int userId) async {
     var returnedData = await sl<ChatApiService>().postConversation(userId);
     return returnedData.fold((error) {
       return left(error);
