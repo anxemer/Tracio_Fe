@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:Tracio/domain/chat/usecases/post_conversation_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:image_picker/image_picker.dart';
@@ -274,7 +275,40 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
   Future<void> _onCreateConversation(
     CreateConversation event,
     Emitter<ConversationState> emit,
-  ) async {}
+  ) async {
+    emit(ChatLoading());
+
+    var response = await sl<PostConversationUsecase>().call(event.userId);
+
+    response.fold(
+      (failure) => {
+        if (failure.message == "You already have a conversation")
+          {add(GetConversations())},
+      },
+      (result) {
+        final MessagePaginationEntity messagePaginationEntity =
+            MessagePaginationEntity(
+          conversation: result,
+          messages: [],
+          totalCount: 0,
+          pageNumber: 1,
+          pageSize: 20,
+          totalPage: 0,
+          hasPreviousPage: false,
+          hasNextPage: false,
+        );
+        emit(ChatLoaded(
+          conversation: result,
+          messages: [],
+          previousConversations: [],
+          pagination: messagePaginationEntity,
+          pageNumber: 1,
+          pageSize: 20,
+        ));
+        add(GetConversations());
+      },
+    );
+  }
 
   Future<void> _onGetConversationByGroup(
     GetConversationByGroup event,

@@ -115,13 +115,17 @@ class ChatApiServiceImpl extends ChatApiService {
   }
 
   @override
-  Future<Either<Failure, dynamic>> postConversation(int userId) async {
+  Future<Either<Failure, ConversationModel?>> postConversation(
+      int userId) async {
     try {
       var response = await sl<DioClient>()
           .post(ApiUrl.urlPostConversation.toString(), data: userId);
 
       if (response.statusCode == 201) {
-        return right(null);
+        return right(ConversationModel.fromMap(response.data['result']));
+      } else if (response.statusCode == 400 &&
+          response.data["message"] == "You already have a conversation") {
+        return left(ExceptionFailure("You already have a conversation"));
       } else {
         return left(ExceptionFailure('Error: ${response.statusCode}'));
       }

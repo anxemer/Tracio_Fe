@@ -10,7 +10,7 @@ abstract class ChatRepository {
   Future<Either<Failure, MessagePaginationEntity>> getMessages(
       Map<String, String> params);
   Future<Either<Failure, dynamic>> getConversationByGroupId(int groupId);
-  Future<Either<Failure, dynamic>> postConversation(int userId);
+  Future<Either<Failure, ConversationEntity>> postConversation(int userId);
   Future<Either<Failure, MessageEntity>> postMessage(PostMessageReq request);
   Future<Either<Failure, MessagePaginationEntity>> getShopMessages(
       int entityId, Map<String, String> params);
