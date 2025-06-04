@@ -18,6 +18,9 @@ import 'package:Tracio/data/map/models/request/post_route_req.dart';
 import 'package:Tracio/domain/map/entities/mapbox_direction_rep.dart';
 import 'package:Tracio/domain/map/entities/route_detail.dart';
 
+import '../../../data/map/models/route_reply.dart';
+import '../entities/route_review.dart';
+
 abstract class RouteRepository {
   Future<Either<Failure, GetRouteRepModel>> getRoutes(GetRouteReq request);
   Future<Either<Failure, MapboxDirectionResponseEntity>>
@@ -35,8 +38,8 @@ abstract class RouteRepository {
       Map<String, dynamic> params);
   Future<Either<Failure, dynamic>> deleteReview(int reviewId);
   Future<Either<Failure, dynamic>> deleteReply(int replyId);
-  Future<Either<Failure, RouteReplyEntity>> postReview(PostReviewReq request);
-  Future<Either<Failure, dynamic>> postReply(PostReplyReq request);
+  Future<Either<Failure, RouteReviewEntity>> postReview(PostReviewReq request);
+  Future<Either<Failure, RouteReplyEntity>> postReply(PostReplyReq request);
   Future<Either<Failure, RouteEntity>> getOnGoingInRoute();
   Future<Either<Failure, RouteEntity>> editRouteTracking(
       UpdateRouteReq request);

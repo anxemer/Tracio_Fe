@@ -1,4 +1,7 @@
 import 'package:Tracio/common/helper/is_dark_mode.dart';
+import 'package:Tracio/domain/map/usecase/reaction/delete_reaction_route_usecase.dart';
+import 'package:Tracio/domain/map/usecase/reaction/post_reaction_review_usecase.dart';
+import 'package:Tracio/service_locator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -51,6 +54,8 @@ class _RouteBlogReviewItemState extends State<RouteBlogReviewItem> {
     return !isReaction;
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -99,13 +104,17 @@ class _RouteBlogReviewItemState extends State<RouteBlogReviewItem> {
                   comment,
                   isReacted: isReacted,
                   likeCount: likeCount,
-                  onReact: () {
+                  onReact: () async {
                     final isNowReacted = toogleIsReaction(isReacted);
                     setState(() {
                       widget.review.isReacted = isNowReacted;
                       widget.review.likeCount += isNowReacted ? 1 : -1;
                     });
-
+                    isNowReacted
+                        ? await sl<PostReactionReviewUsecase>()
+                            .call(widget.review.reviewId)
+                        : await sl<DeleteReactionRouteUsecase>()
+                            .call(widget.review.reviewId);
                     // context.read<ReactionBloc>().add(
                     //       isNowReacted
                     //           ? ReactComment(commentId: widget.comment.commentId)

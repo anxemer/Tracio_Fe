@@ -17,9 +17,9 @@ class PostReplyReq {
 
   Future<FormData> toFormData() async {
     final Map<String, dynamic> map = {
-      'reviewId': reviewId,
-      if (replyId != null) 'replyId': replyId,
-      if (content != null) 'content': content,
+      if (replyId != null) 'ReplyId': replyId,
+      'ReviewId': reviewId,
+      if (content != null) 'Content': content,
     };
 
     if (file != null && file!.isNotEmpty) {
@@ -40,7 +40,7 @@ class PostReplyReq {
       }
 
       if (files.isNotEmpty) {
-        map['files'] = files;
+        map['Files'] = files;
       }
     }
     return FormData.fromMap(map);

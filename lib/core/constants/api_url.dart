@@ -320,7 +320,8 @@ class ApiUrl {
         .replace(queryParameters: params);
   }
 
-  static Uri urlGetRouteReviewReplies = Uri.parse("$portRoute/api/replies");
+  static Uri urlGetRouteReviewReplies =
+      Uri.parse("$portRoute/api/route-replies");
   static Uri urlPostRouteReview = Uri.parse("$portRoute/api/route-reviews");
   static Uri urlPostRouteReply = Uri.parse("$portRoute/api/route-replies");
 

@@ -50,7 +50,7 @@ class CommentInputData {
   factory CommentInputData.forReplyToReview(RouteReviewEntity review) {
     return CommentInputData(
       mode: CommentMode.replyComment,
-      commentId: review.commentId,
+      commentId: review.reviewId,
       hintText: 'Reply to ${review.userName}',
       replyToUserName: review.userName,
     );

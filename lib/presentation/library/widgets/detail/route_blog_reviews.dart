@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:Tracio/data/map/models/request/post_reply_req.dart';
 import 'package:Tracio/data/map/models/request/post_review_req.dart';
+import 'package:Tracio/domain/map/entities/route_reply.dart';
 import 'package:Tracio/domain/map/usecase/route_blog/post_reply_usecase.dart';
 import 'package:Tracio/domain/map/usecase/route_blog/post_review_usecase.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -36,7 +37,8 @@ class RouteBlogReviews extends StatefulWidget {
 
 class _RouteBlogReviewsState extends State<RouteBlogReviews> {
   late CommentInputCubit _commentInputCubit;
-
+  List<RouteReviewEntity> reviews = [];
+  List<RouteReplyEntity> replis = [];
   final TextEditingController textEditingController = TextEditingController();
 
   Future<void> _onRefresh() async {
@@ -47,7 +49,7 @@ class _RouteBlogReviewsState extends State<RouteBlogReviews> {
   @override
   void initState() {
     _onRefresh();
-    //  _commentInputCubit = context.read<CommentInputCubit>();
+    _commentInputCubit = context.read<CommentInputCubit>();
 
     super.initState();
   }
@@ -65,10 +67,13 @@ class _RouteBlogReviewsState extends State<RouteBlogReviews> {
         result.fold(
           (error) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Comment Fail')),
+              SnackBar(content: Text('Review Fail')),
             );
           },
           (success) {
+            setState(() {
+              reviews.add(success);
+            });
             FocusScope.of(context).unfocus();
           },
         );
@@ -77,7 +82,7 @@ class _RouteBlogReviewsState extends State<RouteBlogReviews> {
       case CommentMode.replyComment:
         if (inputData.commentId != null) {
           var result = await sl<PostReplyUsecase>().call(PostReplyReq(
-              reviewId: widget.routeId, content: content, file: files));
+              reviewId: inputData.commentId!, content: content, file: files));
 
           result.fold(
             (error) {
@@ -86,26 +91,24 @@ class _RouteBlogReviewsState extends State<RouteBlogReviews> {
               );
             },
             (success) {
-              // final newReply = ReplyCommentEntity(
-              //     userAvatar: success.userAvatar,
-              //     replyId: success.replyId,
-              //     cyclistId: success.cyclistId,
-              //     commentId: success.commentId,
-              //     cyclistName: success.cyclistName,
-              //     reReplyCyclistName: success.reReplyCyclistName,
-              //     content: success.content,
-              //     isReacted: success.isReacted,
-              //     mediaFiles: success.mediaFiles,
-              //     createdAt: success.createdAt,
-              //     tagUserNames: [],
-              //     mediaUrls: [],
-              //     likeCount: success.likeCount,
-              //     replyCount: 0);
-              // context
-              //     .read<GetCommentCubit>()
-              //     .addReplyComment(inputData.commentId!, newReply);
-              // context.read<GetBlogCubit>().incrementCommentCount(widget.blogId);
-              _commentInputCubit.updateToDefault(widget.routeId);
+              final newReply = RouteReplyEntity(
+                cyclistAvatar: success.userAvatar,
+                replyId: success.replyId,
+                cyclistId: success.cyclistId,
+                reviewId: success.commentId,
+                cyclistName: success.cyclistName,
+                reReplyCyclistName: success.reReplyCyclistName,
+                content: success.content,
+                isReacted: success.isReacted,
+                createdAt: success.createdAt,
+                tagUserNames: [],
+                mediaUrls: success.mediaUrls,
+                likeCount: success.likeCount,
+              );
+              context
+                  .read<RouteCubit>()
+                  .addReplyReview(inputData.commentId!, newReply);
+              _commentInputCubit.updateToDefaultRoute(widget.routeId);
               FocusScope.of(context).unfocus();
             },
           );
@@ -115,41 +118,40 @@ class _RouteBlogReviewsState extends State<RouteBlogReviews> {
       case CommentMode.replyToReply:
         if (inputData.commentId != null) {
           var result = await sl<PostReplyUsecase>().call(PostReplyReq(
-              reviewId: widget.routeId,
+              reviewId: inputData.commentId!,
               content: content,
               file: files,
               replyId: inputData.replyId));
 
-          // result.fold(
-          //   (error) {
-          //     ScaffoldMessenger.of(context).showSnackBar(
-          //       SnackBar(content: Text('Reply comment fail')),
-          //     );
-          //   },
-          //   (success) {
-          //     // final newReply = ReplyCommentEntity(
-          //     //     userAvatar: success.userAvatar,
-          //     //     replyId: success.replyId,
-          //     //     cyclistId: success.cyclistId,
-          //     //     commentId: success.commentId,
-          //     //     cyclistName: success.cyclistName,
-          //     //     reReplyCyclistName: success.reReplyCyclistName,
-          //     //     content: success.content,
-          //     //     isReacted: success.isReacted,
-          //     //     mediaFiles: success.mediaFiles,
-          //     //     createdAt: success.createdAt,
-          //     //     tagUserNames: [],
-          //     //     mediaUrls: [],
-          //     //     likeCount: success.likeCount,
-          //     //     replyCount: 0);
-          //     // context
-          //     //     .read<GetCommentCubit>()
-          //     //     .addReplyComment(inputData.commentId!, newReply);
-          //     // context.read<GetBlogCubit>().incrementCommentCount(widget.blogId);
-          //     _commentInputCubit.updateToDefault(widget.routeId);
-          //     FocusScope.of(context).unfocus();
-          //   },
-          // );
+          result.fold(
+            (error) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Reply comment fail')),
+              );
+            },
+            (success) {
+              final newReply = RouteReplyEntity(
+                cyclistAvatar: success.userAvatar,
+                replyId: success.replyId,
+                cyclistId: success.cyclistId,
+                reviewId: success.commentId,
+                cyclistName: success.cyclistName,
+                reReplyCyclistName: success.reReplyCyclistName,
+                content: success.content,
+                isReacted: success.isReacted,
+                createdAt: success.createdAt,
+                tagUserNames: [],
+                mediaUrls: [],
+                likeCount: success.likeCount,
+              );
+              context
+                  .read<RouteCubit>()
+                  .addReplyReview(inputData.commentId!, newReply);
+              // context.read<GetBlogCubit>().incrementCommentCount(widget.blogId);
+              _commentInputCubit.updateToDefaultRoute(widget.routeId);
+              FocusScope.of(context).unfocus();
+            },
+          );
         }
         break;
     }
@@ -158,6 +160,7 @@ class _RouteBlogReviewsState extends State<RouteBlogReviews> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: Text("Reviews"),
         actions: [
@@ -192,7 +195,7 @@ class _RouteBlogReviewsState extends State<RouteBlogReviews> {
               }
 
               if (state is GetRouteBlogLoaded && state.reviews.isNotEmpty) {
-                List<RouteReviewEntity> reviews = state.reviews;
+                reviews = state.reviews;
 
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -265,6 +268,7 @@ class _RouteBlogReviewsState extends State<RouteBlogReviews> {
                           itemBuilder: (context, index) {
                             return RouteBlogReviewItem(
                               onCmt: () async {
+                                print(state.reviews[index].reviewId);
                                 _commentInputCubit
                                     .updateToReplyReview(state.reviews[index]);
                                 FocusScope.of(context)
@@ -292,7 +296,7 @@ class _RouteBlogReviewsState extends State<RouteBlogReviews> {
                     ),
                     Padding(
                       padding: const EdgeInsets.only(
-                          bottom: AppSize.apHorizontalPadding / 2,
+                          bottom: AppSize.apHorizontalPadding,
                           left: 10,
                           right: 10),
                       child: BlocBuilder<CommentInputCubit, CommentInputState>(
