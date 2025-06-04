@@ -41,18 +41,18 @@ class _RouteBlogItemState extends State<RouteBlogItem> {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        AppNavigator.push(
-            context,
-            BlocProvider(
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => BlocProvider(
               create: (context) => MapCubit(),
               child: BlocProvider.value(
-                value: context.read<RouteCubit>()
-                  ..getRouteDetail(widget.routeId),
-                child: RouteDetailScreen(
-                  routeId: widget.routeId,
-                ),
+                value: context.read<RouteCubit>(),
+                child: RouteDetailScreen(routeId: widget.routeId),
               ),
-            ));
+            ),
+          ),
+        );
       },
       child: Ink(
         padding: EdgeInsets.symmetric(vertical: AppSize.apVerticalPadding),

@@ -5,6 +5,8 @@ import 'package:Tracio/common/widget/button/loading.dart';
 import 'package:Tracio/core/configs/theme/app_colors.dart';
 import 'package:Tracio/data/user/models/get_follow_req.dart';
 import 'package:Tracio/domain/challenge/entities/challenge_reward.dart';
+import 'package:Tracio/presentation/chat/bloc/bloc/conversation_bloc.dart';
+import 'package:Tracio/presentation/chat/pages/conversation.dart';
 import 'package:Tracio/presentation/groups/widgets/challenge_progress.dart';
 import 'package:Tracio/presentation/map/widgets/challenge_reward.dart';
 import 'package:Tracio/presentation/profile/bloc/follow_cubit/follow_cubit.dart';
@@ -115,7 +117,16 @@ class _UserinformationState extends State<Userinformation> {
                   height: 30.h,
                 ),
                 IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      AppNavigator.push(
+                          context,
+                          BlocProvider.value(
+                            value: context.read<ConversationBloc>()
+                              ..add(CreateConversation(
+                                  userId: widget.user.userId!)),
+                            child: ConversationScreen(),
+                          ));
+                    },
                     icon: Icon(
                       Icons.message_rounded,
                       color: AppColors.primary,
@@ -172,7 +183,8 @@ class _UserinformationState extends State<Userinformation> {
                                 userId: widget.user.userId!,
                                 pageNumber: 1,
                                 pageSize: 10)),
-                          child: FollowersScreen(userId: widget.user.userId!,isFollower: true),
+                          child: FollowersScreen(
+                              userId: widget.user.userId!, isFollower: true),
                         ));
                   },
                   child: Text.rich(TextSpan(
@@ -199,7 +211,8 @@ class _UserinformationState extends State<Userinformation> {
                                 userId: widget.user.userId!,
                                 pageNumber: 1,
                                 pageSize: 10)),
-                          child: FollowersScreen(userId: widget.user.userId!,isFollower: false),
+                          child: FollowersScreen(
+                              userId: widget.user.userId!, isFollower: false),
                         ));
                   },
                   child: Text.rich(TextSpan(
