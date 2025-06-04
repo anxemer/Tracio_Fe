@@ -20,6 +20,8 @@ import 'package:Tracio/domain/map/entities/route_detail.dart';
 import 'package:Tracio/domain/map/repositories/route_repository.dart';
 import 'package:Tracio/service_locator.dart';
 
+import '../models/route_reply.dart';
+
 class RouteRepositoryImpl extends RouteRepository {
   @override
   Future<Either<Failure, MapboxDirectionResponseEntity>>
@@ -142,7 +144,7 @@ class RouteRepositoryImpl extends RouteRepository {
   }
 
   @override
-  Future<Either<Failure, dynamic>> postReview(PostReviewReq request) async {
+  Future<Either<Failure, RouteReplyModel>> postReview(PostReviewReq request) async {
     var returnedData = await sl<RouteApiService>().postReview(request);
     return returnedData.fold((error) {
       return left(error);

@@ -39,49 +39,49 @@ enum NotificationType {
 
 NotificationType getNotificationType(int entityType) {
   switch (entityType) {
-    case 1:
+    case 0:
       return NotificationType.commentBlog;
-    case 2:
+    case 1:
       return NotificationType.blogReplyReReply;
-    case 3:
+    case 2:
       return NotificationType.blogReplyComment;
-    case 4:
+    case 3:
       return NotificationType.reactionComment;
-    case 5:
+    case 4:
       return NotificationType.reactionBlog;
-    case 6:
+    case 5:
       return NotificationType.blogReactionReply;
-    case 7:
+    case 6:
       return NotificationType.reviewService;
-    case 8:
+    case 7:
       return NotificationType.replyReview;
-    case 9:
+    case 8:
       return NotificationType.bookingService;
-    case 10:
+    case 9:
       return NotificationType.reviewRoute;
-    case 11:
+    case 10:
       return NotificationType.routeReactionRoute;
-    case 12:
+    case 11:
       return NotificationType.routeReplyReview;
-    case 13:
+    case 12:
       return NotificationType.routeReplyReReply;
-    case 14:
+    case 13:
       return NotificationType.reactionReview;
-    case 15:
+    case 14:
       return NotificationType.routeReactionReply;
-    case 16:
+    case 15:
       return NotificationType.message;
-    case 17:
+    case 16:
       return NotificationType.subscription;
-    case 18:
+    case 17:
       return NotificationType.route;
-    case 19:
+    case 18:
       return NotificationType.user;
-    case 20:
+    case 19:
       return NotificationType.challenge;
-    case 21:
+    case 20:
       return NotificationType.groupInvitation;
-    case 22:
+    case 21:
       return NotificationType.group;
     default:
       return NotificationType.message;

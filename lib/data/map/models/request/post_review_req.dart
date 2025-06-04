@@ -7,7 +7,7 @@ class PostReviewReq {
   final List<int>? tagUserIds;
   final List<String>? tagUserNames;
   final String? content;
-  final File? file;
+  final List<File>? file;
 
   const PostReviewReq({
     required this.routeId,
@@ -19,23 +19,32 @@ class PostReviewReq {
 
   Future<FormData> toFormData() async {
     final Map<String, dynamic> map = {
-      'routeId': routeId,
-      if (content != null) 'content': content,
-      if (tagUserIds != null) 'tagUserIds': tagUserIds,
-      if (tagUserNames != null) 'tagUserNames': tagUserNames,
+      'RouteId': routeId,
+      if (content != null) 'Content': content,
+      if (tagUserIds != null) 'TagUserIds': tagUserIds,
+      if (tagUserNames != null) 'TagUserNames': tagUserNames,
     };
 
-    if (file != null) {
-      final fileName = p.basename(file!.path);
-      final extension =
-          p.extension(fileName).toLowerCase().replaceFirst('.', '');
-      final mimeType = 'image/$extension';
+    if (file != null && file!.isNotEmpty) {
+      List<MultipartFile> files = []; // 👈 Đặt trong block này
 
-      map['files'] = await MultipartFile.fromFile(
-        file!.path,
-        filename: fileName,
-        contentType: DioMediaType.parse(mimeType),
-      );
+      for (var file in file!) {
+        if (await file.exists()) {
+          final image =
+              p.extension(file.path).toLowerCase().replaceFirst('.', '');
+          files.add(await MultipartFile.fromFile(
+            file.path,
+            filename: file.path.split('/').last,
+            contentType: DioMediaType.parse('image/$image'),
+          ));
+        } else {
+          print("⚠️ File không tồn tại: ${file.path}");
+        }
+      }
+
+      if (files.isNotEmpty) {
+        map['Files'] = files;
+      }
     }
 
     return FormData.fromMap(map);

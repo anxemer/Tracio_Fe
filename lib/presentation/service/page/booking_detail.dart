@@ -23,6 +23,7 @@ import '../../../common/widget/picture/picture.dart';
 import '../../../core/configs/theme/app_colors.dart';
 import '../../../core/configs/theme/assets/app_images.dart';
 import '../../../domain/shop/entities/response/booking_detail_entity.dart';
+import '../../../main.dart';
 import '../widget/add_schedule.dart';
 import '../widget/booking_status_tab.dart';
 import '../widget/choose_free_time.dart';
@@ -38,7 +39,19 @@ class BookingDetailScreen extends StatefulWidget {
   State<BookingDetailScreen> createState() => _BookingDetailScreenState();
 }
 
-class _BookingDetailScreenState extends State<BookingDetailScreen> {
+class _BookingDetailScreenState extends State<BookingDetailScreen>
+    with RouteAware {
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context)!);
+  }
+
+  @override
+  void didPopNext() {
+    context.read<GetBookingDetailCubit>().getBookingDetail(widget.bookingId);
+  }
+
   @override
   void initState() {
     context.read<GetBookingDetailCubit>().getBookingDetail(widget.bookingId);
@@ -49,249 +62,243 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
   @override
   Widget build(BuildContext context) {
     var isDark = context.isDarkMode;
-    return BlocProvider(
-      create: (context) =>
-          GetBookingDetailCubit()..getBookingDetail(widget.bookingId),
-      child: Scaffold(
-        appBar: BasicAppbar(
-          title: Text(
-            'Booking Detail',
-            style: TextStyle(
-                color: Colors.white,
-                fontSize: AppSize.textHeading,
-                fontWeight: FontWeight.bold),
-          ),
+    return Scaffold(
+      appBar: BasicAppbar(
+        title: Text(
+          'Booking Detail',
+          style: TextStyle(
+              color: Colors.white,
+              fontSize: AppSize.textHeading,
+              fontWeight: FontWeight.bold),
         ),
-        body: BlocBuilder<GetBookingDetailCubit, GetBookingDetailState>(
-          builder: (context, state) {
-            if (state is GetBookingDetailLoaded) {
-              return Stack(children: [
-                SingleChildScrollView(
-                  padding: EdgeInsets.only(
-                      bottom: 40 + (AppSize.apVerticalPadding * 2)),
-                  physics: BouncingScrollPhysics(),
-                  scrollDirection: Axis.vertical,
-                  child: Column(
-                    children: [
-                      Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: AppSize.apHorizontalPadding * .4,
-                              vertical: AppSize.apVerticalPadding * .2),
-                          child: Card(
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: AppSize.apHorizontalPadding * .4,
-                                  vertical: AppSize.apVerticalPadding * .4),
-                              child: Column(
-                                children: [
-                                  Row(
+      ),
+      body: BlocBuilder<GetBookingDetailCubit, GetBookingDetailState>(
+        builder: (context, state) {
+          if (state is GetBookingDetailLoaded) {
+            return Stack(children: [
+              SingleChildScrollView(
+                padding: EdgeInsets.only(
+                    bottom: 40 + (AppSize.apVerticalPadding * 2)),
+                physics: BouncingScrollPhysics(),
+                scrollDirection: Axis.vertical,
+                child: Column(
+                  children: [
+                    Padding(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: AppSize.apHorizontalPadding * .4,
+                            vertical: AppSize.apVerticalPadding * .2),
+                        child: Card(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: AppSize.apHorizontalPadding * .4,
+                                vertical: AppSize.apVerticalPadding * .4),
+                            child: Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    PictureCustom(
+                                      width: AppSize.imageMedium.w,
+                                      imageUrl:
+                                          state.bookingdetail.serviceMediaFile!,
+                                      height: AppSize.imageMedium.h,
+                                    ),
+                                    SizedBox(
+                                      width: 10.w,
+                                    ),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            state.bookingdetail.serviceName!,
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: AppSize.textLarge,
+                                                color: isDark
+                                                    ? Colors.grey.shade300
+                                                    : Colors.black87),
+                                          ),
+                                          SizedBox(
+                                            height: 10.h,
+                                          ),
+                                          Row(
+                                            // crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Icon(
+                                                Icons.location_on_outlined,
+                                                size: AppSize.iconMedium,
+                                                color: isDark
+                                                    ? AppColors.secondBackground
+                                                    : AppColors.background,
+                                              ),
+                                              SizedBox(
+                                                width: 4.w,
+                                              ),
+                                              Expanded(
+                                                child: Text(
+                                                  overflow:
+                                                      TextOverflow.visible,
+                                                  maxLines: 2,
+                                                  ' ${state.bookingdetail.district} - ${state.bookingdetail.city} ',
+                                                  style: TextStyle(
+                                                      fontSize:
+                                                          AppSize.textMedium,
+                                                      color: isDark
+                                                          ? Colors.white
+                                                          : Colors.black),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 10.h,
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: getStatusColor(
+                                        state.bookingdetail.status!),
+                                    borderRadius: BorderRadius.circular(
+                                        AppSize.borderRadiusSmall),
+                                    border: Border.all(
+                                      color: getStatusBorderColor(
+                                          state.bookingdetail.status!),
+                                    ),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      PictureCustom(
-                                        width: AppSize.imageMedium.w,
-                                        imageUrl: state
-                                            .bookingdetail.serviceMediaFile!,
-                                        height: AppSize.imageMedium.h,
-                                      ),
-                                      SizedBox(
-                                        width: 10.w,
-                                      ),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              state.bookingdetail.serviceName!,
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: AppSize.textLarge,
-                                                  color: isDark
-                                                      ? Colors.grey.shade300
-                                                      : Colors.black87),
-                                            ),
-                                            SizedBox(
-                                              height: 10.h,
-                                            ),
-                                            Row(
-                                              // crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                Icon(
-                                                  Icons.location_on_outlined,
-                                                  size: AppSize.iconMedium,
-                                                  color: isDark
-                                                      ? AppColors
-                                                          .secondBackground
-                                                      : AppColors.background,
-                                                ),
-                                                SizedBox(
-                                                  width: 4.w,
-                                                ),
-                                                Expanded(
-                                                  child: Text(
-                                                    overflow:
-                                                        TextOverflow.visible,
-                                                    maxLines: 2,
-                                                    ' ${state.bookingdetail.district} - ${state.bookingdetail.city} ',
-                                                    style: TextStyle(
-                                                        fontSize:
-                                                            AppSize.textMedium,
-                                                        color: isDark
-                                                            ? Colors.white
-                                                            : Colors.black),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
+                                      Text(
+                                        state.bookingdetail.status!,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: AppSize.textMedium,
+                                          color: Colors.black87,
                                         ),
                                       )
                                     ],
                                   ),
-                                  SizedBox(
-                                    height: 10.h,
-                                  ),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 8, vertical: 4),
-                                    decoration: BoxDecoration(
-                                      color: getStatusColor(
-                                          state.bookingdetail.status!),
-                                      borderRadius: BorderRadius.circular(
-                                          AppSize.borderRadiusSmall),
-                                      border: Border.all(
-                                        color: getStatusBorderColor(
-                                            state.bookingdetail.status!),
-                                      ),
-                                    ),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          state.bookingdetail.status!,
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: AppSize.textMedium,
-                                            color: Colors.black87,
+                                ),
+                                SizedBox(
+                                  height: 10.h,
+                                ),
+                                Divider(
+                                  thickness: 1,
+                                  height: 4,
+                                  color: Colors.black,
+                                ),
+                                SizedBox(
+                                  height: 10.h,
+                                ),
+                                shopInformation(
+                                    state.bookingdetail.shopName!,
+                                    state.bookingdetail.openTime!,
+                                    state.bookingdetail.closeTime!,
+                                    state.bookingdetail.shopId!,
+                                    state.bookingdetail.profilePicture!),
+                                SizedBox(
+                                  height: 10.h,
+                                ),
+                                state.bookingdetail.status == 'Cancelled'
+                                    ? Row(
+                                        spacing: 20.h,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Cancel Reason: ',
+                                            style: TextStyle(
+                                              fontSize: AppSize.textLarge,
+                                              color: Colors.black87,
+                                            ),
                                           ),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: 10.h,
-                                  ),
-                                  Divider(
-                                    thickness: 1,
-                                    height: 4,
-                                    color: Colors.black,
-                                  ),
-                                  SizedBox(
-                                    height: 10.h,
-                                  ),
-                                  shopInformation(
-                                      state.bookingdetail.shopName!,
-                                      state.bookingdetail.openTime!,
-                                      state.bookingdetail.closeTime!,
-                                      state.bookingdetail.shopId!,
-                                      state.bookingdetail.profilePicture!),
-                                  SizedBox(
-                                    height: 10.h,
-                                  ),
-                                  state.bookingdetail.status == 'Cancelled'
-                                      ? Row(
-                                          spacing: 20.h,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'Cancel Reason: ',
-                                              style: TextStyle(
-                                                fontSize: AppSize.textLarge,
-                                                color: Colors.black87,
-                                              ),
+                                          Text(
+                                            state.bookingdetail
+                                                    .userCancelledReason ??
+                                                state.bookingdetail
+                                                    .shopCancelledReason ??
+                                                'No reason provided',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: AppSize.textLarge,
+                                              color: Colors.black87,
                                             ),
-                                            Text(
-                                              state.bookingdetail
-                                                      .userCancelledReason ??
-                                                  state.bookingdetail
-                                                      .shopCancelledReason ??
-                                                  'No reason provided',
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: AppSize.textLarge,
-                                                color: Colors.black87,
-                                              ),
-                                            ),
-                                          ],
-                                        )
-                                      : bookingSumary(
-                                          state.bookingdetail.bookedDate,
-                                          state.bookingdetail.estimatedEndDate,
-                                          state.bookingdetail.formattedDuration,
-                                          state.bookingdetail.formattedPrice,
-                                          state.bookingdetail.adjustPriceReason)
-                                ],
-                              ),
+                                          ),
+                                        ],
+                                      )
+                                    : bookingSumary(
+                                        state.bookingdetail.bookedDate,
+                                        state.bookingdetail.estimatedEndDate,
+                                        state.bookingdetail.formattedDuration,
+                                        state.bookingdetail.formattedPrice,
+                                        state.bookingdetail.adjustPriceReason)
+                              ],
                             ),
-                          )),
-                      // SizedBox(
-                      //   height: 10.h,
-                      // ),
-                      scheduleList(context, state.bookingdetail.userDayFrees!),
-                    ],
-                  ),
+                          ),
+                        )),
+                    // SizedBox(
+                    //   height: 10.h,
+                    // ),
+                    scheduleList(context, state.bookingdetail.userDayFrees!),
+                  ],
                 ),
-                Positioned(
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    child: Container(
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.only(
-                                topLeft:
-                                    Radius.circular(AppSize.borderRadiusLarge),
-                                topRight: Radius.circular(
-                                    AppSize.borderRadiusLarge))),
-                        child: Padding(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: AppSize.apHorizontalPadding,
-                                vertical: AppSize.apVerticalPadding),
-                            child: Center(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children:
-                                    _buildActionButtons(state.bookingdetail),
-                              ),
-                            ))))
-              ]);
-            } else if (state is GetBookingDetailLoading) {
-              return BookingDetailPlaceholder();
-            }
-            return Center(
-                child: Column(
-              children: [
-                Image.asset(
-                  AppImages.error,
-                  width: AppSize.imageLarge,
-                ),
-                Text('Can\'t load blog....'),
-                IconButton(
-                    onPressed: () {
-                      context
-                          .read<GetBookingDetailCubit>()
-                          .getBookingDetail(widget.bookingId);
-                    },
-                    icon: Icon(
-                      Icons.refresh_outlined,
-                      size: AppSize.iconLarge,
-                    ))
-              ],
-            ));
-          },
-        ),
+              ),
+              Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.only(
+                              topLeft:
+                                  Radius.circular(AppSize.borderRadiusLarge),
+                              topRight:
+                                  Radius.circular(AppSize.borderRadiusLarge))),
+                      child: Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: AppSize.apHorizontalPadding,
+                              vertical: AppSize.apVerticalPadding),
+                          child: Center(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children:
+                                  _buildActionButtons(state.bookingdetail),
+                            ),
+                          ))))
+            ]);
+          } else if (state is GetBookingDetailLoading) {
+            return BookingDetailPlaceholder();
+          }
+          return Center(
+              child: Column(
+            children: [
+              Image.asset(
+                AppImages.error,
+                width: AppSize.imageLarge,
+              ),
+              Text('Can\'t load blog....'),
+              IconButton(
+                  onPressed: () {
+                    context
+                        .read<GetBookingDetailCubit>()
+                        .getBookingDetail(widget.bookingId);
+                  },
+                  icon: Icon(
+                    Icons.refresh_outlined,
+                    size: AppSize.iconLarge,
+                  ))
+            ],
+          ));
+        },
       ),
     );
   }
@@ -698,8 +705,8 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
                 context
                     .read<BookingServiceCubit>()
                     .addRescheduleBooking(booking.bookingDetailId!);
-                ChooseFreeTime().showScheduleBottomSheet(context,
-                    booking.serviceId, booking.openHour!, booking.closeHour!);
+                ChooseFreeTime().showScheduleBottomSheet(
+                    context, null, booking.openHour!, booking.closeHour!);
               });
             },
             text: 'Reschedule',

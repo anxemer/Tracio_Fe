@@ -151,7 +151,7 @@ class _PostBlogState extends State<PostBlog> {
                 context,
                 BlocProvider(
                   create: (context) =>
-                      CommentInputCubit(widget.blogEntity.blogId),
+                      CommentInputCubit.forBlog(widget.blogEntity.blogId),
                   child: BlocProvider.value(
                     value: context.read<GetCommentCubit>(),
                     child: DetailBlogPage(

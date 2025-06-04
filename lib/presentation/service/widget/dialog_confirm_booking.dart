@@ -15,7 +15,7 @@ class DialogConfirmBooking {
               height: 10.h,
             ),
             const Text(
-              'You wanna remain your old free time or choose new free time',
+              'Would you like to reschedule this service?',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontWeight: FontWeight.w400,
@@ -42,7 +42,7 @@ class DialogConfirmBooking {
                         ),
                       ),
                     ),
-                    child: const Text('Choose new free time'),
+                    child: const Text('Yes'),
                   ),
                 ),
                 SizedBox(
@@ -62,7 +62,7 @@ class DialogConfirmBooking {
                         ),
                       ),
                     ),
-                    child: const Text('Remain'),
+                    child: const Text('No'),
                   ),
                 ),
               ],

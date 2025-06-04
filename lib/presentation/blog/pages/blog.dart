@@ -110,7 +110,6 @@ class _BlogPageState extends State<BlogPage> with TickerProviderStateMixin {
               flexibleSpace: ShortcutKey(),
             ),
             SliverPersistentHeader(
-              
               pinned: true,
               delegate: _SliverAppBarDelegate(
                 TabBar(
@@ -124,7 +123,7 @@ class _BlogPageState extends State<BlogPage> with TickerProviderStateMixin {
             ),
           ],
           body: TabBarView(
-            // physics: NeverScrollableScrollPhysics(),
+            physics: NeverScrollableScrollPhysics(),
             controller: _tabController,
             children: [
               // Tab 1: Blogs
