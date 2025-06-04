@@ -45,7 +45,7 @@ class _RouteDetailMapViewState extends State<RouteDetailMapView> {
                   await mapCubit.getNetworkImageData(Uri.parse(media.mediaUrl));
               markers.add(PointAnnotationOptions(
                 geometry:
-                    Point(coordinates: Position(loc.latitude, loc.longitude)),
+                    Point(coordinates: Position(loc.longitude, loc.latitude)),
                 image: imageByte,
                 iconSize: 3,
                 iconAnchor: IconAnchor.BOTTOM,

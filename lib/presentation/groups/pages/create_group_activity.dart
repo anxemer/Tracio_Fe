@@ -202,7 +202,7 @@ class _CreateGroupActivityState extends State<CreateGroupActivity>
                         const SizedBox(height: 6),
                         GestureDetector(
                           onTap: () {
-                            showFilterLocationModal(context);
+                            showFilterLocationModal();
                           },
                           child: Container(
                             padding: const EdgeInsets.symmetric(
@@ -405,32 +405,29 @@ class _CreateGroupActivityState extends State<CreateGroupActivity>
     );
   }
 
-  void showFilterLocationModal(BuildContext context) async {
-    final result = await showModalBottomSheet(
-      anchorPoint: Offset(0, 0),
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
-      ),
-      context: context,
-      isScrollControlled: true,
-      builder: (modalContext) {
-        return BlocProvider(
-          create: (context) => GetLocationCubit(),
-          child: BlocProvider<FormGroupActivityCubit>.value(
-            value: BlocProvider.of<FormGroupActivityCubit>(context),
-            child: DraggableScrollableSheet(
-              expand: false,
-              initialChildSize: 0.85,
-              builder: (_, scrollController) {
-                return ActivitySearchLocation(
-                    bottomSheetContext: modalContext,
-                    scrollController: scrollController);
-              },
+  void showFilterLocationModal() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => BlocProvider(
+          create: (_) => GetLocationCubit(),
+          child: BlocProvider.value(
+            value: context.read<FormGroupActivityCubit>(),
+            child: Scaffold(
+              appBar: AppBar(
+                leading: IconButton(
+                  icon: Icon(Icons.arrow_back),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ),
+              body: ActivitySearchLocation(
+                bottomSheetContext: context,
+                scrollController: ScrollController(),
+              ),
             ),
           ),
-        );
-      },
+        ),
+      ),
     );
 
     if (result != null) {

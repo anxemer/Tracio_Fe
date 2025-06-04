@@ -47,7 +47,8 @@ class _RouteBlogItemState extends State<RouteBlogItem> {
             builder: (context) => BlocProvider(
               create: (context) => MapCubit(),
               child: BlocProvider.value(
-                value: context.read<RouteCubit>(),
+                value: context.read<RouteCubit>()
+                  ..getRouteDetail(widget.routeId),
                 child: RouteDetailScreen(routeId: widget.routeId),
               ),
             ),
