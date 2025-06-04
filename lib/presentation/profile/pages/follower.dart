@@ -81,7 +81,7 @@ class _FollowersScreenState extends State<FollowersScreen> {
             }
             if (state is FollowFailure) {
               return ErrorPage(
-                text: 'Cannot load follower, pull to reload',
+                text: 'This account is private',
               );
             }
             if (state is FollowLoaded) {

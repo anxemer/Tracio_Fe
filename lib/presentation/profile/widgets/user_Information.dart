@@ -12,7 +12,9 @@ import 'package:Tracio/presentation/map/widgets/challenge_reward.dart';
 import 'package:Tracio/presentation/profile/bloc/follow_cubit/follow_cubit.dart';
 import 'package:Tracio/presentation/profile/pages/all_reward.dart';
 import 'package:Tracio/presentation/profile/pages/follower.dart';
+import 'package:Tracio/presentation/profile/pages/statistics_chart.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -274,6 +276,7 @@ class _UserinformationState extends State<Userinformation> {
             title: 'Day Streak',
             value: widget.user.totalBlog.toString(),
           ),
+          BarChartSample3()
         ],
       ),
     );

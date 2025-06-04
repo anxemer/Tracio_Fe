@@ -193,6 +193,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
 
     return Padding(
       padding: EdgeInsets.symmetric(
+        vertical: AppSize.apVerticalPadding * .8.w,
         horizontal: AppSize.apHorizontalPadding * .8.w,
       ),
       child: InkWell(

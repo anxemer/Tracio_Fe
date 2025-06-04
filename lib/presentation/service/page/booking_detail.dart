@@ -41,6 +41,7 @@ class BookingDetailScreen extends StatefulWidget {
 class _BookingDetailScreenState extends State<BookingDetailScreen> {
   @override
   void initState() {
+    context.read<GetBookingDetailCubit>().getBookingDetail(widget.bookingId);
     // widget.animationController.forward();
     super.initState();
   }
@@ -666,12 +667,15 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
             height: 40.h,
             ontap: () {
               DialogConfirm(
-                      btnLeft: () => Navigator.pop(context),
-                      btnRight: () => AppNavigator.push(
-                          context,
-                          CancelReasonScreen(
-                            bookingDetailId: booking.bookingDetailId!,
-                          )),
+                      btnLeft: () {
+                        Navigator.pop(context);
+                        AppNavigator.push(
+                            context,
+                            CancelReasonScreen(
+                              bookingDetailId: booking.bookingDetailId!,
+                            ));
+                      },
+                      btnRight: () => Navigator.pop(context),
                       notification:
                           'Are you sure you want to cancel this Booking?')
                   .showDialogConfirmation(context);

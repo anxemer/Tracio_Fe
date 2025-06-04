@@ -15,23 +15,23 @@ class DailyActivityModel extends DailyActivityEntity {
       required super.maxSpeed,
       required super.createdAt,
       required super.updatedAt});
-factory DailyActivityModel.empty() {
-  return DailyActivityModel(
-    cyclingActivityId: 0,
-    userId: 0,
-    userName: '',
-    userAvatarUrl: '',
-    activityDate: null,
-    totalDistance: 0.0,
-    totalDuration: 0,
-    totalElevationGain: 0,
-    totalRides: 0,
-    avgSpeed: 0.0,
-    maxSpeed: 0.0,
-    createdAt: null,
-    updatedAt: null,
-  );
-}
+  factory DailyActivityModel.empty() {
+    return DailyActivityModel(
+      cyclingActivityId: 0,
+      userId: 0,
+      userName: '',
+      userAvatarUrl: '',
+      activityDate: null,
+      totalDistance: 0.0,
+      totalDuration: 0,
+      totalElevationGain: 0,
+      totalRides: 0,
+      avgSpeed: 0.0,
+      maxSpeed: 0.0,
+      createdAt: null,
+      updatedAt: null,
+    );
+  }
 
   factory DailyActivityModel.fromJson(Map<String, dynamic> json) {
     return DailyActivityModel(
@@ -44,7 +44,9 @@ factory DailyActivityModel.empty() {
           ? (json['totalDistance'] as num).toDouble()
           : null,
       totalDuration: json["totalDuration"],
-      totalElevationGain: json["totalElevationGain"],
+      totalElevationGain: json['totalElevationGain'] != null
+          ? (json['totalElevationGain'] as num).toDouble()
+          : null,
       totalRides: json["totalRides"],
       avgSpeed: json['avgSpeed'] != null
           ? (json['avgSpeed'] as num).toDouble()

@@ -10,6 +10,7 @@ import '../../../core/constants/app_size.dart';
 import '../../../data/shop/models/get_booking_req.dart';
 import '../../../domain/shop/entities/response/booking_card_view.dart';
 import '../../../domain/shop/entities/response/booking_entity.dart';
+import '../../../main.dart';
 import '../bloc/bookingservice/booking_service_cubit.dart';
 import '../bloc/bookingservice/booking_service_state.dart';
 import '../bloc/get_booking/get_booking_cubit.dart';
@@ -33,7 +34,7 @@ class BookingStatusTab extends StatefulWidget {
   State<BookingStatusTab> createState() => _BookingStatusTabState();
 }
 
-class _BookingStatusTabState extends State<BookingStatusTab> {
+class _BookingStatusTabState extends State<BookingStatusTab> with RouteAware {
   List<BookingEntity> selectedBooking = [];
   Map<String, int?> calculateOperatingHours(List<BookingEntity> bookings) {
     if (bookings.isEmpty) {
@@ -53,6 +54,19 @@ class _BookingStatusTabState extends State<BookingStatusTab> {
         .reduce((a, b) => a! > b! ? a : b);
 
     return {"minOpenHour": minOpenHour, "maxCloseHour": maxCloseHour};
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context)!);
+  }
+
+  @override
+  void didPopNext() {
+    context
+        .read<GetBookingCubit>()
+        .getBooking(GetBookingReq(status: widget.status));
   }
 
   @override
@@ -97,46 +111,54 @@ class _BookingStatusTabState extends State<BookingStatusTab> {
               var list = state.bookingList;
               var listOverlap = state.overlapBookingList;
               return Stack(children: [
-                SingleChildScrollView(
-                  padding: EdgeInsets.only(
-                      bottom: 40 + (AppSize.apVerticalPadding * 2)),
-                  physics: BouncingScrollPhysics(),
-                  child: Column(
-                    spacing: 6,
-                    children: [
-                      listBooking(list),
-                      listOverlap.isNotEmpty
-                          ? Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal:
-                                      AppSize.apHorizontalPadding * .2.w,
-                                  vertical: AppSize.apVerticalPadding * .4.h),
-                              child: Container(
+                RefreshIndicator(
+                  onRefresh: () async {
+                    context
+                        .read<GetBookingCubit>()
+                        .getBooking(GetBookingReq(status: widget.status));
+                  },
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.only(
+                        bottom: 40 + (AppSize.apVerticalPadding * 2)),
+                    physics: AlwaysScrollableScrollPhysics(),
+                    child: Column(
+                      spacing: 6,
+                      children: [
+                        listBooking(list),
+                        listOverlap.isNotEmpty
+                            ? Padding(
                                 padding: EdgeInsets.symmetric(
                                     horizontal:
                                         AppSize.apHorizontalPadding * .2.w,
                                     vertical: AppSize.apVerticalPadding * .4.h),
-                                decoration: BoxDecoration(
-                                    color: Colors.red.shade100,
-                                    borderRadius: BorderRadius.circular(
-                                        AppSize.borderRadiusMedium)),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Overlap in: ${DateFormat('HH:mm, dd/MM/yyyy').format(listOverlap.first.bookedDate!)}',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.red,
-                                          fontSize: AppSize.textMedium),
-                                    ),
-                                    listBooking(listOverlap),
-                                  ],
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal:
+                                          AppSize.apHorizontalPadding * .2.w,
+                                      vertical:
+                                          AppSize.apVerticalPadding * .4.h),
+                                  decoration: BoxDecoration(
+                                      color: Colors.red.shade100,
+                                      borderRadius: BorderRadius.circular(
+                                          AppSize.borderRadiusMedium)),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Overlap in: ${DateFormat('HH:mm, dd/MM/yyyy').format(listOverlap.first.bookedDate!)}',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            color: Colors.red,
+                                            fontSize: AppSize.textMedium),
+                                      ),
+                                      listBooking(listOverlap),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            )
-                          : SizedBox.shrink(),
-                    ],
+                              )
+                            : SizedBox.shrink(),
+                      ],
+                    ),
                   ),
                 ),
                 Positioned(

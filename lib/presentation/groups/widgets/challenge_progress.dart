@@ -78,45 +78,45 @@ class _ChallengeProgressScreenState extends State<ChallengeProgressScreen> {
                             //       selectedIndex: 3,
                             //     ));
                           }),
-                      actions: [
-                        challenge.isCreator!
-                            ? PopupMenuButton<int>(
-                                icon: const Icon(Icons.more_vert),
-                                onSelected: (int result) {
-                                  if (result == 0) {
-                                    DialogConfirm(
-                                            btnLeft: () {
-                                              Navigator.pop(context);
-                                              context
-                                                  .read<ChallengeCubit>()
-                                                  .deleteChallenge(
-                                                      challenge.challengeId!);
-                                            },
-                                            btnRight: () {
-                                              Navigator.pop(context);
-                                            },
-                                            notification:
-                                                'Are you sure you want to delete this challenge?')
-                                        .showDialogConfirmation(context);
-                                  }
-                                },
-                                itemBuilder: (BuildContext context) =>
-                                    <PopupMenuEntry<int>>[
-                                  PopupMenuItem<int>(
-                                    value: 0,
-                                    child: Row(
-                                      children: const [
-                                        Icon(Icons.delete_outline_outlined,
-                                            color: Colors.black),
-                                        SizedBox(width: 8),
-                                        Text('Delete Challenge'),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              )
-                            : SizedBox.shrink()
-                      ],
+                      // actions: [
+                      //   (challenge.isCreator! && !challenge.isCompleted!)
+                      //       ? PopupMenuButton<int>(
+                      //           icon: const Icon(Icons.more_vert),
+                      //           onSelected: (int result) {
+                      //             if (result == 0) {
+                      //               DialogConfirm(
+                      //                       btnLeft: () {
+                      //                         Navigator.pop(context);
+                      //                         context
+                      //                             .read<ChallengeCubit>()
+                      //                             .deleteChallenge(
+                      //                                 challenge.challengeId!);
+                      //                       },
+                      //                       btnRight: () {
+                      //                         Navigator.pop(context);
+                      //                       },
+                      //                       notification:
+                      //                           'Are you sure you want to delete this challenge?')
+                      //                   .showDialogConfirmation(context);
+                      //             }
+                      //           },
+                      //           itemBuilder: (BuildContext context) =>
+                      //               <PopupMenuEntry<int>>[
+                      //             PopupMenuItem<int>(
+                      //               value: 0,
+                      //               child: Row(
+                      //                 children: const [
+                      //                   Icon(Icons.delete_outline_outlined,
+                      //                       color: Colors.black),
+                      //                   SizedBox(width: 8),
+                      //                   Text('Delete Challenge'),
+                      //                 ],
+                      //               ),
+                      //             ),
+                      //           ],
+                      //         )
+                      //       : SizedBox.shrink()
+                      // ],
                       flexibleSpace: FlexibleSpaceBar(
                         background: CachedNetworkImage(
                           imageUrl: challenge.challengeThumbnail,
