@@ -85,11 +85,15 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
     GetMessages event,
     Emitter<ConversationState> emit,
   ) async {
-    ConversationLoaded? currentState;
-    if (state is ConversationLoaded) {
-      currentState = state as ConversationLoaded;
+    ChatLoaded? currentState;
+    if (state is ChatLoaded) {
+      currentState = state as ChatLoaded;
     }
-    emit(ChatLoading());
+
+    // Only emit loading state if it's the first page
+    if (event.pageNumber == 1) {
+      emit(ChatLoading());
+    }
 
     var request = GetMessagesUsecaseParams(
         conversationId: event.conversationId,
@@ -102,14 +106,31 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
       (result) {
         final MessagePaginationEntity messagePaginationEntity = result;
 
-        emit(ChatLoaded(
-          conversation: messagePaginationEntity.conversation,
-          messages: messagePaginationEntity.messages,
-          previousConversations: currentState?.conversations ?? [],
-          pagination: messagePaginationEntity,
-          pageNumber: event.pageNumber,
-          pageSize: event.pageSize,
-        ));
+        if (currentState != null) {
+          // Append new messages to existing ones
+          final updatedMessages = [
+            ...messagePaginationEntity.messages,
+            ...currentState.messages
+          ];
+          emit(ChatLoaded(
+              conversation: messagePaginationEntity.conversation,
+              messages: updatedMessages,
+              previousConversations: currentState.previousConversations,
+              pagination: messagePaginationEntity,
+              pageNumber: event.pageNumber,
+              pageSize: event.pageSize,
+              refreshKey: currentState.refreshKey + 1));
+        } else {
+          // First page load
+          emit(ChatLoaded(
+            conversation: messagePaginationEntity.conversation,
+            messages: messagePaginationEntity.messages,
+            previousConversations: [],
+            pagination: messagePaginationEntity,
+            pageNumber: event.pageNumber,
+            pageSize: event.pageSize,
+          ));
+        }
       },
     );
   }

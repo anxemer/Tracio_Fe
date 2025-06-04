@@ -32,11 +32,37 @@ class _ChatPageState extends State<ChatPage> {
 
   late final StreamSubscription<MessageEntity> _messageSubscription;
   UserEntity? currentUser;
+  double _keyboardHeight = 0;
+  bool _isLoadingMore = false;
+  bool _isFirstLoad = true;
 
   Future<void> _onRefresh() async {
     context
         .read<ConversationBloc>()
         .add(RefreshMessages(conversationId: widget.conversationId));
+  }
+
+  void _handleScroll() {
+    if (_scrollController.position.pixels <=
+        _scrollController.position.minScrollExtent + 50) {
+      _loadMoreMessages();
+    }
+  }
+
+  void _loadMoreMessages() {
+    if (_isLoadingMore) return;
+
+    final state = context.read<ConversationBloc>().state;
+    if (state is ChatLoaded && state.pagination.hasNextPage) {
+      _isLoadingMore = true;
+      context.read<ConversationBloc>().add(
+            GetMessages(
+              conversationId: widget.conversationId,
+              pageNumber: state.pageNumber + 1,
+              pageSize: state.pageSize,
+            ),
+          );
+    }
   }
 
   void _sendMessage(ChatLoaded state, XFile? file, int? routeId) {
@@ -53,7 +79,6 @@ class _ChatPageState extends State<ChatPage> {
           routeId: routeId));
 
       _textController.clear();
-
       _scrollToBottom();
     }
   }
@@ -62,8 +87,10 @@ class _ChatPageState extends State<ChatPage> {
   void initState() {
     super.initState();
 
+    _scrollController.addListener(_handleScroll);
+
     Future.microtask(() async {
-      currentUser = await sl<AuthLocalSource>().getUser();
+      currentUser = sl<AuthLocalSource>().getUser();
       await _chatService.joinConversation(widget.conversationId);
       _messageSubscription = _chatService.onMessageUpdate.listen((message) {
         context
@@ -77,6 +104,7 @@ class _ChatPageState extends State<ChatPage> {
   @override
   void dispose() {
     _textController.dispose();
+    _scrollController.removeListener(_handleScroll);
     _scrollController.dispose();
     _messageSubscription.cancel();
     Future.microtask(() async =>
@@ -86,8 +114,20 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Get keyboard height
+    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+    if (_keyboardHeight != bottomInset) {
+      _keyboardHeight = bottomInset;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (bottomInset > 0) {
+          _scrollToBottom();
+        }
+      });
+    }
+
     return SafeArea(
         child: Scaffold(
+      resizeToAvoidBottomInset: true,
       backgroundColor: Colors.grey.shade100,
       appBar: ChatAppbar(
         conversation: widget.conversation,
@@ -97,7 +137,20 @@ class _ChatPageState extends State<ChatPage> {
         child: Column(
           children: [
             Expanded(
-              child: BlocBuilder<ConversationBloc, ConversationState>(
+              child: BlocConsumer<ConversationBloc, ConversationState>(
+                listener: (context, state) {
+                  if (state is ChatLoaded) {
+                    _isLoadingMore = false;
+                    // Only scroll to bottom on first load or new messages
+                    if (_isFirstLoad) {
+                      _isFirstLoad = false;
+                      _scrollToBottom();
+                    } else if (state.messages.isNotEmpty &&
+                        state.messages.last.isSentByMe) {
+                      _scrollToBottom();
+                    }
+                  }
+                },
                 buildWhen: (previous, current) {
                   if (previous is ChatLoaded && current is ChatLoaded) {
                     return previous.refreshKey != current.refreshKey;
@@ -116,8 +169,6 @@ class _ChatPageState extends State<ChatPage> {
                       )
                     ];
                   } else if (state is ChatLoaded) {
-                    WidgetsBinding.instance
-                        .addPostFrameCallback((_) => _scrollToBottom());
                     if (state.messages.isEmpty) {
                       children = [
                         const Padding(
@@ -126,6 +177,24 @@ class _ChatPageState extends State<ChatPage> {
                         )
                       ];
                     } else {
+                      // Add loading indicator at top if there are more messages
+                      if (state.pagination.hasNextPage) {
+                        children.add(
+                          const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 8.0),
+                            child: Center(
+                              child: SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      }
+
                       for (int i = 0; i < state.messages.length; i++) {
                         final current = state.messages[i];
                         final previous = i > 0 ? state.messages[i - 1] : null;
@@ -162,11 +231,16 @@ class _ChatPageState extends State<ChatPage> {
                     ];
                   }
 
-                  return ListView(
-                    controller: _scrollController,
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    children: children,
+                  return GestureDetector(
+                    onTap: () {
+                      FocusScope.of(context).unfocus();
+                    },
+                    child: ListView(
+                      controller: _scrollController,
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      children: children,
+                    ),
                   );
                 },
               ),

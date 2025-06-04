@@ -53,7 +53,7 @@ class _ShopConversationTabState extends State<ShopConversationTab>
                       Padding(
                         padding: EdgeInsets.symmetric(vertical: 24.0),
                         child: Center(
-                            child: Text("No group conversations found.")),
+                            child: Text("No shop conversations found.")),
                       ),
                     ],
                   );
