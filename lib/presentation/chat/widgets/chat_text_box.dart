@@ -218,8 +218,7 @@ class _ChatTextBoxState extends State<ChatTextBox> {
                               child: TextField(
                                 controller: widget.textEditingController,
                                 decoration: InputDecoration(
-                                  contentPadding:
-                                      EdgeInsets.symmetric(horizontal: 10.0),
+                                  isDense: true,
                                   hintText: "Message",
                                   border: OutlineInputBorder(
                                       borderSide: BorderSide(
