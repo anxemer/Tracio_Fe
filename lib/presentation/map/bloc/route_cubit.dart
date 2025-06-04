@@ -1,6 +1,7 @@
 import 'package:Tracio/data/map/models/request/post_route_media_req.dart';
 import 'package:Tracio/data/map/models/request/update_route_req.dart';
 import 'package:Tracio/domain/map/entities/route_media.dart';
+import 'package:Tracio/domain/map/entities/route_reply.dart';
 import 'package:Tracio/domain/map/repositories/route_repository.dart';
 import 'package:Tracio/domain/map/usecase/delete_route_usecase.dart';
 import 'package:Tracio/domain/map/usecase/edit_route_tracking_usecase.dart';
@@ -179,7 +180,7 @@ class RouteCubit extends Cubit<RouteState> {
   }
 
   Future<void> getRouteBlogReviews(int routeId,
-      {int pageNumber = 1, int pageSize = 5}) async {
+      {int pageNumber = 1, int pageSize = 20}) async {
     GetRouteBlogLoaded? currentState;
     if (state is GetRouteBlogLoaded) currentState = state as GetRouteBlogLoaded;
 
@@ -218,7 +219,7 @@ class RouteCubit extends Cubit<RouteState> {
   }
 
   Future<void> getRouteBlogReply(int reviewId,
-      {int pageNumber = 1, int pageSize = 5}) async {
+      {int pageNumber = 1, int pageSize = 20}) async {
     GetRouteBlogLoaded? currentState;
     if (state is GetRouteBlogLoaded) currentState = state as GetRouteBlogLoaded;
 
@@ -260,6 +261,47 @@ class RouteCubit extends Cubit<RouteState> {
         ));
       }
     });
+  }
+
+  void addReplyReview(int commentId, RouteReplyEntity newReply) {
+    if (state is GetRouteBlogLoaded) {
+      final currentState = state as GetRouteBlogLoaded;
+      final updatedComments = currentState.reviews.map((comment) {
+        if (comment.commentId == commentId) {
+          // Chỉ định kiểu List<ReplyCommentEntity> cho danh sách rỗng
+          final updatedReplies = <RouteReplyEntity>[
+            newReply,
+            ...(comment.replyPagination?.replies ?? <RouteReplyEntity>[])
+          ];
+          return comment.copyWith(
+            replyPagination: comment.replyPagination?.copyWith(
+                  replies: updatedReplies,
+                  totalCount: (comment.replyPagination?.totalCount ?? 0) + 1,
+                ) ??
+                RouteReplyPaginationEntity(
+                  review: comment,
+                  replies: updatedReplies,
+                  totalCount: 1,
+                  pageNumber: 1,
+                  pageSize: 5,
+                  totalPage: 1,
+                  hasPreviousPage: false,
+                  hasNextPage: false,
+                ),
+            replyCount: (comment.replyCount ?? 0) + 1,
+          );
+        }
+        return comment;
+      }).toList();
+      emit(currentState.copyWith(
+        reviews: updatedComments,
+        totalCount: currentState.totalCount + 1,
+        reviewPaginationEntity: currentState.reviewPaginationEntity?.copyWith(
+          reviews: updatedComments,
+          totalCount: currentState.totalCount + 1,
+        ),
+      ));
+    }
   }
 
   Future<void> updateRouteWithMedia(

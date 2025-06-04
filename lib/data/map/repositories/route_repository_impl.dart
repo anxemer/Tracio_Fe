@@ -1,5 +1,6 @@
 import 'package:Tracio/data/map/models/request/post_route_media_req.dart';
 import 'package:Tracio/data/map/models/request/update_route_req.dart';
+import 'package:Tracio/data/map/models/route_blog_review.dart';
 import 'package:Tracio/domain/map/entities/route.dart';
 import 'package:Tracio/domain/map/entities/route_media.dart';
 import 'package:dartz/dartz.dart';
@@ -20,6 +21,7 @@ import 'package:Tracio/domain/map/entities/route_detail.dart';
 import 'package:Tracio/domain/map/repositories/route_repository.dart';
 import 'package:Tracio/service_locator.dart';
 
+import '../../../domain/map/entities/route_reply.dart';
 import '../models/route_reply.dart';
 
 class RouteRepositoryImpl extends RouteRepository {
@@ -134,23 +136,26 @@ class RouteRepositoryImpl extends RouteRepository {
   }
 
   @override
-  Future<Either<Failure, dynamic>> postReply(PostReplyReq request) async {
-    var returnedData = await sl<RouteApiService>().postReply(request);
-    return returnedData.fold((error) {
-      return left(error);
-    }, (data) {
-      return right(data);
-    });
+  Future<Either<Failure, RouteReplyEntity>> postReply(
+      PostReplyReq request) async {
+    try {
+      var returnedData = await sl<RouteApiService>().postReply(request);
+
+      return Right(returnedData);
+    } on Failure catch (e) {
+      return Left(e);
+    }
   }
 
   @override
-  Future<Either<Failure, RouteReplyModel>> postReview(PostReviewReq request) async {
-    var returnedData = await sl<RouteApiService>().postReview(request);
-    return returnedData.fold((error) {
-      return left(error);
-    }, (data) {
-      return right(data);
-    });
+  Future<Either<Failure, RouteBlogReviewModel>> postReview(
+      PostReviewReq request) async {
+    try {
+      var returnedData = await sl<RouteApiService>().postReview(request);
+      return Right(returnedData);
+    } on Failure catch (e) {
+      return Left(e);
+    }
   }
 
   @override
