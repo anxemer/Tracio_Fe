@@ -1,4 +1,5 @@
 import 'package:Tracio/presentation/groups/cubit/challenge_cubit.dart';
+import 'package:Tracio/presentation/groups/pages/search_group_user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -21,15 +22,32 @@ class GroupPage extends StatefulWidget {
   State<GroupPage> createState() => _GroupPageState();
 }
 
-class _GroupPageState extends State<GroupPage> {
+class _GroupPageState extends State<GroupPage> with SingleTickerProviderStateMixin {
   final groupRouteHub = sl<GroupRouteHubService>();
+  late TabController _tabController;
+  int _currentIndex = 1;
+
   @override
   void initState() {
     super.initState();
+    _currentIndex = widget.initialIndex;
+    _tabController = TabController(
+      length: 2,
+      vsync: this,
+      initialIndex: widget.initialIndex,
+    );
+    _tabController.addListener(() {
+      if (_tabController.indexIsChanging) {
+        setState(() {
+          _currentIndex = _tabController.index;
+        });
+      }
+    });
   }
 
   @override
   void dispose() {
+    _tabController.dispose();
     super.dispose();
   }
 
@@ -44,34 +62,35 @@ class _GroupPageState extends State<GroupPage> {
           create: (context) => ChallengeCubit(),
         ),
       ],
-      child: DefaultTabController(
-        length: 2,
-        initialIndex: widget.initialIndex,
-        child: Scaffold(
-          backgroundColor: Colors.grey.shade200,
-          appBar: _buildAppBar(),
-          body: Column(
-            children: [
-              Container(
-                width: double.infinity,
-                color: Colors.white,
-                child: const TabBar(
-                  labelColor: Colors.black,
-                  indicatorColor: AppColors.primary,
-                  tabs: [
-                    Tab(text: "Challenges"),
-                    Tab(text: "Groups"),
-                  ],
-                ),
+      child: Scaffold(
+        backgroundColor: Colors.grey.shade200,
+        appBar: _buildAppBar(),
+        body: Column(
+          children: [
+            Container(
+              width: double.infinity,
+              color: Colors.white,
+              child: TabBar(
+                controller: _tabController,
+                labelColor: Colors.black,
+                indicatorColor: AppColors.primary,
+                tabs: const [
+                  Tab(text: "Challenges"),
+                  Tab(text: "Groups"),
+                ],
               ),
-              Expanded(
-                child: TabBarView(
-                  physics: NeverScrollableScrollPhysics(),
-                  children: [ChallengeTab(), GroupTab()],
-                ),
+            ),
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                physics: const NeverScrollableScrollPhysics(),
+                children: const [
+                  ChallengeTab(),
+                  GroupTab(),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -82,7 +101,7 @@ class _GroupPageState extends State<GroupPage> {
       height: AppSize.appBarHeight.h,
       hideBack: true,
       title: Text(
-        'Groups',
+        _currentIndex == 0 ? 'Challenges' : 'Groups',
         style: TextStyle(
           color: Colors.white,
           fontWeight: FontWeight.w400,
@@ -116,7 +135,10 @@ class _GroupPageState extends State<GroupPage> {
           highlightColor: Colors.grey.shade600,
           splashColor: Colors.white.withAlpha(30),
           hoverColor: Colors.white.withAlpha(10),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => SearchGroupUser()));
+          },
           icon: Icon(
             Icons.search,
             color: AppColors.primary,

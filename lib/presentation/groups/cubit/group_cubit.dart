@@ -39,13 +39,28 @@ class GroupCubit extends Cubit<GroupState> {
   }
 
   Future<void> getGroupList(GetGroupListReq request) async {
-    emit(GroupLoading());
+    if (request.pageNumber == 1) {
+      emit(GroupLoading());
+    }
     var data = await sl<GetGroupListUsecase>().call(request);
 
     data.fold((error) {
       emit(GroupFailure(errorMessage: error.toString()));
     }, (data) async {
-      emit(GetGroupListSuccess(
+      if (state is GetGroupListSuccess && request.pageNumber > 1) {
+        final currentState = state as GetGroupListSuccess;
+        emit(GetGroupListSuccess(
+          pageSize: data.pageSize,
+          pageNumber: data.pageNumber,
+          totalCount: data.totalCount,
+          totalPages: data.totalPages,
+          hasNextPage: data.hasNextPage,
+          hasPreviousPage: data.hasPreviousPage,
+          groupList: [...currentState.groupList, ...data.groupList],
+          hasMyGroups: data.hasMyGroups,
+        ));
+      } else {
+        emit(GetGroupListSuccess(
           pageSize: data.pageSize,
           pageNumber: data.pageNumber,
           totalCount: data.totalCount,
@@ -53,7 +68,9 @@ class GroupCubit extends Cubit<GroupState> {
           hasNextPage: data.hasNextPage,
           hasPreviousPage: data.hasPreviousPage,
           groupList: data.groupList,
-          hasMyGroups: data.hasMyGroups));
+          hasMyGroups: data.hasMyGroups,
+        ));
+      }
     });
   }
 

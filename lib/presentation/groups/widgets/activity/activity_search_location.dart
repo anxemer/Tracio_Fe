@@ -96,7 +96,7 @@ class _ActivitySearchLocationState extends State<ActivitySearchLocation> {
                 }
               }),
               SearchLocationResult(
-                parentContext: context,
+                parentContext: widget.bottomSheetContext,
               ),
             ],
           ),

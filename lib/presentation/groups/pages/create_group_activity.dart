@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:Tracio/core/configs/theme/app_colors.dart';
 import 'package:Tracio/core/configs/utils/validators/group_validator.dart';
 import 'package:Tracio/core/constants/app_size.dart';
@@ -404,8 +405,8 @@ class _CreateGroupActivityState extends State<CreateGroupActivity>
     );
   }
 
-  void showFilterLocationModal(BuildContext context) {
-    showModalBottomSheet(
+  void showFilterLocationModal(BuildContext context) async {
+    final result = await showModalBottomSheet(
       anchorPoint: Offset(0, 0),
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
@@ -431,6 +432,19 @@ class _CreateGroupActivityState extends State<CreateGroupActivity>
         );
       },
     );
+
+    if (result != null) {
+      // The location was selected and returned
+      context.read<FormGroupActivityCubit>().updateMeetingAddress(
+            result.address,
+          );
+      context.read<FormGroupActivityCubit>().updateMeetingLocation(
+            Position(
+              result.longitude,
+              result.latitude,
+            ),
+          );
+    }
   }
 
   void _showFailureSnackBar(String errorMessage) {
