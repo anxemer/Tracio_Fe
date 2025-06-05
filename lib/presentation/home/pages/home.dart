@@ -84,7 +84,7 @@ class _HomePageState extends State<HomePage> {
             AppNavigator.push(context, NotificationsPage());
           },
           icon: Icon(
-            Icons.notifications,
+            Icons.person_add_alt,
             color: AppColors.primary,
             size: AppSize.iconMedium.w,
           ),
@@ -105,7 +105,7 @@ class _HomePageState extends State<HomePage> {
                 ));
           },
           icon: Icon(
-            Icons.mail,
+            Icons.message_outlined,
             color: AppColors.primary,
             size: AppSize.iconMedium.w,
           ),
