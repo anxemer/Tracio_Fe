@@ -139,34 +139,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                 ),
                                 trailing: Icon(Icons.navigate_next),
                               ),
-                              Container(
-                                width: 600.w,
-                                height: 3.h,
-                                color: Colors.grey.shade500,
-                              ),
-                              ListTile(
-                                leading: Text(
-                                  'Statistics',
-                                  style: TextStyle(
-                                      fontSize: AppSize.textLarge.sp.sp,
-                                      fontWeight: FontWeight.w600),
-                                ),
-                                trailing: Icon(Icons.navigate_next),
-                              ),
-                              Container(
-                                width: 600.w,
-                                height: 3.h,
-                                color: Colors.grey.shade500,
-                              ),
-                              ListTile(
-                                leading: Text(
-                                  'Routes',
-                                  style: TextStyle(
-                                      fontSize: AppSize.textLarge.sp.sp,
-                                      fontWeight: FontWeight.w600),
-                                ),
-                                trailing: Icon(Icons.navigate_next),
-                              ),
+
                               Container(
                                 width: 600.w,
                                 height: 3.h,

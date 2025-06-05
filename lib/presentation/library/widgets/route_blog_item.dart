@@ -50,7 +50,7 @@ class _RouteBlogItemState extends State<RouteBlogItem> {
               child: BlocProvider.value(
                 value: context.read<RouteCubit>()
                   ..getRouteDetail(widget.routeId),
-                child: RouteDetailScreen(routeId: widget.routeId),
+                child: RouteDetailScreen(routeId: widget.routeId,),
               ),
             ),
           ),

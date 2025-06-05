@@ -174,7 +174,7 @@ class ApiUrl {
   static const deleteCartItem = '$portShop/api/carts';
   static const getShopProfile = '$portShop/api/shops/profile';
   static const reviewBooking = '$portShop/api/reviews';
-  static const replyReview = '$portShop/api/replies';
+  static const replyReview = '$portShop/api/shop-replies';
   // static const submitBooking = '${portShop}/api/carts';
   static const rescheduleBooking = '$portShop/api/bookings/reschedule-booking';
 

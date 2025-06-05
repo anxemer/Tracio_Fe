@@ -155,7 +155,7 @@ class BlogApiServiceImpl extends BlogApiService {
   Future<GetCommentBlogRep> getCommentBlog(GetCommentReq comment) async {
     final params = {
       if (comment.commentId != null) 'commentId': comment.commentId.toString(),
-      'pageSize': comment.pageSize.toString(),
+      'pageSize': '50',
       'pageNumber': comment.pageNumber.toString(),
     };
 
@@ -223,9 +223,9 @@ class BlogApiServiceImpl extends BlogApiService {
   Future<GetReplyCommentRepMode> getRepCommentBlog(
       GetReplyCommentReq comment) async {
     try {
-      var response = await sl<DioClient>().get(ApiUrl.urlGetRepComments(
-              comment.commentId, comment.pageNumber, comment.pageSize)
-          .toString());
+      var response = await sl<DioClient>().get(
+          ApiUrl.urlGetRepComments(comment.commentId, comment.pageNumber, 50)
+              .toString());
       if (response.statusCode == 200) {
         final responseData =
             GetReplyCommentRepMode.fromMap(response.data["result"]);

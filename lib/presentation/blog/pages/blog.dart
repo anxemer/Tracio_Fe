@@ -71,7 +71,6 @@ class _BlogPageState extends State<BlogPage> with TickerProviderStateMixin {
       length: 2,
       child: Scaffold(
         body: NestedScrollView(
-          floatHeaderSlivers: true,
           controller: _scrollController,
           headerSliverBuilder: (context, innerBoxIsScrolled) => [
             SliverAppBar(

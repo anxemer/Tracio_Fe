@@ -1,11 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
+import 'package:Tracio/common/widget/button/loading.dart';
 import 'package:Tracio/common/widget/navbar/bottom_nav_bar_manager.dart';
-import 'package:android_id/android_id.dart';
-import 'package:device_info_plus/device_info_plus.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -36,8 +33,6 @@ import '../../../core/services/notifications/i_notification_service.dart';
 import '../../../core/services/signalR/implement/notification_hub_service.dart';
 import '../../../data/auth/models/change_role_req.dart';
 import '../../../data/auth/sources/auth_local_source/auth_local_source.dart';
-import '../../../data/user/models/send_fcm_req.dart';
-import '../../../data/user/source/user_api_source.dart';
 import '../../auth/bloc/authCubit/auth_cubit.dart';
 import '../../auth/bloc/authCubit/auth_state.dart';
 import '../../chat/bloc/bloc/conversation_bloc.dart';
@@ -55,101 +50,6 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  final _notiService = sl<NotificationHubService>();
-  late final StreamSubscription<NotificationModel> _messageSubscription;
-  @override
-  void initState() {
-    INotificationService.init();
-    // FirebaseMessagingService.init();
-
-    Future.microtask(() async {
-      await _notiService.connect();
-      _messageSubscription = _notiService.onMessageUpdate.listen((message) {
-        final notificationType = getNotificationType(message.entityType);
-        final payload = jsonEncode({
-          'entityId': message.entityId,
-          'entityType': message.entityType,
-          'notificationId': message.notificationId,
-          'senderName': message.senderName, // Thêm senderName
-          'senderAvatar': message.senderAvatar, // Thêm senderAvatar
-          'message': message.message, // Thêm message
-          'isRead': message.isRead, // Thêm isRead
-          'createdAt': message.createdAt, // Thêm createdAt
-          'messageId': message.messageId, // Thêm messageId
-        });
-
-        INotificationService.showNotification(
-          id: message.entityType * 1000 + message.entityId, // ID duy nhất
-          type: notificationType,
-          title: _getNotificationTitle(message, notificationType),
-          body: message.message,
-          payload: payload,
-        );
-      });
-    }); // TODO: implement initState
-    super.initState();
-  }
-
-  String _getNotificationTitle(
-      NotificationModel message, NotificationType type) {
-    switch (type) {
-      case NotificationType.commentBlog:
-        return 'New Blog Comment';
-      case NotificationType.blogReplyReReply:
-        return 'Reply to Your Comment';
-      case NotificationType.blogReplyComment:
-        return 'Reply to Blog Comment';
-      case NotificationType.reactionComment:
-        return 'Comment Reaction';
-      case NotificationType.reactionBlog:
-        return 'Blog Reaction';
-      case NotificationType.blogReactionReply:
-        return 'Reply Reaction';
-      case NotificationType.reviewService:
-        return 'Service Review';
-      case NotificationType.replyReview:
-        return 'Reply to Review';
-      case NotificationType.bookingService:
-        return 'Booking Update';
-      case NotificationType.reviewRoute:
-        return 'Route Review';
-      case NotificationType.routeReactionRoute:
-        return 'Route Reaction';
-      case NotificationType.routeReplyReview:
-        return 'Reply to Route Review';
-      case NotificationType.routeReplyReReply:
-        return 'Reply to Route Comment';
-      case NotificationType.reactionReview:
-        return 'Review Reaction';
-      case NotificationType.routeReactionReply:
-        return 'Route Reply Reaction';
-      case NotificationType.message:
-        return 'New Message';
-      case NotificationType.subscription:
-        return 'System Update';
-      case NotificationType.route:
-        return 'Route Update';
-      case NotificationType.user:
-        return 'User Action';
-      case NotificationType.challenge:
-        return 'New Challenge';
-      case NotificationType.groupInvitation:
-        return 'Group Invitation';
-      case NotificationType.group:
-        return 'Group Update';
-      default:
-        return 'New Notification';
-    }
-  }
-
-  @override
-  void dispose() {
-    _messageSubscription.cancel();
-
-    // TODO: implement dispose
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     var isDark = context.isDarkMode;
@@ -196,6 +96,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     return RefreshIndicator(
                       onRefresh: () async {
                         context.read<ShopProfileCubit>().getShopProfile();
+                        context
+                            .read<GetBookingCubit>()
+                            .getBooking(GetBookingReq(status: 'Pending'));
                       },
                       child: SingleChildScrollView(
                         padding: EdgeInsets.all(16.0),
@@ -313,24 +216,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     });
                                   }
                                 }
-                                return Center(
-                                    child: Column(
-                                  children: [
-                                    Image.asset(
-                                      AppImages.error,
-                                      width: AppSize.imageLarge,
-                                    ),
-                                    Text('Can\'t load booking....'),
-                                    IconButton(
-                                        onPressed: () async {
-                                          // await context.read<GetBlogCubit>().getBlog(GetBlogReq());
-                                        },
-                                        icon: Icon(
-                                          Icons.refresh_outlined,
-                                          size: AppSize.iconLarge,
-                                        ))
-                                  ],
-                                ));
+                                return Center(child: LoadingButton());
                               },
                             ),
                             SizedBox(height: 24.0),
