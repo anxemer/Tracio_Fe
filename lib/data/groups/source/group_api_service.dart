@@ -248,9 +248,8 @@ class GroupApiServiceImpl extends GroupApiService {
         ApiUrl.urlDeleteGroupRoute(groupId, groupRouteId).toString(),
       );
 
-      if (response.statusCode == 200) {
-        dynamic data = response.data['result'];
-        return Right(data);
+      if (response.statusCode == 204) {
+        return Right(null);
       } else if (response.statusCode == 400) {
         return Left(AuthorizationFailure(
             'You do not have permission to perform this action.', 400));

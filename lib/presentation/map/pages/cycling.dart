@@ -613,6 +613,38 @@ class _CyclingPageState extends State<CyclingPage> {
                       );
                     },
                   ),
+
+                  //Notify if there is a new participant
+                  BlocListener<TrackingBloc, TrackingState>(
+                    listenWhen: (prev, curr) {
+                      if (prev is TrackingInProgress &&
+                          curr is TrackingInProgress) {
+                        if (prev.groupParticipants == null ||
+                            curr.groupParticipants == null) {
+                          return false;
+                        }
+                        return (prev.groupParticipants!.length) <
+                            (curr.groupParticipants!.length);
+                      }
+                      return false;
+                    },
+                    listener: (context, state) {
+                      if (state is TrackingInProgress &&
+                          state.groupParticipants?.isNotEmpty == true) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text("New participant joined"),
+                            backgroundColor: Colors.green,
+                            duration: Duration(seconds: 3),
+                            behavior: SnackBarBehavior.floating,
+                            margin: EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 20),
+                          ),
+                        );
+                      }
+                    },
+                    child: const SizedBox.shrink(),
+                  ),
                 ],
               ),
             ),

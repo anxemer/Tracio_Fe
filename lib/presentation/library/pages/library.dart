@@ -60,7 +60,7 @@ class _LibraryPageState extends State<LibraryPage>
     return BlocProvider(
       create: (context) => GetLocationCubit(),
       child: DefaultTabController(
-        length: 4,
+        length: 3,
         child: Scaffold(
           appBar: _buildAppBar(),
           body: Column(
@@ -73,7 +73,6 @@ class _LibraryPageState extends State<LibraryPage>
                   Tab(text: "Rides"),
                   Tab(text: "Routes"),
                   Tab(text: "Saved"),
-                  Tab(text: "Offline"),
                 ],
               ),
               BlocListener<RouteCubit, RouteState>(
@@ -112,7 +111,6 @@ class _LibraryPageState extends State<LibraryPage>
                         child: RouteTab(),
                       ),
                       SavedTab(),
-                      OfflineTab()
                     ],
                   ),
                 ),

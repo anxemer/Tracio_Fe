@@ -1,3 +1,4 @@
+import 'package:Tracio/common/widget/navbar/bottom_nav_bar_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:Tracio/core/configs/theme/app_colors.dart';
@@ -56,7 +57,15 @@ class BasicAppbar extends StatelessWidget implements PreferredSizeWidget {
                         padding != null ? AppSize.apHorizontalPadding.w : 0),
                 child: IconButton(
                   onPressed: () {
-                    Navigator.pop(context, data);
+                    if (Navigator.canPop(context)) {
+                      Navigator.pop(context, data);
+                    } else {
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const BottomNavBarManager()));
+                    }
                   },
                   icon: Container(
                     height: AppSize.imageMedium.h,
