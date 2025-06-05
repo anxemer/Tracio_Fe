@@ -270,7 +270,7 @@ class ApiUrl {
 
   static Uri urlGetGroupRouteDetail(int groupRouteId,
       [Map<String, String>? params]) {
-    return Uri.parse("$portGroup/api/group/route/$groupRouteId")
+    return Uri.parse("$portGroup/api/group/0/route/$groupRouteId")
         .replace(queryParameters: params);
   }
 

@@ -24,9 +24,12 @@ class _GroupDetailActivityState extends State<GroupDetailActivity> {
     return BlocBuilder<GroupCubit, GroupState>(
       builder: (context, state) {
         if (state is GetGroupDetailSuccess) {
-          final now = DateTime.now();
+          final maxTime = DateTime.now().add(Duration(minutes: 60));
+          final minTime = DateTime.now().subtract(Duration(minutes: 30));
           final upcomingRoutes = state.groupRoutes.groupRouteList
-              .where((route) => route.startDateTime.isAfter(now))
+              .where((route) => route.startDateTime.isAfter(minTime))
+              .where((route) => route.startDateTime.isBefore(maxTime))
+              .where((route) => route.groupStatus == "NotStarted")
               .toList();
 
           return Column(

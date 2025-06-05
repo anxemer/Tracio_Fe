@@ -5,6 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:Tracio/domain/groups/entities/group_route.dart';
 import 'package:Tracio/presentation/groups/cubit/group_cubit.dart';
 import 'package:Tracio/presentation/groups/cubit/group_state.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class GroupActivityFeed extends StatefulWidget {
   final int groupId;
@@ -23,37 +25,63 @@ class _GroupActivityFeedState extends State<GroupActivityFeed> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text("Group Activity Feed"),
-        ),
-        body: BlocBuilder<GroupCubit, GroupState>(
-          builder: (context, state) {
-            if (state is GroupLoading) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (state is GetGroupDetailSuccess) {
-              return RefreshIndicator(
-                onRefresh: () async {
-                  _onRefresh();
-                },
-                child: _buildActivityList(state.groupRoutes.groupRouteList,
-                    isPrivate: !state.group.isPublic),
-              );
-            }
+      appBar: AppBar(
+        title: const Text("Group Activities"),
+        elevation: 0,
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black87,
+      ),
+      body: BlocBuilder<GroupCubit, GroupState>(
+        builder: (context, state) {
+          if (state is GroupLoading) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is GetGroupDetailSuccess) {
+            return RefreshIndicator(
+              onRefresh: () async {
+                _onRefresh();
+              },
+              child: _buildActivityList(state.groupRoutes.groupRouteList,
+                  isPrivate: !state.group.isPublic),
+            );
+          }
 
-            return const Center(child: Text('No data available'));
-          },
-        ));
+          return const Center(child: Text('No data available'));
+        },
+      ),
+    );
   }
 
   Widget _buildActivityList(List<GroupRouteEntity> groupRoutes,
       {bool isPrivate = false}) {
     if (groupRoutes.isEmpty && !isPrivate) {
       return ListView(
-        physics:
-            const AlwaysScrollableScrollPhysics(), // allow pull even when empty
-        children: const [
-          SizedBox(height: 150),
-          Center(child: Text('No activities yet.')),
+        physics: const AlwaysScrollableScrollPhysics(),
+        children: [
+          SizedBox(height: 150.h),
+          Center(
+            child: Column(
+              children: [
+                Icon(Icons.event_busy, size: 64.w, color: Colors.grey),
+                SizedBox(height: 16.h),
+                Text(
+                  'No activities yet',
+                  style: TextStyle(
+                    fontSize: 18.sp,
+                    color: Colors.grey[600],
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                SizedBox(height: 8.h),
+                Text(
+                  'Be the first to create an activity!',
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    color: Colors.grey[500],
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       );
     }
@@ -62,104 +90,253 @@ class _GroupActivityFeedState extends State<GroupActivityFeed> {
       return ListView(
         physics: const AlwaysScrollableScrollPhysics(),
         children: [
-          const SizedBox(height: 150),
+          SizedBox(height: 150.h),
           Center(
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width * 0.6,
-              child: const Text(
-                'You are not authorized to view activities of this private group.',
-                textAlign: TextAlign.center,
-              ),
+            child: Column(
+              children: [
+                Icon(Icons.lock_outline, size: 64.w, color: Colors.grey),
+                SizedBox(height: 16.h),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.6,
+                  child: Text(
+                    'This is a private group',
+                    style: TextStyle(
+                      fontSize: 18.sp,
+                      color: Colors.grey[800],
+                      fontWeight: FontWeight.w500,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                SizedBox(height: 8.h),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.6,
+                  child: Text(
+                    'You need to be a member to view activities',
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      color: Colors.grey[600],
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
             ),
           ),
         ],
       );
     }
+
     return ListView.builder(
       itemCount: groupRoutes.length,
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.only(
+        left: 16.w,
+        right: 16.w,
+        top: 16.w,
+        bottom: 80.h,
+      ),
       itemBuilder: (context, index) {
         final route = groupRoutes[index];
+        if (route.groupStatus == "Deleted") {
+          return const SizedBox.shrink();
+        }
 
         return GestureDetector(
           onTap: () {
-            // Navigate to activity details page
-            AppNavigator.push(context,
-                GroupActivityDetail(groupRouteId: groupRoutes[index].groupId));
+            AppNavigator.push(
+              context,
+              GroupActivityDetail(
+                groupId: route.groupId,
+                groupRouteId: route.groupRouteId,
+              ),
+            );
           },
           child: Card(
             color: Colors.white,
-            margin: const EdgeInsets.only(bottom: 16),
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            elevation: 1,
+            margin: EdgeInsets.only(bottom: 16.h),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16.r),
+              side: BorderSide(color: Colors.grey.shade200),
+            ),
+            elevation: 2,
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(16.w),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  /// Route Info
-                  Text(route.title,
-                      style: const TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 4),
-                  Text(route.description),
-                  const SizedBox(height: 8),
+                  // Route Title and Status
                   Row(
                     children: [
-                      const Icon(Icons.calendar_today, size: 16),
-                      const SizedBox(width: 4),
-                      Text(route.formattedDate),
-                      const SizedBox(width: 16),
-                      const Icon(Icons.access_time, size: 16),
-                      const SizedBox(width: 4),
-                      Text(route.formattedTime),
+                      Expanded(
+                        child: Text(
+                          route.title,
+                          style: TextStyle(
+                            fontSize: 18.sp,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      _buildStatusChip(route.groupStatus),
                     ],
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8.h),
+
+                  // Description
+                  if (route.description.isNotEmpty) ...[
+                    Text(
+                      route.description,
+                      style: TextStyle(
+                        fontSize: 14.sp,
+                        color: Colors.grey[700],
+                      ),
+                    ),
+                    SizedBox(height: 12.h),
+                  ],
+
+                  // Date and Time
                   Row(
                     children: [
-                      const Icon(Icons.place, size: 16),
-                      const SizedBox(width: 4),
-                      Expanded(child: Text(route.addressMeeting)),
+                      Icon(Icons.calendar_today,
+                          size: 16.w, color: Colors.grey[600]),
+                      SizedBox(width: 4.w),
+                      Text(
+                        route.formattedDate,
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          color: Colors.grey[700],
+                        ),
+                      ),
+                      SizedBox(width: 16.w),
+                      Icon(Icons.access_time,
+                          size: 16.w, color: Colors.grey[600]),
+                      SizedBox(width: 4.w),
+                      Text(
+                        route.formattedTime,
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          color: Colors.grey[700],
+                        ),
+                      ),
                     ],
                   ),
-                  const Divider(height: 24),
+                  SizedBox(height: 8.h),
 
-                  /// Participants Header
-                  Text("Participants (${route.participants.length})",
-                      style: const TextStyle(fontWeight: FontWeight.w600)),
+                  // Location
+                  Row(
+                    children: [
+                      Icon(Icons.place, size: 16.w, color: Colors.grey[600]),
+                      SizedBox(width: 4.w),
+                      Expanded(
+                        child: Text(
+                          route.addressMeeting,
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            color: Colors.grey[700],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 16.h),
+                  Divider(color: Colors.grey.shade200),
 
-                  /// Participants List
+                  // Participants Section
+                  Row(
+                    children: [
+                      Text(
+                        "Participants",
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      SizedBox(width: 8.w),
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 8.w, vertical: 2.h),
+                        decoration: BoxDecoration(
+                          color: Colors.blue.shade50,
+                          borderRadius: BorderRadius.circular(12.r),
+                        ),
+                        child: Text(
+                          "${route.participants.length}",
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            color: Colors.blue.shade700,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 12.h),
+
+                  // Participants List
                   ...route.participants.map((p) => Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 6),
+                        padding: EdgeInsets.symmetric(vertical: 6.h),
                         child: Row(
                           children: [
                             CircleAvatar(
-                              radius: 20,
-                              backgroundImage: NetworkImage(p.cyclistAvatarUrl),
+                              radius: 20.r,
+                              backgroundColor: Colors.grey.shade200,
+                              child: ClipOval(
+                                child: CachedNetworkImage(
+                                  imageUrl: p.cyclistAvatarUrl,
+                                  fit: BoxFit.cover,
+                                  placeholder: (context, url) => Icon(
+                                    Icons.person,
+                                    size: 20.w,
+                                    color: Colors.grey.shade400,
+                                  ),
+                                  errorWidget: (context, url, error) => Icon(
+                                    Icons.person,
+                                    size: 20.w,
+                                    color: Colors.grey.shade400,
+                                  ),
+                                ),
+                              ),
                             ),
-                            const SizedBox(width: 12),
+                            SizedBox(width: 12.w),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(p.cyclistName,
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.bold)),
                                   Text(
-                                      "Joined: ${p.formattedDate} ${p.formattedTime}",
-                                      style: const TextStyle(
-                                          fontSize: 12, color: Colors.grey)),
+                                    p.cyclistName,
+                                    style: TextStyle(
+                                      fontSize: 14.sp,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  Text(
+                                    "Joined: ${p.formattedDate} ${p.formattedTime}",
+                                    style: TextStyle(
+                                      fontSize: 12.sp,
+                                      color: Colors.grey[600],
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
                             if (p.isOrganizer)
-                              const Chip(
-                                label: Text("Organizer"),
-                                visualDensity: VisualDensity.compact,
-                                labelStyle: TextStyle(fontSize: 12),
-                              )
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 8.w,
+                                  vertical: 4.h,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.blue.shade50,
+                                  borderRadius: BorderRadius.circular(12.r),
+                                ),
+                                child: Text(
+                                  "Organizer",
+                                  style: TextStyle(
+                                    fontSize: 12.sp,
+                                    color: Colors.blue.shade700,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
                           ],
                         ),
                       )),
@@ -169,6 +346,45 @@ class _GroupActivityFeedState extends State<GroupActivityFeed> {
           ),
         );
       },
+    );
+  }
+
+  Widget _buildStatusChip(String status) {
+    Color color;
+    String text;
+
+    switch (status) {
+      case "NotStarted":
+        color = Colors.blue;
+        text = "Not started";
+        break;
+      case "Ongoing":
+        color = Colors.green;
+        text = "Ongoing";
+        break;
+      case "Finished":
+        color = Colors.grey;
+        text = "Finished";
+        break;
+      default:
+        color = Colors.grey;
+        text = status;
+    }
+
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12.r),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(
+          fontSize: 12.sp,
+          color: color,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
     );
   }
 }

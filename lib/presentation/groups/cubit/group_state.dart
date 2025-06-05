@@ -93,3 +93,14 @@ class GetGroupDetailSuccess extends GroupState {
     );
   }
 }
+
+class DeleteGroupRouteSuccess extends GroupState {}
+
+class DeleteGroupRouteFailure extends GroupState {
+  String errorMessage;
+  DeleteGroupRouteFailure({
+    required this.errorMessage,
+  });
+}
+
+class DeleteGroupRouteLoading extends GroupState {}

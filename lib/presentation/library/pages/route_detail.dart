@@ -197,7 +197,7 @@ class _RouteDetailScreenState extends State<RouteDetailScreen> with RouteAware {
                           color: Colors.black,
                           iconSize: AppSize.iconMedium * 0.8.w,
                           onPressed: () {
-                            Navigator.pop(context);
+                            Navigator.pop(context, true);
                           },
                           icon: Icon(Icons.arrow_back_ios_sharp)),
                     ),

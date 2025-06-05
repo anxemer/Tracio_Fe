@@ -1,8 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
-
-import 'package:geolocator/geolocator.dart';
-import 'package:location/location.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:flutter/foundation.dart';
 
@@ -12,64 +8,14 @@ void startLocationService() {
 }
 
 class LocationServiceHandler extends TaskHandler {
-  StreamSubscription<LocationData>? _streamSubscription;
-  final Location _location = Location();
   bool _isPaused = false;
-
-  Future<void> _requestLocationPermission() async {
-    if (!await Geolocator.isLocationServiceEnabled()) {
-      throw Exception('Location services is disabled.');
-    }
-
-    LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-    }
-
-    if (permission == LocationPermission.denied ||
-        permission == LocationPermission.deniedForever) {
-      throw Exception('Location permission has been ${permission.name}.');
-    }
-  }
 
   @override
   Future<void> onStart(DateTime timestamp, TaskStarter starter) async {
     try {
-      debugPrint('LocationServiceHandler: Starting location service...');
-      _requestLocationPermission();
-      // Start location stream
-      debugPrint('LocationServiceHandler: Initializing location stream...');
-      _location.changeSettings(
-        distanceFilter: 0,
-        interval: 2000,
-      );
-      _streamSubscription = _location.onLocationChanged.listen(
-        (location) {
-          debugPrint(
-              'LocationServiceHandler: Received location update - lat: ${location.latitude}, lon: ${location.longitude}');
-          if (_isPaused) {
-            debugPrint(
-                'LocationServiceHandler: Service is paused, ignoring location update');
-            return;
-          }
-          // Send data to main isolate
-          final String locationJson = jsonEncode(location.toString());
-          debugPrint('LocationServiceHandler: Sending data to main isolate');
-          FlutterForegroundTask.sendDataToMain(locationJson);
-        },
-        onError: (error) {
-          debugPrint(
-              'LocationServiceHandler: Error in location stream: $error');
-          // Attempt to restart the stream if it fails
-          if (!_isPaused) {
-            debugPrint(
-                'LocationServiceHandler: Attempting to restart location stream...');
-            onStart(timestamp, starter);
-          }
-        },
-      );
-      debugPrint(
-          'LocationServiceHandler: Location stream initialized successfully');
+      if (starter.name == "system") {
+        return;
+      }
     } catch (e) {
       debugPrint('LocationServiceHandler: Error starting location service: $e');
       rethrow;
@@ -82,12 +28,7 @@ class LocationServiceHandler extends TaskHandler {
   }
 
   @override
-  Future<void> onDestroy(DateTime timestamp, bool isDestroyed) async {
-    debugPrint('LocationServiceHandler: Destroying location service...');
-    _streamSubscription?.cancel();
-    _streamSubscription = null;
-    debugPrint('LocationServiceHandler: Location service destroyed');
-  }
+  Future<void> onDestroy(DateTime timestamp, bool isDestroyed) async {}
 
   @override
   void onNotificationButtonPressed(String id) {

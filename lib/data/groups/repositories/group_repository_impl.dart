@@ -121,4 +121,16 @@ class GroupRepositoryImpl extends GroupRepository {
       return right(data);
     });
   }
+
+  @override
+  Future<Either<Failure, dynamic>> deleteGroupRoute(
+      int groupId, int groupRouteId) async {
+    var returnedData =
+        await sl<GroupApiService>().deleteGroupRoute(groupId, groupRouteId);
+    return returnedData.fold((error) {
+      return left(error);
+    }, (data) {
+      return right(data);
+    });
+  }
 }

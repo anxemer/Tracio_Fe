@@ -1,3 +1,4 @@
+import 'package:Tracio/domain/groups/usecases/delete_group_route_usecase.dart';
 import 'package:Tracio/domain/groups/usecases/update_group_route_status_usecase.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -76,9 +77,9 @@ class GroupCubit extends Cubit<GroupState> {
 
   Future<void> getGroupDetail(int groupId,
       {int participantPageNumber = 1,
-      int participantRowsPerPage = 10,
+      int participantRowsPerPage = 20,
       int groupRoutePageNumber = 1,
-      int groupRouteRowsPerPage = 10}) async {
+      int groupRouteRowsPerPage = 20}) async {
     emit(GroupLoading());
 
     final groupResult = await sl<GetGroupDetailUsecase>().call(groupId);
@@ -146,9 +147,12 @@ class GroupCubit extends Cubit<GroupState> {
   Future<Either<Failure, GroupRoutePaginationEntity>> getGroupRoutes(
       int groupId,
       {int pageNumber = 1,
-      int rowsPerPage = 10}) {
+      int rowsPerPage = 20}) {
     var groupRouteRequest = GetGroupRouteReq(
-        groupId: groupId, pageNumber: pageNumber, rowsPerPage: rowsPerPage);
+        groupId: groupId,
+        pageNumber: pageNumber,
+        rowsPerPage: rowsPerPage,
+        sortDesc: true);
     return sl<GetGroupRouteUsecase>().call(groupRouteRequest);
   }
 
@@ -163,7 +167,7 @@ class GroupCubit extends Cubit<GroupState> {
 
   Future<void> getGroupRouteDetail(
       int groupRouteId, GetGroupDetailSuccess currentState,
-      {int pageNumber = 1, int pageSize = 10}) async {
+      {int pageNumber = 1, int pageSize = 20}) async {
     final result = await sl<GetGroupRouteDetailUsecase>().call(
       GetGroupRouteDetailUsecaseParams(
         groupRouteId: groupRouteId,
@@ -244,6 +248,18 @@ class GroupCubit extends Cubit<GroupState> {
       emit(GroupFailure(errorMessage: error.toString()));
     }, (data) {
       emit(PostGroupRouteSuccess(groupRoute: data, isSuccess: true));
+    });
+  }
+
+  Future<void> deleteGroupRoute(int groupId, int groupRouteId) async {
+    emit(DeleteGroupRouteLoading());
+    DeleteGroupRouteUsecaseParams params = DeleteGroupRouteUsecaseParams(
+        groupId: groupId, groupRouteId: groupRouteId);
+    final result = await sl<DeleteGroupRouteUsecase>().call(params);
+    result.fold((error) {
+      emit(DeleteGroupRouteFailure(errorMessage: error.toString()));
+    }, (data) {
+      emit(DeleteGroupRouteSuccess());
     });
   }
 }

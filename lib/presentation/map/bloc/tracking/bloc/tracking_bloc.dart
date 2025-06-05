@@ -88,18 +88,6 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
     // Get initial battery level
     final batteryLevel = await _getBatteryLevel();
 
-    // If we have a groupRouteId, ensure we're connected to the group
-    if (event.groupRouteId != null) {
-      try {
-        final groupRouteHub = sl<GroupRouteHubService>();
-        await groupRouteHub.connect();
-        await groupRouteHub.joinGroupRoute(event.groupRouteId.toString());
-      } catch (e) {
-        debugPrint('Error connecting to group route: $e');
-        // Continue with tracking even if group connection fails
-      }
-    }
-
     emit(TrackingInProgress(
       isPaused: false,
       polyline: [],
@@ -346,9 +334,6 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
     _ticker?.cancel();
     _ticker = null;
 
-    // Store current groupRouteId
-    final currentGroupRouteId = _groupRouteId;
-
     // Reset all state variables
     _startTime = null;
     _movingStartTime = null;
@@ -358,7 +343,7 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
     // Reset location service
     _locationService.reset();
 
-    emit(TrackingInitial(groupRouteId: currentGroupRouteId));
+    emit(TrackingInitial());
   }
 
   void _onAddGroupRouteId(AddGroupRouteId event, Emitter<TrackingState> emit) {

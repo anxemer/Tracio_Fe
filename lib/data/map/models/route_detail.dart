@@ -88,7 +88,7 @@ class RouteDetailModel extends RouteDetailEntity {
       createdAt: DateTime.parse(map['createdAt']),
       updatedAt: DateTime.parse(map['updatedAt']),
       isOwner: map['isOwner'] ?? false,
-      matchedUsers: (map['matchedUsers'] as List<dynamic>?)
+      matchedUsers: (map['matches'] as List<dynamic>?)
               ?.map((e) => MatchedUser.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],

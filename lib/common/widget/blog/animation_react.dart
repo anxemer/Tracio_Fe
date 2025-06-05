@@ -36,7 +36,7 @@ class _AnimationReactState extends State<AnimationReact>
   void didUpdateWidget(covariant AnimationReact oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    if (widget.isAnimating != oldWidget.isAnimating) {
+    if (widget.isAnimating && !oldWidget.isAnimating) {
       startAnimation();
     }
   }

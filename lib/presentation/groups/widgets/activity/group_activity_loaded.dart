@@ -35,6 +35,7 @@ class GroupActivityLoaded extends StatelessWidget {
                       context.read<GroupCubit>().state
                           as GetGroupDetailSuccess),
                 child: GroupActivityDetail(
+                  groupId: groupRoute.groupId,
                   groupRouteId: groupRoute.groupRouteId,
                 ),
               ));

@@ -52,6 +52,16 @@ class _CyclingMapViewState extends State<CyclingMapView>
 
   bool _isCentered = true;
 
+  late MapCubit _mapCubit;
+  late TrackingBloc _trackingBloc;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _mapCubit = context.read<MapCubit>();
+    _trackingBloc = context.read<TrackingBloc>();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -90,24 +100,24 @@ class _CyclingMapViewState extends State<CyclingMapView>
 
       if (mounted) {
         // Move map to position with smooth animation
-        await context.read<MapCubit>().mapboxMap?.flyTo(
-              mapbox.CameraOptions(
-                center: mapbox.Point(
-                  coordinates: mapbox.Position(
-                    cachedPosition.longitude,
-                    cachedPosition.latitude,
-                  ),
-                ),
-                bearing: cachedPosition.heading,
-                zoom: 15.0, // Add default zoom level
-                padding: mapbox.MbxEdgeInsets(
-                    top: 100, left: 0, right: 0, bottom: 0),
+        await _mapCubit.mapboxMap?.flyTo(
+          mapbox.CameraOptions(
+            center: mapbox.Point(
+              coordinates: mapbox.Position(
+                cachedPosition.longitude,
+                cachedPosition.latitude,
               ),
-              mapbox.MapAnimationOptions(
-                duration: 500, // Smooth animation duration
-                startDelay: 0,
-              ),
-            );
+            ),
+            bearing: cachedPosition.heading,
+            zoom: 15.0, // Add default zoom level
+            padding:
+                mapbox.MbxEdgeInsets(top: 100, left: 0, right: 0, bottom: 0),
+          ),
+          mapbox.MapAnimationOptions(
+            duration: 500, // Smooth animation duration
+            startDelay: 0,
+          ),
+        );
       } else {
         debugPrint('⚠️ No position available');
       }
@@ -177,7 +187,7 @@ class _CyclingMapViewState extends State<CyclingMapView>
     _matchedUserUpdateSub?.cancel();
     _currentPositionUpdateSub?.cancel();
     _resetTrackingState();
-    context.read<TrackingBloc>().add(ResetTracking());
+    _trackingBloc.add(ResetTracking());
     super.dispose();
   }
 

@@ -1,3 +1,6 @@
+import 'package:Tracio/data/auth/sources/auth_local_source/auth_local_source.dart';
+import 'package:Tracio/presentation/map/bloc/route_cubit.dart';
+import 'package:Tracio/presentation/map/widgets/detail/route_plan_detail.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -18,8 +21,10 @@ import 'package:Tracio/presentation/map/bloc/tracking/bloc/tracking_bloc.dart';
 import 'package:Tracio/service_locator.dart';
 
 class GroupActivityDetail extends StatefulWidget {
+  final int groupId;
   final int groupRouteId;
-  const GroupActivityDetail({super.key, required this.groupRouteId});
+  const GroupActivityDetail(
+      {super.key, required this.groupId, required this.groupRouteId});
 
   @override
   State<GroupActivityDetail> createState() => _GroupActivityDetailState();
@@ -30,6 +35,7 @@ class _GroupActivityDetailState extends State<GroupActivityDetail> {
   final int _calendarBoxHeight = 70;
   final int _imageHeight = 200;
   final int _imageRouteHeight = 180;
+  bool _isCreator = false;
 
   Future<void> _onRefresh() async {
     if (!mounted) return;
@@ -40,12 +46,45 @@ class _GroupActivityDetailState extends State<GroupActivityDetail> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocBuilder<GroupCubit, GroupState>(
+      body: BlocConsumer<GroupCubit, GroupState>(
+        listener: (context, state) {
+          if (state is DeleteGroupRouteSuccess) {
+            Navigator.pop(context);
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Route deleted successfully'),
+              ),
+            );
+          }
+        },
         builder: (context, state) {
           if (state is GetGroupDetailSuccess) {
             final groupRoute = state.groupRoutes.groupRouteList
                 .firstWhere((p) => p.groupRouteId == widget.groupRouteId);
-
+            _isCreator =
+                groupRoute.creatorId == sl<AuthLocalSource>().getUser()?.userId;
+            if (groupRoute.groupStatus == "Deleted") {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (context) => AlertDialog(
+                    title: const Text('Route Deleted'),
+                    content: const Text('This activity has been deleted.'),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context); // Close dialog
+                          Navigator.pop(context); // Navigate back
+                        },
+                        child: const Text('OK'),
+                      ),
+                    ],
+                  ),
+                );
+              });
+              return const SizedBox.shrink();
+            }
             return Stack(
               children: [
                 RefreshIndicator(
@@ -150,6 +189,9 @@ class _GroupActivityDetailState extends State<GroupActivityDetail> {
   Widget _buildScheduleInfo(GroupRouteEntity groupRoute) {
     bool isDisabled = isLessThan30MinutesFromNow(groupRoute.startDateTime) &&
         isAlreadyInGroupTracking();
+    if (groupRoute.groupStatus == "Finished") {
+      isDisabled = true;
+    }
     return Padding(
       padding:
           const EdgeInsets.symmetric(horizontal: AppSize.apHorizontalPadding),
@@ -197,7 +239,9 @@ class _GroupActivityDetailState extends State<GroupActivityDetail> {
           ),
           _buildActionButton(
               disabled: isDisabled,
-              "Start Riding",
+              groupRoute.groupStatus == "Finished"
+                  ? "This activity has finished"
+                  : "Start Riding",
               Icons.start_sharp, () async {
             try {
               final groupRouteHub = sl<GroupRouteHubService>();
@@ -206,23 +250,21 @@ class _GroupActivityDetailState extends State<GroupActivityDetail> {
                   .joinGroupRoute(widget.groupRouteId.toString());
 
               if (!context.mounted) return;
-              
+
               // Get the TrackingBloc before navigation
               final trackingBloc = context.read<TrackingBloc>();
-              
+
               // Navigate to cycling page
               Navigator.push(context, MaterialPageRoute(builder: (context) {
                 return BlocProvider.value(
-                  value: trackingBloc,
+                  value: trackingBloc
+                    ..add(AddGroupRouteId(widget.groupRouteId)),
                   child: BottomNavBarManager(
                     selectedIndex: 2,
                     isNavVisible: false,
                   ),
                 );
               }));
-
-              // Add groupRouteId after navigation
-              trackingBloc.add(AddGroupRouteId(widget.groupRouteId));
             } catch (e, stack) {
               debugPrint("❌ Failed to start riding: $e\n$stack");
               if (context.mounted) {
@@ -257,7 +299,21 @@ class _GroupActivityDetailState extends State<GroupActivityDetail> {
             ),
             const SizedBox(height: AppSize.apVerticalPadding),
             InkWell(
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => BlocProvider(
+                        create: (context) => MapCubit(),
+                        child: BlocProvider.value(
+                            value: context.read<RouteCubit>()
+                              ..getRouteDetail(groupRoute.ridingRoute!.routeId),
+                            child: RoutePlanDetail(
+                              routeId: groupRoute.ridingRoute!.routeId,
+                            ))),
+                  ),
+                );
+              },
               child: Container(
                 width: double.infinity,
                 decoration: BoxDecoration(
@@ -268,6 +324,8 @@ class _GroupActivityDetailState extends State<GroupActivityDetail> {
                   children: [
                     CachedNetworkImage(
                       imageUrl: groupRoute.ridingRoute!.routeThumbnail,
+                      width: double.infinity,
+                      height: _imageRouteHeight * 0.8.h,
                       fit: BoxFit.cover,
                       errorWidget: (context, url, error) =>
                           _buildGreyBackgroundImage(
@@ -374,7 +432,11 @@ class _GroupActivityDetailState extends State<GroupActivityDetail> {
               create: (context) => MapCubit(),
               child: BlocProvider.value(
                 value: context.read<GroupCubit>(),
-                child: RouteDetailScreen(routeId: detail.routeId),
+                child: BlocProvider.value(
+                  value: context.read<RouteCubit>()
+                    ..getRouteDetail(detail.routeId),
+                  child: RouteDetailScreen(routeId: detail.routeId),
+                ),
               ),
             ),
           ),
@@ -519,7 +581,7 @@ class _GroupActivityDetailState extends State<GroupActivityDetail> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           _buildBackButton(),
-          _buildMenuButton(),
+          if (_isCreator) _buildMenuButton(),
         ],
       ),
     );
@@ -547,16 +609,43 @@ class _GroupActivityDetailState extends State<GroupActivityDetail> {
       color: Colors.white,
       offset: const Offset(0, 40),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      onSelected: (value) {
+      onSelected: (value) async {
         if (value == 'edit') {
           // TODO: Handle edit event
         } else if (value == 'delete') {
-          // TODO: Handle delete event
+          final shouldDelete = await showDialog<bool>(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Delete Route'),
+              content: const Text(
+                  'Are you sure you want to delete this route? This action cannot be undone.'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context, false),
+                  child: const Text('Cancel'),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.pop(context, true),
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.red,
+                  ),
+                  child: const Text('Delete'),
+                ),
+              ],
+            ),
+          );
+
+          if (shouldDelete == true && context.mounted) {
+            context.read<GroupCubit>().deleteGroupRoute(
+                  widget.groupId,
+                  widget.groupRouteId,
+                );
+          }
         }
       },
       itemBuilder: (context) => [
-        _buildPopupMenuItem('edit', Icons.edit_note_outlined, "Edit Event"),
-        _buildPopupMenuItem('delete', Icons.delete_outline, "Delete Event",
+        _buildPopupMenuItem('edit', Icons.edit_note_outlined, "Edit Activity"),
+        _buildPopupMenuItem('delete', Icons.delete_outline, "Delete Activity",
             iconColor: Colors.redAccent),
       ],
     );
