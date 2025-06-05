@@ -105,7 +105,7 @@ class _CyclingSnapshotDisplayState extends State<CyclingSnapshotDisplay> {
                       child: BlocProvider.value(
                         value: context.read<RouteCubit>()
                           ..getRouteDetail(widget.route.routeId),
-                        child: RouteDetailScreen(routeId: widget.route.routeId),
+                        child: RouteDetailScreen(routeId: widget.route.routeId,),
                       ),
                     ),
                   ),

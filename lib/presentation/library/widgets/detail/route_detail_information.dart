@@ -13,6 +13,8 @@ import 'package:Tracio/presentation/library/widgets/detail/route_blog_reviews.da
 import 'package:Tracio/presentation/map/bloc/route_cubit.dart';
 import 'package:intl/intl.dart';
 
+import '../../../blog/bloc/comment/comment_input_cubit.dart';
+
 class RouteDetailInformation extends StatefulWidget {
   final RouteDetailEntity routeEntity;
   const RouteDetailInformation({super.key, required this.routeEntity});
@@ -262,9 +264,36 @@ class _RouteDetailInformationState extends State<RouteDetailInformation> {
                         .getRouteBlogReviews(widget.routeEntity.routeId));
                     AppNavigator.push(
                         context,
-                        RouteBlogReviews(
-                            routeId: widget.routeEntity.routeId,
-                            route: _mapToRouteBlog(widget.routeEntity)));
+                        BlocProvider(
+                          create: (context) => CommentInputCubit.forRoute(
+                              widget.routeEntity.routeId),
+                          child: RouteBlogReviews(
+                              routeId: widget.routeEntity.routeId,
+                              route: RouteBlogEntity(
+                                  routeId: widget.routeEntity.routeId,
+                                  cyclistId: widget.routeEntity.cyclistId,
+                                  cyclistName: widget.routeEntity.cyclistName,
+                                  cyclistAvatar:
+                                      widget.routeEntity.cyclistAvatar,
+                                  routeName: widget.routeEntity.routeName,
+                                  routeThumbnail:
+                                      widget.routeEntity.routeThumbnail,
+                                  description: widget.routeEntity.description,
+                                  city: widget.routeEntity.city,
+                                  totalDistance:
+                                      widget.routeEntity.totalDistance,
+                                  totalElevationGain:
+                                      widget.routeEntity.totalElevationGain,
+                                  totalDuration:
+                                      widget.routeEntity.totalDuration,
+                                  avgSpeed: widget.routeEntity.avgSpeed,
+                                  mood: widget.routeEntity.mood,
+                                  isPublic: true,
+                                  isPlanned: widget.routeEntity.isPlanned,
+                                  isReacted: false,
+                                  createdAt: widget.routeEntity.createdAt,
+                                  updatedAt: widget.routeEntity.updatedAt)),
+                        ));
                   },
                   icon: Icon(
                     Icons.comment_outlined,
