@@ -1,3 +1,4 @@
+import 'package:Tracio/core/erorr/failure.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -73,108 +74,125 @@ class _AllReviewServiceState extends State<AllReviewService> {
             context.read<GetReviewCubit>().getReviewBooking(widget.bookingId);
           }
         },
-        child: BlocBuilder<GetReviewCubit, GetReviewState>(
-          builder: (context, state) {
-            if (state is GetReviewSuccess) {
-              return Column(
-                children: [
-                  Expanded(
-                    child: Stack(children: [
-                      ListView.builder(
-                        itemCount: state.review.length,
-                        shrinkWrap: true,
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        itemBuilder: (context, index) {
-                          return Container(
-                              decoration: BoxDecoration(),
-                              margin:
-                                  EdgeInsets.only(top: index == 0 ? 12 : 16),
-                              // height: 120,
-                              child: ReviewServiceCard(
-                                review: state.review[index],
-                              ));
-                        },
-                      ),
-                      Positioned(
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 10),
-                          decoration: BoxDecoration(
-                            color: context.isDarkMode
-                                ? AppColors.darkGrey
-                                : Colors.grey.shade200,
-                            // boxShadow: [
-                            //   BoxShadow(
-                            //     color: Colors.black,
-                            //     blurRadius: 5,
-                            //     offset: const Offset(0, -3),
-                            //   ),
-                            // ],
-                          ),
-                          child: widget.isShopOwner
-                              ? !widget.isReviewd
-                                  ? Row(
-                                      children: [
-                                        Expanded(
-                                          child: InputTextFormField(
-                                            controller: replyReviewCon,
-                                            labelText: 'Reply',
-                                            hint: 'Reply This Review',
-                                          ),
-                                        ),
-
-                                        // Send button
-                                        IconButton(
-                                          icon: Icon(
-                                            Icons.send_rounded,
-                                            color: context.isDarkMode
-                                                ? AppColors.primary
-                                                : AppColors.background,
-                                            size: AppSize.iconLarge.sp,
-                                          ),
-                                          onPressed: () {
-                                            context
-                                                .read<ReviewBookingCubit>()
-                                                .replyReview(ReplyReviewReq(
-                                                    reviewId: state
-                                                        .review.first.reviewId!,
-                                                    content:
-                                                        replyReviewCon.text));
-                                            replyReviewCon.clear();
-
-                                            FocusManager.instance.primaryFocus
-                                                ?.unfocus();
-                                          },
-                                        ),
-                                      ],
-                                    )
-                                  : SizedBox.shrink()
-                              : widget.isBooking
-                                  ? buildButton(context, 7, 17)
-                                  : SizedBox.shrink(),
-                        ),
-                      ),
-                    ]),
-                  ),
-                ],
-              );
+        child: BlocListener<ReviewBookingCubit, ReviewBookingState>(
+          listener: (context, state) {
+            if (state is ReviewBookingFailure) {
+              if (state.failure is CredentialFailure) {
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(SnackBar(content: Text('No reviews yet')));
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text('Review Failure! Please try again')));
+              }
             }
-            if (state is GetReviewLoading) {
-              return Center(
-                  child: LoadingAnimationWidget.fourRotatingDots(
-                color: AppColors.secondBackground,
-                size: AppSize.iconExtraLarge,
-              ));
+            if (state is ReviewBookingSuccess) {
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(SnackBar(content: Text('Review Success')));
             }
-            if (state is GetReviewFailure) {
-              return Container();
-            }
-            return Container();
           },
+          child: BlocBuilder<GetReviewCubit, GetReviewState>(
+            builder: (context, state) {
+              if (state is GetReviewSuccess) {
+                return Column(
+                  children: [
+                    Expanded(
+                      child: Stack(children: [
+                        ListView.builder(
+                          itemCount: state.review.length,
+                          shrinkWrap: true,
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          itemBuilder: (context, index) {
+                            return Container(
+                                decoration: BoxDecoration(),
+                                margin:
+                                    EdgeInsets.only(top: index == 0 ? 12 : 16),
+                                // height: 120,
+                                child: ReviewServiceCard(
+                                  review: state.review[index],
+                                ));
+                          },
+                        ),
+                        Positioned(
+                          bottom: 0,
+                          left: 0,
+                          right: 0,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 10),
+                            decoration: BoxDecoration(
+                              color: context.isDarkMode
+                                  ? AppColors.darkGrey
+                                  : Colors.grey.shade200,
+                              // boxShadow: [
+                              //   BoxShadow(
+                              //     color: Colors.black,
+                              //     blurRadius: 5,
+                              //     offset: const Offset(0, -3),
+                              //   ),
+                              // ],
+                            ),
+                            child: widget.isShopOwner
+                                ? !widget.isReviewd
+                                    ? Row(
+                                        children: [
+                                          Expanded(
+                                            child: InputTextFormField(
+                                              controller: replyReviewCon,
+                                              labelText: 'Reply',
+                                              hint: 'Reply This Review',
+                                            ),
+                                          ),
+
+                                          // Send button
+                                          IconButton(
+                                            icon: Icon(
+                                              Icons.send_rounded,
+                                              color: context.isDarkMode
+                                                  ? AppColors.primary
+                                                  : AppColors.background,
+                                              size: AppSize.iconLarge.sp,
+                                            ),
+                                            onPressed: () {
+                                              context
+                                                  .read<ReviewBookingCubit>()
+                                                  .replyReview(ReplyReviewReq(
+                                                      reviewId: state.review
+                                                          .first.reviewId!,
+                                                      content:
+                                                          replyReviewCon.text));
+                                              replyReviewCon.clear();
+
+                                              FocusManager.instance.primaryFocus
+                                                  ?.unfocus();
+                                            },
+                                          ),
+                                        ],
+                                      )
+                                    : SizedBox.shrink()
+                                : widget.isBooking
+                                    ? buildButton(context, 7, 17)
+                                    : SizedBox.shrink(),
+                          ),
+                        ),
+                      ]),
+                    ),
+                  ],
+                );
+              }
+              if (state is GetReviewLoading) {
+                return Center(
+                    child: LoadingAnimationWidget.fourRotatingDots(
+                  color: AppColors.secondBackground,
+                  size: AppSize.iconExtraLarge,
+                ));
+              }
+              if (state is GetReviewFailure) {
+                return Container();
+              }
+              return Container();
+            },
+          ),
         ),
       ),
     );

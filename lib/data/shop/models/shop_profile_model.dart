@@ -38,7 +38,7 @@ class ShopProfileModel extends ShopProfileEntity {
       district: json["district"],
       address: json["address"],
       totalPendingBooking: json["totalPendingBooking"],
-      totalService: json["totalPendingBooking"],
+      totalService: json["totalService"],
     );
   }
 

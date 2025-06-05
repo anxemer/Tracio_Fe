@@ -15,9 +15,9 @@ final class ReviewBookingSuccess extends ReviewBookingState {}
 
 final class ReviewBookingFailure extends ReviewBookingState {
   final String message;
-
-  const ReviewBookingFailure(this.message);
+  final Failure failure;
+  const ReviewBookingFailure(this.message, this.failure);
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => [message,failure];
 }

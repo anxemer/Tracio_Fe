@@ -1,4 +1,3 @@
-import 'package:Tracio/core/services/notifications/firebase_message_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -7,7 +6,6 @@ import 'package:Tracio/common/helper/navigator/app_navigator.dart';
 import 'package:Tracio/common/helper/placeholder/booking_detail_holder.dart';
 import 'package:Tracio/common/widget/appbar/app_bar.dart';
 import 'package:Tracio/core/constants/app_size.dart';
-import 'package:Tracio/core/services/notifications/i_notification_service.dart';
 import 'package:Tracio/presentation/service/bloc/bookingservice/get_booking_detail_cubit/get_booking_detail_cubit.dart';
 import 'package:Tracio/presentation/service/widget/all_review_service.dart';
 import 'package:Tracio/presentation/shop_owner/bloc/resolve_booking/resolve_booking_cubit.dart';
@@ -51,6 +49,7 @@ class _BookingDetailShopScreenState extends State<BookingDetailShopScreen> {
         ),
       ],
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         appBar: BasicAppbar(
           title: Text(
             'Booking Detail',

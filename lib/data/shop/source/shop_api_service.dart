@@ -374,6 +374,8 @@ class ShopApiServiceImpl extends ShopApiService {
           .post(ApiUrl.replyReview, data: reply.toMap(), isMultipart: false);
       if (response.statusCode == 201) {
         return Right(true);
+      } else if (response.statusCode == 404) {
+        throw CredentialFailure(response.statusMessage.toString());
       }
       return Right(false);
     } on DioException catch (e) {
