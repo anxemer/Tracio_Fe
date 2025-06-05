@@ -22,7 +22,8 @@ class GroupPage extends StatefulWidget {
   State<GroupPage> createState() => _GroupPageState();
 }
 
-class _GroupPageState extends State<GroupPage> with SingleTickerProviderStateMixin {
+class _GroupPageState extends State<GroupPage>
+    with SingleTickerProviderStateMixin {
   final groupRouteHub = sl<GroupRouteHubService>();
   late TabController _tabController;
   int _currentIndex = 1;
@@ -124,7 +125,7 @@ class _GroupPageState extends State<GroupPage> with SingleTickerProviderStateMix
             AppNavigator.push(context, ConversationScreen());
           },
           icon: Icon(
-            Icons.mail,
+            Icons.message_outlined,
             color: AppColors.primary,
             size: AppSize.iconMedium.w,
           ),
@@ -155,7 +156,7 @@ class _GroupPageState extends State<GroupPage> with SingleTickerProviderStateMix
             AppNavigator.push(context, NotificationsPage());
           },
           icon: Icon(
-            Icons.notifications,
+            Icons.person_add_alt,
             color: AppColors.primary,
             size: AppSize.iconMedium.w,
           ),

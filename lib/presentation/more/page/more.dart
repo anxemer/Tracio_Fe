@@ -13,7 +13,6 @@ import 'package:Tracio/presentation/auth/pages/login.dart';
 import 'package:Tracio/presentation/map/pages/route_planner.dart';
 
 import '../../auth/bloc/authCubit/auth_cubit.dart';
-import '../../auth/bloc/authCubit/auth_state.dart';
 import '../../profile/pages/user_profile.dart';
 
 class MorePage extends StatelessWidget {
@@ -89,22 +88,6 @@ class MorePage extends StatelessWidget {
           ),
           Divider(),
           ListTile(
-            leading: Icon(Icons.people, color: Colors.black54),
-            title: Text('Follows'),
-            onTap: () {
-              Navigator.pushNamed(context, '/follows');
-            },
-          ),
-          Divider(),
-          ListTile(
-            leading: Icon(Icons.photo, color: Colors.black54),
-            title: Text('Photos'),
-            onTap: () {
-              Navigator.pushNamed(context, '/photos');
-            },
-          ),
-          Divider(),
-          ListTile(
             leading: Icon(Icons.directions, color: Colors.black54),
             title: Text('Route Planner'),
             onTap: () {
@@ -112,30 +95,6 @@ class MorePage extends StatelessWidget {
                 context,
                 MaterialPageRoute(builder: (context) => RoutePlanner()),
               );
-            },
-          ),
-          Divider(),
-          ListTile(
-            leading: Icon(Icons.help, color: Colors.black54),
-            title: Text('Help Center'),
-            onTap: () {
-              Navigator.pushNamed(context, '/help-center');
-            },
-          ),
-          Divider(),
-          ListTile(
-            leading: Icon(Icons.contact_mail, color: Colors.black54),
-            title: Text('Contact Us'),
-            onTap: () {
-              Navigator.pushNamed(context, '/contact-us');
-            },
-          ),
-          Divider(),
-          ListTile(
-            leading: Icon(Icons.settings, color: Colors.black54),
-            title: Text('Settings'),
-            onTap: () {
-              Navigator.pushNamed(context, '/settings');
             },
           ),
           Divider(),
