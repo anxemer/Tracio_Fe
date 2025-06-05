@@ -1,3 +1,4 @@
+import 'package:Tracio/domain/map/entities/route_blog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -21,7 +22,8 @@ import 'package:Tracio/presentation/library/widgets/detail/route_detail_particip
 
 class RouteDetailScreen extends StatefulWidget {
   final int routeId;
-  const RouteDetailScreen({super.key, required this.routeId});
+  const RouteDetailScreen(
+      {super.key, required this.routeId});
 
   @override
   State<RouteDetailScreen> createState() => _RouteDetailScreenState();
@@ -52,6 +54,7 @@ class _RouteDetailScreenState extends State<RouteDetailScreen> with RouteAware {
 
   @override
   Widget build(BuildContext context) {
+
     return SafeArea(
       child: Scaffold(
         body: Stack(
@@ -121,6 +124,7 @@ class _RouteDetailScreenState extends State<RouteDetailScreen> with RouteAware {
                                   height: AppSize.apVerticalPadding,
                                 ),
                                 RouteDetailInformation(
+                                    
                                     routeEntity: state.route),
                                 RouteDetailParticipants(
                                   routeDetail: state.route,

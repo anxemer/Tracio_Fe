@@ -39,7 +39,7 @@ class GetCommentCubit extends Cubit<GetCommentState> {
           totalCount: reviewsData.totalCount ?? 0,
           commentBlogPaginationEntity: reviewsData,
           pageNumber: comment.pageNumber ?? 1,
-          pageSize: comment.pageSize ?? 5,
+          pageSize: comment.pageSize ?? 20,
           totalPages: reviewsData.totalPage ?? 1,
           hasPreviousPage: reviewsData.hasPreviousPage ?? false,
           hasNextPage: reviewsData.hasNextPage ?? false,
@@ -49,7 +49,7 @@ class GetCommentCubit extends Cubit<GetCommentState> {
   }
 
   Future<void> getCommentBlogReply(int commentId,
-      {int pageNumber = 1, int pageSize = 5}) async {
+      {int pageNumber = 1, int pageSize = 20}) async {
     GetCommentLoaded? currentState;
     if (state is GetCommentLoaded) currentState = state as GetCommentLoaded;
 
@@ -83,7 +83,7 @@ class GetCommentCubit extends Cubit<GetCommentState> {
           totalCount: 0,
           commentBlogPaginationEntity: null,
           pageNumber: 1,
-          pageSize: 5,
+          pageSize: 20,
           totalPages: 1,
           hasPreviousPage: false,
           hasNextPage: false,
@@ -112,7 +112,7 @@ class GetCommentCubit extends Cubit<GetCommentState> {
         totalCount: 1,
         commentBlogPaginationEntity: null,
         pageNumber: 1,
-        pageSize: 5,
+        pageSize: 20,
         totalPages: 1,
         hasPreviousPage: false,
         hasNextPage: false,
@@ -142,7 +142,7 @@ class GetCommentCubit extends Cubit<GetCommentState> {
                   replies: updatedReplies,
                   totalCount: 1,
                   pageNumber: 1,
-                  pageSize: 5,
+                  pageSize: 20,
                   totalPage: 1,
                   hasPreviousPage: false,
                   hasNextPage: false,

@@ -11,6 +11,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../common/helper/navigator/app_navigator.dart';
+import '../../chat/bloc/bloc/conversation_bloc.dart';
+import '../../chat/pages/conversation.dart';
+
 class FollowersScreen extends StatefulWidget {
   const FollowersScreen(
       {super.key, required this.userId, required this.isFollower});
@@ -107,7 +111,7 @@ class _FollowersScreenState extends State<FollowersScreen> {
                           ),
                         ),
                         follower.status == 'accepted'
-                            ? _messageButton()
+                            ? _messageButton(follower.followerId!)
                             : _followBackButton(),
                       ],
                     ),
@@ -136,10 +140,16 @@ class _FollowersScreenState extends State<FollowersScreen> {
     );
   }
 
-  Widget _messageButton() {
+  Widget _messageButton(int userId) {
     return ElevatedButton(
       onPressed: () {
-        // Mở chat
+        AppNavigator.push(
+            context,
+            BlocProvider.value(
+              value: context.read<ConversationBloc>()
+                ..add(CreateConversation(userId: userId)),
+              child: ConversationScreen(),
+            ));
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.grey.shade800,
