@@ -68,6 +68,7 @@ class _AccountPrivacyScreenState extends State<AccountPrivacyScreen> {
                   setState(() {
                     isPrivate = true;
                   });
+                  print(isPrivate);
                   var result = await sl<EditUserProfileUseCase>()
                       .call(EditUserProfileReq(isPublic: isPrivate));
                   result.fold((error) {}, (data) {});

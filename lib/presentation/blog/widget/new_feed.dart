@@ -49,7 +49,7 @@ class NewFeeds extends StatelessWidget {
           cmtAction: () => CustomModalBottomSheet.show(
             context: context,
             child: BlocProvider(
-              create: (context) => CommentInputCubit(blogs.blogId),
+              create: (context) => CommentInputCubit.forBlog(blogs.blogId),
               child: BlocProvider.value(
                 value: commentCubit,
                 child: Comment(

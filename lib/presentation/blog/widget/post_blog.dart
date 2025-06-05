@@ -21,6 +21,7 @@ import 'package:Tracio/presentation/blog/widget/animated_button_follow.dart';
 import '../../../domain/auth/entities/user.dart';
 import '../../../service_locator.dart';
 import '../bloc/comment/get_comment_cubit.dart';
+import '../pages/edit_blog.dart';
 
 class PostBlog extends StatefulWidget {
   const PostBlog(
@@ -120,9 +121,11 @@ class _PostBlogState extends State<PostBlog> {
                       width: 80.w,
                       height: 30.h,
                     ),
-                  InkWell(
-                      onTap: () => showPostOptions(context, isOwner),
-                      child: Icon(Icons.more_vert_outlined))
+                  // widget.isPersonal
+                  //     ? InkWell(
+                  //         onTap: () => showPostOptions(context, isOwner),
+                  //         child: Icon(Icons.more_vert_outlined))
+                  //     : SizedBox.shrink()
                 ],
               );
             }
@@ -151,7 +154,7 @@ class _PostBlogState extends State<PostBlog> {
                 context,
                 BlocProvider(
                   create: (context) =>
-                      CommentInputCubit(widget.blogEntity.blogId),
+                      CommentInputCubit.forBlog(widget.blogEntity.blogId),
                   child: BlocProvider.value(
                     value: context.read<GetCommentCubit>(),
                     child: DetailBlogPage(
@@ -220,24 +223,33 @@ class _PostBlogState extends State<PostBlog> {
               isOwner
                   ? _buildOption(context, Icons.edit, 'Edit', () {
                       Navigator.pop(context);
-                      // handle edit
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => EditBlogPostScreen(
+                                  imageUrl: widget.blogEntity.mediaFiles,
+                                  blogId: widget.blogEntity.blogId,
+                                  initialContent: widget.blogEntity.content,
+                                  initialIsPublic: widget.blogEntity.isPublic,
+                                )),
+                      );
                     })
                   : SizedBox.shrink(),
-              isOwner
-                  ? _buildOption(context, Icons.delete, 'Delete', () {
-                      Navigator.pop(context);
-                      // handle delete
-                    })
-                  : SizedBox.shrink(),
-              _buildOption(context, Icons.bookmark_add_outlined, 'Save', () {
-                Navigator.pop(context);
-                // handle save
-              }),
-              _buildOption(
-                  context, Icons.report_gmailerrorred_rounded, 'Report', () {
-                Navigator.pop(context);
-                showReportReasons(context); // chuyển sang popup ảnh 2
-              }),
+              // isOwner
+              //     ? _buildOption(context, Icons.delete, 'Delete', () {
+              //         Navigator.pop(context);
+              //         // handle delete
+              //       })
+              //     : SizedBox.shrink(),
+              // _buildOption(context, Icons.bookmark_add_outlined, 'Save', () {
+              //   Navigator.pop(context);
+              //   // handle save
+              // }),
+              // _buildOption(
+              //     context, Icons.report_gmailerrorred_rounded, 'Report', () {
+              //   Navigator.pop(context);
+              //   showReportReasons(context); // chuyển sang popup ảnh 2
+              // }),
             ],
           ),
         );

@@ -1,3 +1,4 @@
+import 'package:Tracio/presentation/service/bloc/bookingservice/get_booking_detail_cubit/get_booking_detail_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -81,17 +82,17 @@ class _BookingStatusTabState extends State<BookingStatusTab> with RouteAware {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<RescheduleBookingCubit, ResolveBookingState>(
+    return BlocConsumer<BookingServiceCubit, BookingServiceState>(
       listener: (context, state) {
-        if (state is RescheduleBookingSuccess) {
+        if (state is BookingServiceSuccess) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Reschedule successfuly')),
           );
-
+          context.read<BookingServiceCubit>().reschedule.clear();
           context.read<GetBookingCubit>().getBooking(
                 GetBookingReq(status: widget.status),
               );
-        } else if (state is RescheduleBookingFailure) {
+        } else if (state is BookingServiceFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Reschedule Fail, Try Again')),
           );
@@ -220,8 +221,11 @@ class _BookingStatusTabState extends State<BookingStatusTab> with RouteAware {
               child: BookingCard(
                   ontap: () => AppNavigator.push(
                       context,
-                      BookingDetailScreen(
-                        bookingId: bookings[index].bookingDetailId!,
+                      BlocProvider(
+                        create: (context) => GetBookingDetailCubit(),
+                        child: BookingDetailScreen(
+                          bookingId: bookings[index].bookingDetailId!,
+                        ),
                       )),
                   service: BookingCardViewModel(
                     imageUrl: bookings[index].serviceMediaFile,

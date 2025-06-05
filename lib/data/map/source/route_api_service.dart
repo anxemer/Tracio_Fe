@@ -23,6 +23,9 @@ import 'package:Tracio/data/map/models/route_detail.dart';
 import 'package:Tracio/domain/map/entities/route_detail.dart';
 import 'package:Tracio/service_locator.dart';
 
+import '../models/route_blog_review.dart';
+import '../models/route_reply.dart';
+
 abstract class RouteApiService {
   Future<Either> getRoutes(GetRouteReq request);
   Future<Either> postRoute(PostRouteReq request);
@@ -36,8 +39,8 @@ abstract class RouteApiService {
       {Map<String, String> params});
   Future<Either<Failure, dynamic>> getRouteBlogReviewReplies(
       Map<String, dynamic> params);
-  Future<Either<Failure, dynamic>> postReview(PostReviewReq request);
-  Future<Either<Failure, dynamic>> postReply(PostReplyReq request);
+  Future<RouteBlogReviewModel> postReview(PostReviewReq request);
+  Future<RouteReplyModel> postReply(PostReplyReq request);
   Future<Either<Failure, dynamic>> deleteReview(int reviewId);
   Future<Either<Failure, dynamic>> deleteReply(int replyId);
   Future<Either<Failure, dynamic>> getOnGoingInRoute();
@@ -282,48 +285,51 @@ class RouteApiServiceImpl extends RouteApiService {
   }
 
   @override
-  Future<Either<Failure, dynamic>> postReply(PostReplyReq request) async {
+  Future<RouteReplyModel> postReply(PostReplyReq request) async {
     try {
-      var formData = request.toFormData();
+      var formData = await request.toFormData();
       var response = await sl<DioClient>().post(
         ApiUrl.urlPostRouteReply.toString(),
         data: formData,
-        options: Options(contentType: "multipart/form-data"),
+        // options: Options(contentType: "multipart/form-data"),
+
+        isMultipart: true,
       );
 
       if (response.statusCode == 201) {
-        return right(response.data);
+        return RouteReplyModel.fromMap(response.data['result']);
       } else {
-        return left(ExceptionFailure('Error: ${response.statusCode}'));
+        throw (ExceptionFailure('Error: ${response.statusCode}'));
       }
     } on DioException catch (e) {
-      return left(
-          ExceptionFailure(e.response?.data['message'] ?? 'An error occurred'));
+      throw (ExceptionFailure(
+          e.response?.data['message'] ?? 'An error occurred'));
     } catch (e) {
-      return left(ExceptionFailure('An unexpected error occurred: $e'));
+      throw (ExceptionFailure('An unexpected error occurred: $e'));
     }
   }
 
   @override
-  Future<Either<Failure, dynamic>> postReview(PostReviewReq request) async {
+  Future<RouteBlogReviewModel> postReview(PostReviewReq request) async {
     try {
-      var formData = request.toFormData();
+      var formData = await request.toFormData();
       var response = await sl<DioClient>().post(
         ApiUrl.urlPostRouteReview.toString(),
         data: formData,
-        options: Options(contentType: "multipart/form-data"),
+        // options: Options(contentType: "multipart/form-data"),
+        isMultipart: true,
       );
 
       if (response.statusCode == 201) {
-        return right(response.data);
+        return RouteBlogReviewModel.fromMap(response.data['result']);
       } else {
-        return left(ExceptionFailure('Error: ${response.statusCode}'));
+        throw (ExceptionFailure('Error: ${response.statusCode}'));
       }
     } on DioException catch (e) {
-      return left(
-          ExceptionFailure(e.response?.data['message'] ?? 'An error occurred'));
+      throw (ExceptionFailure(
+          e.response?.data['message'] ?? 'An error occurred'));
     } catch (e) {
-      return left(ExceptionFailure('An unexpected error occurred: $e'));
+      throw (ExceptionFailure('An unexpected error occurred: $e'));
     }
   }
 

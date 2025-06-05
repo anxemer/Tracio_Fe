@@ -20,7 +20,6 @@ import '../../../domain/auth/entities/user.dart';
 import '../../auth/bloc/authCubit/auth_cubit.dart';
 import '../../auth/bloc/authCubit/auth_state.dart';
 import '../../map/bloc/map_cubit.dart';
-import '../../splash/page/splash.dart';
 
 class TabMorePage extends StatefulWidget {
   const TabMorePage({super.key});
@@ -131,30 +130,6 @@ class _TabMorePageState extends State<TabMorePage> {
                     context,
                     MaterialPageRoute(builder: (context) => RoutePlanner()),
                   );
-                },
-              ),
-              Divider(),
-              ListTile(
-                leading: Icon(Icons.help, color: Colors.black54),
-                title: Text('Help Center'),
-                onTap: () {
-                  Navigator.pushNamed(context, '/help-center');
-                },
-              ),
-              Divider(),
-              ListTile(
-                leading: Icon(Icons.contact_mail, color: Colors.black54),
-                title: Text('Contact Us'),
-                onTap: () {
-                  Navigator.pushNamed(context, '/contact-us');
-                },
-              ),
-              Divider(),
-              ListTile(
-                leading: Icon(Icons.settings, color: Colors.black54),
-                title: Text('Settings'),
-                onTap: () {
-                  Navigator.pushNamed(context, '/settings');
                 },
               ),
               Divider(),

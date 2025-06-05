@@ -5,9 +5,11 @@ import 'package:Tracio/data/map/models/request/post_reply_req.dart';
 import 'package:Tracio/domain/map/repositories/route_repository.dart';
 import 'package:Tracio/service_locator.dart';
 
-class PostReplyUsecase extends Usecase<dynamic, PostReplyReq> {
+import '../../entities/route_reply.dart';
+
+class PostReplyUsecase extends Usecase<RouteReplyEntity, PostReplyReq> {
   @override
-  Future<Either<Failure, dynamic>> call(params) async {
+  Future<Either<Failure, RouteReplyEntity>> call(params) async {
     return await sl<RouteRepository>().postReply(params);
   }
 }
