@@ -1,5 +1,6 @@
 import 'package:Tracio/common/widget/navbar/bottom_nav_bar_manager.dart';
 import 'package:Tracio/data/map/models/request/update_route_req.dart';
+import 'package:Tracio/data/map/models/route.dart';
 import 'package:Tracio/presentation/library/pages/route_detail.dart';
 import 'package:Tracio/presentation/map/bloc/map_cubit.dart';
 import 'package:Tracio/presentation/map/bloc/route_cubit.dart';
@@ -10,6 +11,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:Tracio/core/constants/app_size.dart';
 import 'package:Tracio/domain/map/entities/route.dart';
 import 'package:Tracio/presentation/library/pages/edit_route_planned.dart';
+import 'package:google_polyline_algorithm/google_polyline_algorithm.dart';
+import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 
 class RouteItem extends StatefulWidget {
   final RouteEntity routeData;
@@ -73,7 +76,7 @@ class _RouteItemState extends State<RouteItem> {
 
                 // Distance • Elevation • Duration
                 Text(
-                  "${(widget.routeData.totalDistance / 1000).toStringAsFixed(1)} km • "
+                  "${(widget.routeData.totalDistance).toStringAsFixed(1)} km • "
                   "${widget.routeData.totalElevationGain.toStringAsFixed(0)} m • "
                   "${(widget.routeData.totalDuration / 3600).toStringAsFixed(1)} hr",
                   style: const TextStyle(
@@ -182,7 +185,7 @@ class _RouteItemState extends State<RouteItem> {
             builder: (context) => BlocProvider(
                 create: (context) => MapCubit(),
                 child: BottomNavBarManager(
-                  selectedIndex: 2,
+                  selectedIndex: 1,
                   isNavVisible: false,
                 )),
           ),
@@ -201,5 +204,25 @@ class _RouteItemState extends State<RouteItem> {
         print("Deleting ${widget.routeData.routeName}");
         break;
     }
+  }
+
+  LineString _getLineString(String polyline) {
+    final decoded = decodePolyline(polyline);
+    final coordinates = decoded.map((coord) {
+      if (coord.length >= 2) {
+        return Position(coord[1], coord[0]);
+      } else {
+        return Position(0, 0);
+      }
+    }).toList();
+
+    return LineString(coordinates: coordinates);
+  }
+
+  /// Encodes a list of GeoPoints into a polyline string
+  String encodeToPolyline(List<GeoPoint> points) {
+    final coordinates =
+        points.map((point) => [point.latitude, point.longitude]).toList();
+    return encodePolyline(coordinates);
   }
 }

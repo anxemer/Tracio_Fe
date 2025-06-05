@@ -60,7 +60,7 @@ class ShortcutKey extends StatelessWidget {
                     onTap: () => AppNavigator.push(
                         context,
                         BottomNavBarManager(
-                          selectedIndex: 3,
+                          selectedIndex: 2,
                         )),
                     child: Icon(
                       Icons.radar_rounded,

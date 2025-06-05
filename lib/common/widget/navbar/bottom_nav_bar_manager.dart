@@ -32,7 +32,7 @@ class BottomNavBarManagerState extends State<BottomNavBarManager> {
 
   final List<Widget> _screens = [
     HomePage(),
-    ExplorationPage(),
+    // ExplorationPage(),
     CyclingPage(),
     GroupPage(),
     MorePage(),
@@ -40,7 +40,7 @@ class BottomNavBarManagerState extends State<BottomNavBarManager> {
   void _onTabChanged(int index) {
     setState(() {
       _selectedIndex = index;
-      _isNavVisible = _selectedIndex != 2;
+      _isNavVisible = _selectedIndex != 1;
     });
   }
 
@@ -177,10 +177,10 @@ class BottomNavBarManagerState extends State<BottomNavBarManager> {
                         icon: Icons.home_outlined,
                         text: 'Home',
                       ),
-                      GButton(
-                        icon: Icons.explore_outlined,
-                        text: 'Explore',
-                      ),
+                      // GButton(
+                      //   icon: Icons.explore_outlined,
+                      //   text: 'Explore',
+                      // ),
                       GButton(
                         icon: Icons.directions_bike,
                         text: "Ride",

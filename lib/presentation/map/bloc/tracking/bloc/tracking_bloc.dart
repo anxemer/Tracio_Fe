@@ -385,20 +385,22 @@ class TrackingBloc extends Bloc<TrackingEvent, TrackingState> {
   Future<void> _onLeaveGroupRoute(
       LeaveGroupRoute event, Emitter<TrackingState> emit) async {
     final currentState = state;
+    final groupRouteHub = sl<GroupRouteHubService>();
     if (currentState is TrackingInProgress &&
         currentState.groupRouteId != null) {
       try {
-        final groupRouteHub = sl<GroupRouteHubService>();
-        await groupRouteHub
-            .leaveGroupRoute(currentState.groupRouteId.toString());
-
         emit(currentState.copyWith(
           groupRouteId: null,
           groupParticipants: null,
         ));
+        _groupRouteId = null;
       } catch (e) {
         debugPrint('Error leaving group route: $e');
       }
+    } else if (currentState is TrackingInitial) {
+      _groupRouteId = null;
+      await groupRouteHub.leaveGroupRoute(currentState.groupRouteId.toString());
+      emit(TrackingInitial());
     }
   }
 }

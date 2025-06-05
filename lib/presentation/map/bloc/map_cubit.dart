@@ -183,6 +183,10 @@ class MapCubit extends Cubit<MapCubitState> {
     }
   }
 
+  Future<void> removePolylineRoute() async {
+    await polylineAnnotationManager?.deleteAll();
+  }
+
   Future<void> clearAnnotations() async {
     pointAnnotations.clear();
     emit(MapAnnotationsUpdated());
@@ -345,6 +349,16 @@ class MapCubit extends Cubit<MapCubitState> {
     }
     _userAnnotations.clear();
     _managers.clear();
+  }
+
+  Future<void> removeUserMarker(String userId) async {
+    final manager = _managers[userId];
+    if (manager != null) {
+      await manager.deleteAll();
+      _userAnnotations.remove(userId);
+      _managers.remove(userId);
+      debugPrint("✅ Removed marker for user $userId");
+    }
   }
 
   Future<Uint8List> _fetchAndResizeImage({

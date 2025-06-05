@@ -50,7 +50,7 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
           AppNavigator.pushAndRemove(
               context,
               BottomNavBarManager(
-                selectedIndex: 3,
+                selectedIndex: 2,
               ));
         }
       },

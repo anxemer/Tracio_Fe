@@ -459,7 +459,7 @@ class _CyclingSnapshotDisplayState extends State<CyclingSnapshotDisplay> {
                                 builder: (context) => BlocProvider(
                                   create: (context) => MapCubit(),
                                   child: const BottomNavBarManager(
-                                    selectedIndex: 2,
+                                    selectedIndex: 1,
                                     isNavVisible: false,
                                   ),
                                 ),

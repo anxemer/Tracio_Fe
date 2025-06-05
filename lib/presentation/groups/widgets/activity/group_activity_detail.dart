@@ -260,7 +260,7 @@ class _GroupActivityDetailState extends State<GroupActivityDetail> {
                   value: trackingBloc
                     ..add(AddGroupRouteId(widget.groupRouteId)),
                   child: BottomNavBarManager(
-                    selectedIndex: 2,
+                    selectedIndex: 1,
                     isNavVisible: false,
                   ),
                 );

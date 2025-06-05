@@ -10,7 +10,7 @@ import 'package:Tracio/service_locator.dart';
 
 class GroupRouteHubService {
   final SignalRCoreService _core;
-  final _locationUpdateStream =
+  StreamController<GroupRouteLocationUpdateEntity> _locationUpdateStream =
       StreamController<GroupRouteLocationUpdateEntity>.broadcast();
 
   final List<String> _joinedGroupRouteIds = [];
@@ -56,13 +56,10 @@ class GroupRouteHubService {
     signalrLogger
         .i('[GroupRouteHub] 📤 Sending LeaveGroupRoute($groupRouteId)');
     try {
-      String accessToken = await sl<AuthLocalSource>().getToken();
-      assert(accessToken.isNotEmpty, '❌ accessToken is empty');
-      // await _core.invoke('LeaveGroupRoute',
-      //     args: [groupRouteId],
-      //     hubUrl: ("${ApiUrl.groupRouteHubUrl}?token=$accessToken"));
-      _core.dispose();
       _joinedGroupRouteIds.remove(groupRouteId);
+      _core.off('ReceiveLocationUpdate');
+      _core.off('ReconnectSuccess');
+      await _core.dispose();
       signalrLogger.d('[GroupRouteHub] ✅ Left group route: $groupRouteId');
     } catch (e) {
       signalrLogger.e('[GroupRouteHub] ❌ Failed to leave group route: $e');
@@ -80,7 +77,7 @@ class GroupRouteHubService {
         final model = GroupRouteLocationUpdateModel.fromMap(
           Map<String, dynamic>.from(data[0] as Map),
         );
-        if (model.userId != user!.userId) {
+        if (model.userId != user!.userId && !_locationUpdateStream.isClosed) {
           _locationUpdateStream.add(model);
         }
       } catch (e) {
@@ -108,7 +105,15 @@ class GroupRouteHubService {
 
   void dispose() {
     _locationUpdateStream.close();
+    _core.off('ReceiveLocationUpdate');
+    _core.off('ReconnectSuccess');
     _core.dispose();
     signalrLogger.d('[GroupRouteHub] ✅ StreamController disposed');
+  }
+
+  void endGroupRouteUpdateStream() {
+    _locationUpdateStream.close();
+    _joinedGroupRouteIds.clear();
+    signalrLogger.d('[GroupRouteHub] ✅ Location update stream reset');
   }
 }

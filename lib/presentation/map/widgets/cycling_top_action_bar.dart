@@ -2,6 +2,8 @@ import 'dart:typed_data';
 
 import 'package:Tracio/common/helper/navigator/app_navigator.dart';
 import 'package:Tracio/core/services/location/location_service.dart';
+import 'package:Tracio/core/services/signalR/implement/group_route_hub_service.dart';
+import 'package:Tracio/presentation/library/pages/library.dart';
 import 'package:Tracio/service_locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -17,6 +19,7 @@ import 'package:Tracio/domain/map/entities/place.dart';
 import 'package:Tracio/presentation/map/bloc/get_direction_cubit.dart';
 import 'package:Tracio/presentation/map/bloc/map_cubit.dart';
 import 'package:Tracio/presentation/map/bloc/map_state.dart';
+import 'package:Tracio/presentation/map/bloc/tracking/bloc/tracking_bloc.dart';
 import 'package:Tracio/presentation/map/pages/search_location.dart';
 
 class CyclingTopActionBar extends StatefulWidget {
@@ -33,19 +36,68 @@ class _CyclingTopActionBarState extends State<CyclingTopActionBar> {
     return bytes.buffer.asUint8List();
   }
 
+  void _handleBackPress(BuildContext context) async {
+    final trackingState = context.read<TrackingBloc>().state;
+    final groupRouteHub = sl<GroupRouteHubService>();
+
+    if (trackingState is TrackingInProgress &&
+        trackingState.groupRouteId != null) {
+      await groupRouteHub
+          .leaveGroupRoute(trackingState.groupRouteId.toString());
+      groupRouteHub.endGroupRouteUpdateStream();
+      context.read<TrackingBloc>().add(LeaveGroupRoute());
+    } else if (trackingState is TrackingInitial &&
+        trackingState.groupRouteId != null) {
+      await groupRouteHub
+          .leaveGroupRoute(trackingState.groupRouteId.toString());
+      groupRouteHub.endGroupRouteUpdateStream();
+      context.read<TrackingBloc>().add(LeaveGroupRoute());
+    }
+
+    if (Navigator.canPop(context)) {
+      Navigator.pop(context);
+    } else {
+      final bottomNavBarState =
+          context.findAncestorStateOfType<BottomNavBarManagerState>();
+      if (bottomNavBarState != null) {
+        bottomNavBarState.setSelectedIndex(0);
+        bottomNavBarState.setNavVisible(true);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<MapCubit, MapCubitState>(builder: (context, state) {
       return PopScope(
-        onPopInvokedWithResult: (didPop, result) {
-          if (!didPop && Navigator.canPop(context)) {
-            AppNavigator.push(context, BottomNavBarManager());
-          } else {
-            final bottomNavBarState =
-                context.findAncestorStateOfType<BottomNavBarManagerState>();
-            if (bottomNavBarState != null) {
-              bottomNavBarState.setSelectedIndex(0);
-              bottomNavBarState.setNavVisible(true);
+        onPopInvokedWithResult: (didPop, result) async {
+          if (!didPop) {
+            final trackingState = context.read<TrackingBloc>().state;
+            final groupRouteHub = sl<GroupRouteHubService>();
+
+            if (trackingState is TrackingInProgress &&
+                trackingState.groupRouteId != null) {
+              await groupRouteHub
+                  .leaveGroupRoute(trackingState.groupRouteId.toString());
+              groupRouteHub.endGroupRouteUpdateStream();
+              context.read<TrackingBloc>().add(LeaveGroupRoute());
+            } else if (trackingState is TrackingInitial &&
+                trackingState.groupRouteId != null) {
+              await groupRouteHub
+                  .leaveGroupRoute(trackingState.groupRouteId.toString());
+              groupRouteHub.endGroupRouteUpdateStream();
+              context.read<TrackingBloc>().add(LeaveGroupRoute());
+            }
+
+            if (Navigator.canPop(context)) {
+              AppNavigator.push(context, BottomNavBarManager());
+            } else {
+              final bottomNavBarState =
+                  context.findAncestorStateOfType<BottomNavBarManagerState>();
+              if (bottomNavBarState != null) {
+                bottomNavBarState.setSelectedIndex(0);
+                bottomNavBarState.setNavVisible(true);
+              }
             }
           }
         },
@@ -68,18 +120,7 @@ class _CyclingTopActionBarState extends State<CyclingTopActionBar> {
                   Icons.arrow_back,
                   color: Colors.black54,
                 ),
-                onPressed: () {
-                  if (Navigator.canPop(context)) {
-                    Navigator.pop(context);
-                  } else {
-                    final bottomNavBarState = context
-                        .findAncestorStateOfType<BottomNavBarManagerState>();
-                    if (bottomNavBarState != null) {
-                      bottomNavBarState.setSelectedIndex(0);
-                      bottomNavBarState.setNavVisible(true);
-                    }
-                  }
-                },
+                onPressed: () => _handleBackPress(context),
               ),
               // Search location button
 
@@ -165,6 +206,10 @@ class _CyclingTopActionBarState extends State<CyclingTopActionBar> {
                 onSelected: (String value) {
                   switch (value) {
                     case 'Route Planner':
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const LibraryPage()));
                       break;
                   }
                 },
@@ -172,11 +217,6 @@ class _CyclingTopActionBarState extends State<CyclingTopActionBar> {
                   const PopupMenuItem<String>(
                     value: 'Route Planner',
                     child: Text('Route Planner'),
-                  ),
-                  const PopupMenuDivider(),
-                  const PopupMenuItem<String>(
-                    value: 'Navigation Settings',
-                    child: Text('Navigation Settings'),
                   ),
                 ],
               )
@@ -217,14 +257,6 @@ class _CyclingTopActionBarState extends State<CyclingTopActionBar> {
                   Navigator.pop(context);
                 },
               ),
-              ListTile(
-                leading: const Icon(Icons.location_on, color: Colors.green),
-                title: const Text("Add Point of Interest"),
-                onTap: () {
-                  Navigator.pop(context); // Close bottom sheet
-                  _addPointOfInterest(place); // Function to add POI
-                },
-              ),
             ],
           ),
         );
@@ -263,9 +295,5 @@ class _CyclingTopActionBarState extends State<CyclingTopActionBar> {
     );
 
     context.read<GetDirectionCubit>().getDirectionUsingMapbox(request);
-  }
-
-  void _addPointOfInterest(PlaceDetailEntity place) {
-    print("Adding ${place.address} as a Point of Interest");
   }
 }

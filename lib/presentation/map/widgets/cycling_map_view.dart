@@ -1,9 +1,12 @@
 import 'dart:async';
+import 'package:Tracio/core/configs/theme/app_colors.dart';
+import 'package:Tracio/data/map/models/route.dart';
 import 'package:Tracio/presentation/map/bloc/map_state.dart';
 import 'package:Tracio/presentation/map/bloc/route_cubit.dart';
 import 'package:Tracio/presentation/map/bloc/route_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' as mapbox;
 import 'package:location/location.dart' as loc;
@@ -43,6 +46,8 @@ class _CyclingMapViewState extends State<CyclingMapView>
   int _pointsSinceLastSegment = 0;
   late loc.Location location;
 
+  bool isAddedPolyline = false;
+
   final groupRouteHub = sl<GroupRouteHubService>();
   final matchingHub = sl<MatchingHubService>();
 
@@ -60,6 +65,9 @@ class _CyclingMapViewState extends State<CyclingMapView>
     super.didChangeDependencies();
     _mapCubit = context.read<MapCubit>();
     _trackingBloc = context.read<TrackingBloc>();
+
+    // Cancel any existing subscriptions when dependencies change
+    _cancelAllSubscriptions();
   }
 
   @override
@@ -137,14 +145,18 @@ class _CyclingMapViewState extends State<CyclingMapView>
   }
 
   void _startPositionUpdates() async {
-    // Cancel any existing subscription
+    // Cancel any existing subscription first
     _currentPositionUpdateSub?.cancel();
+    _currentPositionUpdateSub = null;
 
     // Try to get initial position first
     await _handleInitialPosition();
 
+    if (!mounted) return; // Check if widget is still mounted
+
     _currentPositionUpdateSub =
         location.onLocationChanged.listen((locationData) {
+      if (!mounted) return; // Check if widget is still mounted
       _handlePositionUpdate(locationData);
     });
   }
@@ -183,12 +195,21 @@ class _CyclingMapViewState extends State<CyclingMapView>
 
   @override
   void dispose() {
-    _groupParticipantUpdateSub?.cancel();
-    _matchedUserUpdateSub?.cancel();
-    _currentPositionUpdateSub?.cancel();
+    _cancelAllSubscriptions();
     _resetTrackingState();
     _trackingBloc.add(ResetTracking());
     super.dispose();
+  }
+
+  void _cancelAllSubscriptions() {
+    _groupParticipantUpdateSub?.cancel();
+    _groupParticipantUpdateSub = null;
+
+    _matchedUserUpdateSub?.cancel();
+    _matchedUserUpdateSub = null;
+
+    _currentPositionUpdateSub?.cancel();
+    _currentPositionUpdateSub = null;
   }
 
   void _updateRouteLine(List<mapbox.Position> points) async {
@@ -307,7 +328,24 @@ class _CyclingMapViewState extends State<CyclingMapView>
           child: BlocConsumer<GetDirectionCubit, GetDirectionState>(
               listener: (context, state) async {
             if (state is GetDirectionLoaded) {
-              if (context.mounted) {}
+              if (context.mounted) {
+                //Border
+                await context.read<MapCubit>().addPolylineRoute(
+                    state.direction.geometry!,
+                    lineOpacity: 0.6,
+                    lineColor: Colors.white,
+                    lineWidth: 6);
+                //Polyline
+                await context.read<MapCubit>().addPolylineRoute(
+                    state.direction.geometry!,
+                    lineOpacity: 0.8,
+                    lineColor: Colors.blue,
+                    lineBorderWidth: 0,
+                    lineWidth: 4);
+                setState(() {
+                  isAddedPolyline = true;
+                });
+              }
             } else if (state is GetDirectionFailure) {
               // Show error message
               if (context.mounted) {
@@ -452,6 +490,56 @@ class _CyclingMapViewState extends State<CyclingMapView>
                                 .listen((data) async {
                               if (!mounted) return;
                               try {
+                                if (data.status == 'leave') {
+                                  context
+                                      .read<TrackingBloc>()
+                                      .add(RemoveMatchedUser(data.userId));
+                                  await context
+                                      .read<MapCubit>()
+                                      .removeUserMarker(data.userId.toString());
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                          "${data.userName} has left the match"),
+                                      backgroundColor: Colors.orange,
+                                      dismissDirection: DismissDirection.up,
+                                      margin: EdgeInsets.only(
+                                        bottom:
+                                            MediaQuery.of(context).size.height -
+                                                100,
+                                        left: 10,
+                                        right: 10,
+                                      ),
+                                      behavior: SnackBarBehavior.floating,
+                                      duration: Duration(seconds: 3),
+                                    ),
+                                  );
+                                } else if (data.status == 'finish') {
+                                  context
+                                      .read<TrackingBloc>()
+                                      .add(RemoveMatchedUser(data.userId));
+
+                                  await context
+                                      .read<MapCubit>()
+                                      .removeUserMarker(data.userId.toString());
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                          "${data.userName} has finished their ride"),
+                                      dismissDirection: DismissDirection.up,
+                                      margin: EdgeInsets.only(
+                                        bottom:
+                                            MediaQuery.of(context).size.height -
+                                                100,
+                                        left: 10,
+                                        right: 10,
+                                      ),
+                                      backgroundColor: Colors.green,
+                                      behavior: SnackBarBehavior.floating,
+                                      duration: Duration(seconds: 3),
+                                    ),
+                                  );
+                                }
                                 context
                                     .read<TrackingBloc>()
                                     .add(AddMatchedUser(data));
@@ -496,6 +584,60 @@ class _CyclingMapViewState extends State<CyclingMapView>
                     directionState is GetElevationLoading)
                   Center(
                     child: CircularProgressIndicator(),
+                  ),
+                if (isAddedPolyline)
+                  Positioned(
+                    top: 70,
+                    right: 10,
+                    child: GestureDetector(
+                      onTap: () {
+                        context.read<MapCubit>().removePolylineRoute();
+                        context.read<MapCubit>().clearAllMarkers();
+                        setState(() {
+                          isAddedPolyline = false;
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: Colors.blueAccent.withOpacity(0.8),
+                          borderRadius: BorderRadius.circular(8),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 4,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.navigation,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 8),
+                            const Text(
+                              "Cancel Navigation",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            const Icon(
+                              Icons.close,
+                              color: Colors.white,
+                              size: 16,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
               ],
             );

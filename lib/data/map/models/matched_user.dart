@@ -7,6 +7,7 @@ class MatchedUserModel extends MatchedUserEntity {
     required super.avatar,
     required super.longitude,
     required super.latitude,
+    super.status,
   });
 
   factory MatchedUserModel.fromMap(Map<String, dynamic> map) {

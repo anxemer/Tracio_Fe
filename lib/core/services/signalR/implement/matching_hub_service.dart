@@ -32,6 +32,8 @@ class MatchingHubService {
 
     _core.on('NotifyMatchedUser', _onNotifyMatchedUser);
     _core.on('RequestMatch', _onNotifyRequestMatch);
+    _core.on('NotifyLeaveMatch', _onNotifyLeaveMatch);
+    _core.on('NotifyFinishMatch', _onNotifyFinishMatch);
 
     signalrLogger.d('[MatchingHubService] 📡 Handlers registered');
   }
@@ -60,6 +62,37 @@ class MatchingHubService {
     } catch (e) {
       signalrLogger.e(
           '[MatchingHubService] ❌ Failed to send ${approveRequest.status}: $e');
+    }
+  }
+
+  void _onNotifyLeaveMatch(List<Object?>? data) {
+    if (data == null || data.isEmpty) return;
+    signalrLogger.i('[MatchingHubService] 📥 Raw data for leave match: $data');
+
+    try {
+      final raw = data[0];
+      if (raw is Map<String, dynamic>) {
+        final model = MatchedUserModel.fromMap(raw);
+        if (_matchedUser.contains(model.userId)) {
+          _matchedUser.remove(model.userId);
+          final tmpModel = MatchedUserModel(
+            userId: model.userId,
+            userName: model.userName,
+            avatar: model.avatar,
+            latitude: 0,
+            longitude: 0,
+            status: 'leave',
+          );
+          if (!_matchedUserStream.isClosed) {
+            _matchedUserStream.add(tmpModel);
+          }
+          _matchingUser.removeWhere((user) => user.userId == model.userId);
+        }
+      } else {
+        signalrLogger.w('[MatchingHubService] ⚠️ Unexpected data format: $raw');
+      }
+    } catch (e) {
+      signalrLogger.e('[MatchingHubService] ❌ Failed to parse leave match: $e');
     }
   }
 
@@ -108,6 +141,48 @@ class MatchingHubService {
     } catch (e) {
       signalrLogger
           .e('[MatchingHubService] ❌ Failed to parse message update: $e');
+    }
+  }
+
+  void _onNotifyFinishMatch(List<Object?>? data) {
+    if (data == null || data.isEmpty) return;
+    signalrLogger.i('[MatchingHubService] 📥 Raw data for finish match: $data');
+
+    try {
+      final raw = data[0];
+      if (raw is Map<String, dynamic>) {
+        final model = MatchedUserModel.fromMap(raw);
+        if (_matchedUser.contains(model.userId)) {
+          // Remove from matched users list
+          _matchedUser.remove(model.userId);
+
+          // Create a model to notify the UI
+          final tmpModel = MatchedUserModel(
+            userId: model.userId,
+            userName: model.userName,
+            avatar: model.avatar,
+            latitude: 0,
+            longitude: 0,
+            status: 'finish',
+          );
+
+          // Notify through stream
+          if (!_matchedUserStream.isClosed) {
+            _matchedUserStream.add(tmpModel);
+          }
+
+          // Also remove from matching users if present
+          _matchingUser.removeWhere((user) => user.userId == model.userId);
+
+          signalrLogger.i(
+              '[MatchingHubService] ✅ Match finished for user ${model.userId}');
+        }
+      } else {
+        signalrLogger.w('[MatchingHubService] ⚠️ Unexpected data format: $raw');
+      }
+    } catch (e) {
+      signalrLogger
+          .e('[MatchingHubService] ❌ Failed to parse finish match: $e');
     }
   }
 

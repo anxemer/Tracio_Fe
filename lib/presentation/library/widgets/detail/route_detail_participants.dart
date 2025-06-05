@@ -22,6 +22,8 @@ class RouteDetailParticipants extends StatelessWidget {
     if (isOwner) {
       if (matchedUsers?.isNotEmpty ?? false) {
         return 'Route Matches';
+      } else if (participants?.isNotEmpty ?? false) {
+        return 'Group Ride';
       }
       return 'Solo Ride';
     } else if (participants?.isNotEmpty ?? false) {
@@ -35,6 +37,8 @@ class RouteDetailParticipants extends StatelessWidget {
     if (isOwner) {
       if (matchedUsers?.isNotEmpty ?? false) {
         return 'You\'ve discovered cyclists riding on the same route';
+      } else if (participants?.isNotEmpty ?? false) {
+        return 'You are riding with ${participants?.length} cyclists';
       }
       return 'You can match with nearby cyclists on your route';
     } else if (participants?.isNotEmpty ?? false) {
@@ -67,7 +71,6 @@ class RouteDetailParticipants extends StatelessWidget {
             ),
           ),
         ),
-        SizedBox(height: 16.h),
         if (hasMatchedUsers) ...[
           Padding(
             padding:

@@ -25,6 +25,7 @@ import 'package:Tracio/presentation/map/widgets/cycling_top_action_bar.dart';
 import 'package:Tracio/presentation/map/widgets/slide_to_unlock.dart';
 import 'package:Tracio/service_locator.dart';
 import 'package:Tracio/presentation/map/widgets/cycling_recenter_button.dart';
+import 'package:Tracio/presentation/map/widgets/group_ride_status.dart';
 
 class CyclingPage extends StatefulWidget {
   const CyclingPage({super.key});
@@ -106,6 +107,7 @@ class _CyclingPageState extends State<CyclingPage> {
     if (joinedGroupRoutes.isNotEmpty) {
       final groupRouteId = joinedGroupRoutes.first;
       await sl<GroupRouteHubService>().leaveGroupRoute(groupRouteId);
+      sl<GroupRouteHubService>().endGroupRouteUpdateStream();
     }
 
     setState(() {
@@ -370,7 +372,12 @@ class _CyclingPageState extends State<CyclingPage> {
                   /// Cycling Top Bar
                   BlocBuilder<TrackingBloc, TrackingState>(
                     builder: (context, state) {
-                      if (state is! TrackingInProgress) {
+                      if ((state is! TrackingInProgress &&
+                              state is! TrackingStarting &&
+                              state is! TrackingFinishing &&
+                              state is! TrackingFinished) &&
+                          (state is TrackingInitial &&
+                              state.groupRouteId == null)) {
                         return Positioned(
                           top: 10,
                           left: 0,
@@ -384,6 +391,19 @@ class _CyclingPageState extends State<CyclingPage> {
                         );
                       } else {
                         return SizedBox.shrink();
+                      }
+                    },
+                  ),
+
+                  BlocBuilder<TrackingBloc, TrackingState>(
+                    builder: (context, state) {
+                      if ((state is TrackingInProgress &&
+                              state.groupRouteId != null) ||
+                          (state is TrackingInitial &&
+                              state.groupRouteId != null)) {
+                        return const GroupRideStatus();
+                      } else {
+                        return const SizedBox.shrink();
                       }
                     },
                   ),
@@ -623,24 +643,79 @@ class _CyclingPageState extends State<CyclingPage> {
                             curr.groupParticipants == null) {
                           return false;
                         }
-                        return (prev.groupParticipants!.length) <
-                            (curr.groupParticipants!.length);
+                        // Check if there's any change in participants
+                        if (prev.groupParticipants!.length !=
+                            curr.groupParticipants!.length) {
+                          return true;
+                        }
+                        // Check if any participant has changed
+                        final prevIds = prev.groupParticipants!
+                            .map((p) => p.userId)
+                            .toSet();
+                        final currIds = curr.groupParticipants!
+                            .map((p) => p.userId)
+                            .toSet();
+                        return prevIds.difference(currIds).isNotEmpty ||
+                            currIds.difference(prevIds).isNotEmpty;
                       }
                       return false;
                     },
                     listener: (context, state) {
                       if (state is TrackingInProgress &&
                           state.groupParticipants?.isNotEmpty == true) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text("New participant joined"),
-                            backgroundColor: Colors.green,
-                            duration: Duration(seconds: 3),
-                            behavior: SnackBarBehavior.floating,
-                            margin: EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 20),
-                          ),
-                        );
+                        final prevState = context.read<TrackingBloc>().state;
+                        if (prevState is TrackingInProgress) {
+                          final prevIds = prevState.groupParticipants
+                                  ?.map((p) => p.userId)
+                                  .toSet() ??
+                              {};
+                          final currIds = state.groupParticipants
+                                  ?.map((p) => p.userId)
+                                  .toSet() ??
+                              {};
+
+                          // Find new participants
+                          final newParticipants = currIds.difference(prevIds);
+                          if (newParticipants.isNotEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text("New participant joined"),
+                                backgroundColor: Colors.green,
+                                duration: Duration(seconds: 3),
+                                behavior: SnackBarBehavior.floating,
+                                margin: EdgeInsets.only(
+                                    bottom: _currentFabHeight.h + 20,
+                                    left: 10,
+                                    right: 10),
+                                dismissDirection: DismissDirection.up,
+                              ),
+                            );
+                          }
+                        }
+                      }
+                    },
+                    child: const SizedBox.shrink(),
+                  ),
+
+                  // Listen for group route ID changes
+                  BlocListener<TrackingBloc, TrackingState>(
+                    listenWhen: (prev, curr) {
+                      if (prev is TrackingInProgress &&
+                          curr is TrackingInProgress) {
+                        return prev.groupRouteId != curr.groupRouteId;
+                      }
+                      if (prev is TrackingInitial && curr is TrackingInitial) {
+                        return prev.groupRouteId != curr.groupRouteId;
+                      }
+                      return false;
+                    },
+                    listener: (context, state) {
+                      if (state is TrackingInProgress &&
+                          state.groupRouteId == null) {
+                        sl<GroupRouteHubService>().endGroupRouteUpdateStream();
+                      } else if (state is TrackingInitial &&
+                          state.groupRouteId == null) {
+                        sl<GroupRouteHubService>().endGroupRouteUpdateStream();
                       }
                     },
                     child: const SizedBox.shrink(),
