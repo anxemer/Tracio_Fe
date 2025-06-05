@@ -81,7 +81,7 @@ class ServiceGrid extends StatelessWidget {
             sliver: SliverGrid(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 1,
-                childAspectRatio: 3,
+                childAspectRatio: 2.6,
                 mainAxisSpacing: 16.h,
               ),
               delegate: SliverChildBuilderDelegate(

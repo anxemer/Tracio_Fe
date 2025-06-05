@@ -45,6 +45,12 @@ class ResolveBookingShopCubit extends Cubit<ResolveBookingShopState> {
   }
 
   void resetState() {
+    bookedDate = null;
+    shopNote = null;
+    adjPrice = null;
+    price = null;
+    reason = null;
+    emit(ResolveShopBookingInitial());
     emit(ResolveShopBookingInitial());
   }
 

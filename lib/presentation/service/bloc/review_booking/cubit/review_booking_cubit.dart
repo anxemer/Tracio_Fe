@@ -1,3 +1,4 @@
+import 'package:Tracio/core/erorr/failure.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:Tracio/domain/shop/usecase/reply_review.dart';
@@ -14,12 +15,12 @@ class ReviewBookingCubit extends Cubit<ReviewBookingState> {
       emit(ReviewBookingLoading());
       var result = await sl<ReviewBookingUseCase>().call(params);
       result.fold((error) {
-        emit(ReviewBookingFailure(error.message));
+        emit(ReviewBookingFailure(error.message,error));
       }, (data) {
         emit(ReviewBookingSuccess());
       });
-    } catch (e) {
-      emit(ReviewBookingFailure(e.toString()));
+    }on Failure catch (e) {
+      emit(ReviewBookingFailure(e.toString(),e));
     }
   }
 
@@ -28,12 +29,12 @@ class ReviewBookingCubit extends Cubit<ReviewBookingState> {
       emit(ReviewBookingLoading());
       var result = await sl<ReplyReviewUseCase>().call(params);
       result.fold((error) {
-        emit(ReviewBookingFailure(error.message));
+        emit(ReviewBookingFailure(error.message,error));
       }, (data) {
         emit(ReviewBookingSuccess());
       });
-    } catch (e) {
-      emit(ReviewBookingFailure(e.toString()));
+    }on Failure catch (e) {
+      emit(ReviewBookingFailure(e.toString(),e));
     }
   }
 }

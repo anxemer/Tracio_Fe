@@ -60,7 +60,7 @@ class ServiceCard extends StatelessWidget {
                 child: Padding(
                   padding: EdgeInsets.symmetric(
                     vertical: 8.h,
-                    horizontal: screenWidth > 360 ? 12.w : 8.w,
+                    horizontal: 8.w,
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -122,8 +122,6 @@ class ServiceCard extends StatelessWidget {
                         ],
                       ),
 
-                      SizedBox(height: 4.h),
-
                       if (!isShopOwner)
                         Row(
                           children: [
@@ -151,7 +149,6 @@ class ServiceCard extends StatelessWidget {
                         ),
 
                       if (isShopOwner) ...[
-                        SizedBox(height: 8.h),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [

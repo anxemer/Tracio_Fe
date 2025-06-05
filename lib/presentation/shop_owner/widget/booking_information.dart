@@ -33,10 +33,16 @@ class BookingInformation extends StatefulWidget {
 }
 
 class _BookingInformationState extends State<BookingInformation> {
-  final TextEditingController shopNote = TextEditingController();
+  final TextEditingController shopNoteCon = TextEditingController();
   final TextEditingController priceAdjust = TextEditingController();
   final TextEditingController reason = TextEditingController();
   final TextEditingController adjPriceCon = TextEditingController();
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -267,9 +273,11 @@ class _BookingInformationState extends State<BookingInformation> {
         // ✅ Shop Note (Editable hoặc chỉ hiển thị)
         isEditable
             ? SizedBox(
-                height: 40,
+                height: 80,
                 child: InputTextFormField(
-                  controller: TextEditingController(text: shopNote ?? ''),
+                  controller: shopNote != null
+                      ? TextEditingController(text: shopNote)
+                      : shopNoteCon,
                   labelText: 'Shop Note',
                   hint: 'Note for Customer',
                   onFieldSubmitted: (value) {
@@ -316,17 +324,52 @@ class _BookingInformationState extends State<BookingInformation> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (adjPriceReason != null) ...[
-                  SizedBox(height: 4),
+                if (isUpdated && newPrice != null && newPrice != price) ...[
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text('Total Price:',
+                      const Text('Initial Price:',
                           style: TextStyle(
                               fontSize: AppSize.textMedium,
                               color: Colors.grey)),
                       Text(
                         '$price \VNĐ',
+                        style: const TextStyle(
+                          fontSize: AppSize.textMedium,
+                          decoration: TextDecoration.lineThrough,
+                          color: Colors.red,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 4),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('New Price:',
+                          style: TextStyle(
+                              fontSize: AppSize.textMedium,
+                              color: Colors.grey)),
+                      Text(
+                        '$newPrice \VNĐ',
+                        style: TextStyle(
+                          fontSize: AppSize.textLarge,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.green.shade700,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 4),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Total Price:',
+                          style: TextStyle(
+                              fontSize: AppSize.textMedium,
+                              color: Colors.grey)),
+                      Text(
+                        '$newPrice \VNĐ',
                         style: TextStyle(
                           fontSize: AppSize.textLarge,
                           fontWeight: FontWeight.bold,
@@ -336,45 +379,42 @@ class _BookingInformationState extends State<BookingInformation> {
                     ],
                   ),
                   SizedBox(height: 4),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Reason:',
-                        style: TextStyle(
-                          fontSize: AppSize.textLarge,
-                          color: Colors.black87,
-                        ),
-                      ),
-                      SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          adjPriceReason,
-                          style: TextStyle(
-                            fontSize: AppSize.textLarge,
-                            color: Colors.black87,
-                          ),
-                          softWrap: true,
-                        ),
-                      ),
-                    ],
+                  Text(
+                    'Reason: $adjPriceReason',
+                    style: TextStyle(
+                      fontSize: AppSize.textLarge,
+                      color: Colors.black87,
+                    ),
                   ),
                 ] else ...[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Total Price:',
-                          style: TextStyle(
-                              fontSize: AppSize.textMedium,
-                              color: Colors.grey)),
-                      Text(
-                        '$price VNĐ',
-                        style: TextStyle(
-                          fontSize: AppSize.textLarge,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blue.shade700,
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text('Total Price:',
+                              style: TextStyle(
+                                  fontSize: AppSize.textMedium,
+                                  color: Colors.grey)),
+                          Text(
+                            '$price VNĐ',
+                            style: TextStyle(
+                              fontSize: AppSize.textLarge,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blue.shade700,
+                            ),
+                          ),
+                        ],
                       ),
+                      // SizedBox(height: 4),
+                      // Text(
+                      //   'Reason: $adjPriceReason',
+                      //   style: TextStyle(
+                      //     fontSize: AppSize.textLarge,
+                      //     color: Colors.black87,
+                      //   ),
+                      // ),
                     ],
                   ),
                 ],

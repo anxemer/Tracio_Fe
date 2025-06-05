@@ -125,7 +125,7 @@ class ShopOwnerProfileScreen extends StatelessWidget {
                     _buildInfoTile(
                       icon: Icons.store_outlined,
                       title: 'Shop',
-                      subtitle: '${shopProfile.shopName} - Xem chi tiết',
+                      subtitle: '${shopProfile.shopName}',
                       trailingIcon: Icons.arrow_forward_ios,
                       context: context,
                       onTap: () {},

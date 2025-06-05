@@ -5,7 +5,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:Tracio/common/helper/is_dark_mode.dart';
-import 'package:Tracio/core/configs/theme/assets/app_images.dart';
 import 'package:Tracio/core/constants/app_size.dart';
 import 'package:Tracio/domain/shop/entities/response/booking_card_view.dart';
 
@@ -107,7 +106,10 @@ class _BookingCardState extends State<BookingCardShop> {
                               height: 5.h, // Reduce spacing if needed
                             ),
                             // --- Row containing Price and Duration ---
-                            Row(
+                            Wrap(
+                              spacing: 15.w, // giống SizedBox(width: 15.w)
+                              runSpacing:
+                                  5.h, // khoảng cách giữa các dòng nếu wrap
                               children: [
                                 if (widget.service.price != null)
                                   _buildInfoRow(
@@ -116,11 +118,6 @@ class _BookingCardState extends State<BookingCardShop> {
                                         '${widget.service.formattedPrice} \VNĐ',
                                     isDark: isDark,
                                   ),
-                                if (widget.service.price != null &&
-                                    widget.service.duration != null)
-                                  SizedBox(
-                                      width: 15
-                                          .w), // Space between price and duration
                                 if (widget.service.duration != null)
                                   _buildInfoRow(
                                     icon: Icons.access_time_rounded,
